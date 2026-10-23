@@ -72,124 +72,136 @@ def evaluate_betman_results(
     cumulative_profit = 0
     profit_curve = []
     recent_evaluated_picks = []
+    rounds = sorted(list(set(m.get("gm_ts", 0) for m in matches if m.get("gm_ts"))))
+    past_team_results = {}  # team -> list of 'W'/'D'/'L'
 
-    # 시간순(과거->최신)으로 정렬하여 누적 수익 곡선 생성
-    sorted_matches = sorted(matches, key=lambda x: (x.get("gm_ts", 0), x.get("match_seq", "")))
+    for rnd in rounds:
+        rnd_matches = [m for m in matches if m.get("gm_ts") == rnd]
+        
+        for m in rnd_matches:
+            gr = str(m.get("game_result", "")).strip()
+            if gr not in ("0", "1", "2"):
+                continue
 
-    for m in sorted_matches:
-        gr = str(m.get("game_result", "")).strip()
-        if gr not in ("0", "1", "2"):
-            continue
+            odds = {
+                "home_win": float(m.get("odds_win", 0.0) or 0.0),
+                "draw": float(m.get("odds_draw", 0.0) or 0.0),
+                "away_win": float(m.get("odds_lose", 0.0) or 0.0)
+            }
 
-        odds = {
-            "home_win": float(m.get("odds_win", 0.0) or 0.0),
-            "draw": float(m.get("odds_draw", 0.0) or 0.0),
-            "away_win": float(m.get("odds_lose", 0.0) or 0.0)
-        }
+            # 배당률이 없거나 비정상인 경기 제외
+            if odds["home_win"] <= 1.0 and odds["away_win"] <= 1.0:
+                continue
 
-        # 배당률이 없거나 비정상인 경기 제외
-        if odds["home_win"] <= 1.0 and odds["away_win"] <= 1.0:
-            continue
+            home = m.get("home_team", "").strip()
+            away = m.get("away_team", "").strip()
+            g_type = m.get("game_type", "")
+            sport = m.get("sport", "SC")
+            gm_ts = m.get("gm_ts", "기타")
 
-        home = m.get("home_team", "").strip()
-        away = m.get("away_team", "").strip()
-        g_type = m.get("game_type", "")
-        sport = m.get("sport", "SC")
-        gm_ts = m.get("gm_ts", "기타")
+            cat = "일반 승무패"
+            if "핸디캡" in g_type:
+                cat = "핸디캡"
+            elif "언더오버" in g_type:
+                cat = "언더오버"
 
-        cat = "일반 승무패"
-        if "핸디캡" in g_type:
-            cat = "핸디캡"
-        elif "언더오버" in g_type:
-            cat = "언더오버"
+            # [엄격한 시계열 검증: Lookahead Bias 100% 차단]
+            # 오직 이번 회차 이전에 종료된 경기만 팀의 폼으로 사용
+            h_hist = past_team_results.get(home, [])[-5:]
+            a_hist = past_team_results.get(away, [])[-5:]
+            h_w = sum(1 for x in h_hist if x == "W")
+            a_w = sum(1 for x in a_hist if x == "W")
+            h_rate = (h_w / len(h_hist) * 100) if h_hist else 50.0
+            a_rate = (a_w / len(a_hist) * 100) if a_hist else 50.0
+            form_diff = h_rate - a_rate
 
-        # 폼 모멘텀 산출
-        hf = form_analyzer.get_team_recent_form(home)
-        af = form_analyzer.get_team_recent_form(away)
-        h_score = (hf['win_rate_pct'] + (hf['avg_scored'] - hf['avg_conceded']) * 15) if hf.get('has_data') else 0
-        a_score = (af['win_rate_pct'] + (af['avg_scored'] - af['avg_conceded']) * 15) if af.get('has_data') else 0
-        form_diff = h_score - a_score
+            # AI 모델 확률 산출 (과거 데이터 기반 폼 반영)
+            pred = predictor.predict_category(home, away, category=cat, sport=sport, odds=odds, form_diff=form_diff)
+            model_probs = {
+                "home_win": pred["home_win"],
+                "draw": pred["draw"],
+                "away_win": pred["away_win"]
+            }
 
-        # AI 모델 확률 산출 (폼 모멘텀 융합)
-        pred = predictor.predict_category(home, away, category=cat, sport=sport, odds=odds, form_diff=form_diff)
-        model_probs = {
-            "home_win": pred["home_win"],
-            "draw": pred["draw"],
-            "away_win": pred["away_win"]
-        }
+            # 가치 평가
+            eval_res = evaluate_match_value(
+                home, away, odds, model_probs,
+                selection_labels=pred.get("selection_labels"),
+                category=cat
+            )
 
-        # 가치 평가
-        eval_res = evaluate_match_value(
-            home, away, odds, model_probs,
-            selection_labels=pred.get("selection_labels"),
-            category=cat
-        )
+            total_matches += 1
 
-        total_matches += 1
+            if eval_res["is_recommended"]:
+                total_bets += 1
+                total_staked += flat_stake
 
-        if eval_res["is_recommended"]:
-            total_bets += 1
-            total_staked += flat_stake
+                sel = eval_res["best_selection"]
+                sel_odds = odds.get(sel, 0.0)
 
-            sel = eval_res["best_selection"]
-            sel_odds = odds.get(sel, 0.0)
+                # 실제 적중 판별 (Betman: 0=승/언더, 1=무, 2=패/오버)
+                is_hit = False
+                if gr == "0" and sel == "home_win":
+                    is_hit = True
+                elif gr == "1" and sel == "draw":
+                    is_hit = True
+                elif gr == "2" and sel == "away_win":
+                    is_hit = True
 
-            # 실제 적중 판별
-            # Betman: 0=승/언더, 1=무, 2=패/오버
-            is_hit = False
-            if gr == "0" and sel == "home_win":
-                is_hit = True
-            elif gr == "1" and sel == "draw":
-                is_hit = True
-            elif gr == "2" and sel == "away_win":
-                is_hit = True
+                g_key = "S" if "S (" in eval_res["grade"] else ("A" if "A (" in eval_res["grade"] else "B")
+                grade_stats[g_key]["bets"] += 1
+                grade_stats[g_key]["staked"] += flat_stake
 
-            g_key = "S" if "S (" in eval_res["grade"] else ("A" if "A (" in eval_res["grade"] else "B")
-            grade_stats[g_key]["bets"] += 1
-            grade_stats[g_key]["staked"] += flat_stake
+                # 회차별 통계 집계
+                r_entry = round_stats.setdefault(str(gm_ts), {"bets": 0, "wins": 0, "staked": 0, "returned": 0})
+                r_entry["bets"] += 1
+                r_entry["staked"] += flat_stake
 
-            # 회차별 통계 집계
-            r_entry = round_stats.setdefault(str(gm_ts), {"bets": 0, "wins": 0, "staked": 0, "returned": 0})
-            r_entry["bets"] += 1
-            r_entry["staked"] += flat_stake
+                if is_hit:
+                    won_bets += 1
+                    ret_amt = flat_stake * sel_odds
+                    total_returned += ret_amt
+                    grade_stats[g_key]["wins"] += 1
+                    grade_stats[g_key]["returned"] += ret_amt
+                    r_entry["wins"] += 1
+                    r_entry["returned"] += ret_amt
+                    net = ret_amt - flat_stake
+                else:
+                    net = -flat_stake
 
-            if is_hit:
-                won_bets += 1
-                ret_amt = flat_stake * sel_odds
-                total_returned += ret_amt
-                grade_stats[g_key]["wins"] += 1
-                grade_stats[g_key]["returned"] += ret_amt
-                r_entry["wins"] += 1
-                r_entry["returned"] += ret_amt
-                net = ret_amt - flat_stake
-            else:
-                net = -flat_stake
+                cumulative_profit += net
 
-            cumulative_profit += net
+                if total_bets % 5 == 0 or total_bets <= 20:
+                    profit_curve.append({
+                        "bet_index": total_bets,
+                        "cumulative_profit": round(cumulative_profit, 0),
+                        "roi_pct": round((cumulative_profit / total_staked * 100), 2)
+                    })
 
-            # 누적 손익 곡선 데이터 포인트 (베팅 10건마다 또는 적중 시 샘플링)
-            if total_bets % 5 == 0 or total_bets <= 20:
-                profit_curve.append({
-                    "bet_index": total_bets,
-                    "cumulative_profit": round(cumulative_profit, 0),
-                    "roi_pct": round((cumulative_profit / total_staked * 100), 2)
+                pick_name = eval_res["best_selection_name"]
+                score_str = m.get("score", "-")
+                match_dt = m.get("match_time", "")
+
+                recent_evaluated_picks.append({
+                    "date": match_dt,
+                    "round": str(gm_ts),
+                    "match": f"{home} vs {away}",
+                    "game_type": g_type,
+                    "score": score_str,
+                    "pick": pick_name,
+                    "odds": sel_odds,
+                    "is_hit": is_hit,
+                    "net_pnl": f"{net:+,.0f}원"
                 })
 
-            pick_name = eval_res["best_selection_name"]
-            score_str = m.get("score", "-")
-            match_dt = m.get("match_time", "")
-
-            recent_evaluated_picks.append({
-                "date": match_dt,
-                "round": str(gm_ts),
-                "match": f"{home} vs {away}",
-                "game_type": g_type,
-                "score": score_str,
-                "pick": pick_name,
-                "odds": sel_odds,
-                "is_hit": is_hit,
-                "net_pnl": f"{net:+,.0f}원"
-            })
+        # 회차의 모든 경기가 끝난 후에만 과거 전적 사전에 추가 (미래 누수 방지)
+        for m in rnd_matches:
+            gr = str(m.get("game_result", "")).strip()
+            home = m.get("home_team", "").strip()
+            away = m.get("away_team", "").strip()
+            if gr in ("0", "1", "2"):
+                past_team_results.setdefault(home, []).append("W" if gr == "0" else ("D" if gr == "1" else "L"))
+                past_team_results.setdefault(away, []).append("W" if gr == "2" else ("D" if gr == "1" else "L"))
 
     net_profit = total_returned - total_staked
     roi_pct = (net_profit / total_staked * 100.0) if total_staked > 0 else 0.0
