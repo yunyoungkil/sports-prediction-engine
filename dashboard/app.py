@@ -288,9 +288,15 @@ with tab1:
                             st.write(f"• 최근 전적: **{home_form['record_str']}** (승률 {home_form['win_rate_pct']}%)")
                             st.write(f"• 평균 득점: **{home_form['avg_scored']}골** | 실점: **{home_form['avg_conceded']}골**")
                             
-                            with st.popover("최근 5경기 상세"):
-                                for lm in home_form.get("last_matches", []):
-                                    st.write(f"{lm['date']} ({lm['venue']}) vs {lm['opponent']} : **{lm['score']}** ({lm['result']})")
+                            # 최근 5경기 상세 (HTML5 details 호환)
+                            hf_matches = home_form.get("last_matches", [])
+                            if hf_matches:
+                                hf_html = "<details style='margin-top:6px; cursor:pointer;'><summary style='font-size:12px; color:#70a1ff;'>최근 5경기 스코어 보기</summary><div style='font-size:12px; color:#a4b0be; padding-top:4px;'>"
+                                for lm in hf_matches:
+                                    res_c = "#2ed573" if lm['result'] == "W" else ("#747d8c" if lm['result'] == "D" else "#ff4757")
+                                    hf_html += f"• {lm['date']} ({lm['venue']}) vs {lm['opponent']} : <b style='color:{res_c};'>{lm['score']} ({lm['result']})</b><br>"
+                                hf_html += "</div></details>"
+                                st.markdown(hf_html, unsafe_allow_html=True)
                         else:
                             st.caption("기초 데이터 축적 중 (오즈메이커 지수 반영)")
 
@@ -321,9 +327,15 @@ with tab1:
                             st.write(f"• 최근 전적: **{away_form['record_str']}** (승률 {away_form['win_rate_pct']}%)")
                             st.write(f"• 평균 득점: **{away_form['avg_scored']}골** | 실점: **{away_form['avg_conceded']}골**")
                             
-                            with st.popover("최근 5경기 상세"):
-                                for lm in away_form.get("last_matches", []):
-                                    st.write(f"{lm['date']} ({lm['venue']}) vs {lm['opponent']} : **{lm['score']}** ({lm['result']})")
+                            # 최근 5경기 상세 (HTML5 details 호환)
+                            af_matches = away_form.get("last_matches", [])
+                            if af_matches:
+                                af_html = "<details style='margin-top:6px; cursor:pointer;'><summary style='font-size:12px; color:#70a1ff;'>최근 5경기 스코어 보기</summary><div style='font-size:12px; color:#a4b0be; padding-top:4px;'>"
+                                for lm in af_matches:
+                                    res_c = "#2ed573" if lm['result'] == "W" else ("#747d8c" if lm['result'] == "D" else "#ff4757")
+                                    af_html += f"• {lm['date']} ({lm['venue']}) vs {lm['opponent']} : <b style='color:{res_c};'>{lm['score']} ({lm['result']})</b><br>"
+                                af_html += "</div></details>"
+                                st.markdown(af_html, unsafe_allow_html=True)
                         else:
                             st.caption("기초 데이터 축적 중 (오즈메이커 지수 반영)")
 
