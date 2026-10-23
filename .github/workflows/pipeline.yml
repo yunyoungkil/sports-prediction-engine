@@ -1,0 +1,44 @@
+name: Sports Prediction Engine Pipeline
+
+on:
+  schedule:
+    # 프로토 승부식 발매 일정에 맞추어 매주 수요일, 금요일 한국시간 오전 09:30, 오후 14:30 실행
+    # UTC 기준: 00:30, 05:30 (수, 금)
+    - cron: '30 0,5 * * 3,5'
+  workflow_dispatch: # 깃허브 웹 화면에서 'Run workflow' 버튼으로 언제든 수동 즉시 실행 가능
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. 코스 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 2. 파이썬 환경 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: 3. 필수 패키지 설치
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 4. 과거 데이터 존재 확인 (없으면 다운로드)
+        run: |
+          if [ ! -f "data/history/all_historical_matches.csv" ]; then
+            python collector/download_history.py
+          fi
+
+      - name: 5. 파이프라인 실행 (베트맨 수집 -> AI 승률 예측 -> 기대가치 분석)
+        run: |
+          python run_pipeline.py
+
+      - name: 6. 갱신된 예측 결과(JSON)를 깃허브 저장소에 자동 커밋 & 푸시
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add data/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 [자동 갱신] 최신 베트맨 경기 및 AI 승부예측 결과 업데이트" && git push)
