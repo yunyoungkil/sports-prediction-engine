@@ -7,8 +7,15 @@ Streamlit 기반 스포츠 승부 예측 & 가치 픽(Value Bet) 실시간 웹 �
 [Tab 3: 📊 AI 누적 적중률 & 모의 베팅 수익률(ROI)]
 """
 
-import json
+import sys
 from pathlib import Path
+
+# 프로젝트 루트 경로를 sys.path에 추가 (dashboard 하위 폴더에서 실행 시 models 패키지 인식)
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+import json
 import streamlit as st
 import pandas as pd
 
@@ -72,8 +79,8 @@ st.markdown("""
 
 @st.cache_data(ttl=60)
 def load_data():
-    pred_path = Path("data/predictions.json")
-    stats_path = Path("data/performance_stats.json")
+    pred_path = project_root / "data" / "predictions.json"
+    stats_path = project_root / "data" / "performance_stats.json"
     
     preds = []
     if pred_path.exists():
