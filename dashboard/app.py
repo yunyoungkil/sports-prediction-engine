@@ -15,6 +15,11 @@ project_root = Path(__file__).resolve().parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
+# Streamlit 장시간 세션 유지 시 models/tracker 모듈 메모리 캐시 강제 무효화 (핫 리로딩 보장)
+for mod_name in list(sys.modules.keys()):
+    if mod_name.startswith("models") or mod_name.startswith("tracker"):
+        del sys.modules[mod_name]
+
 import json
 import streamlit as st
 import pandas as pd
