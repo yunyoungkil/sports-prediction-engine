@@ -20,6 +20,7 @@ from collector.betman_scraper import BetmanScraper
 from models.poisson_model import MatchPredictor
 from models.evaluator import evaluate_match_value
 from models.odds_normalizer import remove_margin
+from models.form_analyzer import FormAnalyzer
 
 
 def run_full_pipeline(gm_ts: str = "260126") -> list:
@@ -33,8 +34,9 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
     matches = scraper.fetch_current_round_matches(gm_ts=gm_ts)
     scraper.save_matches(matches, "data/current_matches.json")
     
-    # 2. Dixon-Coles AI 모델 준비
+    # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기 준비
     predictor = MatchPredictor()
+    form_analyzer = FormAnalyzer()
     
     # 3. 각 경기별 예측 및 기대가치 평가
     print("\n🧠 [2/3] 전 경기 AI 승률 계산 및 기대가치(EV) 분석 중...")
@@ -67,6 +69,11 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
             is_single=is_single,
             category=category
         )
+
+        # 팀별 최근 5경기 폼 및 상대 전적(H2H) 분석
+        home_form = form_analyzer.get_team_recent_form(home)
+        away_form = form_analyzer.get_team_recent_form(away)
+        h2h_stats = form_analyzer.get_head_to_head(home, away)
         
         results.append({
             "match_seq": m["match_seq"],
@@ -85,7 +92,10 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
             "market_implied_probs": market_stats["true_probs"],
             "model_probabilities": model_probs,
             "top_scores": pred.get("top_scores", []),
-            "evaluation": eval_result
+            "evaluation": eval_result,
+            "home_form": home_form,
+            "away_form": away_form,
+            "h2h": h2h_stats
         })
 
     # 4. 결과 JSON 저장
