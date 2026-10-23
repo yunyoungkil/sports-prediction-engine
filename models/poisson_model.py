@@ -8,6 +8,7 @@ penaltyblog의 Dixon-Coles 및 포아송 모델을 활용하여
 
 import sys
 import math
+import re
 import pandas as pd
 from pathlib import Path
 import penaltyblog as pb
@@ -71,8 +72,27 @@ class MatchPredictor:
             pass
 
     def normalize_team_name(self, name: str) -> str:
-        clean_name = name.strip()
-        return TEAM_NAME_MAP.get(clean_name, clean_name)
+        clean = name.strip()
+        if clean in TEAM_NAME_MAP:
+            return TEAM_NAME_MAP[clean]
+            
+        prefixes = ["1.FC", "1. FC", "VfB", "ACF", "OGC", "RCD", "FSV", "TSG1899", "TSG", "AFC", "AZ", "CF", "CR", "FC", "SC", "SV", "US", "RC", "UD", "CD", "AS", "AC", "RB", "AJ", "SS", "SSC", "PEC", "PSV", "NEC", "BSC"]
+        t = clean
+        for p in sorted(prefixes, key=len, reverse=True):
+            if t.startswith(p):
+                t = t[len(p):].strip()
+                break
+                
+        t_no_suffix = re.sub(r'(CF|FC|05|RCD|SC)$', '', t).strip()
+        if t in TEAM_NAME_MAP:
+            return TEAM_NAME_MAP[t]
+        if t_no_suffix in TEAM_NAME_MAP:
+            return TEAM_NAME_MAP[t_no_suffix]
+            
+        for k, v in TEAM_NAME_MAP.items():
+            if k in clean or clean in k or k in t or t in k:
+                return v
+        return clean
 
     def predict_category(self, home_team: str, away_team: str, category: str = "일반 승무패", line: float = 0.0, sport: str = "SC", odds: dict = None) -> dict:
         """

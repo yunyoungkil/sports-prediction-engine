@@ -164,6 +164,10 @@ with tab1:
             ["기대가치(EV) 높은순 (AI 추천순)", "경기 시작 시간순", "홈 승률 높은순", "배당률 높은순"]
         )
 
+        # [필터 7] 전적 데이터 유무 필터
+        only_has_form = st.sidebar.checkbox("📊 최근 5경기 전적 있는 경기만 보기", value=False)
+        show_all_details = st.sidebar.checkbox("📂 과거 5경기 스코어 상세 펼치기", value=False)
+
         filtered = predictions
         if search_query:
             filtered = [m for m in filtered if search_query.lower() in m["home_team"].lower() or search_query.lower() in m["away_team"].lower()]
@@ -175,6 +179,8 @@ with tab1:
             filtered = [m for m in filtered if m.get("is_single", False)]
         if only_recommended:
             filtered = [m for m in filtered if m["evaluation"]["is_recommended"]]
+        if only_has_form:
+            filtered = [m for m in filtered if m.get("home_form", {}).get("has_data") or m.get("away_form", {}).get("has_data")]
 
         if "기대가치" in sort_by:
             filtered.sort(key=lambda x: x["evaluation"]["best_ev"], reverse=True)
@@ -265,79 +271,63 @@ with tab1:
                     score_text = " | ".join([f"{s['score']} ({s['prob']}%)" for s in m.get("top_scores", [])])
                     st.caption(f"🎯 **예상 스코어 TOP 3:** {score_text}")
 
-                # 팀별 최근 5경기 폼 및 맞대결(H2H) 세부 통계 펼치기
+                # 팀별 최근 5경기 폼 및 맞대결(H2H) 카드 표면 직관 노출 (클릭 불필요!)
                 home_form = m.get("home_form", {})
                 away_form = m.get("away_form", {})
                 h2h = m.get("h2h", {})
 
-                with st.expander("📊 팀별 최근 5경기 폼(W-D-L) & 맞대결(H2H) 세부 통계"):
-                    col_hf, col_h2h, col_af = st.columns([1.1, 1.3, 1.1])
-                    
-                    with col_hf:
-                        st.markdown(f"<div class='notranslate'><b>🏠 {m['home_team']} 최근 5경기</b></div>", unsafe_allow_html=True)
-                        if home_form.get("has_data"):
-                            badges = []
-                            for r in home_form.get("form_sequence", []):
-                                if r == "W":
-                                    badges.append("<span style='background:#2ed573; color:white; padding:2px 7px; border-radius:4px; font-weight:bold; font-size:12px;'>W</span>")
-                                elif r == "D":
-                                    badges.append("<span style='background:#747d8c; color:white; padding:2px 7px; border-radius:4px; font-weight:bold; font-size:12px;'>D</span>")
-                                else:
-                                    badges.append("<span style='background:#ff4757; color:white; padding:2px 7px; border-radius:4px; font-weight:bold; font-size:12px;'>L</span>")
-                            st.markdown(" ".join(badges), unsafe_allow_html=True)
-                            st.write(f"• 최근 전적: **{home_form['record_str']}** (승률 {home_form['win_rate_pct']}%)")
-                            st.write(f"• 평균 득점: **{home_form['avg_scored']}골** | 실점: **{home_form['avg_conceded']}골**")
-                            
-                            # 최근 5경기 상세 (HTML5 details 호환)
-                            hf_matches = home_form.get("last_matches", [])
-                            if hf_matches:
-                                hf_html = "<details style='margin-top:6px; cursor:pointer;'><summary style='font-size:12px; color:#70a1ff;'>최근 5경기 스코어 보기</summary><div style='font-size:12px; color:#a4b0be; padding-top:4px;'>"
-                                for lm in hf_matches:
-                                    res_c = "#2ed573" if lm['result'] == "W" else ("#747d8c" if lm['result'] == "D" else "#ff4757")
-                                    hf_html += f"• {lm['date']} ({lm['venue']}) vs {lm['opponent']} : <b style='color:{res_c};'>{lm['score']} ({lm['result']})</b><br>"
-                                hf_html += "</div></details>"
-                                st.markdown(hf_html, unsafe_allow_html=True)
-                        else:
-                            st.caption("기초 데이터 축적 중 (오즈메이커 지수 반영)")
+                has_form = home_form.get("has_data") or away_form.get("has_data")
+                
+                # 데이터가 실제로 존재하는 경우에만 카드 표면에 깔끔하게 노출 (없는 경기는 여백 낭비 없이 숨김)
+                if has_form:
+                    h_badges = ""
+                    if home_form.get("has_data"):
+                        b_list = []
+                        for r in home_form.get("form_sequence", []):
+                            bg = "#2ed573" if r == "W" else ("#747d8c" if r == "D" else "#ff4757")
+                            b_list.append(f"<span style='background:{bg}; color:white; padding:1px 6px; border-radius:3px; font-weight:800; font-size:11px;'>{r}</span>")
+                        h_badges = " ".join(b_list) + f" &nbsp;<span style='color:#a0aec0; font-size:12px;'>({home_form['record_str']}, 득{home_form['avg_scored']}/실{home_form['avg_conceded']})</span>"
+                    else:
+                        h_badges = "<span style='color:#718096; font-size:12px;'>전적 없음</span>"
 
-                    with col_h2h:
-                        st.markdown(f"<b>⚔️ 맞대결 전적 (H2H)</b>", unsafe_allow_html=True)
-                        if h2h.get("has_data"):
-                            st.markdown(f"<div class='notranslate' style='font-weight:700; color:#70a1ff; margin-bottom:4px;'>{h2h['record_str']}</div>", unsafe_allow_html=True)
-                            st.write(f"• 최근 맞대결 경기수: **{h2h['total_matches']}경기**")
-                            st.write(f"• 경기당 평균 총 골수: **{h2h['avg_goals']}골**")
-                            if h2h.get("matches"):
-                                recent_m = h2h['matches'][0]
-                                st.caption(f"가장 최근 맞대결: {recent_m['date']} ({recent_m['home']} {recent_m['score']} {recent_m['away']})")
-                        else:
-                            st.caption("최근 시즌 내 공식 맞대결 기록 없음")
+                    a_badges = ""
+                    if away_form.get("has_data"):
+                        b_list = []
+                        for r in away_form.get("form_sequence", []):
+                            bg = "#2ed573" if r == "W" else ("#747d8c" if r == "D" else "#ff4757")
+                            b_list.append(f"<span style='background:{bg}; color:white; padding:1px 6px; border-radius:3px; font-weight:800; font-size:11px;'>{r}</span>")
+                        a_badges = " ".join(b_list) + f" &nbsp;<span style='color:#a0aec0; font-size:12px;'>({away_form['record_str']}, 득{away_form['avg_scored']}/실{away_form['avg_conceded']})</span>"
+                    else:
+                        a_badges = "<span style='color:#718096; font-size:12px;'>전적 없음</span>"
 
-                    with col_af:
-                        st.markdown(f"<div class='notranslate'><b>✈️ {m['away_team']} 최근 5경기</b></div>", unsafe_allow_html=True)
-                        if away_form.get("has_data"):
-                            badges = []
-                            for r in away_form.get("form_sequence", []):
-                                if r == "W":
-                                    badges.append("<span style='background:#2ed573; color:white; padding:2px 7px; border-radius:4px; font-weight:bold; font-size:12px;'>W</span>")
-                                elif r == "D":
-                                    badges.append("<span style='background:#747d8c; color:white; padding:2px 7px; border-radius:4px; font-weight:bold; font-size:12px;'>D</span>")
-                                else:
-                                    badges.append("<span style='background:#ff4757; color:white; padding:2px 7px; border-radius:4px; font-weight:bold; font-size:12px;'>L</span>")
-                            st.markdown(" ".join(badges), unsafe_allow_html=True)
-                            st.write(f"• 최근 전적: **{away_form['record_str']}** (승률 {away_form['win_rate_pct']}%)")
-                            st.write(f"• 평균 득점: **{away_form['avg_scored']}골** | 실점: **{away_form['avg_conceded']}골**")
-                            
-                            # 최근 5경기 상세 (HTML5 details 호환)
-                            af_matches = away_form.get("last_matches", [])
-                            if af_matches:
-                                af_html = "<details style='margin-top:6px; cursor:pointer;'><summary style='font-size:12px; color:#70a1ff;'>최근 5경기 스코어 보기</summary><div style='font-size:12px; color:#a4b0be; padding-top:4px;'>"
-                                for lm in af_matches:
+                    h2h_html = ""
+                    if h2h.get("has_data"):
+                        h2h_html = f"<div style='background:#1e293b; border:1px solid #3b82f6; border-radius:6px; padding:3px 10px; font-size:12px; font-weight:700; color:#60a5fa;'>⚔️ 맞대결: {h2h['record_str']} (평균 {h2h['avg_goals']}골)</div>"
+
+                    st.markdown(
+                        f"<div class='notranslate' translate='no' style='background:#141b27; border:1px solid #233147; border-radius:8px; padding:8px 14px; margin-top:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;'>"
+                        f"<div><b>🏠 {m['home_team']}:</b> {h_badges}</div>"
+                        f"{h2h_html}"
+                        f"<div><b>✈️ {m['away_team']}:</b> {a_badges}</div>"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
+
+                    # 사이드바에서 '과거 5경기 스코어 상세 펼치기' 체크 시 상세 스코어 표시
+                    if show_all_details:
+                        det_col1, det_col2 = st.columns(2)
+                        with det_col1:
+                            if home_form.get("has_data") and home_form.get("last_matches"):
+                                st.caption(f"🏠 **{m['home_team']} 최근 5경기 스코어:**")
+                                for lm in home_form["last_matches"]:
                                     res_c = "#2ed573" if lm['result'] == "W" else ("#747d8c" if lm['result'] == "D" else "#ff4757")
-                                    af_html += f"• {lm['date']} ({lm['venue']}) vs {lm['opponent']} : <b style='color:{res_c};'>{lm['score']} ({lm['result']})</b><br>"
-                                af_html += "</div></details>"
-                                st.markdown(af_html, unsafe_allow_html=True)
-                        else:
-                            st.caption("기초 데이터 축적 중 (오즈메이커 지수 반영)")
+                                    st.markdown(f"<span style='font-size:12px; color:#a0aec0;'>• {lm['date']} ({lm['venue']}) vs {lm['opponent']} : <b style='color:{res_c};'>{lm['score']} ({lm['result']})</b></span>", unsafe_allow_html=True)
+                        with det_col2:
+                            if away_form.get("has_data") and away_form.get("last_matches"):
+                                st.caption(f"✈️ **{m['away_team']} 최근 5경기 스코어:**")
+                                for lm in away_form["last_matches"]:
+                                    res_c = "#2ed573" if lm['result'] == "W" else ("#747d8c" if lm['result'] == "D" else "#ff4757")
+                                    st.markdown(f"<span style='font-size:12px; color:#a0aec0;'>• {lm['date']} ({lm['venue']}) vs {lm['opponent']} : <b style='color:{res_c};'>{lm['score']} ({lm['result']})</b></span>", unsafe_allow_html=True)
 
         if len(filtered) > 60:
             st.info(f"💡 현재 상위 60개 경기를 표시 중입니다. (사이드바의 게임 유형 및 리그 필터를 활용해 보세요!)")

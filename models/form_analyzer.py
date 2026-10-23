@@ -51,6 +51,15 @@ TEAM_NAME_MAP = {
 }
 
 
+import re
+
+PREFIXES = [
+    "1.FC", "1. FC", "VfB", "ACF", "OGC", "RCD", "FSV", "TSG1899", "TSG", 
+    "AFC", "AZ", "CF", "CR", "FC", "SC", "SV", "US", "RC", "UD", "CD", 
+    "AS", "AC", "RB", "AJ", "SS", "SSC", "PEC", "PSV", "NEC", "BSC"
+]
+
+
 class FormAnalyzer:
     def __init__(self, history_csv_path: str = "data/history/all_historical_matches.csv"):
         self.history_path = Path(history_csv_path)
@@ -70,7 +79,27 @@ class FormAnalyzer:
 
     def normalize_name(self, name: str) -> str:
         clean = name.strip()
-        return TEAM_NAME_MAP.get(clean, clean)
+        if clean in TEAM_NAME_MAP:
+            return TEAM_NAME_MAP[clean]
+            
+        t = clean
+        for p in sorted(PREFIXES, key=len, reverse=True):
+            if t.startswith(p):
+                t = t[len(p):].strip()
+                break
+                
+        t_no_suffix = re.sub(r'(CF|FC|05|RCD|SC)$', '', t).strip()
+        
+        if t in TEAM_NAME_MAP:
+            return TEAM_NAME_MAP[t]
+        if t_no_suffix in TEAM_NAME_MAP:
+            return TEAM_NAME_MAP[t_no_suffix]
+            
+        for k, v in TEAM_NAME_MAP.items():
+            if k in clean or clean in k or k in t or t in k:
+                return v
+                
+        return clean
 
     def get_team_recent_form(self, team_name: str, n_matches: int = 5) -> Dict[str, Any]:
         """
