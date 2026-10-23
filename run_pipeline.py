@@ -50,7 +50,7 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
         is_single = m.get("is_single", False)
         
         # 카테고리별(일반/핸디캡/언더오버/전반전) 정밀 AI 확률 계산
-        pred = predictor.predict_category(home, away, category=category, line=line)
+        pred = predictor.predict_category(home, away, category=category, line=line, sport=m.get("sport", "SC"), odds=odds)
         model_probs = {
             "home_win": pred["home_win"],
             "draw": pred["draw"],

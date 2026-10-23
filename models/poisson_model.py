@@ -74,11 +74,75 @@ class MatchPredictor:
         clean_name = name.strip()
         return TEAM_NAME_MAP.get(clean_name, clean_name)
 
-    def predict_category(self, home_team: str, away_team: str, category: str = "일반 승무패", line: float = 0.0) -> dict:
+    def predict_category(self, home_team: str, away_team: str, category: str = "일반 승무패", line: float = 0.0, sport: str = "SC", odds: dict = None) -> dict:
         """
         게임 카테고리(일반 승무패, 핸디캡, 언더오버, 전반전 등)에 맞춰 
-        Dixon-Coles 스코어 매트릭스로부터 정확한 확률을 계산합니다.
+        정확한 확률을 계산합니다. 축구는 Dixon-Coles 스코어 매트릭스를, 
+        비축구(농구, 야구)는 마진 제거 시장 함축 확률을 적용합니다.
         """
+        # 비축구(농구 BK, 야구 BS 등) 또는 축구 범위를 벗어나는 기준점(농구 점수 등) 처리
+        is_non_soccer = (sport != "SC") or (abs(line) > 10.0)
+        
+        if is_non_soccer and odds:
+            # 2지선다 또는 3지선다 마진 제거 확률 계산
+            h_odds = odds.get("home_win", 1.9)
+            d_odds = odds.get("draw", 0.0)
+            a_odds = odds.get("away_win", 1.9)
+            
+            if d_odds > 1.0:
+                inv_h = 1.0 / h_odds
+                inv_d = 1.0 / d_odds
+                inv_a = 1.0 / a_odds
+                tot = inv_h + inv_d + inv_a
+                p_h, p_d, p_a = inv_h / tot, inv_d / tot, inv_a / tot
+            else:
+                inv_h = 1.0 / h_odds if h_odds > 0 else 0.5
+                inv_a = 1.0 / a_odds if a_odds > 0 else 0.5
+                tot = inv_h + inv_a
+                p_h, p_d, p_a = inv_h / tot, 0.0, inv_a / tot
+                
+            cutoff = line if line != 0 else (2.5 if "언더오버" in category else 0.0)
+            if "언더오버" in category:
+                return {
+                    "home_win": round(p_h, 4),
+                    "draw": 0.0,
+                    "away_win": round(p_a, 4),
+                    "category_label": f"언더/오버 (기준 {cutoff})",
+                    "selection_labels": {
+                        "home_win": f"언더 (< {cutoff})",
+                        "draw": "-",
+                        "away_win": f"오버 (> {cutoff})"
+                    },
+                    "top_scores": []
+                }
+            elif "핸디캡" in category:
+                sign_str = f"{line:+.1f}" if line != 0 else "0.0"
+                return {
+                    "home_win": round(p_h, 4),
+                    "draw": round(p_d, 4),
+                    "away_win": round(p_a, 4),
+                    "category_label": f"핸디캡 ({sign_str})",
+                    "selection_labels": {
+                        "home_win": f"{home_team} ({sign_str}) 승",
+                        "draw": "핸디캡 무승부" if d_odds > 1.0 else "-",
+                        "away_win": f"{away_team} 반대승"
+                    },
+                    "top_scores": []
+                }
+            else:
+                return {
+                    "home_win": round(p_h, 4),
+                    "draw": round(p_d, 4),
+                    "away_win": round(p_a, 4),
+                    "category_label": category,
+                    "selection_labels": {
+                        "home_win": f"{home_team} 승",
+                        "draw": "무승부" if d_odds > 1.0 else "-",
+                        "away_win": f"{away_team} 승"
+                    },
+                    "top_scores": []
+                }
+
         home_en = self.normalize_team_name(home_team)
         away_en = self.normalize_team_name(away_team)
         model = self.models.get("global")
@@ -138,6 +202,7 @@ class MatchPredictor:
             total = prob_under + prob_over
             if total > 0:
                 prob_under /= total
+                prob_over /= total
                 prob_over /= total
                 
             return {
