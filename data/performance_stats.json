@@ -1,127 +1,387 @@
 {
-  "updated_at": "2026-10-23 18:31:42",
-  "sample_matches_analyzed": 250,
-  "total_bets_placed": 172,
-  "won_bets": 55,
-  "win_rate_pct": 32.0,
-  "total_staked_krw": 1720000,
-  "total_returned_krw": 1666800,
-  "net_profit_krw": -53200,
-  "roi_pct": -3.09,
+  "updated_at": "2026-10-23 21:31:37",
+  "source": "베트맨 공식 직전 8개 회차 실제 경기 전수 채점",
+  "sample_matches_analyzed": 3455,
+  "total_bets_placed": 1376,
+  "won_bets": 323,
+  "win_rate_pct": 23.5,
+  "total_staked_krw": 13760000,
+  "total_returned_krw": 10954300,
+  "net_profit_krw": -2805700,
+  "roi_pct": -20.39,
   "grade_breakdown": {
     "S": {
-      "bets": 105,
-      "wins": 31,
-      "staked": 1050000,
-      "returned": 1069800.0,
-      "win_rate_pct": 29.5,
-      "roi_pct": 1.9
+      "bets": 1047,
+      "wins": 200,
+      "staked": 10470000,
+      "returned": 7959900.0,
+      "win_rate_pct": 19.1,
+      "roi_pct": -24.0
     },
     "A": {
-      "bets": 38,
-      "wins": 16,
-      "staked": 380000,
-      "returned": 417700.0,
-      "win_rate_pct": 42.1,
-      "roi_pct": 9.9
+      "bets": 174,
+      "wins": 68,
+      "staked": 1740000,
+      "returned": 1738200.0,
+      "win_rate_pct": 39.1,
+      "roi_pct": -0.1
     },
     "B": {
-      "bets": 29,
-      "wins": 8,
-      "staked": 290000,
-      "returned": 179300.0,
-      "win_rate_pct": 27.6,
-      "roi_pct": -38.2
+      "bets": 155,
+      "wins": 55,
+      "staked": 1550000,
+      "returned": 1256200.0,
+      "win_rate_pct": 35.5,
+      "roi_pct": -19.0
+    }
+  },
+  "round_breakdown": {
+    "260118": {
+      "bets": 82,
+      "wins": 20,
+      "staked": 820000,
+      "returned": 645800.0,
+      "win_rate_pct": 24.4,
+      "net_profit": -174200,
+      "roi_pct": -21.2
+    },
+    "260119": {
+      "bets": 55,
+      "wins": 18,
+      "staked": 550000,
+      "returned": 706500.0,
+      "win_rate_pct": 32.7,
+      "net_profit": 156500,
+      "roi_pct": 28.5
+    },
+    "260120": {
+      "bets": 307,
+      "wins": 71,
+      "staked": 3070000,
+      "returned": 2407900.0,
+      "win_rate_pct": 23.1,
+      "net_profit": -662100,
+      "roi_pct": -21.6
+    },
+    "260121": {
+      "bets": 119,
+      "wins": 27,
+      "staked": 1190000,
+      "returned": 913700.0,
+      "win_rate_pct": 22.7,
+      "net_profit": -276300,
+      "roi_pct": -23.2
+    },
+    "260122": {
+      "bets": 231,
+      "wins": 41,
+      "staked": 2310000,
+      "returned": 1260400.0,
+      "win_rate_pct": 17.7,
+      "net_profit": -1049600,
+      "roi_pct": -45.4
+    },
+    "260123": {
+      "bets": 305,
+      "wins": 74,
+      "staked": 3050000,
+      "returned": 2360100.0,
+      "win_rate_pct": 24.3,
+      "net_profit": -689900,
+      "roi_pct": -22.6
+    },
+    "260124": {
+      "bets": 92,
+      "wins": 24,
+      "staked": 920000,
+      "returned": 858500.0,
+      "win_rate_pct": 26.1,
+      "net_profit": -61500,
+      "roi_pct": -6.7
+    },
+    "260125": {
+      "bets": 185,
+      "wins": 48,
+      "staked": 1850000,
+      "returned": 1801400.0,
+      "win_rate_pct": 25.9,
+      "net_profit": -48600,
+      "roi_pct": -2.6
     }
   },
   "recent_evaluated_picks": [
     {
-      "date": "05/10/2024",
-      "match": "Lille vs Toulouse",
-      "score": "2:1",
-      "pick": "무승부",
-      "odds": 4.1,
+      "date": "26.10.23 (금) 18:00",
+      "round": "260125",
+      "match": "브리즈번 로어 vs 퍼스 글로리",
+      "game_type": "축구 핸디캡",
+      "score": "1:1",
+      "pick": "브리즈번 로어 (0.0) 승",
+      "odds": 3.9,
       "is_hit": false,
       "net_pnl": "-10,000원"
     },
     {
-      "date": "05/10/2024",
-      "match": "Rennes vs Monaco",
-      "score": "1:2",
-      "pick": "Rennes 승",
+      "date": "26.10.23 (금) 09:30",
+      "round": "260125",
+      "match": "CR플라멩구 vs 에스투디안테스데 라플라타",
+      "game_type": "축구 핸디캡",
+      "score": "-1:0",
+      "pick": "에스투디안테스데 라플라타 반대승",
+      "odds": 3.55,
+      "is_hit": true,
+      "net_pnl": "+25,500원"
+    },
+    {
+      "date": "26.10.23 (금) 09:30",
+      "round": "260125",
+      "match": "CR플라멩구 vs 에스투디안테스데 라플라타",
+      "game_type": "축구 승무패",
+      "score": "0:0",
+      "pick": "에스투디안테스데 라플라타 승",
+      "odds": 9.7,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "릴레스트룀SK vs 레알 소시에다드",
+      "game_type": "축구 언더오버",
+      "score": "6:0",
+      "pick": "언더 (< 2.5)",
+      "odds": 2.13,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "릴레스트룀SK vs 레알 소시에다드",
+      "game_type": "축구 핸디캡",
+      "score": "2:6",
+      "pick": "레알 소시에다드 반대승",
+      "odds": 3.95,
+      "is_hit": true,
+      "net_pnl": "+29,500원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "릴레스트룀SK vs 레알 소시에다드",
+      "game_type": "축구 핸디캡",
+      "score": "1:6",
+      "pick": "릴레스트룀SK (0.0) 승",
       "odds": 2.7,
       "is_hit": false,
       "net_pnl": "-10,000원"
     },
     {
-      "date": "06/10/2024",
-      "match": "Lyon vs Nantes",
-      "score": "2:0",
-      "pick": "Lyon 승",
-      "odds": 1.75,
-      "is_hit": true,
-      "net_pnl": "+7,500원"
-    },
-    {
-      "date": "06/10/2024",
-      "match": "Reims vs Montpellier",
-      "score": "4:2",
-      "pick": "Montpellier 승",
-      "odds": 4.33,
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "릴레스트룀SK vs 레알 소시에다드",
+      "game_type": "축구 승무패",
+      "score": "0:6",
+      "pick": "릴레스트룀SK 승",
+      "odds": 5.5,
       "is_hit": false,
       "net_pnl": "-10,000원"
     },
     {
-      "date": "06/10/2024",
-      "match": "Nice vs Paris SG",
-      "score": "1:1",
-      "pick": "Nice 승",
-      "odds": 4.75,
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "베식타시 vs 크리스털 팰리스",
+      "game_type": "축구 언더오버",
+      "score": "4:0",
+      "pick": "언더 (< 2.5)",
+      "odds": 2.41,
       "is_hit": false,
       "net_pnl": "-10,000원"
     },
     {
-      "date": "18/10/2024",
-      "match": "Monaco vs Lille",
-      "score": "0:0",
-      "pick": "Lille 승",
-      "odds": 3.8,
-      "is_hit": false,
-      "net_pnl": "-10,000원"
-    },
-    {
-      "date": "19/10/2024",
-      "match": "Brest vs Rennes",
-      "score": "1:1",
-      "pick": "Brest 승",
-      "odds": 2.9,
-      "is_hit": false,
-      "net_pnl": "-10,000원"
-    },
-    {
-      "date": "19/10/2024",
-      "match": "St Etienne vs Lens",
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "베식타시 vs 크리스털 팰리스",
+      "game_type": "축구 핸디캡",
       "score": "0:2",
-      "pick": "Lens 승",
-      "odds": 1.67,
-      "is_hit": true,
-      "net_pnl": "+6,700원"
-    },
-    {
-      "date": "20/10/2024",
-      "match": "Nantes vs Nice",
-      "score": "1:1",
-      "pick": "Nice 승",
-      "odds": 2.38,
+      "pick": "베식타시 (0.0) 승",
+      "odds": 8.0,
       "is_hit": false,
       "net_pnl": "-10,000원"
     },
     {
-      "date": "25/10/2024",
-      "match": "Rennes vs Le Havre",
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "베식타시 vs 크리스털 팰리스",
+      "game_type": "축구 핸디캡",
+      "score": "1:2",
+      "pick": "베식타시 (0.0) 승",
+      "odds": 3.75,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "TSG1899 호펜하임 vs 올랭피크 리옹",
+      "game_type": "축구 핸디캡",
       "score": "1:0",
-      "pick": "Le Havre 승",
+      "pick": "TSG1899 호펜하임 (0.0) 승",
+      "odds": 6.8,
+      "is_hit": true,
+      "net_pnl": "+58,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "TSG1899 호펜하임 vs 올랭피크 리옹",
+      "game_type": "축구 핸디캡",
+      "score": "2:0",
+      "pick": "TSG1899 호펜하임 (0.0) 승",
+      "odds": 3.3,
+      "is_hit": true,
+      "net_pnl": "+23,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "AC오모니아 vs SL벤피카",
+      "game_type": "축구 언더오버",
+      "score": "5:0",
+      "pick": "언더 (< 2.5)",
+      "odds": 2.2,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "AC오모니아 vs SL벤피카",
+      "game_type": "축구 소수핸디캡",
+      "score": "4.5:4",
+      "pick": "SL벤피카 반대승",
+      "odds": 5.32,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "AC오모니아 vs SL벤피카",
+      "game_type": "축구 핸디캡",
+      "score": "2:4",
+      "pick": "AC오모니아 (0.0) 승",
+      "odds": 3.05,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "AC오모니아 vs SL벤피카",
+      "game_type": "축구 승무패",
+      "score": "1:4",
+      "pick": "AC오모니아 승",
+      "odds": 7.2,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "야기엘로니아 비아위스토크 vs RSC안더레흐트",
+      "game_type": "축구 핸디캡",
+      "score": "2:3",
+      "pick": "RSC안더레흐트 반대승",
+      "odds": 9.5,
+      "is_hit": true,
+      "net_pnl": "+85,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "야기엘로니아 비아위스토크 vs RSC안더레흐트",
+      "game_type": "축구 핸디캡",
+      "score": "1:3",
+      "pick": "RSC안더레흐트 반대승",
+      "odds": 4.05,
+      "is_hit": true,
+      "net_pnl": "+30,500원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "야기엘로니아 비아위스토크 vs RSC안더레흐트",
+      "game_type": "축구 승무패",
+      "score": "0:3",
+      "pick": "야기엘로니아 비아위스토크 승",
+      "odds": 2.75,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "NK첼레 vs 잘츠부르크",
+      "game_type": "축구 언더오버",
+      "score": "4:0",
+      "pick": "언더 (< 2.5)",
+      "odds": 2.07,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "NK첼레 vs 잘츠부르크",
+      "game_type": "축구 핸디캡",
+      "score": "4:2",
+      "pick": "잘츠부르크 반대승",
+      "odds": 4.2,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "NK첼레 vs 잘츠부르크",
+      "game_type": "축구 핸디캡",
+      "score": "3:2",
+      "pick": "NK첼레 (0.0) 승",
+      "odds": 2.4,
+      "is_hit": true,
+      "net_pnl": "+14,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "NK첼레 vs 잘츠부르크",
+      "game_type": "축구 승무패",
+      "score": "2:2",
+      "pick": "NK첼레 승",
+      "odds": 5.2,
+      "is_hit": false,
+      "net_pnl": "-10,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "AFC본머스 vs AC밀란",
+      "game_type": "축구 핸디캡",
+      "score": "1:0",
+      "pick": "AFC본머스 (0.0) 승",
       "odds": 7.5,
+      "is_hit": true,
+      "net_pnl": "+65,000원"
+    },
+    {
+      "date": "26.10.23 (금) 04:00",
+      "round": "260125",
+      "match": "AFC본머스 vs AC밀란",
+      "game_type": "축구 승무패",
+      "score": "3:0",
+      "pick": "AC밀란 승",
+      "odds": 3.1,
       "is_hit": false,
       "net_pnl": "-10,000원"
     }
@@ -129,1895 +389,1458 @@
   "profit_curve": [
     {
       "bet_index": 1,
-      "home": "Lille",
-      "away": "Toulouse",
-      "actual_score": "2-1",
-      "pick": "무승부",
-      "odds": 4.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -10000
+      "cumulative_profit": 32500.0,
+      "roi_pct": 325.0
     },
     {
       "bet_index": 2,
-      "home": "Rennes",
-      "away": "Monaco",
-      "actual_score": "1-2",
-      "pick": "Rennes 승",
-      "odds": 2.7,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -20000
+      "cumulative_profit": 22500.0,
+      "roi_pct": 112.5
     },
     {
       "bet_index": 3,
-      "home": "Lyon",
-      "away": "Nantes",
-      "actual_score": "2-0",
-      "pick": "Lyon 승",
-      "odds": 1.75,
-      "is_hit": true,
-      "profit": 7500.0,
-      "cumulative_profit": -12500.0
+      "cumulative_profit": 33200.0,
+      "roi_pct": 110.67
     },
     {
       "bet_index": 4,
-      "home": "Reims",
-      "away": "Montpellier",
-      "actual_score": "4-2",
-      "pick": "Montpellier 승",
-      "odds": 4.33,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -22500.0
+      "cumulative_profit": 23200.0,
+      "roi_pct": 58.0
     },
     {
       "bet_index": 5,
-      "home": "Nice",
-      "away": "Paris SG",
-      "actual_score": "1-1",
-      "pick": "Nice 승",
-      "odds": 4.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -32500.0
+      "cumulative_profit": 13200.0,
+      "roi_pct": 26.4
     },
     {
       "bet_index": 6,
-      "home": "Monaco",
-      "away": "Lille",
-      "actual_score": "0-0",
-      "pick": "Lille 승",
-      "odds": 3.8,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -42500.0
+      "cumulative_profit": 3200.0,
+      "roi_pct": 5.33
     },
     {
       "bet_index": 7,
-      "home": "Brest",
-      "away": "Rennes",
-      "actual_score": "1-1",
-      "pick": "Brest 승",
-      "odds": 2.9,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -52500.0
+      "cumulative_profit": -6800.0,
+      "roi_pct": -9.71
     },
     {
       "bet_index": 8,
-      "home": "St Etienne",
-      "away": "Lens",
-      "actual_score": "0-2",
-      "pick": "Lens 승",
-      "odds": 1.67,
-      "is_hit": true,
-      "profit": 6700.0,
-      "cumulative_profit": -45800.0
+      "cumulative_profit": 7100.0,
+      "roi_pct": 8.88
     },
     {
       "bet_index": 9,
-      "home": "Nantes",
-      "away": "Nice",
-      "actual_score": "1-1",
-      "pick": "Nice 승",
-      "odds": 2.38,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -55800.0
+      "cumulative_profit": -2900.0,
+      "roi_pct": -3.22
     },
     {
       "bet_index": 10,
-      "home": "Rennes",
-      "away": "Le Havre",
-      "actual_score": "1-0",
-      "pick": "Le Havre 승",
-      "odds": 7.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -65800.0
+      "cumulative_profit": -12900.0,
+      "roi_pct": -12.9
     },
     {
       "bet_index": 11,
-      "home": "Reims",
-      "away": "Brest",
-      "actual_score": "1-2",
-      "pick": "Brest 승",
-      "odds": 3.25,
-      "is_hit": true,
-      "profit": 22500.0,
-      "cumulative_profit": -43300.0
+      "cumulative_profit": -22900.0,
+      "roi_pct": -20.82
     },
     {
       "bet_index": 12,
-      "home": "Lens",
-      "away": "Lille",
-      "actual_score": "0-2",
-      "pick": "무승부",
-      "odds": 3.4,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -53300.0
+      "cumulative_profit": -32900.0,
+      "roi_pct": -27.42
     },
     {
       "bet_index": 13,
-      "home": "Lyon",
-      "away": "Auxerre",
-      "actual_score": "2-2",
-      "pick": "무승부",
-      "odds": 5.0,
-      "is_hit": true,
-      "profit": 40000.0,
-      "cumulative_profit": -13300.0
+      "cumulative_profit": -42900.0,
+      "roi_pct": -33.0
     },
     {
       "bet_index": 14,
-      "home": "Montpellier",
-      "away": "Toulouse",
-      "actual_score": "0-3",
-      "pick": "Montpellier 승",
-      "odds": 3.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -23300.0
+      "cumulative_profit": -52900.0,
+      "roi_pct": -37.79
     },
     {
       "bet_index": 15,
-      "home": "Nice",
-      "away": "Monaco",
-      "actual_score": "2-1",
-      "pick": "Nice 승",
-      "odds": 3.2,
-      "is_hit": true,
-      "profit": 22000.0,
-      "cumulative_profit": -1300.0
+      "cumulative_profit": -62900.0,
+      "roi_pct": -41.93
     },
     {
       "bet_index": 16,
-      "home": "Marseille",
-      "away": "Paris SG",
-      "actual_score": "0-3",
-      "pick": "Marseille 승",
-      "odds": 3.9,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -11300.0
+      "cumulative_profit": -72900.0,
+      "roi_pct": -45.56
     },
     {
       "bet_index": 17,
-      "home": "Lille",
-      "away": "Lyon",
-      "actual_score": "1-1",
-      "pick": "Lille 승",
-      "odds": 2.15,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -21300.0
+      "cumulative_profit": -61800.0,
+      "roi_pct": -36.35
     },
     {
       "bet_index": 18,
-      "home": "Paris SG",
-      "away": "Lens",
-      "actual_score": "1-0",
-      "pick": "Lens 승",
-      "odds": 6.25,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -31300.0
+      "cumulative_profit": -71800.0,
+      "roi_pct": -39.89
     },
     {
       "bet_index": 19,
-      "home": "Brest",
-      "away": "Nice",
-      "actual_score": "0-1",
-      "pick": "Nice 승",
-      "odds": 2.75,
-      "is_hit": true,
-      "profit": 17500.0,
-      "cumulative_profit": -13800.0
+      "cumulative_profit": -81800.0,
+      "roi_pct": -43.05
     },
     {
       "bet_index": 20,
-      "home": "Toulouse",
-      "away": "Reims",
-      "actual_score": "1-0",
-      "pick": "Reims 승",
-      "odds": 3.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -23800.0
-    },
-    {
-      "bet_index": 21,
-      "home": "Le Havre",
-      "away": "Montpellier",
-      "actual_score": "1-0",
-      "pick": "Montpellier 승",
-      "odds": 3.2,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -33800.0
-    },
-    {
-      "bet_index": 22,
-      "home": "Nantes",
-      "away": "Marseille",
-      "actual_score": "1-2",
-      "pick": "Marseille 승",
-      "odds": 2.05,
-      "is_hit": true,
-      "profit": 10500.0,
-      "cumulative_profit": -23300.0
-    },
-    {
-      "bet_index": 23,
-      "home": "Strasbourg",
-      "away": "Monaco",
-      "actual_score": "1-3",
-      "pick": "Strasbourg 승",
-      "odds": 3.4,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -33300.0
-    },
-    {
-      "bet_index": 24,
-      "home": "Le Havre",
-      "away": "Reims",
-      "actual_score": "0-3",
-      "pick": "Le Havre 승",
-      "odds": 3.3,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -43300.0
+      "cumulative_profit": -91800.0,
+      "roi_pct": -45.9
     },
     {
       "bet_index": 25,
-      "home": "Montpellier",
-      "away": "Brest",
-      "actual_score": "3-1",
-      "pick": "Montpellier 승",
-      "odds": 3.25,
-      "is_hit": true,
-      "profit": 22500.0,
-      "cumulative_profit": -20800.0
-    },
-    {
-      "bet_index": 26,
-      "home": "Rennes",
-      "away": "Toulouse",
-      "actual_score": "0-2",
-      "pick": "Rennes 승",
-      "odds": 2.15,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -30800.0
-    },
-    {
-      "bet_index": 27,
-      "home": "Monaco",
-      "away": "Brest",
-      "actual_score": "3-2",
-      "pick": "Brest 승",
-      "odds": 6.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -40800.0
-    },
-    {
-      "bet_index": 28,
-      "home": "St Etienne",
-      "away": "Montpellier",
-      "actual_score": "1-0",
-      "pick": "Montpellier 승",
-      "odds": 2.9,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -50800.0
-    },
-    {
-      "bet_index": 29,
-      "home": "Lille",
-      "away": "Rennes",
-      "actual_score": "1-0",
-      "pick": "Rennes 승",
-      "odds": 3.9,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -60800.0
+      "cumulative_profit": -90500.0,
+      "roi_pct": -36.2
     },
     {
       "bet_index": 30,
-      "home": "Nantes",
-      "away": "Le Havre",
-      "actual_score": "0-2",
-      "pick": "Le Havre 승",
-      "odds": 4.5,
-      "is_hit": true,
-      "profit": 35000.0,
-      "cumulative_profit": -25800.0
-    },
-    {
-      "bet_index": 31,
-      "home": "Reims",
-      "away": "Lens",
-      "actual_score": "0-2",
-      "pick": "무승부",
-      "odds": 3.3,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -35800.0
-    },
-    {
-      "bet_index": 32,
-      "home": "Rennes",
-      "away": "St Etienne",
-      "actual_score": "5-0",
-      "pick": "Rennes 승",
-      "odds": 1.48,
-      "is_hit": true,
-      "profit": 4800.0,
-      "cumulative_profit": -31000.0
-    },
-    {
-      "bet_index": 33,
-      "home": "Le Havre",
-      "away": "Angers",
-      "actual_score": "0-1",
-      "pick": "Le Havre 승",
-      "odds": 2.3,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -41000.0
-    },
-    {
-      "bet_index": 34,
-      "home": "Lyon",
-      "away": "Nice",
-      "actual_score": "4-1",
-      "pick": "Nice 승",
-      "odds": 3.7,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -51000.0
+      "cumulative_profit": -140500.0,
+      "roi_pct": -46.83
     },
     {
       "bet_index": 35,
-      "home": "Toulouse",
-      "away": "Auxerre",
-      "actual_score": "2-0",
-      "pick": "Auxerre 승",
-      "odds": 5.25,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -61000.0
-    },
-    {
-      "bet_index": 36,
-      "home": "Marseille",
-      "away": "Monaco",
-      "actual_score": "2-1",
-      "pick": "Marseille 승",
-      "odds": 2.63,
-      "is_hit": true,
-      "profit": 16300.0,
-      "cumulative_profit": -44700.0
-    },
-    {
-      "bet_index": 37,
-      "home": "Lille",
-      "away": "Brest",
-      "actual_score": "3-1",
-      "pick": "Brest 승",
-      "odds": 6.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -54700.0
-    },
-    {
-      "bet_index": 38,
-      "home": "Auxerre",
-      "away": "Paris SG",
-      "actual_score": "0-0",
-      "pick": "Auxerre 승",
-      "odds": 9.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -64700.0
-    },
-    {
-      "bet_index": 39,
-      "home": "Lens",
-      "away": "Montpellier",
-      "actual_score": "2-0",
-      "pick": "무승부",
-      "odds": 5.25,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -74700.0
+      "cumulative_profit": -166000.0,
+      "roi_pct": -47.43
     },
     {
       "bet_index": 40,
-      "home": "Nantes",
-      "away": "Rennes",
-      "actual_score": "1-0",
-      "pick": "Rennes 승",
-      "odds": 2.4,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -84700.0
-    },
-    {
-      "bet_index": 41,
-      "home": "Strasbourg",
-      "away": "Reims",
-      "actual_score": "0-0",
-      "pick": "Strasbourg 승",
-      "odds": 2.38,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -94700.0
-    },
-    {
-      "bet_index": 42,
-      "home": "St Etienne",
-      "away": "Marseille",
-      "actual_score": "0-2",
-      "pick": "Marseille 승",
-      "odds": 1.65,
-      "is_hit": true,
-      "profit": 6500.0,
-      "cumulative_profit": -88200.0
-    },
-    {
-      "bet_index": 43,
-      "home": "Toulouse",
-      "away": "St Etienne",
-      "actual_score": "2-1",
-      "pick": "St Etienne 승",
-      "odds": 8.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -98200.0
-    },
-    {
-      "bet_index": 44,
-      "home": "Reims",
-      "away": "Monaco",
-      "actual_score": "0-0",
-      "pick": "Reims 승",
-      "odds": 3.7,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -108200.0
+      "cumulative_profit": -158600.0,
+      "roi_pct": -39.65
     },
     {
       "bet_index": 45,
-      "home": "Montpellier",
-      "away": "Nice",
-      "actual_score": "2-2",
-      "pick": "Nice 승",
-      "odds": 2.3,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -118200.0
-    },
-    {
-      "bet_index": 46,
-      "home": "Brest",
-      "away": "Nantes",
-      "actual_score": "4-1",
-      "pick": "Brest 승",
-      "odds": 2.05,
-      "is_hit": true,
-      "profit": 10500.0,
-      "cumulative_profit": -107700.0
-    },
-    {
-      "bet_index": 47,
-      "home": "Rennes",
-      "away": "Angers",
-      "actual_score": "2-0",
-      "pick": "Rennes 승",
-      "odds": 1.62,
-      "is_hit": true,
-      "profit": 6200.0,
-      "cumulative_profit": -101500.0
-    },
-    {
-      "bet_index": 48,
-      "home": "Monaco",
-      "away": "Paris SG",
-      "actual_score": "2-4",
-      "pick": "Monaco 승",
-      "odds": 4.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -111500.0
-    },
-    {
-      "bet_index": 49,
-      "home": "Lyon",
-      "away": "Montpellier",
-      "actual_score": "1-0",
-      "pick": "Montpellier 승",
-      "odds": 8.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -121500.0
+      "cumulative_profit": -77500.0,
+      "roi_pct": -17.22
     },
     {
       "bet_index": 50,
-      "home": "Angers",
-      "away": "Brest",
-      "actual_score": "2-0",
-      "pick": "Brest 승",
-      "odds": 2.3,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -131500.0
-    },
-    {
-      "bet_index": 51,
-      "home": "Lens",
-      "away": "Toulouse",
-      "actual_score": "0-1",
-      "pick": "Lens 승",
-      "odds": 1.91,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -141500.0
-    },
-    {
-      "bet_index": 52,
-      "home": "Marseille",
-      "away": "Le Havre",
-      "actual_score": "5-1",
-      "pick": "무승부",
-      "odds": 6.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -151500.0
-    },
-    {
-      "bet_index": 53,
-      "home": "Nantes",
-      "away": "Monaco",
-      "actual_score": "2-2",
-      "pick": "Nantes 승",
-      "odds": 5.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -161500.0
-    },
-    {
-      "bet_index": 54,
-      "home": "Auxerre",
-      "away": "Lille",
-      "actual_score": "0-0",
-      "pick": "Auxerre 승",
-      "odds": 4.6,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -171500.0
+      "cumulative_profit": -127500.0,
+      "roi_pct": -25.5
     },
     {
       "bet_index": 55,
-      "home": "Brest",
-      "away": "Lyon",
-      "actual_score": "2-1",
-      "pick": "Brest 승",
-      "odds": 3.1,
-      "is_hit": true,
-      "profit": 21000.0,
-      "cumulative_profit": -150500.0
-    },
-    {
-      "bet_index": 56,
-      "home": "Reims",
-      "away": "Nice",
-      "actual_score": "2-4",
-      "pick": "Nice 승",
-      "odds": 2.6,
-      "is_hit": true,
-      "profit": 16000.0,
-      "cumulative_profit": -134500.0
-    },
-    {
-      "bet_index": 57,
-      "home": "Rennes",
-      "away": "Marseille",
-      "actual_score": "1-2",
-      "pick": "Rennes 승",
-      "odds": 3.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -144500.0
-    },
-    {
-      "bet_index": 58,
-      "home": "Le Havre",
-      "away": "Lens",
-      "actual_score": "1-2",
-      "pick": "Le Havre 승",
-      "odds": 5.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -154500.0
-    },
-    {
-      "bet_index": 59,
-      "home": "Montpellier",
-      "away": "Angers",
-      "actual_score": "1-3",
-      "pick": "Montpellier 승",
-      "odds": 2.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -164500.0
+      "cumulative_profit": -80500.0,
+      "roi_pct": -14.64
     },
     {
       "bet_index": 60,
-      "home": "Toulouse",
-      "away": "Strasbourg",
-      "actual_score": "1-2",
-      "pick": "Strasbourg 승",
-      "odds": 4.5,
-      "is_hit": true,
-      "profit": 35000.0,
-      "cumulative_profit": -129500.0
-    },
-    {
-      "bet_index": 61,
-      "home": "Montpellier",
-      "away": "Monaco",
-      "actual_score": "2-1",
-      "pick": "Montpellier 승",
-      "odds": 5.25,
-      "is_hit": true,
-      "profit": 42500.0,
-      "cumulative_profit": -87000.0
-    },
-    {
-      "bet_index": 62,
-      "home": "Lille",
-      "away": "Nice",
-      "actual_score": "2-1",
-      "pick": "Nice 승",
-      "odds": 3.6,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -97000.0
-    },
-    {
-      "bet_index": 63,
-      "home": "Lens",
-      "away": "Paris SG",
-      "actual_score": "1-2",
-      "pick": "Lens 승",
-      "odds": 4.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -107000.0
-    },
-    {
-      "bet_index": 64,
-      "home": "St Etienne",
-      "away": "Nantes",
-      "actual_score": "1-1",
-      "pick": "Nantes 승",
-      "odds": 2.9,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -117000.0
+      "cumulative_profit": -130500.0,
+      "roi_pct": -21.75
     },
     {
       "bet_index": 65,
-      "home": "Angers",
-      "away": "Auxerre",
-      "actual_score": "2-0",
-      "pick": "Auxerre 승",
-      "odds": 3.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -127000.0
-    },
-    {
-      "bet_index": 66,
-      "home": "Reims",
-      "away": "Le Havre",
-      "actual_score": "1-1",
-      "pick": "Le Havre 승",
-      "odds": 5.25,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -137000.0
-    },
-    {
-      "bet_index": 67,
-      "home": "Auxerre",
-      "away": "St Etienne",
-      "actual_score": "1-1",
-      "pick": "Auxerre 승",
-      "odds": 1.91,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -147000.0
-    },
-    {
-      "bet_index": 68,
-      "home": "Monaco",
-      "away": "Rennes",
-      "actual_score": "3-2",
-      "pick": "Rennes 승",
-      "odds": 4.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -157000.0
-    },
-    {
-      "bet_index": 69,
-      "home": "Strasbourg",
-      "away": "Lille",
-      "actual_score": "2-1",
-      "pick": "Lille 승",
-      "odds": 2.55,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -167000.0
+      "cumulative_profit": -180500.0,
+      "roi_pct": -27.77
     },
     {
       "bet_index": 70,
-      "home": "Paris SG",
-      "away": "Reims",
-      "actual_score": "1-1",
-      "pick": "무승부",
-      "odds": 6.5,
-      "is_hit": true,
-      "profit": 55000.0,
-      "cumulative_profit": -112000.0
-    },
-    {
-      "bet_index": 71,
-      "home": "Lens",
-      "away": "Angers",
-      "actual_score": "1-0",
-      "pick": "Lens 승",
-      "odds": 1.42,
-      "is_hit": true,
-      "profit": 4200.0,
-      "cumulative_profit": -107800.0
-    },
-    {
-      "bet_index": 72,
-      "home": "Nantes",
-      "away": "Lyon",
-      "actual_score": "1-1",
-      "pick": "Lyon 승",
-      "odds": 2.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -117800.0
-    },
-    {
-      "bet_index": 73,
-      "home": "Toulouse",
-      "away": "Montpellier",
-      "actual_score": "1-2",
-      "pick": "Montpellier 승",
-      "odds": 5.25,
-      "is_hit": true,
-      "profit": 42500.0,
-      "cumulative_profit": -75300.0
-    },
-    {
-      "bet_index": 74,
-      "home": "Nice",
-      "away": "Marseille",
-      "actual_score": "2-0",
-      "pick": "Nice 승",
-      "odds": 2.8,
-      "is_hit": true,
-      "profit": 18000.0,
-      "cumulative_profit": -57300.0
+      "cumulative_profit": -167300.0,
+      "roi_pct": -23.9
     },
     {
       "bet_index": 75,
-      "home": "Brest",
-      "away": "Paris SG",
-      "actual_score": "2-5",
-      "pick": "Brest 승",
-      "odds": 6.25,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -67300.0
-    },
-    {
-      "bet_index": 76,
-      "home": "Monaco",
-      "away": "Auxerre",
-      "actual_score": "4-2",
-      "pick": "Auxerre 승",
-      "odds": 8.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -77300.0
-    },
-    {
-      "bet_index": 77,
-      "home": "Lille",
-      "away": "St Etienne",
-      "actual_score": "4-1",
-      "pick": "Lille 승",
-      "odds": 1.4,
-      "is_hit": true,
-      "profit": 4000.0,
-      "cumulative_profit": -73300.0
-    },
-    {
-      "bet_index": 78,
-      "home": "Toulouse",
-      "away": "Nice",
-      "actual_score": "1-1",
-      "pick": "Nice 승",
-      "odds": 2.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -83300.0
-    },
-    {
-      "bet_index": 79,
-      "home": "Angers",
-      "away": "Le Havre",
-      "actual_score": "1-1",
-      "pick": "Le Havre 승",
-      "odds": 3.9,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -93300.0
+      "cumulative_profit": -196900.0,
+      "roi_pct": -26.25
     },
     {
       "bet_index": 80,
-      "home": "Rennes",
-      "away": "Strasbourg",
-      "actual_score": "1-0",
-      "pick": "Rennes 승",
-      "odds": 2.05,
-      "is_hit": true,
-      "profit": 10500.0,
-      "cumulative_profit": -82800.0
-    },
-    {
-      "bet_index": 81,
-      "home": "Marseille",
-      "away": "Lyon",
-      "actual_score": "3-2",
-      "pick": "Marseille 승",
-      "odds": 2.0,
-      "is_hit": true,
-      "profit": 10000.0,
-      "cumulative_profit": -72800.0
-    },
-    {
-      "bet_index": 82,
-      "home": "Nantes",
-      "away": "Brest",
-      "actual_score": "0-2",
-      "pick": "Brest 승",
-      "odds": 3.1,
-      "is_hit": true,
-      "profit": 21000.0,
-      "cumulative_profit": -51800.0
-    },
-    {
-      "bet_index": 83,
-      "home": "Paris SG",
-      "away": "Monaco",
-      "actual_score": "4-1",
-      "pick": "Monaco 승",
-      "odds": 6.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -61800.0
-    },
-    {
-      "bet_index": 84,
-      "home": "Nice",
-      "away": "Lens",
-      "actual_score": "2-0",
-      "pick": "무승부",
-      "odds": 3.3,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -71800.0
+      "cumulative_profit": -154200.0,
+      "roi_pct": -19.28
     },
     {
       "bet_index": 85,
-      "home": "Lille",
-      "away": "Le Havre",
-      "actual_score": "1-2",
-      "pick": "무승부",
-      "odds": 5.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -81800.0
-    },
-    {
-      "bet_index": 86,
-      "home": "St Etienne",
-      "away": "Rennes",
-      "actual_score": "0-2",
-      "pick": "Rennes 승",
-      "odds": 2.15,
-      "is_hit": true,
-      "profit": 11500.0,
-      "cumulative_profit": -70300.0
-    },
-    {
-      "bet_index": 87,
-      "home": "Lyon",
-      "away": "Reims",
-      "actual_score": "4-0",
-      "pick": "Reims 승",
-      "odds": 5.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -80300.0
-    },
-    {
-      "bet_index": 88,
-      "home": "Angers",
-      "away": "Marseille",
-      "actual_score": "0-2",
-      "pick": "Marseille 승",
-      "odds": 1.62,
-      "is_hit": true,
-      "profit": 6200.0,
-      "cumulative_profit": -74100.0
-    },
-    {
-      "bet_index": 89,
-      "home": "Brest",
-      "away": "Auxerre",
-      "actual_score": "2-2",
-      "pick": "Brest 승",
-      "odds": 2.25,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -84100.0
+      "cumulative_profit": -181300.0,
+      "roi_pct": -21.33
     },
     {
       "bet_index": 90,
-      "home": "Monaco",
-      "away": "Nantes",
-      "actual_score": "7-1",
-      "pick": "Monaco 승",
-      "odds": 1.55,
-      "is_hit": true,
-      "profit": 5500.0,
-      "cumulative_profit": -78600.0
-    },
-    {
-      "bet_index": 91,
-      "home": "Montpellier",
-      "away": "Lyon",
-      "actual_score": "1-4",
-      "pick": "Montpellier 승",
-      "odds": 4.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -88600.0
-    },
-    {
-      "bet_index": 92,
-      "home": "Le Havre",
-      "away": "Nice",
-      "actual_score": "1-3",
-      "pick": "무승부",
-      "odds": 4.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -98600.0
-    },
-    {
-      "bet_index": 93,
-      "home": "Reims",
-      "away": "Angers",
-      "actual_score": "0-1",
-      "pick": "Reims 승",
-      "odds": 2.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -108600.0
-    },
-    {
-      "bet_index": 94,
-      "home": "Rennes",
-      "away": "Lille",
-      "actual_score": "0-2",
-      "pick": "Rennes 승",
-      "odds": 2.7,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -118600.0
+      "cumulative_profit": -157800.0,
+      "roi_pct": -17.53
     },
     {
       "bet_index": 95,
-      "home": "Rennes",
-      "away": "Reims",
-      "actual_score": "1-0",
-      "pick": "Rennes 승",
-      "odds": 2.15,
-      "is_hit": true,
-      "profit": 11500.0,
-      "cumulative_profit": -107100.0
-    },
-    {
-      "bet_index": 96,
-      "home": "St Etienne",
-      "away": "Angers",
-      "actual_score": "3-3",
-      "pick": "St Etienne 승",
-      "odds": 2.4,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -117100.0
-    },
-    {
-      "bet_index": 97,
-      "home": "Auxerre",
-      "away": "Marseille",
-      "actual_score": "3-0",
-      "pick": "Auxerre 승",
-      "odds": 5.5,
-      "is_hit": true,
-      "profit": 45000.0,
-      "cumulative_profit": -72100.0
-    },
-    {
-      "bet_index": 98,
-      "home": "Nantes",
-      "away": "Lens",
-      "actual_score": "3-1",
-      "pick": "Lens 승",
-      "odds": 2.05,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -82100.0
-    },
-    {
-      "bet_index": 99,
-      "home": "Le Havre",
-      "away": "Toulouse",
-      "actual_score": "1-4",
-      "pick": "Le Havre 승",
-      "odds": 4.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -92100.0
+      "cumulative_profit": -207800.0,
+      "roi_pct": -21.87
     },
     {
       "bet_index": 100,
-      "home": "Nice",
-      "away": "Montpellier",
-      "actual_score": "2-0",
-      "pick": "무승부",
-      "odds": 5.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -102100.0
-    },
-    {
-      "bet_index": 101,
-      "home": "Strasbourg",
-      "away": "Brest",
-      "actual_score": "0-0",
-      "pick": "Brest 승",
-      "odds": 3.6,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -112100.0
-    },
-    {
-      "bet_index": 102,
-      "home": "Monaco",
-      "away": "Reims",
-      "actual_score": "3-0",
-      "pick": "Reims 승",
-      "odds": 7.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -122100.0
-    },
-    {
-      "bet_index": 103,
-      "home": "St Etienne",
-      "away": "Nice",
-      "actual_score": "1-3",
-      "pick": "Nice 승",
-      "odds": 1.67,
-      "is_hit": true,
-      "profit": 6700.0,
-      "cumulative_profit": -115400.0
-    },
-    {
-      "bet_index": 104,
-      "home": "Lens",
-      "away": "Le Havre",
-      "actual_score": "3-4",
-      "pick": "무승부",
-      "odds": 5.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -125400.0
+      "cumulative_profit": -235600.0,
+      "roi_pct": -23.56
     },
     {
       "bet_index": 105,
-      "home": "Paris SG",
-      "away": "Lille",
-      "actual_score": "4-1",
-      "pick": "Lille 승",
-      "odds": 7.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -135400.0
-    },
-    {
-      "bet_index": 106,
-      "home": "Lyon",
-      "away": "Brest",
-      "actual_score": "2-1",
-      "pick": "Brest 승",
-      "odds": 5.25,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -145400.0
-    },
-    {
-      "bet_index": 107,
-      "home": "Angers",
-      "away": "Toulouse",
-      "actual_score": "0-4",
-      "pick": "Toulouse 승",
-      "odds": 2.35,
-      "is_hit": true,
-      "profit": 13500.0,
-      "cumulative_profit": -131900.0
-    },
-    {
-      "bet_index": 108,
-      "home": "Montpellier",
-      "away": "Rennes",
-      "actual_score": "0-4",
-      "pick": "Rennes 승",
-      "odds": 2.1,
-      "is_hit": true,
-      "profit": 11000.0,
-      "cumulative_profit": -120900.0
-    },
-    {
-      "bet_index": 109,
-      "home": "Rennes",
-      "away": "Paris SG",
-      "actual_score": "1-4",
-      "pick": "Rennes 승",
-      "odds": 4.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -130900.0
+      "cumulative_profit": -261300.0,
+      "roi_pct": -24.89
     },
     {
       "bet_index": 110,
-      "home": "Marseille",
-      "away": "Lens",
-      "actual_score": "0-1",
-      "pick": "Lens 승",
-      "odds": 6.0,
-      "is_hit": true,
-      "profit": 50000.0,
-      "cumulative_profit": -80900.0
-    },
-    {
-      "bet_index": 111,
-      "home": "Brest",
-      "away": "Angers",
-      "actual_score": "2-0",
-      "pick": "Brest 승",
-      "odds": 1.73,
-      "is_hit": true,
-      "profit": 7300.0,
-      "cumulative_profit": -73600.0
-    },
-    {
-      "bet_index": 112,
-      "home": "Le Havre",
-      "away": "St Etienne",
-      "actual_score": "1-1",
-      "pick": "Le Havre 승",
-      "odds": 2.3,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -83600.0
-    },
-    {
-      "bet_index": 113,
-      "home": "Nantes",
-      "away": "Strasbourg",
-      "actual_score": "0-1",
-      "pick": "Strasbourg 승",
-      "odds": 2.75,
-      "is_hit": true,
-      "profit": 17500.0,
-      "cumulative_profit": -66100.0
-    },
-    {
-      "bet_index": 114,
-      "home": "Reims",
-      "away": "Auxerre",
-      "actual_score": "0-2",
-      "pick": "Reims 승",
-      "odds": 2.4,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -76100.0
+      "cumulative_profit": -290800.0,
+      "roi_pct": -26.44
     },
     {
       "bet_index": 115,
-      "home": "Nantes",
-      "away": "Lille",
-      "actual_score": "1-0",
-      "pick": "Lille 승",
-      "odds": 2.15,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -86100.0
-    },
-    {
-      "bet_index": 116,
-      "home": "Lyon",
-      "away": "Le Havre",
-      "actual_score": "4-2",
-      "pick": "무승부",
-      "odds": 5.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -96100.0
-    },
-    {
-      "bet_index": 117,
-      "home": "Brest",
-      "away": "Reims",
-      "actual_score": "0-0",
-      "pick": "Reims 승",
-      "odds": 5.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -106100.0
-    },
-    {
-      "bet_index": 118,
-      "home": "Montpellier",
-      "away": "St Etienne",
-      "actual_score": "0-2",
-      "pick": "Montpellier 승",
-      "odds": 2.2,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -116100.0
-    },
-    {
-      "bet_index": 119,
-      "home": "Paris SG",
-      "away": "Marseille",
-      "actual_score": "3-1",
-      "pick": "Marseille 승",
-      "odds": 6.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -126100.0
+      "cumulative_profit": -308300.0,
+      "roi_pct": -26.81
     },
     {
       "bet_index": 120,
-      "home": "Reims",
-      "away": "Marseille",
-      "actual_score": "3-1",
-      "pick": "Reims 승",
-      "odds": 5.5,
-      "is_hit": true,
-      "profit": 45000.0,
-      "cumulative_profit": -81100.0
-    },
-    {
-      "bet_index": 121,
-      "home": "St Etienne",
-      "away": "Paris SG",
-      "actual_score": "1-6",
-      "pick": "St Etienne 승",
-      "odds": 17.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -91100.0
-    },
-    {
-      "bet_index": 122,
-      "home": "Monaco",
-      "away": "Nice",
-      "actual_score": "2-1",
-      "pick": "Nice 승",
-      "odds": 3.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -101100.0
-    },
-    {
-      "bet_index": 123,
-      "home": "Toulouse",
-      "away": "Brest",
-      "actual_score": "2-4",
-      "pick": "Brest 승",
-      "odds": 4.1,
-      "is_hit": true,
-      "profit": 31000.0,
-      "cumulative_profit": -70100.0
-    },
-    {
-      "bet_index": 124,
-      "home": "Angers",
-      "away": "Rennes",
-      "actual_score": "0-3",
-      "pick": "Rennes 승",
-      "odds": 1.82,
-      "is_hit": true,
-      "profit": 8200.0,
-      "cumulative_profit": -61900.0
+      "cumulative_profit": -134400.0,
+      "roi_pct": -11.2
     },
     {
       "bet_index": 125,
-      "home": "Auxerre",
-      "away": "Montpellier",
-      "actual_score": "1-0",
-      "pick": "Montpellier 승",
-      "odds": 4.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -71900.0
-    },
-    {
-      "bet_index": 126,
-      "home": "Le Havre",
-      "away": "Nantes",
-      "actual_score": "3-2",
-      "pick": "Le Havre 승",
-      "odds": 3.1,
-      "is_hit": true,
-      "profit": 21000.0,
-      "cumulative_profit": -50900.0
-    },
-    {
-      "bet_index": 127,
-      "home": "Lille",
-      "away": "Lens",
-      "actual_score": "1-0",
-      "pick": "Lens 승",
-      "odds": 3.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -60900.0
-    },
-    {
-      "bet_index": 128,
-      "home": "Nice",
-      "away": "Nantes",
-      "actual_score": "1-2",
-      "pick": "무승부",
-      "odds": 4.2,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -70900.0
-    },
-    {
-      "bet_index": 129,
-      "home": "Brest",
-      "away": "Monaco",
-      "actual_score": "2-1",
-      "pick": "Brest 승",
-      "odds": 4.0,
-      "is_hit": true,
-      "profit": 30000.0,
-      "cumulative_profit": -40900.0
+      "cumulative_profit": -28100.0,
+      "roi_pct": -2.25
     },
     {
       "bet_index": 130,
-      "home": "Lyon",
-      "away": "Lille",
-      "actual_score": "2-1",
-      "pick": "Lille 승",
-      "odds": 3.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -50900.0
-    },
-    {
-      "bet_index": 131,
-      "home": "Lens",
-      "away": "St Etienne",
-      "actual_score": "1-0",
-      "pick": "Lens 승",
-      "odds": 1.55,
-      "is_hit": true,
-      "profit": 5500.0,
-      "cumulative_profit": -45400.0
-    },
-    {
-      "bet_index": 132,
-      "home": "Montpellier",
-      "away": "Le Havre",
-      "actual_score": "0-2",
-      "pick": "Montpellier 승",
-      "odds": 2.4,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -55400.0
-    },
-    {
-      "bet_index": 133,
-      "home": "Reims",
-      "away": "Strasbourg",
-      "actual_score": "0-1",
-      "pick": "Reims 승",
-      "odds": 3.2,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -65400.0
-    },
-    {
-      "bet_index": 134,
-      "home": "Rennes",
-      "away": "Auxerre",
-      "actual_score": "0-1",
-      "pick": "Rennes 승",
-      "odds": 1.85,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -75400.0
+      "cumulative_profit": 12300.0,
+      "roi_pct": 0.95
     },
     {
       "bet_index": 135,
-      "home": "Lens",
-      "away": "Reims",
-      "actual_score": "0-2",
-      "pick": "무승부",
-      "odds": 4.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -85400.0
-    },
-    {
-      "bet_index": 136,
-      "home": "Monaco",
-      "away": "Marseille",
-      "actual_score": "3-0",
-      "pick": "Marseille 승",
-      "odds": 3.4,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -95400.0
-    },
-    {
-      "bet_index": 137,
-      "home": "Toulouse",
-      "away": "Lille",
-      "actual_score": "1-2",
-      "pick": "Lille 승",
-      "odds": 2.55,
-      "is_hit": true,
-      "profit": 15500.0,
-      "cumulative_profit": -79900.0
-    },
-    {
-      "bet_index": 138,
-      "home": "Strasbourg",
-      "away": "Nice",
-      "actual_score": "2-2",
-      "pick": "Nice 승",
-      "odds": 2.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -89900.0
-    },
-    {
-      "bet_index": 139,
-      "home": "St Etienne",
-      "away": "Brest",
-      "actual_score": "3-3",
-      "pick": "Brest 승",
-      "odds": 2.05,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -99900.0
+      "cumulative_profit": -37700.0,
+      "roi_pct": -2.79
     },
     {
       "bet_index": 140,
-      "home": "Angers",
-      "away": "Montpellier",
-      "actual_score": "2-0",
-      "pick": "Montpellier 승",
-      "odds": 4.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -109900.0
-    },
-    {
-      "bet_index": 141,
-      "home": "Le Havre",
-      "away": "Rennes",
-      "actual_score": "1-5",
-      "pick": "Rennes 승",
-      "odds": 2.1,
-      "is_hit": true,
-      "profit": 11000.0,
-      "cumulative_profit": -98900.0
-    },
-    {
-      "bet_index": 142,
-      "home": "Rennes",
-      "away": "Nantes",
-      "actual_score": "2-1",
-      "pick": "Rennes 승",
-      "odds": 1.8,
-      "is_hit": true,
-      "profit": 8000.0,
-      "cumulative_profit": -90900.0
-    },
-    {
-      "bet_index": 143,
-      "home": "Marseille",
-      "away": "Montpellier",
-      "actual_score": "5-1",
-      "pick": "Montpellier 승",
-      "odds": 11.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -100900.0
-    },
-    {
-      "bet_index": 144,
-      "home": "Brest",
-      "away": "Lens",
-      "actual_score": "1-3",
-      "pick": "Lens 승",
-      "odds": 3.1,
-      "is_hit": true,
-      "profit": 21000.0,
-      "cumulative_profit": -79900.0
+      "cumulative_profit": -23000.0,
+      "roi_pct": -1.64
     },
     {
       "bet_index": 145,
-      "home": "Reims",
-      "away": "Toulouse",
-      "actual_score": "1-0",
-      "pick": "Reims 승",
-      "odds": 3.3,
-      "is_hit": true,
-      "profit": 23000.0,
-      "cumulative_profit": -56900.0
-    },
-    {
-      "bet_index": 146,
-      "home": "Paris SG",
-      "away": "Nice",
-      "actual_score": "1-3",
-      "pick": "무승부",
-      "odds": 4.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -66900.0
-    },
-    {
-      "bet_index": 147,
-      "home": "Strasbourg",
-      "away": "St Etienne",
-      "actual_score": "3-1",
-      "pick": "Strasbourg 승",
-      "odds": 1.62,
-      "is_hit": true,
-      "profit": 6200.0,
-      "cumulative_profit": -60700.0
-    },
-    {
-      "bet_index": 148,
-      "home": "Le Havre",
-      "away": "Monaco",
-      "actual_score": "1-1",
-      "pick": "Le Havre 승",
-      "odds": 6.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -70700.0
-    },
-    {
-      "bet_index": 149,
-      "home": "Lyon",
-      "away": "Rennes",
-      "actual_score": "4-1",
-      "pick": "Rennes 승",
-      "odds": 4.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -80700.0
+      "cumulative_profit": -73000.0,
+      "roi_pct": -5.03
     },
     {
       "bet_index": 150,
-      "home": "Montpellier",
-      "away": "Reims",
-      "actual_score": "0-0",
-      "pick": "Montpellier 승",
-      "odds": 4.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -90700.0
-    },
-    {
-      "bet_index": 151,
-      "home": "Marseille",
-      "away": "Brest",
-      "actual_score": "4-1",
-      "pick": "Brest 승",
-      "odds": 6.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -100700.0
-    },
-    {
-      "bet_index": 152,
-      "home": "Nice",
-      "away": "Reims",
-      "actual_score": "1-0",
-      "pick": "Reims 승",
-      "odds": 7.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -110700.0
-    },
-    {
-      "bet_index": 153,
-      "home": "Strasbourg",
-      "away": "Paris SG",
-      "actual_score": "2-1",
-      "pick": "Paris SG 승",
-      "odds": 2.6,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -120700.0
-    },
-    {
-      "bet_index": 154,
-      "home": "Toulouse",
-      "away": "Rennes",
-      "actual_score": "2-1",
-      "pick": "Rennes 승",
-      "odds": 3.4,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -130700.0
+      "cumulative_profit": -65700.0,
+      "roi_pct": -4.38
     },
     {
       "bet_index": 155,
-      "home": "Nantes",
-      "away": "Angers",
-      "actual_score": "0-1",
-      "pick": "Angers 승",
-      "odds": 4.75,
-      "is_hit": true,
-      "profit": 37500.0,
-      "cumulative_profit": -93200.0
-    },
-    {
-      "bet_index": 156,
-      "home": "Brest",
-      "away": "Montpellier",
-      "actual_score": "1-0",
-      "pick": "Montpellier 승",
-      "odds": 7.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -103200.0
-    },
-    {
-      "bet_index": 157,
-      "home": "Lyon",
-      "away": "Lens",
-      "actual_score": "1-2",
-      "pick": "Lens 승",
-      "odds": 5.75,
-      "is_hit": true,
-      "profit": 47500.0,
-      "cumulative_profit": -55700.0
-    },
-    {
-      "bet_index": 158,
-      "home": "Auxerre",
-      "away": "Nantes",
-      "actual_score": "1-1",
-      "pick": "Auxerre 승",
-      "odds": 2.8,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -65700.0
-    },
-    {
-      "bet_index": 159,
-      "home": "Brest",
-      "away": "Lille",
-      "actual_score": "2-0",
-      "pick": "Brest 승",
-      "odds": 4.5,
-      "is_hit": true,
-      "profit": 35000.0,
-      "cumulative_profit": -30700.0
+      "cumulative_profit": 127100.0,
+      "roi_pct": 8.2
     },
     {
       "bet_index": 160,
-      "home": "Le Havre",
-      "away": "Marseille",
-      "actual_score": "1-3",
-      "pick": "Le Havre 승",
-      "odds": 6.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -40700.0
-    },
-    {
-      "bet_index": 161,
-      "home": "Montpellier",
-      "away": "Paris SG",
-      "actual_score": "1-4",
-      "pick": "무승부",
-      "odds": 7.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -50700.0
-    },
-    {
-      "bet_index": 162,
-      "home": "Reims",
-      "away": "St Etienne",
-      "actual_score": "0-2",
-      "pick": "Reims 승",
-      "odds": 2.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -60700.0
-    },
-    {
-      "bet_index": 163,
-      "home": "Rennes",
-      "away": "Nice",
-      "actual_score": "2-0",
-      "pick": "Rennes 승",
-      "odds": 3.6,
-      "is_hit": true,
-      "profit": 26000.0,
-      "cumulative_profit": -34700.0
-    },
-    {
-      "bet_index": 164,
-      "home": "Toulouse",
-      "away": "Lens",
-      "actual_score": "1-1",
-      "pick": "Lens 승",
-      "odds": 3.1,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -44700.0
+      "cumulative_profit": 293800.0,
+      "roi_pct": 18.36
     },
     {
       "bet_index": 165,
-      "home": "Lens",
-      "away": "Monaco",
-      "actual_score": "4-0",
-      "pick": "Lens 승",
-      "odds": 3.9,
-      "is_hit": true,
-      "profit": 29000.0,
-      "cumulative_profit": -15700.0
-    },
-    {
-      "bet_index": 166,
-      "home": "Lille",
-      "away": "Reims",
-      "actual_score": "2-1",
-      "pick": "Reims 승",
-      "odds": 8.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -25700.0
-    },
-    {
-      "bet_index": 167,
-      "home": "Lyon",
-      "away": "Angers",
-      "actual_score": "2-0",
-      "pick": "무승부",
-      "odds": 6.0,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -35700.0
-    },
-    {
-      "bet_index": 168,
-      "home": "Marseille",
-      "away": "Rennes",
-      "actual_score": "4-2",
-      "pick": "Rennes 승",
-      "odds": 4.2,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -45700.0
-    },
-    {
-      "bet_index": 169,
-      "home": "Nantes",
-      "away": "Montpellier",
-      "actual_score": "3-0",
-      "pick": "Montpellier 승",
-      "odds": 5.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -55700.0
+      "cumulative_profit": 271300.0,
+      "roi_pct": 16.44
     },
     {
       "bet_index": 170,
-      "home": "Nice",
-      "away": "Brest",
-      "actual_score": "6-0",
-      "pick": "Brest 승",
-      "odds": 6.5,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -65700.0
+      "cumulative_profit": 286700.0,
+      "roi_pct": 16.86
     },
     {
-      "bet_index": 171,
-      "home": "St Etienne",
-      "away": "Toulouse",
-      "actual_score": "2-3",
-      "pick": "Toulouse 승",
-      "odds": 3.25,
-      "is_hit": true,
-      "profit": 22500.0,
-      "cumulative_profit": -43200.0
+      "bet_index": 175,
+      "cumulative_profit": 273200.0,
+      "roi_pct": 15.61
     },
     {
-      "bet_index": 172,
-      "home": "Strasbourg",
-      "away": "Le Havre",
-      "actual_score": "2-3",
-      "pick": "무승부",
-      "odds": 4.75,
-      "is_hit": false,
-      "profit": -10000,
-      "cumulative_profit": -53200.0
+      "bet_index": 180,
+      "cumulative_profit": 223200.0,
+      "roi_pct": 12.4
+    },
+    {
+      "bet_index": 185,
+      "cumulative_profit": 197000.0,
+      "roi_pct": 10.65
+    },
+    {
+      "bet_index": 190,
+      "cumulative_profit": 147000.0,
+      "roi_pct": 7.74
+    },
+    {
+      "bet_index": 195,
+      "cumulative_profit": 187200.0,
+      "roi_pct": 9.6
+    },
+    {
+      "bet_index": 200,
+      "cumulative_profit": 137200.0,
+      "roi_pct": 6.86
+    },
+    {
+      "bet_index": 205,
+      "cumulative_profit": 87200.0,
+      "roi_pct": 4.25
+    },
+    {
+      "bet_index": 210,
+      "cumulative_profit": 60800.0,
+      "roi_pct": 2.9
+    },
+    {
+      "bet_index": 215,
+      "cumulative_profit": 74300.0,
+      "roi_pct": 3.46
+    },
+    {
+      "bet_index": 220,
+      "cumulative_profit": 73600.0,
+      "roi_pct": 3.35
+    },
+    {
+      "bet_index": 225,
+      "cumulative_profit": 23600.0,
+      "roi_pct": 1.05
+    },
+    {
+      "bet_index": 230,
+      "cumulative_profit": -5300.0,
+      "roi_pct": -0.23
+    },
+    {
+      "bet_index": 235,
+      "cumulative_profit": -55300.0,
+      "roi_pct": -2.35
+    },
+    {
+      "bet_index": 240,
+      "cumulative_profit": -105300.0,
+      "roi_pct": -4.39
+    },
+    {
+      "bet_index": 245,
+      "cumulative_profit": -120800.0,
+      "roi_pct": -4.93
+    },
+    {
+      "bet_index": 250,
+      "cumulative_profit": -65600.0,
+      "roi_pct": -2.62
+    },
+    {
+      "bet_index": 255,
+      "cumulative_profit": -43100.0,
+      "roi_pct": -1.69
+    },
+    {
+      "bet_index": 260,
+      "cumulative_profit": -93100.0,
+      "roi_pct": -3.58
+    },
+    {
+      "bet_index": 265,
+      "cumulative_profit": -118600.0,
+      "roi_pct": -4.48
+    },
+    {
+      "bet_index": 270,
+      "cumulative_profit": -147100.0,
+      "roi_pct": -5.45
+    },
+    {
+      "bet_index": 275,
+      "cumulative_profit": -112600.0,
+      "roi_pct": -4.09
+    },
+    {
+      "bet_index": 280,
+      "cumulative_profit": -79600.0,
+      "roi_pct": -2.84
+    },
+    {
+      "bet_index": 285,
+      "cumulative_profit": -108500.0,
+      "roi_pct": -3.81
+    },
+    {
+      "bet_index": 290,
+      "cumulative_profit": -116500.0,
+      "roi_pct": -4.02
+    },
+    {
+      "bet_index": 295,
+      "cumulative_profit": -145000.0,
+      "roi_pct": -4.92
+    },
+    {
+      "bet_index": 300,
+      "cumulative_profit": -195000.0,
+      "roi_pct": -6.5
+    },
+    {
+      "bet_index": 305,
+      "cumulative_profit": -224500.0,
+      "roi_pct": -7.36
+    },
+    {
+      "bet_index": 310,
+      "cumulative_profit": -191300.0,
+      "roi_pct": -6.17
+    },
+    {
+      "bet_index": 315,
+      "cumulative_profit": -214800.0,
+      "roi_pct": -6.82
+    },
+    {
+      "bet_index": 320,
+      "cumulative_profit": -229800.0,
+      "roi_pct": -7.18
+    },
+    {
+      "bet_index": 325,
+      "cumulative_profit": -216300.0,
+      "roi_pct": -6.66
+    },
+    {
+      "bet_index": 330,
+      "cumulative_profit": -224300.0,
+      "roi_pct": -6.8
+    },
+    {
+      "bet_index": 335,
+      "cumulative_profit": -232800.0,
+      "roi_pct": -6.95
+    },
+    {
+      "bet_index": 340,
+      "cumulative_profit": -263100.0,
+      "roi_pct": -7.74
+    },
+    {
+      "bet_index": 345,
+      "cumulative_profit": -313100.0,
+      "roi_pct": -9.08
+    },
+    {
+      "bet_index": 350,
+      "cumulative_profit": -339600.0,
+      "roi_pct": -9.7
+    },
+    {
+      "bet_index": 355,
+      "cumulative_profit": -389600.0,
+      "roi_pct": -10.97
+    },
+    {
+      "bet_index": 360,
+      "cumulative_profit": -416700.0,
+      "roi_pct": -11.58
+    },
+    {
+      "bet_index": 365,
+      "cumulative_profit": -466700.0,
+      "roi_pct": -12.79
+    },
+    {
+      "bet_index": 370,
+      "cumulative_profit": -452500.0,
+      "roi_pct": -12.23
+    },
+    {
+      "bet_index": 375,
+      "cumulative_profit": -479600.0,
+      "roi_pct": -12.79
+    },
+    {
+      "bet_index": 380,
+      "cumulative_profit": -493600.0,
+      "roi_pct": -12.99
+    },
+    {
+      "bet_index": 385,
+      "cumulative_profit": -494600.0,
+      "roi_pct": -12.85
+    },
+    {
+      "bet_index": 390,
+      "cumulative_profit": -501400.0,
+      "roi_pct": -12.86
+    },
+    {
+      "bet_index": 395,
+      "cumulative_profit": -531200.0,
+      "roi_pct": -13.45
+    },
+    {
+      "bet_index": 400,
+      "cumulative_profit": -483000.0,
+      "roi_pct": -12.07
+    },
+    {
+      "bet_index": 405,
+      "cumulative_profit": -533000.0,
+      "roi_pct": -13.16
+    },
+    {
+      "bet_index": 410,
+      "cumulative_profit": -556000.0,
+      "roi_pct": -13.56
+    },
+    {
+      "bet_index": 415,
+      "cumulative_profit": -606000.0,
+      "roi_pct": -14.6
+    },
+    {
+      "bet_index": 420,
+      "cumulative_profit": -656000.0,
+      "roi_pct": -15.62
+    },
+    {
+      "bet_index": 425,
+      "cumulative_profit": -634000.0,
+      "roi_pct": -14.92
+    },
+    {
+      "bet_index": 430,
+      "cumulative_profit": -607000.0,
+      "roi_pct": -14.12
+    },
+    {
+      "bet_index": 435,
+      "cumulative_profit": -613700.0,
+      "roi_pct": -14.11
+    },
+    {
+      "bet_index": 440,
+      "cumulative_profit": -639800.0,
+      "roi_pct": -14.54
+    },
+    {
+      "bet_index": 445,
+      "cumulative_profit": -689800.0,
+      "roi_pct": -15.5
+    },
+    {
+      "bet_index": 450,
+      "cumulative_profit": -660400.0,
+      "roi_pct": -14.68
+    },
+    {
+      "bet_index": 455,
+      "cumulative_profit": -689100.0,
+      "roi_pct": -15.15
+    },
+    {
+      "bet_index": 460,
+      "cumulative_profit": -739100.0,
+      "roi_pct": -16.07
+    },
+    {
+      "bet_index": 465,
+      "cumulative_profit": -789100.0,
+      "roi_pct": -16.97
+    },
+    {
+      "bet_index": 470,
+      "cumulative_profit": -809100.0,
+      "roi_pct": -17.21
+    },
+    {
+      "bet_index": 475,
+      "cumulative_profit": -859100.0,
+      "roi_pct": -18.09
+    },
+    {
+      "bet_index": 480,
+      "cumulative_profit": -828200.0,
+      "roi_pct": -17.25
+    },
+    {
+      "bet_index": 485,
+      "cumulative_profit": -833500.0,
+      "roi_pct": -17.19
+    },
+    {
+      "bet_index": 490,
+      "cumulative_profit": -835000.0,
+      "roi_pct": -17.04
+    },
+    {
+      "bet_index": 495,
+      "cumulative_profit": -862800.0,
+      "roi_pct": -17.43
+    },
+    {
+      "bet_index": 500,
+      "cumulative_profit": -860100.0,
+      "roi_pct": -17.2
+    },
+    {
+      "bet_index": 505,
+      "cumulative_profit": -910100.0,
+      "roi_pct": -18.02
+    },
+    {
+      "bet_index": 510,
+      "cumulative_profit": -934100.0,
+      "roi_pct": -18.32
+    },
+    {
+      "bet_index": 515,
+      "cumulative_profit": -898600.0,
+      "roi_pct": -17.45
+    },
+    {
+      "bet_index": 520,
+      "cumulative_profit": -816600.0,
+      "roi_pct": -15.7
+    },
+    {
+      "bet_index": 525,
+      "cumulative_profit": -866600.0,
+      "roi_pct": -16.51
+    },
+    {
+      "bet_index": 530,
+      "cumulative_profit": -891600.0,
+      "roi_pct": -16.82
+    },
+    {
+      "bet_index": 535,
+      "cumulative_profit": -909600.0,
+      "roi_pct": -17.0
+    },
+    {
+      "bet_index": 540,
+      "cumulative_profit": -939600.0,
+      "roi_pct": -17.4
+    },
+    {
+      "bet_index": 545,
+      "cumulative_profit": -989600.0,
+      "roi_pct": -18.16
+    },
+    {
+      "bet_index": 550,
+      "cumulative_profit": -1018100.0,
+      "roi_pct": -18.51
+    },
+    {
+      "bet_index": 555,
+      "cumulative_profit": -1033100.0,
+      "roi_pct": -18.61
+    },
+    {
+      "bet_index": 560,
+      "cumulative_profit": -955100.0,
+      "roi_pct": -17.06
+    },
+    {
+      "bet_index": 565,
+      "cumulative_profit": -951100.0,
+      "roi_pct": -16.83
+    },
+    {
+      "bet_index": 570,
+      "cumulative_profit": -1001100.0,
+      "roi_pct": -17.56
+    },
+    {
+      "bet_index": 575,
+      "cumulative_profit": -946600.0,
+      "roi_pct": -16.46
+    },
+    {
+      "bet_index": 580,
+      "cumulative_profit": -976700.0,
+      "roi_pct": -16.84
+    },
+    {
+      "bet_index": 585,
+      "cumulative_profit": -1001200.0,
+      "roi_pct": -17.11
+    },
+    {
+      "bet_index": 590,
+      "cumulative_profit": -1001700.0,
+      "roi_pct": -16.98
+    },
+    {
+      "bet_index": 595,
+      "cumulative_profit": -1024200.0,
+      "roi_pct": -17.21
+    },
+    {
+      "bet_index": 600,
+      "cumulative_profit": -1074200.0,
+      "roi_pct": -17.9
+    },
+    {
+      "bet_index": 605,
+      "cumulative_profit": -1024400.0,
+      "roi_pct": -16.93
+    },
+    {
+      "bet_index": 610,
+      "cumulative_profit": -1019400.0,
+      "roi_pct": -16.71
+    },
+    {
+      "bet_index": 615,
+      "cumulative_profit": -1040900.0,
+      "roi_pct": -16.93
+    },
+    {
+      "bet_index": 620,
+      "cumulative_profit": -1090900.0,
+      "roi_pct": -17.6
+    },
+    {
+      "bet_index": 625,
+      "cumulative_profit": -1067400.0,
+      "roi_pct": -17.08
+    },
+    {
+      "bet_index": 630,
+      "cumulative_profit": -1047100.0,
+      "roi_pct": -16.62
+    },
+    {
+      "bet_index": 635,
+      "cumulative_profit": -1069100.0,
+      "roi_pct": -16.84
+    },
+    {
+      "bet_index": 640,
+      "cumulative_profit": -1094600.0,
+      "roi_pct": -17.1
+    },
+    {
+      "bet_index": 645,
+      "cumulative_profit": -1120300.0,
+      "roi_pct": -17.37
+    },
+    {
+      "bet_index": 650,
+      "cumulative_profit": -1170300.0,
+      "roi_pct": -18.0
+    },
+    {
+      "bet_index": 655,
+      "cumulative_profit": -1192300.0,
+      "roi_pct": -18.2
+    },
+    {
+      "bet_index": 660,
+      "cumulative_profit": -1242300.0,
+      "roi_pct": -18.82
+    },
+    {
+      "bet_index": 665,
+      "cumulative_profit": -1265500.0,
+      "roi_pct": -19.03
+    },
+    {
+      "bet_index": 670,
+      "cumulative_profit": -1241500.0,
+      "roi_pct": -18.53
+    },
+    {
+      "bet_index": 675,
+      "cumulative_profit": -1291500.0,
+      "roi_pct": -19.13
+    },
+    {
+      "bet_index": 680,
+      "cumulative_profit": -1320800.0,
+      "roi_pct": -19.42
+    },
+    {
+      "bet_index": 685,
+      "cumulative_profit": -1370800.0,
+      "roi_pct": -20.01
+    },
+    {
+      "bet_index": 690,
+      "cumulative_profit": -1420800.0,
+      "roi_pct": -20.59
+    },
+    {
+      "bet_index": 695,
+      "cumulative_profit": -1470800.0,
+      "roi_pct": -21.16
+    },
+    {
+      "bet_index": 700,
+      "cumulative_profit": -1476300.0,
+      "roi_pct": -21.09
+    },
+    {
+      "bet_index": 705,
+      "cumulative_profit": -1505800.0,
+      "roi_pct": -21.36
+    },
+    {
+      "bet_index": 710,
+      "cumulative_profit": -1531300.0,
+      "roi_pct": -21.57
+    },
+    {
+      "bet_index": 715,
+      "cumulative_profit": -1581300.0,
+      "roi_pct": -22.12
+    },
+    {
+      "bet_index": 720,
+      "cumulative_profit": -1542200.0,
+      "roi_pct": -21.42
+    },
+    {
+      "bet_index": 725,
+      "cumulative_profit": -1555200.0,
+      "roi_pct": -21.45
+    },
+    {
+      "bet_index": 730,
+      "cumulative_profit": -1605200.0,
+      "roi_pct": -21.99
+    },
+    {
+      "bet_index": 735,
+      "cumulative_profit": -1633000.0,
+      "roi_pct": -22.22
+    },
+    {
+      "bet_index": 740,
+      "cumulative_profit": -1636500.0,
+      "roi_pct": -22.11
+    },
+    {
+      "bet_index": 745,
+      "cumulative_profit": -1639500.0,
+      "roi_pct": -22.01
+    },
+    {
+      "bet_index": 750,
+      "cumulative_profit": -1668800.0,
+      "roi_pct": -22.25
+    },
+    {
+      "bet_index": 755,
+      "cumulative_profit": -1694500.0,
+      "roi_pct": -22.44
+    },
+    {
+      "bet_index": 760,
+      "cumulative_profit": -1744500.0,
+      "roi_pct": -22.95
+    },
+    {
+      "bet_index": 765,
+      "cumulative_profit": -1774600.0,
+      "roi_pct": -23.2
+    },
+    {
+      "bet_index": 770,
+      "cumulative_profit": -1824600.0,
+      "roi_pct": -23.7
+    },
+    {
+      "bet_index": 775,
+      "cumulative_profit": -1874600.0,
+      "roi_pct": -24.19
+    },
+    {
+      "bet_index": 780,
+      "cumulative_profit": -1924600.0,
+      "roi_pct": -24.67
+    },
+    {
+      "bet_index": 785,
+      "cumulative_profit": -1974600.0,
+      "roi_pct": -25.15
+    },
+    {
+      "bet_index": 790,
+      "cumulative_profit": -2024600.0,
+      "roi_pct": -25.63
+    },
+    {
+      "bet_index": 795,
+      "cumulative_profit": -2015700.0,
+      "roi_pct": -25.35
+    },
+    {
+      "bet_index": 800,
+      "cumulative_profit": -2044400.0,
+      "roi_pct": -25.55
+    },
+    {
+      "bet_index": 805,
+      "cumulative_profit": -2053900.0,
+      "roi_pct": -25.51
+    },
+    {
+      "bet_index": 810,
+      "cumulative_profit": -2063900.0,
+      "roi_pct": -25.48
+    },
+    {
+      "bet_index": 815,
+      "cumulative_profit": -2065900.0,
+      "roi_pct": -25.35
+    },
+    {
+      "bet_index": 820,
+      "cumulative_profit": -2115900.0,
+      "roi_pct": -25.8
+    },
+    {
+      "bet_index": 825,
+      "cumulative_profit": -2165900.0,
+      "roi_pct": -26.25
+    },
+    {
+      "bet_index": 830,
+      "cumulative_profit": -2138200.0,
+      "roi_pct": -25.76
+    },
+    {
+      "bet_index": 835,
+      "cumulative_profit": -2141500.0,
+      "roi_pct": -25.65
+    },
+    {
+      "bet_index": 840,
+      "cumulative_profit": -2171300.0,
+      "roi_pct": -25.85
+    },
+    {
+      "bet_index": 845,
+      "cumulative_profit": -2164000.0,
+      "roi_pct": -25.61
+    },
+    {
+      "bet_index": 850,
+      "cumulative_profit": -2158000.0,
+      "roi_pct": -25.39
+    },
+    {
+      "bet_index": 855,
+      "cumulative_profit": -2137000.0,
+      "roi_pct": -24.99
+    },
+    {
+      "bet_index": 860,
+      "cumulative_profit": -2166500.0,
+      "roi_pct": -25.19
+    },
+    {
+      "bet_index": 865,
+      "cumulative_profit": -2170500.0,
+      "roi_pct": -25.09
+    },
+    {
+      "bet_index": 870,
+      "cumulative_profit": -2196000.0,
+      "roi_pct": -25.24
+    },
+    {
+      "bet_index": 875,
+      "cumulative_profit": -2246000.0,
+      "roi_pct": -25.67
+    },
+    {
+      "bet_index": 880,
+      "cumulative_profit": -2192000.0,
+      "roi_pct": -24.91
+    },
+    {
+      "bet_index": 885,
+      "cumulative_profit": -2219800.0,
+      "roi_pct": -25.08
+    },
+    {
+      "bet_index": 890,
+      "cumulative_profit": -2208400.0,
+      "roi_pct": -24.81
+    },
+    {
+      "bet_index": 895,
+      "cumulative_profit": -2199900.0,
+      "roi_pct": -24.58
+    },
+    {
+      "bet_index": 900,
+      "cumulative_profit": -2249900.0,
+      "roi_pct": -25.0
+    },
+    {
+      "bet_index": 905,
+      "cumulative_profit": -2278600.0,
+      "roi_pct": -25.18
+    },
+    {
+      "bet_index": 910,
+      "cumulative_profit": -2259600.0,
+      "roi_pct": -24.83
+    },
+    {
+      "bet_index": 915,
+      "cumulative_profit": -2289900.0,
+      "roi_pct": -25.03
+    },
+    {
+      "bet_index": 920,
+      "cumulative_profit": -2291400.0,
+      "roi_pct": -24.91
+    },
+    {
+      "bet_index": 925,
+      "cumulative_profit": -2341400.0,
+      "roi_pct": -25.31
+    },
+    {
+      "bet_index": 930,
+      "cumulative_profit": -2348900.0,
+      "roi_pct": -25.26
+    },
+    {
+      "bet_index": 935,
+      "cumulative_profit": -2292900.0,
+      "roi_pct": -24.52
+    },
+    {
+      "bet_index": 940,
+      "cumulative_profit": -2281500.0,
+      "roi_pct": -24.27
+    },
+    {
+      "bet_index": 945,
+      "cumulative_profit": -2309800.0,
+      "roi_pct": -24.44
+    },
+    {
+      "bet_index": 950,
+      "cumulative_profit": -2309900.0,
+      "roi_pct": -24.31
+    },
+    {
+      "bet_index": 955,
+      "cumulative_profit": -2279400.0,
+      "roi_pct": -23.87
+    },
+    {
+      "bet_index": 960,
+      "cumulative_profit": -2329400.0,
+      "roi_pct": -24.26
+    },
+    {
+      "bet_index": 965,
+      "cumulative_profit": -2335500.0,
+      "roi_pct": -24.2
+    },
+    {
+      "bet_index": 970,
+      "cumulative_profit": -2369200.0,
+      "roi_pct": -24.42
+    },
+    {
+      "bet_index": 975,
+      "cumulative_profit": -2394200.0,
+      "roi_pct": -24.56
+    },
+    {
+      "bet_index": 980,
+      "cumulative_profit": -2408200.0,
+      "roi_pct": -24.57
+    },
+    {
+      "bet_index": 985,
+      "cumulative_profit": -2433200.0,
+      "roi_pct": -24.7
+    },
+    {
+      "bet_index": 990,
+      "cumulative_profit": -2414200.0,
+      "roi_pct": -24.39
+    },
+    {
+      "bet_index": 995,
+      "cumulative_profit": -2464200.0,
+      "roi_pct": -24.77
+    },
+    {
+      "bet_index": 1000,
+      "cumulative_profit": -2435700.0,
+      "roi_pct": -24.36
+    },
+    {
+      "bet_index": 1005,
+      "cumulative_profit": -2426700.0,
+      "roi_pct": -24.15
+    },
+    {
+      "bet_index": 1010,
+      "cumulative_profit": -2451100.0,
+      "roi_pct": -24.27
+    },
+    {
+      "bet_index": 1015,
+      "cumulative_profit": -2501100.0,
+      "roi_pct": -24.64
+    },
+    {
+      "bet_index": 1020,
+      "cumulative_profit": -2518100.0,
+      "roi_pct": -24.69
+    },
+    {
+      "bet_index": 1025,
+      "cumulative_profit": -2568100.0,
+      "roi_pct": -25.05
+    },
+    {
+      "bet_index": 1030,
+      "cumulative_profit": -2586500.0,
+      "roi_pct": -25.11
+    },
+    {
+      "bet_index": 1035,
+      "cumulative_profit": -2636500.0,
+      "roi_pct": -25.47
+    },
+    {
+      "bet_index": 1040,
+      "cumulative_profit": -2618500.0,
+      "roi_pct": -25.18
+    },
+    {
+      "bet_index": 1045,
+      "cumulative_profit": -2583100.0,
+      "roi_pct": -24.72
+    },
+    {
+      "bet_index": 1050,
+      "cumulative_profit": -2571600.0,
+      "roi_pct": -24.49
+    },
+    {
+      "bet_index": 1055,
+      "cumulative_profit": -2567300.0,
+      "roi_pct": -24.33
+    },
+    {
+      "bet_index": 1060,
+      "cumulative_profit": -2578300.0,
+      "roi_pct": -24.32
+    },
+    {
+      "bet_index": 1065,
+      "cumulative_profit": -2628300.0,
+      "roi_pct": -24.68
+    },
+    {
+      "bet_index": 1070,
+      "cumulative_profit": -2623100.0,
+      "roi_pct": -24.51
+    },
+    {
+      "bet_index": 1075,
+      "cumulative_profit": -2673100.0,
+      "roi_pct": -24.87
+    },
+    {
+      "bet_index": 1080,
+      "cumulative_profit": -2683600.0,
+      "roi_pct": -24.85
+    },
+    {
+      "bet_index": 1085,
+      "cumulative_profit": -2694100.0,
+      "roi_pct": -24.83
+    },
+    {
+      "bet_index": 1090,
+      "cumulative_profit": -2630100.0,
+      "roi_pct": -24.13
+    },
+    {
+      "bet_index": 1095,
+      "cumulative_profit": -2680100.0,
+      "roi_pct": -24.48
+    },
+    {
+      "bet_index": 1100,
+      "cumulative_profit": -2682000.0,
+      "roi_pct": -24.38
+    },
+    {
+      "bet_index": 1105,
+      "cumulative_profit": -2419000.0,
+      "roi_pct": -21.89
+    },
+    {
+      "bet_index": 1110,
+      "cumulative_profit": -2423000.0,
+      "roi_pct": -21.83
+    },
+    {
+      "bet_index": 1115,
+      "cumulative_profit": -2473000.0,
+      "roi_pct": -22.18
+    },
+    {
+      "bet_index": 1120,
+      "cumulative_profit": -2523000.0,
+      "roi_pct": -22.53
+    },
+    {
+      "bet_index": 1125,
+      "cumulative_profit": -2573000.0,
+      "roi_pct": -22.87
+    },
+    {
+      "bet_index": 1130,
+      "cumulative_profit": -2558000.0,
+      "roi_pct": -22.64
+    },
+    {
+      "bet_index": 1135,
+      "cumulative_profit": -2586300.0,
+      "roi_pct": -22.79
+    },
+    {
+      "bet_index": 1140,
+      "cumulative_profit": -2598600.0,
+      "roi_pct": -22.79
+    },
+    {
+      "bet_index": 1145,
+      "cumulative_profit": -2600000.0,
+      "roi_pct": -22.71
+    },
+    {
+      "bet_index": 1150,
+      "cumulative_profit": -2650000.0,
+      "roi_pct": -23.04
+    },
+    {
+      "bet_index": 1155,
+      "cumulative_profit": -2628900.0,
+      "roi_pct": -22.76
+    },
+    {
+      "bet_index": 1160,
+      "cumulative_profit": -2678900.0,
+      "roi_pct": -23.09
+    },
+    {
+      "bet_index": 1165,
+      "cumulative_profit": -2707200.0,
+      "roi_pct": -23.24
+    },
+    {
+      "bet_index": 1170,
+      "cumulative_profit": -2739200.0,
+      "roi_pct": -23.41
+    },
+    {
+      "bet_index": 1175,
+      "cumulative_profit": -2789200.0,
+      "roi_pct": -23.74
+    },
+    {
+      "bet_index": 1180,
+      "cumulative_profit": -2799700.0,
+      "roi_pct": -23.73
+    },
+    {
+      "bet_index": 1185,
+      "cumulative_profit": -2800000.0,
+      "roi_pct": -23.63
+    },
+    {
+      "bet_index": 1190,
+      "cumulative_profit": -2747100.0,
+      "roi_pct": -23.08
+    },
+    {
+      "bet_index": 1195,
+      "cumulative_profit": -2776600.0,
+      "roi_pct": -23.24
+    },
+    {
+      "bet_index": 1200,
+      "cumulative_profit": -2800100.0,
+      "roi_pct": -23.33
+    },
+    {
+      "bet_index": 1205,
+      "cumulative_profit": -2791400.0,
+      "roi_pct": -23.17
+    },
+    {
+      "bet_index": 1210,
+      "cumulative_profit": -2812900.0,
+      "roi_pct": -23.25
+    },
+    {
+      "bet_index": 1215,
+      "cumulative_profit": -2761400.0,
+      "roi_pct": -22.73
+    },
+    {
+      "bet_index": 1220,
+      "cumulative_profit": -2811400.0,
+      "roi_pct": -23.04
+    },
+    {
+      "bet_index": 1225,
+      "cumulative_profit": -2828900.0,
+      "roi_pct": -23.09
+    },
+    {
+      "bet_index": 1230,
+      "cumulative_profit": -2841900.0,
+      "roi_pct": -23.1
+    },
+    {
+      "bet_index": 1235,
+      "cumulative_profit": -2891900.0,
+      "roi_pct": -23.42
+    },
+    {
+      "bet_index": 1240,
+      "cumulative_profit": -2795100.0,
+      "roi_pct": -22.54
+    },
+    {
+      "bet_index": 1245,
+      "cumulative_profit": -2787100.0,
+      "roi_pct": -22.39
+    },
+    {
+      "bet_index": 1250,
+      "cumulative_profit": -2816200.0,
+      "roi_pct": -22.53
+    },
+    {
+      "bet_index": 1255,
+      "cumulative_profit": -2845700.0,
+      "roi_pct": -22.67
+    },
+    {
+      "bet_index": 1260,
+      "cumulative_profit": -2895700.0,
+      "roi_pct": -22.98
+    },
+    {
+      "bet_index": 1265,
+      "cumulative_profit": -2855700.0,
+      "roi_pct": -22.57
+    },
+    {
+      "bet_index": 1270,
+      "cumulative_profit": -2878700.0,
+      "roi_pct": -22.67
+    },
+    {
+      "bet_index": 1275,
+      "cumulative_profit": -2844200.0,
+      "roi_pct": -22.31
+    },
+    {
+      "bet_index": 1280,
+      "cumulative_profit": -2894200.0,
+      "roi_pct": -22.61
+    },
+    {
+      "bet_index": 1285,
+      "cumulative_profit": -2875200.0,
+      "roi_pct": -22.38
+    },
+    {
+      "bet_index": 1290,
+      "cumulative_profit": -2925200.0,
+      "roi_pct": -22.68
+    },
+    {
+      "bet_index": 1295,
+      "cumulative_profit": -2937200.0,
+      "roi_pct": -22.68
+    },
+    {
+      "bet_index": 1300,
+      "cumulative_profit": -2914700.0,
+      "roi_pct": -22.42
+    },
+    {
+      "bet_index": 1305,
+      "cumulative_profit": -2964700.0,
+      "roi_pct": -22.72
+    },
+    {
+      "bet_index": 1310,
+      "cumulative_profit": -2985700.0,
+      "roi_pct": -22.79
+    },
+    {
+      "bet_index": 1315,
+      "cumulative_profit": -2914200.0,
+      "roi_pct": -22.16
+    },
+    {
+      "bet_index": 1320,
+      "cumulative_profit": -2943500.0,
+      "roi_pct": -22.3
+    },
+    {
+      "bet_index": 1325,
+      "cumulative_profit": -2993500.0,
+      "roi_pct": -22.59
+    },
+    {
+      "bet_index": 1330,
+      "cumulative_profit": -2910200.0,
+      "roi_pct": -21.88
+    },
+    {
+      "bet_index": 1335,
+      "cumulative_profit": -2917700.0,
+      "roi_pct": -21.86
+    },
+    {
+      "bet_index": 1340,
+      "cumulative_profit": -2917900.0,
+      "roi_pct": -21.78
+    },
+    {
+      "bet_index": 1345,
+      "cumulative_profit": -2947200.0,
+      "roi_pct": -21.91
+    },
+    {
+      "bet_index": 1350,
+      "cumulative_profit": -2956200.0,
+      "roi_pct": -21.9
+    },
+    {
+      "bet_index": 1355,
+      "cumulative_profit": -2907200.0,
+      "roi_pct": -21.46
+    },
+    {
+      "bet_index": 1360,
+      "cumulative_profit": -2821700.0,
+      "roi_pct": -20.75
+    },
+    {
+      "bet_index": 1365,
+      "cumulative_profit": -2838700.0,
+      "roi_pct": -20.8
+    },
+    {
+      "bet_index": 1370,
+      "cumulative_profit": -2820700.0,
+      "roi_pct": -20.59
+    },
+    {
+      "bet_index": 1375,
+      "cumulative_profit": -2795700.0,
+      "roi_pct": -20.33
     }
   ]
 }

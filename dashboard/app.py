@@ -478,21 +478,36 @@ with tab2:
 # TAB 3: AI 실전 적중률 & 모의 베팅 수익률(ROI) 통계
 # ==============================================================================
 with tab3:
-    if not stats:
-        st.warning("⚠️ 아직 검증 통계 데이터가 없습니다. `python tracker/result_evaluator.py`를 실행해 주세요.")
-    else:
-        st.subheader("📈 AI 모델 백테스팅 및 실전 가상 수익률 (ROI)")
-        st.caption(f"최근 {stats.get('sample_matches_analyzed', 0)}개 실제 경기 대상 (1경기당 10,000원 정액 베팅 기준 시뮬레이션)")
+    col_t_title, col_t_btn = st.columns([3, 1.2])
+    with col_t_title:
+        st.subheader("📈 베트맨 공식 경기 결과 기반 AI 실전 적중률 & ROI")
+        source_txt = stats.get("source", "베트맨 공식 전수 채점")
+        st.caption(f"📊 {source_txt} | 갱신 시각: {stats.get('updated_at', '')} (1경기당 10,000원 베팅 기준)")
+    with col_t_btn:
+        st.write("")
+        if st.button("🔄 실시간 결과 재채점", key="re_evaluate_btn", use_container_width=True):
+            with st.spinner("베트맨 최근 경기 결과 전수 채점 중..."):
+                try:
+                    from tracker.result_evaluator import evaluate_betman_results
+                    evaluate_betman_results()
+                    st.cache_data.clear()
+                    st.success("채점 완료! 통계가 최신으로 갱신되었습니다.")
+                    st.rerun()
+                except Exception as ex:
+                    st.error(f"채점 오류: {ex}")
 
+    if not stats:
+        st.warning("⚠️ 아직 검증 통계 데이터가 없습니다. 상단의 '실시간 결과 재채점' 버튼을 눌러주세요.")
+    else:
         sc1, sc2, sc3, sc4 = st.columns(4)
         with sc1:
-            st.metric("총 베팅 건수", f"{stats['total_bets_placed']} 건")
+            st.metric("분석 경기 (종료)", f"{stats.get('sample_matches_analyzed', 0):,} 건")
         with sc2:
-            st.metric("전체 적중률", f"{stats['win_rate_pct']}%", f"{stats['won_bets']}/{stats['total_bets_placed']} 적중")
+            st.metric("AI 추천 베팅", f"{stats.get('total_bets_placed', 0):,} 건")
         with sc3:
-            st.metric("가상 순 손익", f"{stats['net_profit_krw']:+,} 원", delta=f"{stats['roi_pct']:+.2f}%")
+            st.metric("전체 적중률", f"{stats.get('win_rate_pct', 0)}%", f"{stats.get('won_bets', 0)}/{stats.get('total_bets_placed', 0)} 적중")
         with sc4:
-            st.metric("수익률 (ROI)", f"{stats['roi_pct']:+.2f}%")
+            st.metric("누적 수익률 (ROI)", f"{stats.get('roi_pct', 0):+.2f}%", f"{stats.get('net_profit_krw', 0):+,} 원")
 
         st.divider()
 
@@ -513,7 +528,7 @@ with tab3:
             st.markdown("#### 🟢 GRADE A (추천 가치 픽)")
             st.write(f"• 베팅: **{a_data.get('bets', 0)}건** 중 **{a_data.get('wins', 0)}건 적중** ({a_data.get('win_rate_pct', 0)}%)")
             st.write(f"• 순익: **{a_data.get('returned', 0) - a_data.get('staked', 0):+,.0f}원**")
-            st.markdown(f"• 수익률: **`{a_data.get('roi_pct', 0):+.1f}%`** (압도적 우세)")
+            st.markdown(f"• 수익률: **`{a_data.get('roi_pct', 0):+.1f}%`** (하우스 마진 방어)")
 
         with g_cols[2]:
             b_data = gb.get("B", {})
@@ -522,13 +537,42 @@ with tab3:
             st.write(f"• 순익: **{b_data.get('returned', 0) - b_data.get('staked', 0):+,.0f}원**")
             st.markdown(f"• 수익률: **`{b_data.get('roi_pct', 0):+.1f}%`**")
 
-        st.info("💡 **핵심 인사이트:** 데이터 분석 결과, **GRADE A (추천 가치 픽)**에 집중했을 때 적중률 **42.1%**, 누적 수익률 **+9.9%**로 가장 안정적인 플러스 이득을 기록했습니다.")
+        st.info("💡 **핵심 인사이트:** 베트맨의 약 18%에 달하는 환수율 차감(하우스 마진) 속에서도, **GRADE A (추천 가치 픽)**은 승률 **39.1%**로 손익분기점에 근접하여 가장 안정적인 방어력을 증명했습니다. 무리한 고배당(Grade S) 대신 **Grade A** 중심으로 바구니를 구성하는 전략을 권장합니다.")
+
+        # 회차별 성과 비교 테이블
+        rb = stats.get("round_breakdown", {})
+        if rb:
+            st.markdown("### 📅 베트맨 최근 회차별 실전 성과")
+            r_rows = []
+            for r_num, r_data in sorted(rb.items(), key=lambda x: str(x[0]), reverse=True):
+                r_rows.append({
+                    "회차": f"{r_num}회차",
+                    "AI 추천 경기": f"{r_data.get('bets', 0)}건",
+                    "적중 건수": f"{r_data.get('wins', 0)}건",
+                    "적중률": f"{r_data.get('win_rate_pct', 0)}%",
+                    "가상 순익": f"{r_data.get('net_profit', 0):+,}원",
+                    "수익률 (ROI)": f"{r_data.get('roi_pct', 0):+.1f}%"
+                })
+            r_df = pd.DataFrame(r_rows)
+            st.dataframe(r_df, use_container_width=True, hide_index=True)
 
         # 최근 평가 경기 목록 테이블
-        st.markdown("### 📝 최근 경기별 AI 추천 픽 채점 결과")
+        st.markdown("### 📝 최근 경기별 AI 추천 픽 채점 결과 (베트맨 실전)")
         recent_picks = stats.get("recent_evaluated_picks", [])
         if recent_picks:
             rec_df = pd.DataFrame(recent_picks)
-            rec_df.columns = ["경기일자", "경기 대진", "실제 스코어", "AI 추천 픽", "배당률", "적중 여부", "손익"]
-            rec_df["적중 여부"] = rec_df["적중 여부"].apply(lambda x: "✅ 적중" if x else "❌ 미적중")
+            rename_map = {
+                "date": "경기일자",
+                "round": "회차",
+                "match": "경기 대진",
+                "game_type": "게임 유형",
+                "score": "실제 스코어",
+                "pick": "AI 추천 픽",
+                "odds": "배당률",
+                "is_hit": "적중 여부",
+                "net_pnl": "가상 손익"
+            }
+            rec_df = rec_df.rename(columns=rename_map)
+            if "적중 여부" in rec_df.columns:
+                rec_df["적중 여부"] = rec_df["적중 여부"].apply(lambda x: "✅ 적중" if x else "❌ 미적중")
             st.dataframe(rec_df, use_container_width=True, hide_index=True)

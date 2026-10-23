@@ -22,6 +22,7 @@ from models.poisson_model import MatchPredictor
 from models.evaluator import evaluate_match_value
 from models.odds_normalizer import remove_margin
 from models.form_analyzer import FormAnalyzer
+from tracker.result_evaluator import evaluate_betman_results
 
 
 def run_full_pipeline(gm_ts: str = "260126") -> list:
@@ -55,6 +56,12 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
         r_scraper = BetmanResultsScraper()
         res_list = r_scraper.fetch_recent_rounds(current_ts=int(gm_ts), n_rounds=8)
         r_scraper.save_results(res_list)
+        
+    # 1-3. 베트맨 최근 종료 경기 채점 및 실전 ROI 통계 자동 갱신
+    try:
+        evaluate_betman_results()
+    except Exception as e:
+        print(f"⚠️ 베트맨 결과 채점 중 오류: {e}")
     
     # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기 준비
     predictor = MatchPredictor()
