@@ -17,6 +17,7 @@ if sys.platform.startswith('win'):
         pass
 
 from collector.betman_scraper import BetmanScraper
+from collector.betman_results_scraper import BetmanResultsScraper
 from models.poisson_model import MatchPredictor
 from models.evaluator import evaluate_match_value
 from models.odds_normalizer import remove_margin
@@ -29,10 +30,31 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
     print(f"⏰ 실행 시각: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
     
-    # 1. 베트맨 경기 목록 및 배당 수집
+    # 1. 베트맨 최신 발매 경기 목록 및 배당 수집
     scraper = BetmanScraper()
-    matches = scraper.fetch_current_round_matches(gm_ts=gm_ts)
-    scraper.save_matches(matches, "data/current_matches.json")
+    try:
+        matches = scraper.fetch_current_round_matches(gm_ts=gm_ts)
+    except Exception as e:
+        print(f"⚠️ 베트맨 실시간 수집 중 오류 발생: {e}")
+        matches = []
+
+    cached_file = Path("data/current_matches.json")
+    if matches and len(matches) > 0:
+        scraper.save_matches(matches, "data/current_matches.json")
+    elif cached_file.exists():
+        print(f"⚠️ 실시간 수집 결과가 비어있어 기존 캐시({cached_file}) 데이터를 사용합니다.")
+        with open(cached_file, "r", encoding="utf-8") as f:
+            matches = json.load(f)
+    else:
+        print("❌ 수집된 경기 및 캐시 데이터가 없습니다.")
+        return []
+    
+    # 1-2. 베트맨 직전 회차 실제 경기 결과 및 스코어 확인 (없으면 수집)
+    results_path = Path("data/history/betman_recent_results.json")
+    if not results_path.exists():
+        r_scraper = BetmanResultsScraper()
+        res_list = r_scraper.fetch_recent_rounds(current_ts=int(gm_ts), n_rounds=8)
+        r_scraper.save_results(res_list)
     
     # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기 준비
     predictor = MatchPredictor()
