@@ -21,6 +21,7 @@ import pandas as pd
 
 from models.parlay_builder import (
     build_recommended_parlays,
+    build_banker_wheel_combinations,
     calculate_parlay_metrics,
     get_pick_item
 )
@@ -343,6 +344,154 @@ with tab2:
     if not predictions:
         st.warning("⚠️ 예측 데이터가 없습니다. 먼저 터미널에서 `python run_pipeline.py`를 실행해 주세요.")
     else:
+        # -------------------------------------------------------------
+        # 고정 축(Banker) + 변수 경기 전수 마킹(Wheel) 헤징 전략
+        # -------------------------------------------------------------
+        st.markdown("### 🛡️ 고정 축(Banker 2경기) + 변수 경기 전수 마킹(Wheel 1경기) 헤징 전략")
+        st.caption("💡 확실한 승률 70%+ 축 2경기에 2배당 이상의 변수 경기 [승 / 무 / 패] 3가지를 전수 분할 마킹하여, 변수를 100% 방어하면서 고배당 수익을 확정 짓는 실전 노하우 전략입니다.")
+
+        wheel_data = build_banker_wheel_combinations(predictions)
+        if wheel_data.get("valid"):
+            b1 = wheel_data["banker_1"]
+            b2 = wheel_data["banker_2"]
+            bank_odds = wheel_data["bank_combined_odds"]
+            bank_prob_pct = wheel_data["bank_combined_prob_pct"]
+            wm = wheel_data["wheel_match"]
+            min_combo_odds = wheel_data["min_combo_odds"]
+            tickets = wheel_data["tickets"]
+
+            with st.container(border=True):
+                # 상단 헤더 요약 3열
+                wc1, wc2, wc3 = st.columns([1.5, 1.5, 1.2])
+                with wc1:
+                    st.markdown("##### 📌 확실한 축 (Bankers 2경기)")
+                    st.markdown(
+                        f"<div class='notranslate' style='font-size:0.95rem; line-height:1.6;'>"
+                        f"• <b>#{b1['match_seq']} [{b1['league']}]</b> {b1['home_team']} vs {b1['away_team']}<br>"
+                        f"&nbsp;&nbsp;&nbsp;↳ 픽: <span style='color:#2ed573; font-weight:bold;'>{b1['pick']}</span> ({b1['odds']}배 | AI 승률 {b1['prob']*100:.1f}%)<br>"
+                        f"• <b>#{b2['match_seq']} [{b2['league']}]</b> {b2['home_team']} vs {b2['away_team']}<br>"
+                        f"&nbsp;&nbsp;&nbsp;↳ 픽: <span style='color:#2ed573; font-weight:bold;'>{b2['pick']}</span> ({b2['odds']}배 | AI 승률 {b2['prob']*100:.1f}%)"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
+                    st.markdown(f"🔒 **축 2경기 결합 배당:** `{bank_odds}배` (AI 결합 승률: `{bank_prob_pct}`)")
+
+                with wc2:
+                    st.markdown("##### 🎲 변수 타겟 (Wheel 1경기 전수 마킹)")
+                    st.markdown(
+                        f"<div class='notranslate' style='font-size:0.95rem; line-height:1.6;'>"
+                        f"• <b>#{wm['match_seq']} [{wm['league']}]</b> {wm['home_team']} vs {wm['away_team']}<br>"
+                        f"&nbsp;&nbsp;&nbsp;↳ 🏠 홈 승리: <b>{wm['odds_home']}배</b><br>"
+                        f"&nbsp;&nbsp;&nbsp;↳ 🤝 무승부: <b style='color:#ffa502;'>{wm['odds_draw']}배</b><br>"
+                        f"&nbsp;&nbsp;&nbsp;↳ ✈️ 원정 승리: <b>{wm['odds_away']}배</b>"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
+                    st.markdown("⚡ **[홈 / 무 / 원정] 3장으로 분할 마킹 ➔ 변수 경기 100% 적중!**")
+
+                with wc3:
+                    st.markdown("##### 🎯 전략 기대 성과")
+                    st.metric("최소 보장 배당률", f"{min_combo_odds} 배", "어떤 결과가 나와도 최소 이 배당!")
+                    st.metric("축 2경기 적중 확률", bank_prob_pct, "축만 통과하면 순수익 확정")
+
+                st.divider()
+
+                # 시뮬레이터
+                st.markdown("##### 💰 티켓 3장 실전 베팅 & 환급금 시뮬레이터")
+                sim_col1, sim_col2 = st.columns([1.5, 2.5])
+                with sim_col1:
+                    w_stake = st.number_input(
+                        "티켓당 베팅 금액 (원)",
+                        min_value=1000,
+                        max_value=100000,
+                        value=10000,
+                        step=1000,
+                        key="wheel_stake_input"
+                    )
+                    total_w_stake = w_stake * 3
+                    st.caption(f"총 투자 금액: **3장 × {w_stake:,}원 = {total_w_stake:,}원**")
+                
+                with sim_col2:
+                    st.info(
+                        f"💡 **수익 보장 원리:** 3장 중 반드시 1장만 당첨되므로, 당첨금에서 총 베팅금({total_w_stake:,}원)을 뺀 금액이 실제 순수익입니다. "
+                        f"축 2경기(승률 {bank_prob_pct})만 적중하면 100% 순이익이 남습니다."
+                    )
+
+                # 3장 티켓별 결과 시뮬레이션 표
+                t1_odds = tickets[0]["combined_odds"]
+                t2_odds = tickets[1]["combined_odds"]
+                t3_odds = tickets[2]["combined_odds"]
+
+                t1_ret = int(w_stake * t1_odds)
+                t2_ret = int(w_stake * t2_odds)
+                t3_ret = int(w_stake * t3_odds)
+
+                t1_prof = t1_ret - total_w_stake
+                t2_prof = t2_ret - total_w_stake
+                t3_prof = t3_ret - total_w_stake
+
+                t1_roi = (t1_prof / total_w_stake) * 100
+                t2_roi = (t2_prof / total_w_stake) * 100
+                t3_roi = (t3_prof / total_w_stake) * 100
+
+                wheel_df = pd.DataFrame([
+                    {
+                        "티켓": "🎫 티켓 1 (홈승)",
+                        "마킹 조합": f"[축 2경기] + [{wm['home_team']} 승 ({wm['odds_home']}배)]",
+                        "합산 배당률": f"{t1_odds}배",
+                        "베팅액": f"{w_stake:,}원",
+                        "적중 시 환급금": f"{t1_ret:,}원",
+                        "실질 순수익": f"{t1_prof:+,}원",
+                        "수익률(ROI)": f"{t1_roi:+.1f}%",
+                        "결과 의미": "정배 승리 방어"
+                    },
+                    {
+                        "티켓": "🎫 티켓 2 (무승부 🔥)",
+                        "마킹 조합": f"[축 2경기] + [무승부 ({wm['odds_draw']}배)]",
+                        "합산 배당률": f"{t2_odds}배",
+                        "베팅액": f"{w_stake:,}원",
+                        "적중 시 환급금": f"{t2_ret:,}원",
+                        "실질 순수익": f"{t2_prof:+,}원",
+                        "수익률(ROI)": f"{t2_roi:+.1f}%",
+                        "결과 의미": "🔥 무캐기 고배당 잭팟"
+                    },
+                    {
+                        "티켓": "🎫 티켓 3 (원정승 ⚡)",
+                        "마킹 조합": f"[축 2경기] + [{wm['away_team']} 승 ({wm['odds_away']}배)]",
+                        "합산 배당률": f"{t3_odds}배",
+                        "베팅액": f"{w_stake:,}원",
+                        "적중 시 환급금": f"{t3_ret:,}원",
+                        "실질 순수익": f"{t3_prof:+,}원",
+                        "수익률(ROI)": f"{t3_roi:+.1f}%",
+                        "결과 의미": "⚡ 역배 완벽 방어"
+                    }
+                ])
+                st.dataframe(wheel_df, use_container_width=True, hide_index=True)
+
+                st.success(
+                    f"✨ **결과 요약:** 축 2경기(승률 {bank_prob_pct}) 적중 시, 변수 경기가 홈승/무승부/역배승 어떤 것으로 끝나도 "
+                    f"**최소 {t3_prof:+,}원 ({min(t1_roi, t2_roi, t3_roi):+.1f}%) ~ 최대 {t2_prof:+,}원 ({max(t1_roi, t2_roi, t3_roi):+.1f}%) 확정 순이익**을 얻습니다!"
+                )
+
+                # 개별 티켓 바구니 담기 버튼
+                btn_cols = st.columns(3)
+                with btn_cols[0]:
+                    if st.button("📥 티켓 1 경기들을 바구니에 담기", use_container_width=True):
+                        st.session_state["cart_seqs"] = [b1["match_seq"], b2["match_seq"], wm["match_seq"]]
+                        st.rerun()
+                with btn_cols[1]:
+                    if st.button("📥 티켓 2 경기들을 바구니에 담기", use_container_width=True):
+                        st.session_state["cart_seqs"] = [b1["match_seq"], b2["match_seq"], wm["match_seq"]]
+                        st.rerun()
+                with btn_cols[2]:
+                    if st.button("📥 티켓 3 경기들을 바구니에 담기", use_container_width=True):
+                        st.session_state["cart_seqs"] = [b1["match_seq"], b2["match_seq"], wm["match_seq"]]
+                        st.rerun()
+        else:
+            st.info(f"💡 {wheel_data.get('error', '현재 회차에서 조건에 맞는 축 또는 변수 경기를 찾지 못했습니다.')}")
+
+        st.divider()
+
         # AI 추천 5대 프리셋 생성
         parlay_presets = build_recommended_parlays(predictions)
 

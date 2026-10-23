@@ -226,3 +226,149 @@ def build_recommended_parlays(predictions: List[Dict[str, Any]]) -> Dict[str, An
     results["single_king"] = best_single
 
     return results
+
+
+def build_banker_wheel_combinations(predictions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    고정 축(Banker 2경기) + 변수 경기 휠(Wheel 1경기 전수 마킹) 전략 조합 생성기
+    - 축 2경기: AI 승률 70% 이상의 최상급 안전 강팀 (Banker)
+    - 변수 경기: 승/무/패 배당이 모두 2.0배 이상인 팽팽한 경기
+    - 결과: 승/무/패 3장 전수 마킹 티켓 세트 및 배당/환급금 산출
+    """
+    banker_candidates = []
+    seen = set()
+    for m in predictions:
+        if "일반" not in m.get("category", ""):
+            continue
+        ev_info = m.get("evaluation", {})
+        best_sel = ev_info.get("best_selection", "home_win")
+        prob = m.get("model_probabilities", {}).get(best_sel, 0.0)
+        odd = m.get("betman_odds", {}).get(best_sel, 0.0)
+        ht = m.get("home_team", "").strip()
+        at = m.get("away_team", "").strip()
+        m_key = f"{ht}_vs_{at}"
+        if prob >= 0.70 and odd >= 1.22 and m_key not in seen:
+            seen.add(m_key)
+            banker_candidates.append({
+                "match_seq": str(m.get("match_seq", "")),
+                "match_key": m_key,
+                "league": m.get("league", ""),
+                "match_time": m.get("match_time", ""),
+                "home_team": ht,
+                "away_team": at,
+                "pick": ev_info.get("best_selection_name", f"{ht} 승"),
+                "odds": odd,
+                "prob": prob,
+                "grade": ev_info.get("grade", "S")
+            })
+
+    banker_candidates.sort(key=lambda x: x["prob"], reverse=True)
+    if len(banker_candidates) < 2:
+        return {"valid": False, "error": "승률 70% 이상의 확실한 축(Banker) 경기가 2개 이상 필요합니다."}
+
+    b1 = banker_candidates[0]
+    b2 = banker_candidates[1]
+    bank_odds = round(b1["odds"] * b2["odds"], 2)
+    bank_prob = round(b1["prob"] * b2["prob"], 4)
+    bank_keys = {b1["match_key"], b2["match_key"]}
+
+    target_matches = []
+    for m in predictions:
+        if "일반" not in m.get("category", ""):
+            continue
+        ht = m.get("home_team", "").strip()
+        at = m.get("away_team", "").strip()
+        m_key = f"{ht}_vs_{at}"
+        if m_key in bank_keys:
+            continue
+        odds = m.get("betman_odds", {})
+        ho = odds.get("home_win", 0.0)
+        do = odds.get("draw", 0.0)
+        ao = odds.get("away_win", 0.0)
+        if ho >= 2.0 and ao >= 2.0 and do >= 2.8:
+            min_combo = min(ho, do, ao) * bank_odds
+            target_matches.append((m, ho, do, ao, min_combo))
+
+    target_matches.sort(key=lambda x: x[4], reverse=True)
+
+    if not target_matches:
+        # 조건 완화
+        for m in predictions:
+            if "일반" not in m.get("category", ""):
+                continue
+            ht = m.get("home_team", "").strip()
+            at = m.get("away_team", "").strip()
+            m_key = f"{ht}_vs_{at}"
+            if m_key in bank_keys:
+                continue
+            odds = m.get("betman_odds", {})
+            ho = odds.get("home_win", 0.0)
+            do = odds.get("draw", 0.0)
+            ao = odds.get("away_win", 0.0)
+            if ho >= 1.85 and ao >= 1.85 and do >= 2.8:
+                min_combo = min(ho, do, ao) * bank_odds
+                target_matches.append((m, ho, do, ao, min_combo))
+        target_matches.sort(key=lambda x: x[4], reverse=True)
+
+    if not target_matches:
+        return {"valid": False, "error": "전수 마킹에 적합한 2.0배 이상의 변수 경기를 찾지 못했습니다."}
+
+    tm, ho, do, ao, min_comb = target_matches[0]
+    wheel_match = {
+        "match_seq": str(tm.get("match_seq", "")),
+        "match_key": f"{tm.get('home_team')}_vs_{tm.get('away_team')}",
+        "league": tm.get("league", ""),
+        "match_time": tm.get("match_time", ""),
+        "home_team": tm.get("home_team", ""),
+        "away_team": tm.get("away_team", ""),
+        "odds_home": ho,
+        "odds_draw": do,
+        "odds_away": ao,
+        "probs": tm.get("model_probabilities", {})
+    }
+
+    t1_odds = round(bank_odds * ho, 2)
+    t2_odds = round(bank_odds * do, 2)
+    t3_odds = round(bank_odds * ao, 2)
+
+    tickets = [
+        {
+            "ticket_no": 1,
+            "title": f"티켓 1: [축 2경기] + [{wheel_match['home_team']} 승]",
+            "outcome_label": f"{wheel_match['home_team']} 승",
+            "target_odds": ho,
+            "combined_odds": t1_odds,
+            "bankers": [b1, b2],
+            "pick_name": f"{wheel_match['home_team']} 승"
+        },
+        {
+            "ticket_no": 2,
+            "title": f"티켓 2: [축 2경기] + [무승부 (고배당 🔥)]",
+            "outcome_label": "무승부 (고배당)",
+            "target_odds": do,
+            "combined_odds": t2_odds,
+            "bankers": [b1, b2],
+            "pick_name": "무승부"
+        },
+        {
+            "ticket_no": 3,
+            "title": f"티켓 3: [축 2경기] + [{wheel_match['away_team']} 승 (역배/원정)]",
+            "outcome_label": f"{wheel_match['away_team']} 승",
+            "target_odds": ao,
+            "combined_odds": t3_odds,
+            "bankers": [b1, b2],
+            "pick_name": f"{wheel_match['away_team']} 승"
+        }
+    ]
+
+    return {
+        "valid": True,
+        "banker_1": b1,
+        "banker_2": b2,
+        "bank_combined_odds": bank_odds,
+        "bank_combined_prob": bank_prob,
+        "bank_combined_prob_pct": f"{bank_prob * 100:.1f}%",
+        "wheel_match": wheel_match,
+        "min_combo_odds": min(t1_odds, t2_odds, t3_odds),
+        "tickets": tickets
+    }
