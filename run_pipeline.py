@@ -80,8 +80,18 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
         line = m.get("line", 0.0)
         is_single = m.get("is_single", False)
         
-        # 카테고리별(일반/핸디캡/언더오버/전반전) 정밀 AI 확률 계산
-        pred = predictor.predict_category(home, away, category=category, line=line, sport=m.get("sport", "SC"), odds=odds)
+        # 팀별 최근 5경기 폼 및 상대 전적(H2H) 분석
+        home_form = form_analyzer.get_team_recent_form(home)
+        away_form = form_analyzer.get_team_recent_form(away)
+        h2h_stats = form_analyzer.get_head_to_head(home, away)
+
+        # 폼 모멘텀 차이 산출
+        h_score = (home_form['win_rate_pct'] + (home_form['avg_scored'] - home_form['avg_conceded']) * 15) if home_form.get('has_data') else 0
+        a_score = (away_form['win_rate_pct'] + (away_form['avg_scored'] - away_form['avg_conceded']) * 15) if away_form.get('has_data') else 0
+        form_diff = h_score - a_score
+
+        # 카테고리별(일반/핸디캡/언더오버/전반전) 정밀 AI 확률 계산 (폼 모멘텀 반영)
+        pred = predictor.predict_category(home, away, category=category, line=line, sport=m.get("sport", "SC"), odds=odds, form_diff=form_diff)
         model_probs = {
             "home_win": pred["home_win"],
             "draw": pred["draw"],
@@ -98,11 +108,6 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
             is_single=is_single,
             category=category
         )
-
-        # 팀별 최근 5경기 폼 및 상대 전적(H2H) 분석
-        home_form = form_analyzer.get_team_recent_form(home)
-        away_form = form_analyzer.get_team_recent_form(away)
-        h2h_stats = form_analyzer.get_head_to_head(home, away)
         
         results.append({
             "match_seq": m["match_seq"],

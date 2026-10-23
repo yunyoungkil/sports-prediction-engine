@@ -94,12 +94,25 @@ class MatchPredictor:
                 return v
         return clean
 
-    def predict_category(self, home_team: str, away_team: str, category: str = "일반 승무패", line: float = 0.0, sport: str = "SC", odds: dict = None) -> dict:
+    def predict_category(
+        self,
+        home_team: str,
+        away_team: str,
+        category: str = "일반 승무패",
+        line: float = 0.0,
+        sport: str = "SC",
+        odds: dict = None,
+        form_diff: float = 0.0
+    ) -> dict:
         """
         게임 카테고리(일반 승무패, 핸디캡, 언더오버, 전반전 등)에 맞춰 
         정확한 확률을 계산합니다. 축구는 Dixon-Coles 스코어 매트릭스를, 
-        비축구(농구, 야구)는 마진 제거 시장 함축 확률을 적용합니다.
+        비축구(농구, 야구)는 마진 제거 시장 함축 확률을 적용하며,
+        최근 경기 폼 모멘텀(form_diff)을 베이지안 우도 갱신으로 반영합니다.
         """
+        # 최근 폼 모멘텀 차이(-0.08 ~ +0.08)
+        form_adj = max(-0.08, min(0.08, form_diff * 0.0015)) if form_diff != 0.0 else 0.0
+
         # 비축구(농구 BK, 야구 BS 등) 또는 축구 범위를 벗어나는 기준점(농구 점수 등) 처리
         is_non_soccer = (sport != "SC") or (abs(line) > 10.0)
         
@@ -120,6 +133,13 @@ class MatchPredictor:
                 inv_a = 1.0 / a_odds if a_odds > 0 else 0.5
                 tot = inv_h + inv_a
                 p_h, p_d, p_a = inv_h / tot, 0.0, inv_a / tot
+                
+            # 폼 모멘텀 반영
+            if form_adj != 0.0 and "언더오버" not in category:
+                p_h = max(0.05, min(0.95, p_h + form_adj))
+                p_a = max(0.05, min(0.95, p_a - form_adj))
+                tot = p_h + p_d + p_a
+                p_h, p_d, p_a = p_h / tot, p_d / tot, p_a / tot
                 
             cutoff = line if line != 0 else (2.5 if "언더오버" in category else 0.0)
             if "언더오버" in category:
@@ -175,10 +195,35 @@ class MatchPredictor:
             except Exception:
                 grid = None
 
-        # 모델이 없거나 비주류 리그인 경우의 표준 기대 득점 기반 기본 매트릭스 생성
+        # 모델이 없거나 비주류 리그인 경우: 시장 배당률 기반 기대 득점(λ) 정밀 추정
         if grid is None:
+            if odds and (odds.get("home_win", 0) > 1.0 or odds.get("away_win", 0) > 1.0):
+                h_o = odds.get("home_win", 2.5)
+                d_o = odds.get("draw", 3.2)
+                a_o = odds.get("away_win", 2.8)
+                
+                # 시장 순수 확률 추정
+                if d_o > 1.0:
+                    inv_h = 1.0 / h_o if h_o > 0 else 0.4
+                    inv_d = 1.0 / d_o if d_o > 0 else 0.3
+                    inv_a = 1.0 / a_o if a_o > 0 else 0.3
+                    tot = inv_h + inv_d + inv_a
+                    p_h, p_a = inv_h / tot, inv_a / tot
+                else:
+                    inv_h = 1.0 / h_o if h_o > 0 else 0.5
+                    inv_a = 1.0 / a_o if a_o > 0 else 0.5
+                    tot = inv_h + inv_a
+                    p_h, p_a = inv_h / tot, inv_a / tot
+
+                # 확률 비율에 따른 기대 득점 배분 (축구 평균 2.6골 기준)
+                total_expected_goals = 2.6
+                ratio = p_h / (p_h + p_a + 1e-6)
+                lh = max(0.5, min(3.0, total_expected_goals * ratio * 1.15))
+                la = max(0.4, min(2.8, total_expected_goals - lh + 0.25))
+            else:
+                lh, la = 1.45, 1.15
+
             grid = [[0.0] * 8 for _ in range(8)]
-            lh, la = 1.45, 1.15  # 평균 기대 득점
             for i in range(8):
                 for j in range(8):
                     p_i = (math.exp(-lh) * (lh ** i)) / math.factorial(i)
@@ -253,6 +298,12 @@ class MatchPredictor:
                 p_h_draw /= total
                 p_h_lose /= total
 
+            if form_adj != 0.0:
+                p_h_win = max(0.05, min(0.95, p_h_win + form_adj))
+                p_h_lose = max(0.05, min(0.95, p_h_lose - form_adj))
+                tot = p_h_win + p_h_draw + p_h_lose
+                p_h_win, p_h_draw, p_h_lose = p_h_win / tot, p_h_draw / tot, p_h_lose / tot
+
             sign_str = f"{h_line:+.1f}" if h_line != 0 else "0.0"
             return {
                 "home_win": round(p_h_win, 4),
@@ -294,6 +345,13 @@ class MatchPredictor:
             p_win = sum(grid[i][j] for i in range(max_h) for j in range(max_a) if i > j)
             p_draw = sum(grid[i][j] for i in range(max_h) for j in range(max_a) if i == j)
             p_lose = sum(grid[i][j] for i in range(max_h) for j in range(max_a) if i < j)
+
+            if form_adj != 0.0:
+                p_win = max(0.05, min(0.95, p_win + form_adj))
+                p_lose = max(0.05, min(0.95, p_lose - form_adj))
+                tot = p_win + p_draw + p_lose
+                p_win, p_draw, p_lose = p_win / tot, p_draw / tot, p_lose / tot
+
             return {
                 "home_win": round(p_win, 4),
                 "draw": round(p_draw, 4),

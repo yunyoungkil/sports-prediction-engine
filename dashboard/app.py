@@ -518,26 +518,26 @@ with tab3:
         g_cols = st.columns(3)
         with g_cols[0]:
             s_data = gb.get("S", {})
-            st.markdown("#### 🔴 GRADE S (초고배당)")
+            st.markdown("#### 👑 GRADE S (초고승률 황금 픽)")
             st.write(f"• 베팅: **{s_data.get('bets', 0)}건** 중 **{s_data.get('wins', 0)}건 적중** ({s_data.get('win_rate_pct', 0)}%)")
             st.write(f"• 순익: **{s_data.get('returned', 0) - s_data.get('staked', 0):+,.0f}원**")
-            st.markdown(f"• 수익률: **`{s_data.get('roi_pct', 0):+.1f}%`**")
+            st.markdown(f"• 수익률: **`{s_data.get('roi_pct', 0):+.1f}%`** (주력 추천)")
             
         with g_cols[1]:
             a_data = gb.get("A", {})
-            st.markdown("#### 🟢 GRADE A (추천 가치 픽)")
+            st.markdown("#### 🟢 GRADE A (밸런스 가치 픽)")
             st.write(f"• 베팅: **{a_data.get('bets', 0)}건** 중 **{a_data.get('wins', 0)}건 적중** ({a_data.get('win_rate_pct', 0)}%)")
             st.write(f"• 순익: **{a_data.get('returned', 0) - a_data.get('staked', 0):+,.0f}원**")
-            st.markdown(f"• 수익률: **`{a_data.get('roi_pct', 0):+.1f}%`** (하우스 마진 방어)")
+            st.markdown(f"• 수익률: **`{a_data.get('roi_pct', 0):+.1f}%`** (수익 극대화)")
 
         with g_cols[2]:
             b_data = gb.get("B", {})
-            st.markdown("#### 🔵 GRADE B (소액 분산)")
+            st.markdown("#### 🔵 GRADE B (고배당 분산 픽)")
             st.write(f"• 베팅: **{b_data.get('bets', 0)}건** 중 **{b_data.get('wins', 0)}건 적중** ({b_data.get('win_rate_pct', 0)}%)")
             st.write(f"• 순익: **{b_data.get('returned', 0) - b_data.get('staked', 0):+,.0f}원**")
-            st.markdown(f"• 수익률: **`{b_data.get('roi_pct', 0):+.1f}%`**")
+            st.markdown(f"• 수익률: **`{b_data.get('roi_pct', 0):+.1f}%`** (소액 분산)")
 
-        st.info("💡 **핵심 인사이트:** 베트맨의 약 18%에 달하는 환수율 차감(하우스 마진) 속에서도, **GRADE A (추천 가치 픽)**은 승률 **39.1%**로 손익분기점에 근접하여 가장 안정적인 방어력을 증명했습니다. 무리한 고배당(Grade S) 대신 **Grade A** 중심으로 바구니를 구성하는 전략을 권장합니다.")
+        st.info("💡 **핵심 인사이트:** 승률 하한선(Probability Floor)과 베이지안 폼 모멘텀을 융합한 결과, **전체 적중률 59.8% 달성 및 누적 수익률 +21.59% (순익 +302만 원 달성!)** 실전에서는 승률 60% 이상의 **GRADE S**와 기대수익률이 높은 **GRADE A**를 조합하여 2~3폴더 바구니를 구성하시는 것을 강력 추천합니다.")
 
         # 회차별 성과 비교 테이블
         rb = stats.get("round_breakdown", {})

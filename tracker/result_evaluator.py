@@ -52,7 +52,9 @@ def evaluate_betman_results(
         print("⚠️ 베트맨 결과 데이터가 비어있습니다.")
         return run_historical_backtest(output_path=output_path, flat_stake=flat_stake)
 
+    from models.form_analyzer import FormAnalyzer
     predictor = MatchPredictor()
+    form_analyzer = FormAnalyzer()
 
     total_matches = 0
     total_bets = 0
@@ -101,8 +103,15 @@ def evaluate_betman_results(
         elif "언더오버" in g_type:
             cat = "언더오버"
 
-        # AI 모델 확률 산출
-        pred = predictor.predict_category(home, away, category=cat, sport=sport, odds=odds)
+        # 폼 모멘텀 산출
+        hf = form_analyzer.get_team_recent_form(home)
+        af = form_analyzer.get_team_recent_form(away)
+        h_score = (hf['win_rate_pct'] + (hf['avg_scored'] - hf['avg_conceded']) * 15) if hf.get('has_data') else 0
+        a_score = (af['win_rate_pct'] + (af['avg_scored'] - af['avg_conceded']) * 15) if af.get('has_data') else 0
+        form_diff = h_score - a_score
+
+        # AI 모델 확률 산출 (폼 모멘텀 융합)
+        pred = predictor.predict_category(home, away, category=cat, sport=sport, odds=odds, form_diff=form_diff)
         model_probs = {
             "home_win": pred["home_win"],
             "draw": pred["draw"],

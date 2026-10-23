@@ -19,6 +19,30 @@ def remove_margin(home_odds: float, draw_odds: float, away_odds: float) -> dict:
         'true_probs': 순수 시장 확률 (합 1.0)
     }
     """
+    # 2지선다 (무승부 없음: 언더오버, 농구/배구 승패 등)
+    if draw_odds <= 1.0 and home_odds > 1.0 and away_odds > 1.0:
+        inv_home = 1.0 / home_odds
+        inv_away = 1.0 / away_odds
+        overround = inv_home + inv_away
+        payout_rate = (1.0 / overround) * 100.0 if overround > 0 else 100.0
+        margin_rate = (overround - 1.0) * 100.0
+        true_home = inv_home / overround if overround > 0 else 0.5
+        true_away = inv_away / overround if overround > 0 else 0.5
+        return {
+            "margin_pct": round(margin_rate, 2),
+            "payout_pct": round(payout_rate, 2),
+            "raw_probs": {
+                "home": round(inv_home, 4),
+                "draw": 0.0,
+                "away": round(inv_away, 4)
+            },
+            "true_probs": {
+                "home": round(true_home, 4),
+                "draw": 0.0,
+                "away": round(true_away, 4)
+            }
+        }
+
     if home_odds <= 1.0 or draw_odds <= 1.0 or away_odds <= 1.0:
         return {
             "margin_pct": 0.0,
@@ -27,7 +51,7 @@ def remove_margin(home_odds: float, draw_odds: float, away_odds: float) -> dict:
             "true_probs": {"home": 0.333, "draw": 0.333, "away": 0.333}
         }
     
-    # 1. 역수 합 (Overround / 총합 마진)
+    # 1. 역수 합 (Overround / 총합 마진) - 3지선다
     inv_home = 1.0 / home_odds
     inv_draw = 1.0 / draw_odds
     inv_away = 1.0 / away_odds
