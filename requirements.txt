@@ -1,6 +1,6 @@
 # Core data science & math
-pandas>=2.0.0
-numpy>=1.24.0
+pandas>=2.0.0,<2.3.0
+numpy>=1.24.0,<2.0.0
 scipy>=1.10.0
 
 # Sports quant & betting analytics
@@ -14,3 +14,4 @@ lxml>=4.9.0
 # Visualization dashboard
 streamlit>=1.30.0
 plotly>=5.18.0
+pyarrow<18

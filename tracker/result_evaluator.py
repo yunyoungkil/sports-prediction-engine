@@ -181,17 +181,38 @@ def evaluate_betman_results(
                 pick_name = eval_res["best_selection_name"]
                 score_str = m.get("score", "-")
                 match_dt = m.get("match_time", "")
+                league_str = m.get("league", "기타")
+                
+                # 실제 경기 결과 텍스트 정규화
+                actual_res_text = m.get("result_text", "")
+                if not actual_res_text:
+                    if gr == "0":
+                        actual_res_text = "홈승" if "승" in g_type else "언더"
+                    elif gr == "1":
+                        actual_res_text = "무승부"
+                    elif gr == "2":
+                        actual_res_text = "원정승" if "승" in g_type else "오버"
 
                 recent_evaluated_picks.append({
                     "date": match_dt,
                     "round": str(gm_ts),
+                    "match_seq": str(m.get("match_seq", "")),
+                    "league": league_str,
                     "match": f"{home} vs {away}",
+                    "home_team": home,
+                    "away_team": away,
                     "game_type": g_type,
                     "score": score_str,
+                    "actual_result": actual_res_text,
                     "pick": pick_name,
+                    "raw_pick": eval_res.get("raw_selection_name", pick_name),
+                    "grade": eval_res.get("grade", "A"),
+                    "ai_prob": round(model_probs.get(sel, 0.0) * 100, 1),
+                    "ev_pct": eval_res.get("best_ev_pct", "+0.0%"),
                     "odds": sel_odds,
                     "is_hit": is_hit,
-                    "net_pnl": f"{net:+,.0f}원"
+                    "net_pnl": f"{net:+,.0f}원",
+                    "net_pnl_num": net
                 })
 
         # 회차의 모든 경기가 끝난 후에만 과거 전적 사전에 추가 (미래 누수 방지)
@@ -222,8 +243,8 @@ def evaluate_betman_results(
         r_data["net_profit"] = int(ret - stk)
         r_data["roi_pct"] = round(((ret - stk) / stk * 100.0) if stk > 0 else 0.0, 1)
 
-    # 가장 최근에 평가된 25개 경기 (역순: 최신이 위로)
-    display_recent_picks = list(reversed(recent_evaluated_picks))[:25]
+    # 전체 평가된 경기 (역순: 최신이 위로)
+    display_recent_picks = list(reversed(recent_evaluated_picks))
 
     stats = {
         "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

@@ -13,17 +13,49 @@ from typing import List, Dict, Any, Optional
 import itertools
 
 
-def get_pick_item(match: Dict[str, Any]) -> Dict[str, Any]:
-    """경기 예측 데이터에서 추천 픽의 정량적 정보를 추출"""
+def get_pick_item(match: Dict[str, Any], selection: Optional[str] = None) -> Dict[str, Any]:
+    """
+    경기 예측 데이터에서 픽의 정량적 정보를 추출.
+    selection 인자가 없거나 'best'이면 AI 최고 추천 픽을 사용하고,
+    'home_win', 'draw', 'away_win'이 전달되면 해당 수동 선택 픽을 추출합니다.
+    """
     eval_info = match.get("evaluation", {})
-    best_sel = eval_info.get("best_selection", "home_win")
-    odds_val = match.get("betman_odds", {}).get(best_sel, 1.0)
-    prob_val = match.get("model_probabilities", {}).get(best_sel, 0.0)
-    ev_val = eval_info.get("best_ev", 0.0)
+    if not selection or selection == "best":
+        chosen_sel = eval_info.get("best_selection", "home_win")
+    else:
+        chosen_sel = selection
+        
+    odds_val = match.get("betman_odds", {}).get(chosen_sel, 1.0)
+    prob_val = match.get("model_probabilities", {}).get(chosen_sel, 0.0)
     
-    # 경기 고유 식별자 (팀 대진 기준)
+    if chosen_sel == eval_info.get("best_selection"):
+        ev_val = eval_info.get("best_ev", 0.0)
+        grade_val = eval_info.get("grade", "PASS")
+        raw_name = eval_info.get("raw_selection_name") or eval_info.get("best_selection_name", "")
+    else:
+        ev_val = (prob_val * odds_val) - 1.0 if (odds_val > 1.0 and prob_val > 0) else -1.0
+        ev_val = round(ev_val, 4)
+        if ev_val >= 0.02 and prob_val >= 0.50:
+            grade_val = "S (👑 초고승률 황금 픽)"
+        elif ev_val >= 0.02 and prob_val >= 0.42:
+            grade_val = "A (🟢 밸런스 가치 픽)"
+        elif ev_val >= 0.06:
+            grade_val = "B (🔵 고배당 분산 픽)"
+        else:
+            grade_val = "PASS (가치 낮음)"
+            
+        sel_labels = match.get("selection_labels", {})
+        if sel_labels and chosen_sel in sel_labels:
+            raw_name = sel_labels[chosen_sel]
+        else:
+            label_map = {
+                "home_win": f"{match.get('home_team')} 승",
+                "draw": "무승부",
+                "away_win": f"{match.get('away_team')} 승"
+            }
+            raw_name = label_map.get(chosen_sel, chosen_sel)
+            
     match_key = f"{match.get('home_team')}_vs_{match.get('away_team')}"
-    raw_name = eval_info.get("raw_selection_name") or eval_info.get("best_selection_name", "")
     
     return {
         "match_seq": str(match.get("match_seq", "")),
@@ -36,11 +68,12 @@ def get_pick_item(match: Dict[str, Any]) -> Dict[str, Any]:
         "category": match.get("category", "일반 승무패"),
         "category_label": match.get("category_label", match.get("game_type", "")),
         "is_single": match.get("is_single", False),
+        "chosen_selection": chosen_sel,
         "selection_name": raw_name,
         "odds": odds_val,
         "prob": prob_val,
         "ev": ev_val,
-        "grade": eval_info.get("grade", "PASS"),
+        "grade": grade_val,
     }
 
 

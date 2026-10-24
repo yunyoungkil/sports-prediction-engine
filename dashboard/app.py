@@ -21,6 +21,8 @@ for mod_name in list(sys.modules.keys()):
         del sys.modules[mod_name]
 
 import json
+import re
+from datetime import datetime
 import streamlit as st
 import pandas as pd
 
@@ -103,19 +105,70 @@ def load_data():
 
 predictions, stats = load_data()
 
-# 세션 상태: 사용자의 맞춤 조합 바구니 (경기 번호 목록)
-if "cart_seqs" not in st.session_state:
-    st.session_state["cart_seqs"] = []
+
+def generate_bet_slip_text(picks, combined_odds, combined_prob_pct=None, combined_ev_pct=None, stake=None):
+    """
+    베트맨 프로토 마킹용 텍스트 슬립 생성 (카카오톡/메모장 복사용)
+    """
+    lines = [
+        "📋 [베트맨 프로토 승부식 베팅 슬립]",
+        "────────────────────────────────────────"
+    ]
+    for idx, p in enumerate(picks, 1):
+        m_seq = p.get("match_seq", "")
+        league = p.get("league", "")
+        home = p.get("home_team", "")
+        away = p.get("away_team", "")
+        cat = p.get("category_label", p.get("game_type", "승무패"))
+        pick_name = p.get("selection_name", "")
+        odds = p.get("odds", 0.0)
+        prob = p.get("prob", 0.0)
+        lines.append(f"[{idx}] 경기 #{m_seq} ({league})")
+        lines.append(f"    {home} vs {away}")
+        lines.append(f"    👉 픽: [{cat}] {pick_name} | 배당: {odds}배 (AI 승률 {prob*100:.1f}%)")
+        lines.append("")
+        
+    lines.append("────────────────────────────────────────")
+    summary = f"📊 총 {len(picks)}폴더 | 결합 배당률: {combined_odds}배"
+    if combined_prob_pct:
+        summary += f" | AI 승률: {combined_prob_pct}"
+    if combined_ev_pct:
+        summary += f" | 기대가치: {combined_ev_pct}"
+    lines.append(summary)
+    
+    if stake and stake > 0:
+        payout = int(stake * combined_odds)
+        net_profit = payout - stake
+        lines.append(f"💰 베팅금: {stake:,}원 ➔ 예상 환급금: {payout:,}원 (순수익: {net_profit:+,}원)")
+        
+    lines.append("────────────────────────────────────────")
+    return "\n".join(lines)
+
+
+# 세션 상태: 사용자의 맞춤 조합 바구니 (경기 번호 -> 선택 마킹 'home_win' | 'draw' | 'away_win' | 'best')
+if "cart_picks" not in st.session_state:
+    st.session_state["cart_picks"] = {}
+
+# 하위 호환성 유지: cart_seqs
+st.session_state["cart_seqs"] = list(st.session_state["cart_picks"].keys())
+
+pred_map = {str(m["match_seq"]): m for m in predictions}
+current_cart_picks = [
+    get_pick_item(pred_map[seq], selection=st.session_state["cart_picks"][seq])
+    for seq in st.session_state["cart_picks"]
+    if seq in pred_map
+]
 
 # 타이틀 헤더
 st.title("⚽ 스포츠 승부 예측 & 가치 픽 (Value Bet) 대시보드")
 st.caption("베트맨(Betman) 프로토 배당률 및 Dixon-Coles 통계 모델 기반 기대가치(EV) 실시간 분석")
 
-# 상단 탭 3개 구성
-tab1, tab2, tab3 = st.tabs([
+# 상단 탭 4개 구성
+tab1, tab2, tab3, tab4 = st.tabs([
     "🔥 이번 회차 실시간 베트맨 경기",
     "🎯 AI 추천 2~3폴더 조합 & 베팅 바구니",
-    "📊 AI 실전 적중률 & 수익률(ROI) 통계"
+    "🏁 지난 경기 결과 vs AI 예측 채점 (실전 검증)",
+    "📊 AI 누적 적중률 & 수익률(ROI) 통계"
 ])
 
 # ==============================================================================
@@ -140,7 +193,7 @@ with tab1:
         with c3:
             st.metric("최고 기대가치", highest_ev_match["evaluation"]["best_ev_pct"], f"{highest_ev_match['home_team']} vs {highest_ev_match['away_team']}")
         with c4:
-            st.metric("장바구니 담긴 경기", f"{len(st.session_state['cart_seqs'])} 개", "Tab 2에서 조합 확인")
+            st.metric("투표용지 담긴 경기", f"{len(current_cart_picks)} 개", "사이드바 및 Tab 2에서 확인")
 
         st.divider()
 
@@ -174,6 +227,41 @@ with tab1:
         only_has_form = st.sidebar.checkbox("📊 최근 5경기 전적 있는 경기만 보기", value=False)
         show_all_details = st.sidebar.checkbox("📂 과거 5경기 스코어 상세 펼치기", value=False)
 
+        # -------------------------------------------------------------
+        # 🛒 베트맨 실시간 투표용지 사이드바 위젯 (Live Bet Slip)
+        # -------------------------------------------------------------
+        st.sidebar.divider()
+        st.sidebar.markdown(f"### 🛒 실시간 투표용지 ({len(current_cart_picks)}폴더)")
+        if not current_cart_picks:
+            st.sidebar.info("💡 경기 카드의 **[승 / 무 / 패]** 배당 버튼을 누르면 투표용지에 실시간으로 담깁니다.")
+        else:
+            s_metrics = calculate_parlay_metrics(current_cart_picks)
+            if not s_metrics["valid"]:
+                st.sidebar.error(s_metrics["error"])
+            else:
+                st.sidebar.markdown(
+                    f"<div class='cart-summary-box' style='padding:12px; margin-bottom:10px;'>"
+                    f"• <b>선택 폴더:</b> <span style='color:#60a5fa; font-weight:bold;'>{s_metrics['folders']}경기</span><br>"
+                    f"• <b>합산 배당률:</b> <span style='color:#2ed573; font-size:1.25rem; font-weight:800;'>{s_metrics['combined_odds']}배</span><br>"
+                    f"• <b>AI 결합 승률:</b> {s_metrics['combined_prob_pct']}<br>"
+                    f"• <b>조합 기대가치:</b> {s_metrics['combined_ev_pct']}"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+                for cp in current_cart_picks:
+                    del_col1, del_col2 = st.sidebar.columns([4, 1])
+                    with del_col1:
+                        st.markdown(f"<span style='font-size:12px;'>#{cp['match_seq']} <b>{cp['selection_name']}</b> ({cp['odds']}배)</span>", unsafe_allow_html=True)
+                    with del_col2:
+                        if st.sidebar.button("✕", key=f"side_del_{cp['match_seq']}"):
+                            del st.session_state["cart_picks"][cp["match_seq"]]
+                            st.rerun()
+
+                st.sidebar.caption("👉 'Tab 2'에서 켈리 자금관리 및 복사 가능")
+                if st.sidebar.button("🗑️ 투표용지 비우기", key="side_clear_cart", use_container_width=True):
+                    st.session_state["cart_picks"] = {}
+                    st.rerun()
+
         filtered = predictions
         if search_query:
             filtered = [m for m in filtered if search_query.lower() in m["home_team"].lower() or search_query.lower() in m["away_team"].lower()]
@@ -194,6 +282,37 @@ with tab1:
             filtered.sort(key=lambda x: x["model_probabilities"]["home_win"], reverse=True)
         elif "배당률" in sort_by:
             filtered.sort(key=lambda x: max(x["betman_odds"].values()), reverse=True)
+
+        # -------------------------------------------------------------
+        # [일자별 빠른 선택 Pills]
+        # -------------------------------------------------------------
+        date_map = {}
+        for m in predictions:
+            mt = m.get("match_time", "")
+            d_match = re.search(r"(\d{2}\.\d{2}\.\d{2})\s*(\([가-힣a-zA-Z]+\))?", mt)
+            if d_match:
+                d_key = d_match.group(1)
+                d_day = d_match.group(2) if d_match.group(2) else ""
+                label = f"{d_key} {d_day}".strip()
+                if d_key not in date_map:
+                    date_map[d_key] = label
+
+        sorted_dates = sorted(date_map.keys())
+        today_str = datetime.now().strftime("%y.%m.%d")
+
+        date_options = ["전체 일자"]
+        for d in sorted_dates:
+            d_label = date_map[d]
+            if d == today_str:
+                d_label = f"⚡ 오늘 ({d_label})"
+            date_options.append(d_label)
+
+        selected_date_pill = st.pills("📅 일자 빠른 필터", options=date_options, default="전체 일자")
+        if selected_date_pill != "전체 일자":
+            target_search = re.search(r"\d{2}\.\d{2}\.\d{2}", selected_date_pill)
+            if target_search:
+                target_key = target_search.group(0)
+                filtered = [m for m in filtered if target_key in m.get("match_time", "")]
 
         st.subheader(f"📋 경기 분석 결과 ({len(filtered)}경기)")
 
@@ -239,15 +358,19 @@ with tab1:
                     st.markdown(f"**🎯 AI 추천:**")
                     st.markdown(f"<div class='notranslate' style='color: #2ed573; font-weight: 800; font-size: 1.02rem;'>{eval_info['best_selection_name']}</div>", unsafe_allow_html=True)
                     st.markdown(f"기대가치: **`{eval_info['best_ev_pct']}`**")
+                # 현재 슬립에 담긴 픽 확인
+                current_pick_sel = st.session_state["cart_picks"].get(m_seq)
+
                 with head_col3:
-                    # 바구니 담기 토글 버튼
-                    in_cart = m_seq in st.session_state["cart_seqs"]
-                    btn_label = "✅ 담김" if in_cart else "🛒 담기"
-                    if st.button(btn_label, key=f"cart_btn_{m_seq}"):
-                        if in_cart:
-                            st.session_state["cart_seqs"].remove(m_seq)
+                    # AI 추천 픽 토글 담기 버튼
+                    is_ai_in_cart = (current_pick_sel in ("best", eval_info["best_selection"]))
+                    ai_btn_label = "✅ AI추천 담김" if is_ai_in_cart else "⚡ AI추천 담기"
+                    ai_btn_type = "primary" if is_ai_in_cart else "secondary"
+                    if st.button(ai_btn_label, key=f"cart_ai_btn_{m_seq}", type=ai_btn_type, use_container_width=True):
+                        if is_ai_in_cart:
+                            del st.session_state["cart_picks"][m_seq]
                         else:
-                            st.session_state["cart_seqs"].append(m_seq)
+                            st.session_state["cart_picks"][m_seq] = eval_info["best_selection"]
                         st.rerun()
 
                 # 각 선택지별 라벨 및 배당/확률
@@ -255,21 +378,51 @@ with tab1:
                 label_d = sel_labels.get("draw", "무승부")
                 label_a = sel_labels.get("away_win", f"{m['away_team']} 승")
 
+                # 베트맨 승 / 무 / 패 실시간 마킹 버튼 영역
                 col_h, col_d, col_a = st.columns(3)
                 with col_h:
-                    st.markdown(f"<div class='notranslate'><b>{label_h}</b></div>", unsafe_allow_html=True)
-                    st.write(f"배당: **{odds['home_win']}** 배 | AI: **{probs['home_win']*100:.1f}%**")
+                    is_h = (current_pick_sel == "home_win")
+                    btn_h_txt = f"{'✅ ' if is_h else ''}🏠 {label_h}  [{odds['home_win']}배]"
+                    h_type = "primary" if is_h else "secondary"
+                    if st.button(btn_h_txt, key=f"btn_h_{m_seq}", type=h_type, use_container_width=True):
+                        if is_h:
+                            del st.session_state["cart_picks"][m_seq]
+                        else:
+                            st.session_state["cart_picks"][m_seq] = "home_win"
+                        st.rerun()
+                    ev_h = ((probs['home_win'] * odds['home_win']) - 1) * 100 if odds['home_win'] > 1.0 else 0
+                    st.caption(f"AI: **{probs['home_win']*100:.1f}%** | EV: **{ev_h:+.1f}%**")
                     st.progress(probs['home_win'])
+
                 with col_d:
                     if odds['draw'] > 0:
-                        st.markdown(f"<div class='notranslate'><b>{label_d}</b></div>", unsafe_allow_html=True)
-                        st.write(f"배당: **{odds['draw']}** 배 | AI: **{probs['draw']*100:.1f}%**")
+                        is_d = (current_pick_sel == "draw")
+                        btn_d_txt = f"{'✅ ' if is_d else ''}🤝 {label_d}  [{odds['draw']}배]"
+                        d_type = "primary" if is_d else "secondary"
+                        if st.button(btn_d_txt, key=f"btn_d_{m_seq}", type=d_type, use_container_width=True):
+                            if is_d:
+                                del st.session_state["cart_picks"][m_seq]
+                            else:
+                                st.session_state["cart_picks"][m_seq] = "draw"
+                            st.rerun()
+                        ev_d = ((probs['draw'] * odds['draw']) - 1) * 100 if odds['draw'] > 1.0 else 0
+                        st.caption(f"AI: **{probs['draw']*100:.1f}%** | EV: **{ev_d:+.1f}%**")
                         st.progress(probs['draw'])
                     else:
                         st.caption("무승부 없음 (2지선다 게임)")
+
                 with col_a:
-                    st.markdown(f"<div class='notranslate'><b>{label_a}</b></div>", unsafe_allow_html=True)
-                    st.write(f"배당: **{odds['away_win']}** 배 | AI: **{probs['away_win']*100:.1f}%**")
+                    is_a = (current_pick_sel == "away_win")
+                    btn_a_txt = f"{'✅ ' if is_a else ''}✈️ {label_a}  [{odds['away_win']}배]"
+                    a_type = "primary" if is_a else "secondary"
+                    if st.button(btn_a_txt, key=f"btn_a_{m_seq}", type=a_type, use_container_width=True):
+                        if is_a:
+                            del st.session_state["cart_picks"][m_seq]
+                        else:
+                            st.session_state["cart_picks"][m_seq] = "away_win"
+                        st.rerun()
+                    ev_a = ((probs['away_win'] * odds['away_win']) - 1) * 100 if odds['away_win'] > 1.0 else 0
+                    st.caption(f"AI: **{probs['away_win']*100:.1f}%** | EV: **{ev_a:+.1f}%**")
                     st.progress(probs['away_win'])
 
                 # 스코어 및 부가 지표
@@ -482,16 +635,43 @@ with tab2:
                 btn_cols = st.columns(3)
                 with btn_cols[0]:
                     if st.button("📥 티켓 1 경기들을 바구니에 담기", use_container_width=True):
-                        st.session_state["cart_seqs"] = [b1["match_seq"], b2["match_seq"], wm["match_seq"]]
+                        st.session_state["cart_picks"] = {
+                            str(b1["match_seq"]): b1.get("chosen_selection", "home_win"),
+                            str(b2["match_seq"]): b2.get("chosen_selection", "home_win"),
+                            str(wm["match_seq"]): "home_win"
+                        }
                         st.rerun()
                 with btn_cols[1]:
                     if st.button("📥 티켓 2 경기들을 바구니에 담기", use_container_width=True):
-                        st.session_state["cart_seqs"] = [b1["match_seq"], b2["match_seq"], wm["match_seq"]]
+                        st.session_state["cart_picks"] = {
+                            str(b1["match_seq"]): b1.get("chosen_selection", "home_win"),
+                            str(b2["match_seq"]): b2.get("chosen_selection", "home_win"),
+                            str(wm["match_seq"]): "draw"
+                        }
                         st.rerun()
                 with btn_cols[2]:
                     if st.button("📥 티켓 3 경기들을 바구니에 담기", use_container_width=True):
-                        st.session_state["cart_seqs"] = [b1["match_seq"], b2["match_seq"], wm["match_seq"]]
+                        st.session_state["cart_picks"] = {
+                            str(b1["match_seq"]): b1.get("chosen_selection", "home_win"),
+                            str(b2["match_seq"]): b2.get("chosen_selection", "home_win"),
+                            str(wm["match_seq"]): "away_win"
+                        }
                         st.rerun()
+
+                with st.expander("📋 헷징 3장 티켓 전체 마킹 슬립 복사 (클릭하여 펼치기)", expanded=False):
+                    wheel_slip_lines = [
+                        "🛡️ [고정 축 + 변수 헷징 3장 티켓 마킹 슬립]",
+                        f"🔒 고정 축 2경기: #{b1['match_seq']} [{b1['league']}] {b1['home_team']} vs {b1['away_team']} ({b1['pick']}) | #{b2['match_seq']} [{b2['league']}] {b2['home_team']} vs {b2['away_team']} ({b2['pick']})",
+                        f"🎲 변수 마킹 경기: #{wm['match_seq']} [{wm['league']}] {wm['home_team']} vs {wm['away_team']}",
+                        "────────────────────────────────────────",
+                        f"🎫 티켓 1 (홈승 방어): [축 2경기] + {wm['home_team']} 승 ({wm['odds_home']}배) ➔ 합산 {t1_odds}배 (환급: {t1_ret:,}원 | 순익: {t1_prof:+,}원)",
+                        f"🎫 티켓 2 (무승부 잭팟): [축 2경기] + 무승부 ({wm['odds_draw']}배) ➔ 합산 {t2_odds}배 (환급: {t2_ret:,}원 | 순익: {t2_prof:+,}원)",
+                        f"🎫 티켓 3 (역배승 방어): [축 2경기] + {wm['away_team']} 승 ({wm['odds_away']}배) ➔ 합산 {t3_odds}배 (환급: {t3_ret:,}원 | 순익: {t3_prof:+,}원)",
+                        "────────────────────────────────────────",
+                        f"💰 티켓당 {w_stake:,}원 베팅 (총 투자 {total_w_stake:,}원)",
+                        f"✨ 축 2경기(승률 {bank_prob_pct}) 적중 시 최소 {min(t1_prof, t2_prof, t3_prof):+,}원 확정 순이익!"
+                    ]
+                    st.code("\n".join(wheel_slip_lines), language="text")
         else:
             st.info(f"💡 {wheel_data.get('error', '현재 회차에서 조건에 맞는 축 또는 변수 경기를 찾지 못했습니다.')}")
 
@@ -530,8 +710,7 @@ with tab2:
                 with col_btn:
                     if st.button("📥 바구니 담기", key=f"copy_preset_{key}"):
                         for p in combo["picks"]:
-                            if p["match_seq"] not in st.session_state["cart_seqs"]:
-                                st.session_state["cart_seqs"].append(p["match_seq"])
+                            st.session_state["cart_picks"][str(p["match_seq"])] = p.get("chosen_selection", "best")
                         st.rerun()
 
                 # 포함된 경기 세부 내역 테이블
@@ -551,6 +730,15 @@ with tab2:
                 df_p = pd.DataFrame(rows)
                 st.dataframe(df_p, use_container_width=True, hide_index=True)
 
+                with st.expander(f"📋 {title} 마킹 슬립 복사", expanded=False):
+                    preset_slip = generate_bet_slip_text(
+                        combo["picks"],
+                        combo["combined_odds"],
+                        combo["combined_prob_pct"],
+                        combo["combined_ev_pct"]
+                    )
+                    st.code(preset_slip, language="text")
+
         st.divider()
 
         # -------------------------------------------------------------
@@ -563,19 +751,23 @@ with tab2:
         cb_col1, cb_col2 = st.columns([4, 1])
         with cb_col2:
             if st.button("🗑️ 바구니 비우기", use_container_width=True):
+                st.session_state["cart_picks"] = {}
                 st.session_state["cart_seqs"] = []
                 st.rerun()
 
         # 현재 담긴 경기 객체 추출
         pred_map = {str(m["match_seq"]): m for m in predictions}
-        cart_matches = [pred_map[seq] for seq in st.session_state["cart_seqs"] if seq in pred_map]
-        cart_picks = [get_pick_item(m) for m in cart_matches]
+        cart_picks = [
+            get_pick_item(pred_map[seq], selection=st.session_state["cart_picks"][seq])
+            for seq in st.session_state["cart_picks"]
+            if seq in pred_map
+        ]
 
         # 바구니 조합 지표 계산
         metrics = calculate_parlay_metrics(cart_picks)
 
         if not cart_picks:
-            st.info("💡 아직 바구니에 담긴 경기가 없습니다. 위 프리셋의 [📥 바구니 담기] 버튼이나 '실시간 베트맨 경기' 탭에서 [🛒 담기]를 눌러보세요.")
+            st.info("💡 아직 바구니에 담긴 경기가 없습니다. 위 프리셋의 [📥 바구니 담기] 버튼이나 '실시간 베트맨 경기' 탭에서 [승/무/패] 배당 버튼을 눌러보세요.")
         else:
             # 베트맨 규정 검증 메시지
             if not metrics["valid"]:
@@ -611,47 +803,279 @@ with tab2:
                         st.write(f"**{p['odds']}배** ({p['prob']*100:.1f}%)")
                     with r5:
                         if st.button("❌", key=f"del_cart_{p['match_seq']}"):
-                            st.session_state["cart_seqs"].remove(p["match_seq"])
+                            if p["match_seq"] in st.session_state["cart_picks"]:
+                                del st.session_state["cart_picks"][p["match_seq"]]
+                            st.rerun()
+
+                # -------------------------------------------------------------
+                # 📐 켈리 기준(Kelly Criterion) 자금관리 계산기
+                # -------------------------------------------------------------
+                st.markdown("##### 📐 켈리 기준(Kelly Criterion) 자금관리 계산기")
+                st.caption("수학적으로 증명된 켈리 베팅 공식에 따라, 시드머니 규모와 기대가치(EV)에 맞는 최적 투자 금액을 산출합니다.")
+
+                k_col1, k_col2, k_col3 = st.columns([1.5, 1.5, 1.2])
+                with k_col1:
+                    total_bankroll = st.number_input(
+                        "💼 총 보유 시드머니 (Bankroll, 원)",
+                        min_value=10000,
+                        max_value=100000000,
+                        value=st.session_state.get("user_bankroll", 200000),
+                        step=10000,
+                        key="user_bankroll_input"
+                    )
+                    st.session_state["user_bankroll"] = total_bankroll
+
+                with k_col2:
+                    kelly_mode = st.selectbox(
+                        "🛡️ 켈리 운용 전략 (위험 선호도)",
+                        [
+                            "1/4 켈리 (0.25x) - 안정 지향 / MDD 최소화 (권장 ⭐)",
+                            "1/2 켈리 (0.50x) - 밸런스 퀀트 베팅",
+                            "풀 켈리 (1.00x) - 공격형 자산 증식",
+                            "1/8 켈리 (0.125x) - 초보수적 소액 테스트"
+                        ],
+                        index=0
+                    )
+                    multiplier = 0.25
+                    if "1/2" in kelly_mode:
+                        multiplier = 0.50
+                    elif "풀" in kelly_mode:
+                        multiplier = 1.00
+                    elif "1/8" in kelly_mode:
+                        multiplier = 0.125
+
+                with k_col3:
+                    c_odds = metrics["combined_odds"]
+                    c_prob = metrics["combined_prob"]
+                    c_ev = metrics["combined_ev"]
+                    
+                    raw_kelly = 0.0
+                    if c_odds > 1.0 and c_ev > 0:
+                        b_val = c_odds - 1.0
+                        q_val = 1.0 - c_prob
+                        raw_kelly = max(0.0, (c_prob * b_val - q_val) / b_val)
+                        
+                    applied_kelly = raw_kelly * multiplier
+                    rec_stake = int(total_bankroll * applied_kelly)
+                    rec_stake_proto = max(1000, (rec_stake // 1000) * 1000) if rec_stake >= 1000 else 1000
+                    rec_stake_proto = min(100000, rec_stake_proto)
+                    
+                    st.metric("추천 베팅 비중", f"{applied_kelly * 100:.2f}%", f"이론 100%: {raw_kelly * 100:.1f}%")
+
+                with st.container(border=True):
+                    res_k1, res_k2, res_k3 = st.columns([1.5, 1.5, 1])
+                    with res_k1:
+                        st.markdown(f"**💡 수학적 권장 베팅액:** <span style='font-size:1.25rem; color:#2ed573; font-weight:800;'>{rec_stake_proto:,} 원</span>", unsafe_allow_html=True)
+                        st.caption(f"시드머니({total_bankroll:,}원)의 {rec_stake_proto/total_bankroll*100:.1f}% (베트맨 1,000원 단위 반영)")
+                    with res_k2:
+                        est_ret = int(rec_stake_proto * c_odds)
+                        est_pnl = est_ret - rec_stake_proto
+                        st.markdown(f"**적중 시 순익:** <span style='color:#60a5fa; font-weight:700;'>{est_pnl:+,} 원</span> (환급: {est_ret:,}원)", unsafe_allow_html=True)
+                        st.caption(f"수학적 기대 순익(EV): {int(rec_stake_proto * c_ev):+,}원")
+                    with res_k3:
+                        if st.button("👉 권장 금액 적용", use_container_width=True):
+                            st.session_state["applied_stake"] = rec_stake_proto
                             st.rerun()
 
                 # 모의 베팅 환급금 계산기
                 st.markdown("##### 💰 예상 환급금 & 기대 순익 시뮬레이터")
-                stake_krw = st.number_input("베팅 희망 금액 (원)", min_value=1000, max_value=100000, value=10000, step=1000)
+                default_val = st.session_state.get("applied_stake", 10000)
+                stake_krw = st.number_input("베팅 희망 금액 (원)", min_value=1000, max_value=100000, value=default_val, step=1000, key="cart_stake_input")
                 
                 exp_return = int(stake_krw * metrics["combined_odds"])
                 exp_profit = int(stake_krw * metrics["combined_ev"])
                 
                 res_col1, res_col2 = st.columns(2)
                 with res_col1:
-                    st.markdown(f"• 적중 시 예상 환급금: **`{exp_return:,} 원`** (수익: {exp_return - stake_krw:+,}원)")
+                    st.markdown(f"• 적중 시 예상 환급금: **`{exp_return:,} 원`** (순수익: {exp_return - stake_krw:+,}원)")
                 with res_col2:
                     st.markdown(f"• 수학적 기대 이익(EV): **`{exp_profit:+,} 원`**")
 
+                # 바구니 전체 베팅 슬립 복사
+                st.markdown("##### 📋 마킹 슬립 원클릭 복사 (카톡/베트맨 입력용)")
+                cart_slip = generate_bet_slip_text(
+                    cart_picks,
+                    metrics["combined_odds"],
+                    metrics["combined_prob_pct"],
+                    metrics["combined_ev_pct"],
+                    stake=stake_krw
+                )
+                st.code(cart_slip, language="text")
+
 
 # ==============================================================================
-# TAB 3: AI 실전 적중률 & 모의 베팅 수익률(ROI) 통계
+# TAB 3: 🏁 지난 경기 결과 vs AI 예측 채점 (실전 검증)
 # ==============================================================================
 with tab3:
     col_t_title, col_t_btn = st.columns([3, 1.2])
     with col_t_title:
-        st.subheader("📈 베트맨 공식 경기 결과 기반 AI 실전 적중률 & ROI")
-        source_txt = stats.get("source", "베트맨 공식 전수 채점")
-        st.caption(f"📊 {source_txt} | 갱신 시각: {stats.get('updated_at', '')} (1경기당 10,000원 베팅 기준)")
+        st.subheader("🏁 지난 베트맨 실제 경기 결과 vs AI 예측 실전 대조")
+        st.caption("베트맨 공식 종료 경기들의 실제 최종 스코어 및 결과와 AI의 사전 예측 승률, 추천 픽(GRADE S/A/B), 적중 여부를 1:1로 비교 검증합니다.")
     with col_t_btn:
         st.write("")
-        if st.button("🔄 실시간 결과 재채점", key="re_evaluate_btn", use_container_width=True):
+        if st.button("🔄 실시간 결과 재채점", key="re_evaluate_btn_tab3", use_container_width=True):
             with st.spinner("베트맨 최근 경기 결과 전수 채점 중..."):
                 try:
                     from tracker.result_evaluator import evaluate_betman_results
                     evaluate_betman_results()
                     st.cache_data.clear()
-                    st.success("채점 완료! 통계가 최신으로 갱신되었습니다.")
+                    st.success("채점 완료! 최신 경기 결과와 적중률이 갱신되었습니다.")
                     st.rerun()
                 except Exception as ex:
                     st.error(f"채점 오류: {ex}")
 
+    recent_picks = stats.get("recent_evaluated_picks", [])
+    if not recent_picks:
+        st.info("💡 아직 채점된 지난 경기 데이터가 없습니다. 상단의 '실시간 결과 재채점' 버튼을 눌러주세요.")
+    else:
+        # 1. 상단 KPI 카드
+        total_hist = len(recent_picks)
+        hit_hist = sum(1 for p in recent_picks if p.get("is_hit"))
+        hit_rate = (hit_hist / total_hist * 100) if total_hist > 0 else 0.0
+        total_pnl = sum(p.get("net_pnl_num", 0) for p in recent_picks)
+        s_picks = [p for p in recent_picks if "S (" in p.get("grade", "")]
+        s_hits = sum(1 for p in s_picks if p.get("is_hit"))
+        s_rate = (s_hits / len(s_picks) * 100) if s_picks else 0.0
+
+        hc1, hc2, hc3, hc4 = st.columns(4)
+        with hc1:
+            st.metric("총 종료 분석 경기", f"{total_hist:,} 건")
+        with hc2:
+            st.metric("AI 추천 적중 건수", f"{hit_hist:,} 건", f"전체 적중률 {hit_rate:.1f}%")
+        with hc3:
+            st.metric("👑 GRADE S 적중률", f"{s_rate:.1f}%", f"{s_hits}/{len(s_picks)} 적중 (주력)")
+        with hc4:
+            st.metric("실전 가상 총 손익", f"{total_pnl:+,.0f} 원", f"경기당 1만원 베팅 기준")
+
+        st.divider()
+
+        # 2. 인터랙티브 다차원 필터 바
+        with st.container(border=True):
+            st.markdown("##### 🔍 지난 경기 대조 필터 & 검색")
+            f_col1, f_col2, f_col3, f_col4 = st.columns([1.5, 1.5, 1.5, 2])
+            
+            with f_col1:
+                avail_rounds = sorted(list(set(str(p.get("round", "")) for p in recent_picks)), reverse=True)
+                round_filter = st.selectbox("📅 발매 회차 선택", ["전체 회차"] + [f"{r}회차" for r in avail_rounds])
+
+            with f_col2:
+                hit_filter = st.selectbox("🎯 적중 여부", ["전체 보기", "✅ 적중한 경기만", "❌ 미적중 경기만"])
+
+            with f_col3:
+                grade_filter = st.selectbox("👑 AI 추천 등급", ["전체 등급", "GRADE S (초고승률)", "GRADE A (밸런스 가치)", "GRADE B (고배당)"])
+
+            with f_col4:
+                team_search = st.text_input("🔎 팀 이름 검색", placeholder="예: 브리즈번, 플라멩구, 릴레스트룀")
+
+            sub_f1, sub_f2 = st.columns([2, 1.5])
+            with sub_f1:
+                avail_leagues = sorted(list(set(p.get("league", "기타") for p in recent_picks if p.get("league"))))
+                league_filter = st.selectbox("🏆 리그 선택", ["전체 리그"] + avail_leagues)
+            with sub_f2:
+                view_mode = st.radio("👀 결과 표시 방식", ["📇 카드형 대조 뷰", "📊 데이터 테이블 뷰"], horizontal=True)
+
+        # 필터링 적용
+        f_picks = recent_picks
+        if round_filter != "전체 회차":
+            target_r = round_filter.replace("회차", "")
+            f_picks = [p for p in f_picks if str(p.get("round")) == target_r]
+        if hit_filter == "✅ 적중한 경기만":
+            f_picks = [p for p in f_picks if p.get("is_hit")]
+        elif hit_filter == "❌ 미적중 경기만":
+            f_picks = [p for p in f_picks if not p.get("is_hit")]
+        if grade_filter != "전체 등급":
+            g_tag = "S (" if "S" in grade_filter else ("A (" if "A" in grade_filter else "B (")
+            f_picks = [p for p in f_picks if g_tag in p.get("grade", "")]
+        if league_filter != "전체 리그":
+            f_picks = [p for p in f_picks if p.get("league") == league_filter]
+        if team_search:
+            q = team_search.lower()
+            f_picks = [p for p in f_picks if q in p.get("match", "").lower() or q in p.get("home_team", "").lower() or q in p.get("away_team", "").lower()]
+
+        st.subheader(f"📋 채점 경기 대조 목록 ({len(f_picks)}경기)")
+
+        if not f_picks:
+            st.info("선택하신 조건에 일치하는 지난 경기가 없습니다.")
+        elif view_mode == "📊 데이터 테이블 뷰":
+            rec_df = pd.DataFrame(f_picks)
+            cols_order = ["round", "date", "league", "match", "game_type", "score", "actual_result", "pick", "grade", "ai_prob", "odds", "is_hit", "net_pnl"]
+            existing_cols = [c for c in cols_order if c in rec_df.columns]
+            rec_df = rec_df[existing_cols]
+            rename_map = {
+                "round": "회차",
+                "date": "경기일자",
+                "league": "리그",
+                "match": "경기 대진",
+                "game_type": "유형",
+                "score": "실제 스코어",
+                "actual_result": "실제 결과",
+                "pick": "AI 추천 픽",
+                "grade": "등급",
+                "ai_prob": "AI 승률(%)",
+                "odds": "배당률",
+                "is_hit": "적중 여부",
+                "net_pnl": "가상 손익"
+            }
+            rec_df = rec_df.rename(columns=rename_map)
+            if "적중 여부" in rec_df.columns:
+                rec_df["적중 여부"] = rec_df["적중 여부"].apply(lambda x: "✅ 적중" if x else "❌ 미적중")
+            st.dataframe(rec_df, use_container_width=True, hide_index=True)
+        else:
+            for p in f_picks[:60]:
+                is_win = p.get("is_hit", False)
+                status_badge = "<span style='background:#2ed573; color:white; padding:4px 10px; border-radius:6px; font-weight:800; font-size:13px;'>✅ 적중!</span>" if is_win else "<span style='background:#ff4757; color:white; padding:4px 10px; border-radius:6px; font-weight:800; font-size:13px;'>❌ 미적중</span>"
+
+                grade_raw = p.get("grade", "")
+                if "S (" in grade_raw:
+                    g_badge = "<span class='badge-s'>GRADE S</span>"
+                elif "A (" in grade_raw:
+                    g_badge = "<span class='badge-a'>GRADE A</span>"
+                else:
+                    g_badge = "<span class='badge-b'>GRADE B</span>"
+
+                with st.container(border=True):
+                    st.markdown(
+                        f"<div class='notranslate' style='display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;'>"
+                        f"<div><b style='font-size:1.1rem;'>[{p.get('league', '기타')}] {p.get('match')}</b> &nbsp; {g_badge} &nbsp; <span class='badge-cat'>{p.get('game_type', '승무패')}</span></div>"
+                        f"<div>{status_badge}</div>"
+                        f"</div>"
+                        f"<div class='match-meta-bar notranslate' style='margin-bottom:12px; font-size:12px;'>"
+                        f"📅 {p.get('date')} &nbsp;|&nbsp; 🔢 베트맨 경기번호: #{p.get('match_seq')} &nbsp;|&nbsp; 🏷️ {p.get('round')}회차"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
+
+                    c_res, c_ai, c_pnl = st.columns([1.5, 2.2, 1.5])
+                    with c_res:
+                        st.markdown("**🏁 실제 경기 결과:**")
+                        st.markdown(f"<div style='font-size:1.5rem; font-weight:800; color:#f1f2f6;'>{p.get('score', '-')}</div>", unsafe_allow_html=True)
+                        st.markdown(f"판정: <b style='color:#70a1ff;'>{p.get('actual_result', '-')}</b>", unsafe_allow_html=True)
+
+                    with c_ai:
+                        st.markdown("**🧠 당시 AI 예측 & 추천:**")
+                        st.markdown(f"<div class='notranslate' style='color:#2ed573; font-weight:800; font-size:1.05rem;'>👉 {p.get('pick')}</div>", unsafe_allow_html=True)
+                        st.caption(f"배당률: **{p.get('odds')}배** | AI 승률: **{p.get('ai_prob')}%** | 기대가치: **{p.get('ev_pct')}**")
+
+                    with c_pnl:
+                        st.markdown("**💰 실전 채점 손익:**")
+                        pnl_color = "#2ed573" if is_win else "#ff4757"
+                        st.markdown(f"<div style='font-size:1.3rem; font-weight:800; color:{pnl_color};'>{p.get('net_pnl', '0원')}</div>", unsafe_allow_html=True)
+                        st.caption("10,000원 베팅 기준")
+
+            if len(f_picks) > 60:
+                st.info(f"💡 전체 {len(f_picks)}경기 중 상위 60경기를 표시했습니다. 전체 경기 내역은 위의 '📊 데이터 테이블 뷰'를 선택하시면 한눈에 보실 수 있습니다.")
+
+
+# ==============================================================================
+# TAB 4: 📊 AI 누적 적중률 & 수익률(ROI) 통계
+# ==============================================================================
+with tab4:
+    st.subheader("📈 베트맨 공식 경기 결과 기반 AI 누적 적중률 & ROI 통계")
+    source_txt = stats.get("source", "베트맨 공식 전수 채점")
+    st.caption(f"📊 {source_txt} | 갱신 시각: {stats.get('updated_at', '')} (1경기당 10,000원 베팅 기준)")
+
     if not stats:
-        st.warning("⚠️ 아직 검증 통계 데이터가 없습니다. 상단의 '실시간 결과 재채점' 버튼을 눌러주세요.")
+        st.warning("⚠️ 아직 검증 통계 데이터가 없습니다. Tab 3의 '실시간 결과 재채점' 버튼을 눌러주세요.")
     else:
         sc1, sc2, sc3, sc4 = st.columns(4)
         with sc1:
@@ -709,24 +1133,3 @@ with tab3:
                 })
             r_df = pd.DataFrame(r_rows)
             st.dataframe(r_df, use_container_width=True, hide_index=True)
-
-        # 최근 평가 경기 목록 테이블
-        st.markdown("### 📝 최근 경기별 AI 추천 픽 채점 결과 (베트맨 실전)")
-        recent_picks = stats.get("recent_evaluated_picks", [])
-        if recent_picks:
-            rec_df = pd.DataFrame(recent_picks)
-            rename_map = {
-                "date": "경기일자",
-                "round": "회차",
-                "match": "경기 대진",
-                "game_type": "게임 유형",
-                "score": "실제 스코어",
-                "pick": "AI 추천 픽",
-                "odds": "배당률",
-                "is_hit": "적중 여부",
-                "net_pnl": "가상 손익"
-            }
-            rec_df = rec_df.rename(columns=rename_map)
-            if "적중 여부" in rec_df.columns:
-                rec_df["적중 여부"] = rec_df["적중 여부"].apply(lambda x: "✅ 적중" if x else "❌ 미적중")
-            st.dataframe(rec_df, use_container_width=True, hide_index=True)
