@@ -372,7 +372,7 @@ with tab1:
     # -------------------------------------------------------------
     if st.session_state["custom_step"] == 1:
         st.markdown("### 📋 STEP 01. 대상 경기 검색 및 승/무/패 다중 선택")
-        st.caption("경기마다 배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동 전개됩니다. ⭐ = AI 확률 1순위, 끝난 경기는 결과와 적중 여부(✅/❌)가 표시됩니다.")
+        st.caption("경기마다 배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동 전개됩니다. ⭐ = AI 확률 1순위(AI가 없으면 배당 1순위). AI 예상이 배당과 다르면 ⚠️로 표시되고, 끝난 경기는 배당·AI 각각의 적중 여부(✅/❌)가 나옵니다.")
 
         # 필터 컨트롤
         with st.container(border=True):
@@ -476,6 +476,17 @@ with tab1:
         if not page_matches:
             st.info("선택하신 필터 조건에 해당하는 발매 경기가 없습니다.")
 
+        def _prob(probs, k):
+            return float(probs.get(k, probs.get(k.replace("_win", ""), 0.0)) or 0.0) if probs else 0.0
+
+        def _mark(pick, actual):
+            if not pick or not actual:
+                return ""
+            ok = pick == actual
+            return f"<span style='color:{'#10b981' if ok else '#ef4444'}'>{'✅' if ok else '❌'}</span>"
+
+        cap = "<div style='font-size:11px;color:#94a3b8'>{}</div>"
+
         for m in page_matches:
             seq = str(m.get("match_seq", ""))
             odds = m.get("betman_odds", {})
@@ -485,24 +496,26 @@ with tab1:
                 continue
             log = pre_log.get(seq)
             res = find_result(m, results_idx, cur_gm_ts)
-            is_ai = m.get("prob_source") in AI_SOURCES
-            # 끝난 경기는 경기 전 기록으로만 AI 예상을 보여준다 (경기 후 재계산 값은 결과 정보가 섞일 수 있음)
+
+            # 배당 예상: 경기 전에 확정된 배당(마진 제거) 기준 → 사후 정보 없음
+            mk_probs = (log or {}).get("market_probs") or m.get("market_implied_probs")
+            mk_k, mk_p = top_pick(mk_probs, opts)
+            # AI 예상: 축구 승무패만. 끝난 경기는 경기 전 고정 기록으로만 (경기 후 재계산 값은 결과가 섞일 수 있음)
             if res is not None:
-                # 기록이 없으면 경기 전에 확정된 배당 기준 1순위로 대신 표시 (배당은 사후 정보가 아님)
-                ai_probs = log.get("model_probs") if log else m.get("market_implied_probs")
-                src = "AI" if log else "배당"
+                ai_probs = log.get("model_probs") if log else None
             else:
-                ai_probs = m.get("blended_probabilities") or m.get("market_implied_probs")
-                src = "AI" if is_ai else "배당"
+                ai_probs = m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
             ai_k, ai_p = top_pick(ai_probs, opts)
 
             cur = st.session_state["selections"].get(seq, {})
             default = [k for k in opts if cur.get(SEL_KEY[k])]
-            disp = {k: f"{'⭐' if k == ai_k else ''}{labels[k]} {float(odds[k]):.2f}" for k in opts}
+            star_k = ai_k or mk_k
+            disp = {k: f"{'⭐' if k == star_k else ''}{labels[k]} {float(odds[k]):.2f}" for k in opts}
             single = " · ⚡단통" if m.get("is_single") else ""
+            actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
 
             with st.container(border=True):
-                c1, c2, c3, c4 = st.columns([3.0, 3.6, 0.9, 1.5], vertical_alignment="center")
+                c1, c2, c3, c4, c5, c6 = st.columns([2.8, 3.0, 1.1, 1.4, 0.9, 1.3], vertical_alignment="center")
                 with c1:
                     st.markdown(
                         f"<div style='font-size:12px;color:#94a3b8'>#{seq} · {m.get('match_time', '')} · {m.get('league', '')} · "
@@ -514,33 +527,35 @@ with tab1:
                         f"선택 #{seq}", options=opts, format_func=lambda k, d=disp: d[k], selection_mode="multi",
                         default=default, key=f"pick_{seq}_{st.session_state['editor_version']}",
                         label_visibility="collapsed", disabled=res is not None)
-                    # 예상은 배당 버튼 바로 아래
-                    hint = []
-                    if ai_k:
-                        hint.append(f"{src} 예상 <b>{labels[ai_k]}</b> {ai_p * 100:.0f}%")
                     ev = m.get("evaluation", {})
                     if res is None and ev.get("is_recommended"):
-                        hint.append(f"🔥 가치 픽 {ev.get('best_ev_pct', '')}")
-                    if hint:
-                        st.markdown("<div style='font-size:12px;color:#cbd5e1;margin-top:-6px'>" + " · ".join(hint) + "</div>",
+                        st.markdown(f"<div style='font-size:12px;margin-top:-6px'>🔥 가치 픽 {ev.get('best_ev_pct', '')}</div>",
                                     unsafe_allow_html=True)
-
-                cap = "<div style='font-size:11px;color:#94a3b8'>{}</div>"
-                actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
                 with c3:
+                    body = f"<b>{labels[mk_k]}</b> {mk_p * 100:.0f}%" if mk_k else "-"
+                    st.markdown(cap.format("배당 예상") + f"<div style='font-size:14px'>{body}</div>", unsafe_allow_html=True)
+                with c4:
+                    if ai_k and ai_k == mk_k:
+                        delta = (ai_p - _prob(mk_probs, ai_k)) * 100
+                        arrow = "▲" if delta >= 0.5 else ("▼" if delta <= -0.5 else "")
+                        body = f"<b>{labels[ai_k]}</b> {ai_p * 100:.0f}% <span style='font-size:11px;color:#94a3b8'>{arrow}{abs(delta):.0f}</span>" if arrow \
+                            else f"<b>{labels[ai_k]}</b> {ai_p * 100:.0f}%"
+                    elif ai_k:
+                        body = f"<span style='color:#f59e0b'>⚠️ <b>{labels[ai_k]}</b> {ai_p * 100:.0f}% 다름</span>"
+                    elif res is not None and m.get("game_type") == "축구 승무패":
+                        body = "<span style='color:#94a3b8;font-size:12px'>경기 전 기록 없음</span>"
+                    else:
+                        body = "<span style='color:#94a3b8'>-</span>"
+                    st.markdown(cap.format("AI 예상") + f"<div style='font-size:14px'>{body}</div>", unsafe_allow_html=True)
+                with c5:
                     score = res.get("score", "") if res is not None else "-"
-                    note = " (핸디 적용)" if res is not None and ("핸디캡" in str(m.get("category", ""))) else ""
+                    note = " (핸디)" if res is not None and "핸디캡" in str(m.get("category", "")) else ""
                     st.markdown(cap.format("점수" + note) + f"<div style='font-size:16px;font-weight:700'>{score}</div>",
                                 unsafe_allow_html=True)
-                with c4:
+                with c6:
                     if actual:
-                        if ai_k:
-                            ok = ai_k == actual
-                            color = "#10b981" if ok else "#ef4444"
-                            mark = f" <span style='color:{color}'>{'✅ 적중' if ok else '❌ 실패'}</span>"
-                        else:
-                            mark = ""
-                        body = f"<div style='font-size:15px'><b>{labels.get(actual, '?')}</b>{mark}</div>"
+                        marks = f"배당 {_mark(mk_k, actual)}" + (f" · AI {_mark(ai_k, actual)}" if ai_k else "")
+                        body = f"<div style='font-size:15px'><b>{labels.get(actual, '?')}</b></div><div style='font-size:12px'>{marks}</div>"
                     else:
                         body = "<div style='font-size:13px;color:#94a3b8'>진행 전</div>"
                     st.markdown(cap.format("결과") + body, unsafe_allow_html=True)
