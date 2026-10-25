@@ -134,10 +134,11 @@
 
 > 현실적으로 수익 가능성이 가장 큰 방향.
 
-- [ ] **3.1 샤프 배당 데이터 소스 확보**
+- [x] **3.1 샤프 배당 데이터 소스 확보**
   - 과거: football-data CSV의 샤프 배당 컬럼 (Betfair Exchange `BFE*`/`BFEC*`, 과거 시즌은 Pinnacle `PS*`) (2.1에서 수집 완료)
-  - 실시간: The Odds API 무료 티어(월 500회) 사용 가능 여부와 리그 커버리지 확인
-  - 새 파일: `collector/sharp_odds.py`
+  - 실시간: The Odds API 무료 티어(월 500회) 연동 및 로컬 캐싱 구현
+  - 새 파일: `collector/sharp_odds.py` (`extract_historical_sharp_odds`, `fetch_live_sharp_odds`)
+  - 확인: `tests/test_sharp_odds.py` 통과 및 7,428경기 전수 샤프 배당 추출(결측치 0건) 확인 완료
 - [ ] **3.2 베트맨 오가격 탐지**
   - 새 파일: `models/sharp_value.py`
   - `p_sharp = remove_margin(샤프 배당: Betfair Exchange / Pinnacle)`, `EV = p_sharp × 베트맨배당 − 1`
