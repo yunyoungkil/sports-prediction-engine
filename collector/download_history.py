@@ -107,7 +107,9 @@ def download_historical_data(target_dir: str = "data/history") -> dict:
                     "PSH", "PSD", "PSA",       # Pinnacle 배당 (오프닝 - 과거 시즌)
                     "PSCH", "PSCD", "PSCA",    # Pinnacle 배당 (마감 - 과거 시즌)
                     "BFEH", "BFED", "BFEA",    # Betfair Exchange 배당 (오프닝 - 샤프 기준선)
-                    "BFECH", "BFECD", "BFECA"  # Betfair Exchange 배당 (마감 - 샤프 기준선)
+                    "BFECH", "BFECD", "BFECA", # Betfair Exchange 배당 (마감 - 샤프 기준선)
+                    "AvgH", "AvgD", "AvgA",    # 시장 평균 배당 (시가 - Phase 5.1 피처)
+                    "MaxH", "MaxD", "MaxA"     # 시장 최고 배당 (시가 - Phase 5.1 피처)
                 ] if c in df.columns
             ]
             subset = df[keep_cols].dropna(subset=["HomeTeam", "AwayTeam", "FTHG", "FTAG"]).copy()

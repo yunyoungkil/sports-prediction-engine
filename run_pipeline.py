@@ -101,6 +101,10 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     from models.blender import MarketModelBlender
     # 튜닝 셋에서 적합된 계수(data/blender_params.json) 사용, 없으면 시장 단독
     blender = MarketModelBlender.load()
+    # [Phase 5.2] 시장 보정 모델: 검증 게이트(TEST·베트맨 실전 모두 시장보다 LL 낮음)를 통과한 경우에만 사용
+    from models.market_corrector import MarketCorrector
+    corrector = MarketCorrector.load()
+    print(f"ℹ 확률 기준: {'시장 보정 모델(Phase 5.1, 검증 중)' if corrector else '시장 단독'} (축구 일반 승무패)")
     
     # 3. 각 경기별 예측 및 기대가치 평가
     print("\n🧠 [2/3] 전 경기 AI 승률 계산 및 기대가치(EV) 분석 중...")
@@ -152,6 +156,11 @@ def run_full_pipeline(gm_ts: str = None) -> list:
 
         # [Step 3.4] 시장과 모델의 로짓 블렌딩 확률 산출
         blended_probs = blender.predict_proba(market_stats["true_probs"], model_probs)
+        prob_source = "blender"
+        # [Phase 5.2] 축구 일반 승무패는 시장 보정 모델 우선 (1X2 데이터로만 학습했으므로 다른 유형에는 쓰지 않음)
+        if corrector is not None and m.get("sport", "SC") == "SC" and category == "일반 승무패":
+            blended_probs = corrector.predict_proba(market_stats["true_probs"], form_diff=form_diff, sot_diff=sot_diff)
+            prob_source = "market_corrector"
         
         # [Step 3.4 & 3.5] 기대가치(EV) 평가 (블렌딩 확률 기준 산출 및 비축구 종목 추천 제외)
         eval_result = evaluate_match_value(
@@ -190,6 +199,7 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             "market_implied_probs": market_stats["true_probs"],
             "model_probabilities": model_probs,
             "blended_probabilities": blended_probs,
+            "prob_source": prob_source,
             "top_scores": pred.get("top_scores", []),
             "evaluation": eval_result,
             "home_form": home_form,
