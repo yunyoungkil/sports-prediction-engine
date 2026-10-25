@@ -29,6 +29,10 @@ BETMAN_VAL_ROUNDS: List[int] = [
 # 실험(Phase 2)에서 조정되어야 하며, VAL_SEASONS(2425) 결과에 맞추어 사후 조정해서는 안 됩니다.
 # -----------------------------------------------------------------------------
 MODEL_TUNING_CONSTANTS: Dict[str, Any] = {
+    # [poisson_model.py: 라인 53] Dixon-Coles 시간 감쇠 가중치 계수 (최근 경기 우선 가중)
+    # 튜닝 실험: None(0.9657) -> xi=0.001(0.9636)으로 검증 Log Loss 개선 확인
+    "DIXON_COLES_XI": 0.001,
+
     # [poisson_model.py: 라인 226] 시장 배당 기반 홈 기대 득점(λ_h) 가중치
     "HOME_ADVANTAGE_MULTIPLIER": 1.15,
 

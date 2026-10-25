@@ -47,8 +47,13 @@ TEAM_NAME_MAP = {
 
 
 class MatchPredictor:
-    def __init__(self, history_csv_path: str = "data/history/all_historical_matches.csv"):
+    def __init__(
+        self,
+        history_csv_path: str = "data/history/all_historical_matches.csv",
+        xi: float = 0.001
+    ):
         self.history_path = Path(history_csv_path)
+        self.xi = xi
         self.models = {}
         self.df = None
         self._load_and_train()
@@ -60,11 +65,21 @@ class MatchPredictor:
             self.df = pd.read_csv(self.history_path)
             self.df = self.df.dropna(subset=["HomeTeam", "AwayTeam", "FTHG", "FTAG"])
             
+            weights = None
+            if self.xi is not None and "Date" in self.df.columns:
+                try:
+                    dates = pd.to_datetime(self.df["Date"], dayfirst=True)
+                    weights = pb.models.dixon_coles_weights(dates, xi=self.xi)
+                except Exception as we:
+                    print(f"⚠️ Dixon-Coles 시간 가중치 계산 건너뜀 ({we})")
+                    weights = None
+
             model = pb.models.DixonColesGoalModel(
                 goals_home=self.df["FTHG"].astype(int),
                 goals_away=self.df["FTAG"].astype(int),
                 teams_home=self.df["HomeTeam"],
                 teams_away=self.df["AwayTeam"],
+                weights=weights
             )
             model.fit()
             self.models["global"] = model
