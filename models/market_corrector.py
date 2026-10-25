@@ -21,6 +21,7 @@ models/market_corrector.py
 import json
 import math
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -313,8 +314,10 @@ def run_experiment(feature_set: str, df: pd.DataFrame, cache: Dict[int, List], b
 
     # 2. TRAIN+TUNE으로 다시 학습 후 TEST·진행 중 시즌·베트맨 실전에서 평가
     model = MarketCorrector(feature_set, best_lam).fit(train + tune)
-    report = {"tune_ll_by_lambda": {str(k): v for k, v in tune_scores.items()}, "chosen_lambda": best_lam}
-    for name, seasons in [("test", TEST_SEASONS), ("current_season", [2627])]:
+    current_seasons = sorted(s for s in cache if s not in TRAIN_SEASONS + TUNE_SEASONS + TEST_SEASONS)
+    report = {"tune_ll_by_lambda": {str(k): v for k, v in tune_scores.items()}, "chosen_lambda": best_lam,
+              "evaluated_model_trained_on": TRAIN_SEASONS + TUNE_SEASONS}
+    for name, seasons in [("test", TEST_SEASONS), ("current_season", current_seasons)]:
         rows = rows_for(seasons)
         if rows:
             report[name] = MarketCorrector.score(rows, model.predict_rows(rows))
@@ -326,6 +329,16 @@ def run_experiment(feature_set: str, df: pd.DataFrame, cache: Dict[int, List], b
         and report.get("test", {}).get("ll_diff", 1) < 0
         and report.get("betman", {}).get("ll_diff", 1) < 0
     )
+
+    # 3. [5.3] 게이트 통과 시 실전용은 같은 λ로 지금까지의 전체 과거 데이터에 재학습 (평가 수치는 위 평가 모델 기준)
+    if report["passes_gate"]:
+        all_seasons = sorted(cache)
+        production = MarketCorrector(feature_set, best_lam).fit(rows_for(all_seasons))
+        report["production_trained_on"] = all_seasons
+        report["production_rows"] = len(rows_for(all_seasons))
+        report["trained_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        production.report = report
+        return production
     model.report = report
     return model
 
@@ -336,7 +349,7 @@ def _print_report(model: MarketCorrector) -> None:
     print("  TUNE LL by λ: " + ", ".join(f"{k}: {v:.4f}" for k, v in r["tune_ll_by_lambda"].items()))
     print(f"  β(결과별) {dict(zip(model.per_outcome, np.round(model.beta, 4)))}")
     print(f"  γ(홈) {dict(zip(model.match, np.round(model.gamma[0], 4)))}  γ(원정) {dict(zip(model.match, np.round(model.gamma[1], 4)))}  c {np.round(model.c, 4).tolist()}")
-    for key, label in [("test", f"TEST {TEST_SEASONS}"), ("current_season", "진행 중 2627"), ("betman", "베트맨 실전")]:
+    for key, label in [("test", f"TEST {TEST_SEASONS}"), ("current_season", "진행 중 시즌"), ("betman", "베트맨 실전")]:
         if key in r:
             s = r[key]
             mark = "✅" if s["ll_diff"] < 0 else "❌"
@@ -357,7 +370,7 @@ if __name__ == "__main__":
     fa = FormAnalyzer()
 
     print("⚙️ 피처 생성 중 (as_of 폼 계산 포함, 수 분 소요)...")
-    cache = {s: build_historical_rows(df_all, [s], fa) for s in TRAIN_SEASONS + TUNE_SEASONS + TEST_SEASONS + [2627]}
+    cache = {s: build_historical_rows(df_all, [s], fa) for s in sorted(int(x) for x in df_all['Season'].unique() if int(x) >= min(TRAIN_SEASONS))}
     betman_rows = build_betman_rows(load_betman_dataset(), fa)
 
     models = {fs: run_experiment(fs, df_all, cache, betman_rows) for fs in ("full", "live", "live_sharp")}

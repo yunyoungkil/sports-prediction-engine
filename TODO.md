@@ -230,9 +230,13 @@
 - [ ] **5.2 실전 연결 (게이트 방식)** — 파이프라인 연결 완료, 대시보드 표시 남음
   - [x] `run_pipeline.py`: `MarketCorrector.load()`는 live 모델이 **TEST와 베트맨 실전 모두**에서 시장보다 나을 때만 모델을 반환한다. 축구 일반 승무패에만 적용하고, 그 외 유형은 시장 단독. `predictions.json`에 `prob_source` 필드를 추가했다. (260126 회차 266경기 적용 확인)
   - [ ] 대시보드에 현재 모델 성적(시장 대비 LL 차이와 CI, 실전 ROI)과 "검증 중" 표시를 추가한다 (`data/market_corrector.json`의 `report` 사용)
-- [ ] **5.3 매주 재학습 + 성적표**
+- [ ] **5.3 매주 재학습 + 성적표** — 구현 완료, 2주 연속 자동 갱신 확인 대기
   - Actions 주 1회: 과거 데이터 갱신 → 5.1 재학습 → 새 회차 결과로 채점 → `data/model_scorecard.json` 누적
   - 확인: 2주 연속 자동 갱신
+  - [x] `models/market_corrector.py`: 게이트를 통과하면 같은 λ로 **전체 과거 데이터(현재 7,428경기)**에 다시 적합해 실전용으로 저장한다(`production_trained_on`, `trained_at`). 평가 수치는 TRAIN+TUNE 모델 기준으로 유지한다. 진행 중 시즌은 자동으로 인식한다.
+  - [x] `tracker/prediction_log.py`: 킥오프 전 AI 확률을 `data/history/prediction_log/{회차}.json`에 저장한다. 킥오프 후에는 고정해 사후 수정을 막는다. 축구 3-way만 저장한다.
+  - [x] `evaluation/scorecard.py`: 경기 전 기록만 실제 결과로 채점한다(LL vs 시장, CI, 1순위 적중률, EV>2% ROI). 300건 미만이면 "검증 중"으로 판정하고, 날짜별 history를 누적한다.
+  - [x] `run_pipeline.py`가 매 실행마다 성적표와 예측 기록을 갱신한다. `pipeline.yml`은 수요일 데이터 갱신 직후 재학습한다.
 - [ ] **5.4 베트맨 vs 해외 배당 실시간 비교** — 수집·저장·검증 스크립트 완료, 실전 표본 누적 중
   - The Odds API(무료 월 500회)로 베트맨 판매 경기의 해외 시가 배당을 회차마다 저장
   - 베트맨 배당이 해외 시장과 크게 다른 경기를 표시하고, 결과가 쌓이면 ROI 검증

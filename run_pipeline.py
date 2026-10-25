@@ -114,6 +114,14 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     except Exception as e:
         print(f"⚠️ 해외 배당 검증 리포트 갱신 실패: {e}")
 
+    # 1-5. [Phase 5.3] AI 성적표 갱신 (경기 전 예측 기록 × 실전 결과)
+    try:
+        from evaluation.scorecard import update_scorecard
+        card = update_scorecard()
+        print(f"📋 [5.3] AI 성적표: 채점 {card['graded_matches']}경기 → {card['verdict']}")
+    except Exception as e:
+        print(f"⚠️ AI 성적표 갱신 실패: {e}")
+
     # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기, 시장-모델 블렌더 준비
     predictor = MatchPredictor()
     form_analyzer = FormAnalyzer()
@@ -244,6 +252,16 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     print(f"\n💾 [3/3] 최종 예측 결과 저장 완료: {output_path} (총 {len(results)}경기)")
+
+    # 4-1. [Phase 5.3] 킥오프 전 예측을 회차별로 보존 (나중에 성적표가 이 기록만 채점)
+    if gm_ts:
+        try:
+            from tracker.prediction_log import save_prediction_log
+            version = corrector.report.get("trained_at") if corrector else None
+            log_stat = save_prediction_log(gm_ts, results, model_version=version)
+            print(f"📝 [5.3] 경기 전 예측 기록: {log_stat['updated']}경기 갱신 (이미 시작 {log_stat['frozen_or_started']}경기는 고정)")
+        except Exception as e:
+            print(f"⚠️ 예측 기록 저장 실패: {e}")
     
     # 요약 출력
     print("\n" + "=" * 60)
