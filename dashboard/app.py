@@ -143,6 +143,35 @@ def load_baseline_summary():
         return None
 
 
+@st.cache_data(ttl=60)
+def load_model_status():
+    """
+    현재 실전 확률을 만드는 AI의 검증 결과 (run_pipeline.py와 같은 우선순위).
+    베트맨 학습 보정(5.6) → 유럽 학습 보정(5.1) → 없음(시장 단독)
+    """
+    for path, name, keys in [
+        (project_root / "data" / "betman_corrector.json", "베트맨 학습 보정 AI",
+         [("test", "TEST 2026-01~10 (베트맨)"), ("holdout", "최근 실전 (베트맨)")]),
+        (project_root / "data" / "market_corrector.json", "유럽 학습 보정 AI",
+         [("test", "TEST 2025/26 (유럽)"), ("betman", "베트맨 실전")]),
+    ]:
+        if not path.exists():
+            continue
+        rep = json.loads(path.read_text(encoding="utf-8")).get("report", {})
+        if rep.get("passes_gate"):
+            return {"name": name, "trained_at": rep.get("trained_at"),
+                    "evals": [(label, rep[k]) for k, label in keys if k in rep]}
+    return None
+
+
+@st.cache_data(ttl=60)
+def load_scorecard():
+    path = project_root / "data" / "model_scorecard.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def get_grade_badge_html(grade_raw: str) -> str:
     """등급 문자열을 표준 HTML 배지로 변환합니다."""
     if "S (" in grade_raw:
@@ -959,21 +988,23 @@ with tab2:
     if not predictions:
         st.warning("⚠️ 아직 분석된 예측 데이터가 없습니다. 먼저 터미널에서 `python run_pipeline.py`를 실행해 주세요.")
     else:
-        # Phase 1 체크포인트 조치 (REVIEW R3): 모델 Log Loss가 시장 기준선보다 열세일 때 투명하게 경고 배너 표시
-        b_sum = load_baseline_summary()
-        if b_sum:
-            b_m_ll = b_sum["betman_model_ll"]
-            b_mkt_ll = b_sum["betman_market_ll"]
-            t_m_ll = b_sum["test_model_ll"]
-            t_mkt_ll = b_sum["test_market_ll"]
-            if b_m_ll > b_mkt_ll or t_m_ll > t_mkt_ll:
-                st.warning(
-                    f"⚠️ **[공지: 모델 검증 안내 — 모든 추천 픽은 '참고용'으로 제공됩니다]**\n\n"
-                    f"현재 순수 AI 통계 모델은 검증 데이터에서 **시장 배당 기준선(Market Baseline)보다 Log Loss가 높아 예측 오차가 더 큽니다**.\n\n"
-                    f"- **실전 베트맨 검증셋:** AI 모델 `{b_m_ll:.4f}` vs 시장 기준선 `{b_mkt_ll:.4f}` (시장 우위: `+{b_m_ll - b_mkt_ll:.4f}`)\n"
-                    f"- **유럽 5대 리그 OOS 검증셋:** AI 모델 `{t_m_ll:.4f}` vs 시장 기준선 `{t_mkt_ll:.4f}` (시장 우위: `+{t_m_ll - t_mkt_ll:.4f}`)\n\n"
-                    f"이에 따라 Phase 1 체크포인트 규칙에 의거, 대시보드의 모든 추천 등급(S/A/B)은 **'참고용(Reference Only)'**으로 표시됩니다."
-                )
+        # 현재 실전 AI의 검증 상태 (REVIEW R3 원칙: 시장 대비 성적을 항상 투명하게 표시)
+        status = load_model_status()
+        if status:
+            lines = []
+            for label, s in status["evals"]:
+                ci = s.get("ll_diff_ci", [None, None])
+                lines.append(f"- **{label}** ({s['samples']:,}경기): AI `{s['model_ll']:.4f}` vs 시장 `{s['market_ll']:.4f}` "
+                             f"(차이 `{s['ll_diff']:+.4f}`, 95% CI `[{ci[0]:+.4f}, {ci[1]:+.4f}]`)")
+            st.info(
+                f"🧠 **현재 확률 기준: {status['name']}** (축구 일반 승무패에 적용, 나머지 유형은 배당 기준)\n\n"
+                + "\n".join(lines) + "\n\n"
+                "과거 시험에서는 시장(배당)보다 조금 더 정확했지만 차이가 작아 **검증 중**입니다. "
+                "Log loss는 낮을수록 정확하고, 차이가 음수면 AI 우세입니다. 실전 성적은 ③ 성과 검증 탭의 공식 성적표에서 확인하세요. "
+                "모든 등급(S/A/B)은 **참고용**입니다."
+            )
+        else:
+            st.warning("⚠️ 검증을 통과한 AI 모델이 없어 **배당(시장) 확률 기준**으로 표시됩니다. 모든 등급은 참고용입니다.")
 
         # 1. 상단 이번 회차 KPI 카드
         total_matches = len(predictions)
@@ -1009,14 +1040,14 @@ with tab2:
 
             t_sort = st.radio(
                 "정렬 기준",
-                ["기대가치(EV) 높은순 (AI 추천순)", "경기 시작 시간순", "홈 승률 높은순", "배당률 높은순"],
+                ["경기 시작 시간순", "기대가치(EV) 높은순", "홈 승률 높은순", "배당률 높은순"],
                 horizontal=True,
                 key="tab2_sort"
             )
 
             c_chk1, c_chk2, c_chk3 = st.columns(3)
             with c_chk1:
-                t_only_rec = st.checkbox("🔥 추천 가치 픽(EV > 0)만 보기", value=True, key="tab2_only_rec")
+                t_only_rec = st.checkbox("🔥 추천 가치 픽만 보기", value=False, key="tab2_only_rec")
             with c_chk2:
                 t_only_single = st.checkbox("⚡ 한경기(단통) 구매 가능만 보기", value=False, key="tab2_only_single")
             with c_chk3:
@@ -1063,8 +1094,10 @@ with tab2:
                 "홈배당": float(odds.get("home_win", 0.0)),
                 "무배당": float(odds.get("draw", 0.0)),
                 "원정배당": float(odds.get("away_win", 0.0)),
-                "AI 추천 픽": eval_info.get("best_selection_name", "-"),
+                "확률 기준": "AI" if m.get("prob_source") in AI_SOURCES else "배당",
+                "EV 최고 선택": eval_info.get("best_selection_name", "-"),
                 "기대가치": eval_info.get("best_ev_pct", "-"),
+                "등급": "추천" if eval_info.get("is_recommended") else "패스",
                 "단통": "⚡" if m.get("is_single") else ""
             })
 
@@ -1107,7 +1140,7 @@ with tab2:
                             unsafe_allow_html=True
                         )
                     with d_c2:
-                        st.markdown(f"**AI 추천:** <span style='color:#10b981; font-weight:800;'>{eval_info.get('best_selection_name')}</span>", unsafe_allow_html=True)
+                        st.markdown(f"**EV 최고 선택:** <span style='color:#10b981; font-weight:800;'>{eval_info.get('best_selection_name')}</span>", unsafe_allow_html=True)
                         st.markdown(f"기대가치: **`{eval_info.get('best_ev_pct')}`**")
                         if st.button("🛒 맞춤조건구매에 담기", use_container_width=True):
                             b_sel = eval_info.get("best_selection", "home_win")
@@ -1121,44 +1154,30 @@ with tab2:
 
                     st.divider()
 
-                    # 확률 비교 3열 (홈 / 무 / 패)
-                    st.markdown("##### 📊 모델 vs 시장 확률 & 블렌딩 기대가치(EV) 비교")
-                    col_h, col_d, col_a = st.columns(3)
-                    with col_h:
-                        m_h = probs.get("home_win", 0.0)
-                        mkt_h = mkt_probs.get("home", 0.0)
-                        b_h = blended_probs.get("home_win", m_h)
-                        diff_h = m_h - mkt_h
-                        ev_h = ((b_h * odds.get("home_win", 0.0)) - 1) * 100 if odds.get("home_win", 0.0) > 1.0 else 0
-                        st.markdown(f"**🏠 {sel_labels.get('home_win', '홈 승')} ({odds.get('home_win', 0.0)}배)**")
-                        st.caption(f"• 순수 모델 확률: **{m_h*100:.1f}%**\n\n• 시장 확률: **{mkt_h*100:.1f}%** ({diff_h*100:+.1f}%p)")
-                        st.markdown(f"• 블렌딩 확률: **{b_h*100:.1f}%** | EV: **{ev_h:+.1f}%**")
-                        st.progress(max(0.0, min(1.0, b_h)))
-
-                    with col_d:
-                        if odds.get("draw", 0.0) > 0:
-                            m_d = probs.get("draw", 0.0)
-                            mkt_d = mkt_probs.get("draw", 0.0)
-                            b_d = blended_probs.get("draw", m_d)
-                            diff_d = m_d - mkt_d
-                            ev_d = ((b_d * odds.get("draw", 0.0)) - 1) * 100 if odds.get("draw", 0.0) > 1.0 else 0
-                            st.markdown(f"**🤝 {sel_labels.get('draw', '무승부')} ({odds.get('draw', 0.0)}배)**")
-                            st.caption(f"• 순수 모델 확률: **{m_d*100:.1f}%**\n\n• 시장 확률: **{mkt_d*100:.1f}%** ({diff_d*100:+.1f}%p)")
-                            st.markdown(f"• 블렌딩 확률: **{b_d*100:.1f}%** | EV: **{ev_d:+.1f}%**")
-                            st.progress(max(0.0, min(1.0, b_d)))
-                        else:
-                            st.caption("무승부 없음 (2지선다 게임)")
-
-                    with col_a:
-                        m_a = probs.get("away_win", 0.0)
-                        mkt_a = mkt_probs.get("away", 0.0)
-                        b_a = blended_probs.get("away_win", m_a)
-                        diff_a = m_a - mkt_a
-                        ev_a = ((b_a * odds.get("away_win", 0.0)) - 1) * 100 if odds.get("away_win", 0.0) > 1.0 else 0
-                        st.markdown(f"**✈️ {sel_labels.get('away_win', '원정 승')} ({odds.get('away_win', 0.0)}배)**")
-                        st.caption(f"• 순수 모델 확률: **{m_a*100:.1f}%**\n\n• 시장 확률: **{mkt_a*100:.1f}%** ({diff_a*100:+.1f}%p)")
-                        st.markdown(f"• 블렌딩 확률: **{b_a*100:.1f}%** | EV: **{ev_a:+.1f}%**")
-                        st.progress(max(0.0, min(1.0, b_a)))
+                    # 확률 비교: 배당(마진 제거) 확률 vs AI 확률, EV는 실전 확률 기준
+                    is_ai_src = target_m.get("prob_source") in AI_SOURCES
+                    src_name = {"betman_corrector": "베트맨 학습 보정 AI", "market_corrector": "유럽 학습 보정 AI"}.get(
+                        target_m.get("prob_source"), "배당 기준 (AI 미적용 유형)")
+                    st.markdown(f"##### 📊 배당 확률 vs AI 확률 & 기대가치(EV) — 확률 기준: {src_name}")
+                    icons = {"home_win": "🏠", "draw": "🤝", "away_win": "✈️"}
+                    defaults = {"home_win": "홈 승", "draw": "무승부", "away_win": "원정 승"}
+                    p_cols = st.columns(3)
+                    for col, k in zip(p_cols, ("home_win", "draw", "away_win")):
+                        with col:
+                            o = float(odds.get(k, 0.0) or 0.0)
+                            if o <= 1.0:
+                                st.caption("해당 선택지 없음 (2지선다 게임)")
+                                continue
+                            mk = float(mkt_probs.get(k.replace("_win", ""), 0.0) or 0.0)
+                            fin = float(blended_probs.get(k, mk) or mk) if is_ai_src else mk
+                            ev = (fin * o - 1) * 100
+                            st.markdown(f"**{icons[k]} {sel_labels.get(k, defaults[k])} ({o}배)**")
+                            if is_ai_src:
+                                st.caption(f"• 배당 확률: **{mk*100:.1f}%**\n\n• AI 확률: **{fin*100:.1f}%** ({(fin - mk)*100:+.1f}%p)")
+                            else:
+                                st.caption(f"• 배당 확률: **{mk*100:.1f}%**")
+                            st.markdown(f"• EV: **{ev:+.1f}%**")
+                            st.progress(max(0.0, min(1.0, fin)))
 
                     # 스코어 및 폼 데이터
                     if target_m.get("top_scores"):
@@ -1191,13 +1210,58 @@ with tab2:
 # TAB 3: 📊 ③ 성과 검증 (실제 경기 대조 & 통계)
 # ==============================================================================
 with tab3:
+    # ------------------------------------------------------------------
+    # A. 공식 AI 성적표 — 경기 시작 전에 고정 저장한 예측만 실제 결과로 채점 (사후 정보 없음)
+    # ------------------------------------------------------------------
+    st.subheader("🏅 공식 AI 성적표 (경기 전 예측만 채점)")
+    st.caption("파이프라인이 경기 시작 전에 고정 저장한 AI 확률(data/history/prediction_log)만 실제 결과로 채점합니다. "
+               "학습·튜닝에 쓰이지 않은 진짜 앞으로의 성적이며, AI 실력의 공식 지표입니다. Log loss는 낮을수록 정확합니다.")
+    card = load_scorecard()
+    if card and card.get("model_ll") is not None:
+        k1, k2, k3, k4 = st.columns(4)
+        k1.metric("채점 경기", f"{card['graded_matches']:,}경기", f"회차 {len(card.get('rounds', []))}개")
+        k2.metric("Log loss (AI vs 시장)", f"{card['model_ll']:.4f}", f"시장 {card['market_ll']:.4f}", delta_color="off")
+        ci = card.get("ll_diff_ci", [0, 0])
+        k3.metric("차이 (음수 = AI 우세)", f"{card['ll_diff']:+.4f}", f"95% CI [{ci[0]:+.4f}, {ci[1]:+.4f}]", delta_color="off")
+        k4.metric("AI 1순위 적중률", f"{card.get('hit_rate_top_pick', 0):.1f}%",
+                  f"EV>2% {card.get('value_bets', 0)}건 ROI {card.get('roi_pct', 0):+.1f}%", delta_color="off")
+        st.markdown(f"**판정:** {card.get('verdict', '-')}")
+        hist = [h for h in card.get("history", []) if h.get("ll_diff") is not None]
+        if len(hist) >= 2:
+            h_df = pd.DataFrame(hist).set_index("date")[["model_ll", "market_ll"]].rename(
+                columns={"model_ll": "AI", "market_ll": "시장"})
+            st.line_chart(h_df, height=220)
+    else:
+        n = card.get("graded_matches", 0) if card else 0
+        st.info(f"⏳ 아직 채점할 경기가 없습니다 (현재 {n}경기). 2026-10-25부터 경기 전 예측을 기록하기 시작했으며, "
+                "기록된 경기가 끝날 때마다 자동으로 채점됩니다. 300경기가 쌓이면 판정합니다.")
+
+    status = load_model_status()
+    if status:
+        with st.container(border=True):
+            st.markdown(f"**📚 과거 시험 성적 — {status['name']}** (학습에 쓰지 않은 기간, 실전 확률과 같은 모델)")
+            rows_bt = []
+            for label, s in status["evals"]:
+                ci = s.get("ll_diff_ci", [None, None])
+                rows_bt.append({"시험": label, "경기 수": s["samples"], "AI LL": s["model_ll"], "시장 LL": s["market_ll"],
+                                "차이": f"{s['ll_diff']:+.4f}", "95% CI": f"[{ci[0]:+.4f}, {ci[1]:+.4f}]",
+                                "EV>2% 베팅": s.get("bets", 0)})
+            st.dataframe(pd.DataFrame(rows_bt), use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    # ------------------------------------------------------------------
+    # B. 구 모델 기록 (참고) — performance_stats.json
+    # ------------------------------------------------------------------
     col_t_title, col_t_btn = st.columns([3, 1.2])
     with col_t_title:
-        st.subheader("🏁 실제 경기 결과 vs AI 예측 실전 대조 & 누적 성과 통계")
-        st.caption("베트맨 공식 종료 경기들의 실제 최종 스코어 및 결과와 AI의 사전 예측 승률, 추천 픽(GRADE S/A/B), 적중 여부를 1:1로 비교 검증합니다.")
+        st.subheader("🗂️ 구 모델(Dixon-Coles) 추천 채점 기록 — 참고용")
+        st.warning("이 섹션은 **현재 실전 AI가 아닌 예전 Dixon-Coles 모델**이 과거 회차에 낸 추천을 다시 계산해 채점한 기록입니다. "
+                   "모델이 채점 경기 이후의 데이터까지 학습했을 수 있어(미래 정보 혼입 가능) **실력 지표로 쓰면 안 됩니다.** "
+                   "실력 판단은 위의 공식 성적표를 보세요.")
     with col_t_btn:
         st.write("")
-        if st.button("🔄 실시간 결과 재채점", key="re_evaluate_btn_tab3", use_container_width=True):
+        if st.button("🔄 구 모델 재채점", key="re_evaluate_btn_tab3", use_container_width=True):
             with st.spinner("베트맨 최근 경기 결과 전수 채점 중..."):
                 try:
                     from tracker.result_evaluator import evaluate_betman_results
@@ -1272,7 +1336,9 @@ with tab3:
             st.markdown(f"• 수익률: **`{b_data.get('roi_pct', 0):+.1f}%`**")
             st.caption(f"95% CI: [{b_data.get('roi_ci_low', 0.0):+.1f}%, {b_data.get('roi_ci_high', 0.0):+.1f}%]")
 
-        st.info("💡 **핵심 인사이트:** 미래 경기 데이터를 엄격히 차단하고 사전 시계열만으로 검증한 실전 성과입니다. 베트맨의 약 18% 하우스 마진으로 인해 전체 누적 ROI는 -2.98% (95% CI: [-9.61%, +3.74%])입니다. 특히 복수 조합(2~3폴더)은 하우스 마진이 곱으로 누적(2폴더 ~27.8%, 3폴더 ~38.6%)되므로, 단일 경기에서 확실한 EV/CLV 우위가 검증되기 전까지는 조합 베팅을 주의하고 '시뮬레이션 전용'으로 활용해야 합니다.")
+        st.info(f"💡 구 모델 누적 ROI {stats.get('roi_pct', 0.0):+.2f}% (95% CI [{stats.get('roi_ci_low', 0.0):+.1f}%, {stats.get('roi_ci_high', 0.0):+.1f}%]). "
+                "베트맨 환급률이 약 85%라 단일 경기 마진이 약 15%이고, 조합은 마진이 곱으로 누적됩니다(2폴더 약 28%, 3폴더 약 39%). "
+                "단일 경기에서 우위가 검증되기 전까지 조합은 시뮬레이션 용도로만 쓰세요.")
 
         st.divider()
 

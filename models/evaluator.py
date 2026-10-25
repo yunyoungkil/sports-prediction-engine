@@ -78,7 +78,8 @@ def evaluate_match_value(
         grade = "B (참고용 - 고배당)"
         is_recommended = True
     else:
-        grade = "PASS (기대가치 마이너스 - 패스 권장)"
+        # EV가 양수여도 등급 기준(확률·EV 문턱)에 못 미치면 PASS — 문구는 사실대로 구분
+        grade = "PASS (기대가치 기준 미달 - 패스 권장)" if best_ev > 0 else "PASS (기대가치 마이너스 - 패스 권장)"
         is_recommended = False
 
     # [Step 3.5] 비축구 종목 추천 제외: 축구 이외의 종목은 AI 통계 모델 미지원이므로 추천에서 제외

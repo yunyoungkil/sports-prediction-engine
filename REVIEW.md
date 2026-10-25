@@ -233,6 +233,7 @@ from models.poisson_model import normalize_league_name
 | R12 | 🟠 | `BETMAN_CUTOFF_DATE` "2026-10-05"가 5월 10일로 해석됨 | R1 | [x] |
 | R13 | 🟠 | Phase 3 완료 기준이 "시장보다 낮다"에서 "단독 모델 대비 개선"으로 바뀜 | Phase 3 | [x] 원래 기준 복원 |
 | R14 | 🟠 | 홀/짝(축구 SUM)이 "일반 승무패"로 분류됨 | 0.1, A.3 | [ ] (임시 조치 완료) |
+| R15 | 🟠 | 구 모델 채점이 현재 AI가 아니고 미래 정보 혼입 가능 | 1.5, 4.3 | [ ] (대시보드 표시 조치 완료) |
 
 ## R10 🔴 샤프 오가격 ROI +3.28%는 미래 정보로 계산됨
 
@@ -309,6 +310,20 @@ from models.poisson_model import normalize_league_name
 - `game_type`에 "SUM"이 있거나 `win_txt == "홀"`이면 `category = "홀짝"`으로 분류한다.
 - `predict_category`, 대시보드 필터, 조합 빌더에서 "홀짝"을 처리한다(모델 미지원 → 참고용).
 - 완료 기준: 260126 회차에서 "일반 승무패" 133경기, "홀짝" 133경기로 분리되고, 대시보드에 홀/짝이 승무패로 표시되지 않는다.
+
+
+## R15 🟠 구 모델 채점(`tracker/result_evaluator.py`)이 현재 AI가 아니고 미래 정보 혼입 가능 (표시 조치 완료, 코드 미수정)
+
+**현상**
+- `evaluate_betman_results()`는 `MatchPredictor()`(Dixon-Coles)를 **기간 제한 없이 전체 과거 데이터로 학습**한 뒤 과거 회차 경기를 다시 예측해 채점한다.
+- 그런데 유럽 리그 CSV에는 채점 대상(10월) 경기 결과까지 들어 있다. 이 모델이 낸 "추천"은 현재 실전 AI(베트맨 학습 보정)의 추천과도 다르다.
+- `performance_stats.json`의 1,491건, 적중 46.4%, ROI −4.07%가 대시보드에서 "실전 성과"처럼 보이고 있었다.
+
+**조치 (Claude, 2026-10-25)**
+- 대시보드 ③에서 이 섹션을 "구 모델 기록 — 참고용"으로 내리고 경고를 붙였다. 공식 지표는 `evaluation/scorecard.py`(경기 전 고정 예측만 채점)로 바꿨다.
+
+**남은 일 (선택)**
+- `result_evaluator`를 회차별 `train_until`로 학습하게 고치거나, 공식 성적표로 완전히 대체할지 결정한다.
 
 ---
 
