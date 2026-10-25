@@ -78,6 +78,11 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
     rets = np.where(best[bet] == y[bet], odds[bet, best[bet]] - 1.0, -1.0).tolist()
     roi, lo, hi = bootstrap_roi_confidence_interval(rets)
 
+    # 💎 경기 (대시보드 표시와 같은 기준: AI 확률 기준 EV > 0 인 최고 EV 선택지에 1단위)
+    gem = ev[idx, best] > 0
+    gem_rets = np.where(best[gem] == y[gem], odds[gem, best[gem]] - 1.0, -1.0).tolist()
+    g_roi, g_lo, g_hi = bootstrap_roi_confidence_interval(gem_rets)
+
     card.update({
         "model_ll": round(float(nll_m.mean()), 4),
         "market_ll": round(float(nll_k.mean()), 4),
@@ -85,6 +90,8 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
         "ll_diff_ci": [round(float(np.percentile(boot, 2.5)), 4), round(float(np.percentile(boot, 97.5)), 4)],
         "hit_rate_top_pick": round(float((pm.argmax(axis=1) == y).mean() * 100), 1),
         "value_bets": int(bet.sum()), "roi_pct": roi, "roi_ci_low": lo, "roi_ci_high": hi,
+        "gem_bets": int(gem.sum()), "gem_hits": int(sum(1 for r in gem_rets if r > 0)),
+        "gem_roi_pct": g_roi, "gem_roi_ci_low": g_lo, "gem_roi_ci_high": g_hi,
         "prob_sources": {s: sum(1 for r in rows if r["source"] == s) for s in {r["source"] for r in rows}},
     })
     if len(rows) < MIN_SAMPLES_FOR_VERDICT:
@@ -119,7 +126,7 @@ def update_scorecard(path: Path = SCORECARD_PATH) -> Dict[str, Any]:
         except Exception:
             history = []
     today = card["updated_at"][:10]
-    entry = {"date": today, **{k: card.get(k) for k in ("graded_matches", "model_ll", "market_ll", "ll_diff", "ll_diff_ci", "roi_pct")}}
+    entry = {"date": today, **{k: card.get(k) for k in ("graded_matches", "model_ll", "market_ll", "ll_diff", "ll_diff_ci", "roi_pct", "gem_bets", "gem_roi_pct")}}
     history = [h for h in history if h.get("date") != today] + [entry]
     card["history"] = history
     path.write_text(json.dumps(card, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -135,4 +142,5 @@ if __name__ == "__main__":
     if c.get("model_ll") is not None:
         print(f"LL: AI {c['model_ll']} vs 시장 {c['market_ll']} (차이 {c['ll_diff']:+.4f}, CI {c['ll_diff_ci']})")
         print(f"1순위 적중률 {c['hit_rate_top_pick']}% | EV>{EV_THRESHOLD:.0%} 베팅 {c['value_bets']}건 ROI {c['roi_pct']:+.2f}% [{c['roi_ci_low']:+.2f}, {c['roi_ci_high']:+.2f}]")
+        print(f"💎 EV>0 경기 {c['gem_bets']}건 (적중 {c['gem_hits']}) ROI {c['gem_roi_pct']:+.2f}% [{c['gem_roi_ci_low']:+.2f}, {c['gem_roi_ci_high']:+.2f}]")
     print(f"판정: {c['verdict']}")

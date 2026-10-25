@@ -401,7 +401,7 @@ with tab1:
     # -------------------------------------------------------------
     if st.session_state["custom_step"] == 1:
         st.markdown("### 📋 STEP 01. 대상 경기 검색 및 승/무/패 다중 선택")
-        st.caption("경기마다 배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동 전개됩니다. ⭐ = AI 확률 1순위(AI가 없으면 배당 1순위). AI 예상이 배당과 다르면 ⚠️로 표시되고, 끝난 경기는 배당·AI 각각의 적중 여부(✅/❌)가 나옵니다.")
+        st.caption("경기마다 배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동 전개됩니다. ⭐ = AI 확률 1순위(AI가 없으면 배당 1순위). 💎 = AI 기준 기대가치 플러스(축구 승무패만, **검증 중 — 과거 표본이 적어 믿을 근거 부족**). AI 예상이 배당과 다르면 ⚠️로 표시되고, 끝난 경기는 각 예상의 적중 여부(✅/❌)가 나옵니다.")
 
         # 필터 컨트롤
         with st.container(border=True):
@@ -535,11 +535,18 @@ with tab1:
             else:
                 ai_probs = m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
             ai_k, ai_p = top_pick(ai_probs, opts)
+            # 💎 = AI 확률 기준 기대가치(EV) 플러스 선택지 (AI 적용 경기만, 1순위가 아니어도 표시)
+            gems = {}
+            if ai_probs:
+                for k in opts:
+                    ev_k = _prob(ai_probs, k) * float(odds[k]) - 1.0
+                    if ev_k > 0:
+                        gems[k] = ev_k
 
             cur = st.session_state["selections"].get(seq, {})
             default = [k for k in opts if cur.get(SEL_KEY[k])]
             star_k = ai_k or mk_k
-            disp = {k: f"{'⭐' if k == star_k else ''}{labels[k]} {float(odds[k]):.2f}" for k in opts}
+            disp = {k: f"{'💎' if k in gems else ''}{'⭐' if k == star_k else ''}{labels[k]} {float(odds[k]):.2f}" for k in opts}
             single = " · ⚡단통" if m.get("is_single") else ""
             actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
 
@@ -583,6 +590,9 @@ with tab1:
                         body = "<span style='color:#94a3b8'>-</span>"
                     if ai_k:
                         body += f" {_mark(ai_k, actual)}"
+                    for gk, gev in sorted(gems.items(), key=lambda x: -x[1]):
+                        body += (f"<div style='font-size:12px;color:#38bdf8'>💎 <b>{labels[gk]}</b> {_prob(ai_probs, gk) * 100:.0f}% · "
+                                 f"EV {gev * 100:+.1f}% {_mark(gk, actual)}</div>")
                     st.markdown(cap.format("AI 예상") + f"<div style='font-size:14px'>{body}</div>", unsafe_allow_html=True)
                 with c5:
                     score = res.get("score", "") if res is not None else "-"
@@ -1226,6 +1236,12 @@ with tab3:
         k4.metric("AI 1순위 적중률", f"{card.get('hit_rate_top_pick', 0):.1f}%",
                   f"EV>2% {card.get('value_bets', 0)}건 ROI {card.get('roi_pct', 0):+.1f}%", delta_color="off")
         st.markdown(f"**판정:** {card.get('verdict', '-')}")
+        if card.get("gem_bets") is not None:
+            gb = card["gem_bets"]
+            st.markdown(
+                f"**💎 경기 성적** (AI 기준 기대가치 플러스 선택지에 1단위씩 걸었다면): **{gb}건**, 적중 {card.get('gem_hits', 0)}건, "
+                f"수익률 **{card.get('gem_roi_pct', 0):+.1f}%** (95% CI [{card.get('gem_roi_ci_low', 0):+.1f}%, {card.get('gem_roi_ci_high', 0):+.1f}%])"
+                + (" — 표본이 적어 아직 판단 불가 (300건 이상 필요)" if gb < 300 else ""))
         hist = [h for h in card.get("history", []) if h.get("ll_diff") is not None]
         if len(hist) >= 2:
             h_df = pd.DataFrame(hist).set_index("date")[["model_ll", "market_ll"]].rename(
