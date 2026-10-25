@@ -5,7 +5,7 @@ AI 모델이 산출한 승률과 베트맨의 실제 배당률을 비교하여
 기대가치(Expected Value, EV)를 계산하고 수학적으로 유리한 가치 픽(Value Bet)을 추천합니다.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 def evaluate_match_value(
@@ -15,19 +15,26 @@ def evaluate_match_value(
     model_probs: Dict[str, float],
     selection_labels: Dict[str, str] = None,
     is_single: bool = False,
-    category: str = "일반 승무패"
+    category: str = "일반 승무패",
+    blended_probs: Optional[Dict[str, float]] = None,
+    sport: str = "축구"
 ) -> Dict[str, Any]:
     """
     기대가치(EV) 분석 및 추천 픽 평가를 수행합니다.
-    공식: EV = (모델 확률 * 배당률) - 1.0
+    [Step 3.4] 모델 단독 확률 대신 시장+모델 블렌딩 확률(blended_probs)을 우선 기준으로 계산합니다.
+    [Step 3.5] 비축구 종목(농구, 야구 등)은 모델 미지원으로 추천에서 제외하고 '참고용'으로 분류합니다.
+    공식: EV = (확률 * 배당률) - 1.0
     """
     home_odds = betman_odds.get("home_win", 0.0)
     draw_odds = betman_odds.get("draw", 0.0)
     away_odds = betman_odds.get("away_win", 0.0)
     
-    p_home = model_probs.get("home_win", 0.0)
-    p_draw = model_probs.get("draw", 0.0)
-    p_away = model_probs.get("away_win", 0.0)
+    # 블렌딩 확률이 제공되면 블렌딩 확률을, 없으면 모델 단독 확률 사용
+    eval_probs = blended_probs if blended_probs else model_probs
+    
+    p_home = eval_probs.get("home_win", 0.0)
+    p_draw = eval_probs.get("draw", 0.0)
+    p_away = eval_probs.get("away_win", 0.0)
     
     # 0.0 배당은 미발매 항목이므로 EV 제외 (-1.0 처리)
     ev_home = (p_home * home_odds) - 1.0 if home_odds > 1.0 and p_home > 0 else -1.0
@@ -58,10 +65,9 @@ def evaluate_match_value(
     single_prefix = "[단통 ⚡] " if is_single else ""
     full_selection_name = f"{single_prefix}{base_name}"
     
-    best_prob = model_probs.get(best_key, 0.0)
+    best_prob = eval_probs.get(best_key, 0.0)
     
     # 등급 산출: 승률(적중률)과 기대가치(EV) 기반 분류
-    # Phase 1 체크포인트: OOS 검증에서 모델 Log Loss가 시장 기준선보다 열세이므로 모든 추천은 '참고용'으로 명시
     if best_ev >= 0.02 and best_prob >= 0.50:
         grade = "S (참고용 - 고승률)"
         is_recommended = True
@@ -74,6 +80,12 @@ def evaluate_match_value(
     else:
         grade = "PASS (기대가치 마이너스 - 패스 권장)"
         is_recommended = False
+
+    # [Step 3.5] 비축구 종목 추천 제외: 축구 이외의 종목은 AI 통계 모델 미지원이므로 추천에서 제외
+    is_soccer = (str(sport).upper() in ("SC", "축구", "SOCCER", "FOOTBALL"))
+    if not is_soccer and is_recommended:
+        is_recommended = False
+        grade = "참고용 (비축구 종목 - AI 모델 미지원)"
         
     return {
         "expected_values": evs,
@@ -85,5 +97,6 @@ def evaluate_match_value(
         "grade": grade,
         "is_recommended": is_recommended,
         "is_single": is_single,
-        "category": category
+        "category": category,
+        "sport": sport
     }

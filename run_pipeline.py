@@ -95,9 +95,11 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         except Exception:
             pass
     
-    # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기 준비
+    # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기, 시장-모델 블렌더 준비
     predictor = MatchPredictor()
     form_analyzer = FormAnalyzer()
+    from models.blender import MarketModelBlender
+    blender = MarketModelBlender()
     
     # 3. 각 경기별 예측 및 기대가치 평가
     print("\n🧠 [2/3] 전 경기 AI 승률 계산 및 기대가치(EV) 분석 중...")
@@ -146,13 +148,18 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         
         # 베트맨 시장 마진 분석
         market_stats = remove_margin(odds["home_win"], odds["draw"], odds["away_win"])
+
+        # [Step 3.4] 시장과 모델의 로짓 블렌딩 확률 산출
+        blended_probs = blender.predict_proba(market_stats["true_probs"], model_probs)
         
-        # 기대가치(EV) 평가
+        # [Step 3.4 & 3.5] 기대가치(EV) 평가 (블렌딩 확률 기준 산출 및 비축구 종목 추천 제외)
         eval_result = evaluate_match_value(
             home, away, odds, model_probs,
             selection_labels=pred.get("selection_labels"),
             is_single=is_single,
-            category=category
+            category=category,
+            blended_probs=blended_probs,
+            sport=m.get("sport", "SC")
         )
         
         results.append({
@@ -174,6 +181,7 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             "clv_pct": None,
             "market_implied_probs": market_stats["true_probs"],
             "model_probabilities": model_probs,
+            "blended_probabilities": blended_probs,
             "top_scores": pred.get("top_scores", []),
             "evaluation": eval_result,
             "home_form": home_form,
