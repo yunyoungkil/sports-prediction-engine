@@ -33,7 +33,62 @@ class BetmanScraper:
         self.cookie_jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cookie_jar))
 
-    def fetch_current_round_matches(self, gm_ts: str = "260126") -> list:
+    def find_current_round(self) -> str:
+        """
+        베트맨 공식 API에서 현재 발매(판매) 중인 프로토 승부식(gm_id) 최신 gmTs를 자동 조회합니다.
+        """
+        print(f"🔍 베트맨 현재 판매 회차 자동 조회 중({self.gm_id})...")
+        init_url = f"{BASE_URL}/main/mainPage/gamebuy/buyableGameList.do"
+        try:
+            req_init = urllib.request.Request(init_url, headers={"User-Agent": DEFAULT_USER_AGENT})
+            self.opener.open(req_init, timeout=8)
+        except Exception as e:
+            print(f"  ⚠ 세션 쿠키 초기화 경고: {e}")
+
+        endpoints = [
+            f"{BASE_URL}/buyPsblGame/inqBuyAbleGameInfoList.do",
+            f"{BASE_URL}/buyPsblGame/inqCacheBuyAbleGameInfoList.do"
+        ]
+        headers = {
+            "User-Agent": DEFAULT_USER_AGENT,
+            "Referer": init_url,
+            "Origin": BASE_URL,
+            "Content-Type": "application/json; charset=UTF-8",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-Requested-With": "XMLHttpRequest"
+        }
+        payload = json.dumps({"_sbmInfo": {"_sbmInfo": {"debugMode": "false"}}}).encode("utf-8")
+
+        for endpoint in endpoints:
+            try:
+                req = urllib.request.Request(endpoint, data=payload, headers=headers)
+                with self.opener.open(req, timeout=8) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                proto_games = data.get("protoGames", [])
+                matched_rounds = []
+                for g in proto_games:
+                    if g.get("gmId") == self.gm_id:
+                        gm_ts = str(g.get("gmTs", "")).strip()
+                        if gm_ts:
+                            matched_rounds.append(gm_ts)
+                if matched_rounds:
+                    matched_rounds.sort(reverse=True)
+                    round_found = matched_rounds[0]
+                    print(f"  ✓ 현재 판매 중인 최신 회차 발견: {round_found}")
+                    return round_found
+            except Exception:
+                pass
+
+        print("  ⚠ 현재 판매 회차 자동 조회 실패")
+        return None
+
+    def fetch_current_round_matches(self, gm_ts: str = None) -> list:
+        if not gm_ts:
+            gm_ts = self.find_current_round()
+            if not gm_ts:
+                print("  ⚠ 회차 정보를 확인할 수 없어 경기 수집을 중단합니다.")
+                return []
+
         print(f"🔍 베트맨 프로토 승부식({self.gm_id}, 회차:{gm_ts}) 실시간 API 연동 시작...")
         
         matches = []
@@ -47,7 +102,7 @@ class BetmanScraper:
             api_url = f"{BASE_URL}/buyPsblGame/detailSchedule.do"
             payload = {
                 "gmId": self.gm_id,
-                "gmTs": int(gm_ts) if str(gm_ts).isdigit() else 260126,
+                "gmTs": int(gm_ts) if str(gm_ts).isdigit() else 0,
                 "yearMonth": "",
                 "sportsCode": "",
                 "betId": "",
@@ -150,7 +205,13 @@ class BetmanScraper:
         print(f"💾 수집 결과 저장 완료: {dest} (총 {len(matches)}경기)")
 
 
+def find_current_round(gm_id: str = "G101") -> str:
+    """모듈 레벨 헬퍼 함수: 현재 판매 중인 최신 회차를 반환합니다."""
+    return BetmanScraper(gm_id=gm_id).find_current_round()
+
+
 if __name__ == "__main__":
     scraper = BetmanScraper()
-    matches = scraper.fetch_current_round_matches(gm_ts="260126")
+    cur_round = scraper.find_current_round()
+    matches = scraper.fetch_current_round_matches(gm_ts=cur_round)
     scraper.save_matches(matches)

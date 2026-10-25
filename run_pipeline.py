@@ -25,7 +25,7 @@ from models.form_analyzer import FormAnalyzer
 from tracker.result_evaluator import evaluate_betman_results
 
 
-def run_full_pipeline(gm_ts: str = "260126") -> list:
+def run_full_pipeline(gm_ts: str = None) -> list:
     print("=" * 60)
     print("⚽ 스포츠 승부 예측 & 가치 픽 분석 파이프라인 시작")
     print(f"⏰ 실행 시각: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -33,8 +33,15 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
     
     # 1. 베트맨 최신 발매 경기 목록 및 배당 수집
     scraper = BetmanScraper()
+    if not gm_ts:
+        gm_ts = scraper.find_current_round()
+        if gm_ts:
+            print(f"📌 최신 판매 회차 자동 탐지 완료: {gm_ts}회차")
+        else:
+            print("⚠️ 최신 회차 자동 탐지 실패 (수동 지정 또는 캐시 확인)")
+
     try:
-        matches = scraper.fetch_current_round_matches(gm_ts=gm_ts)
+        matches = scraper.fetch_current_round_matches(gm_ts=gm_ts) if gm_ts else []
     except Exception as e:
         print(f"⚠️ 베트맨 실시간 수집 중 오류 발생: {e}")
         matches = []
@@ -169,4 +176,8 @@ def run_full_pipeline(gm_ts: str = "260126") -> list:
 
 
 if __name__ == "__main__":
-    run_full_pipeline()
+    import argparse
+    parser = argparse.ArgumentParser(description="스포츠 승부 예측 & 가치 픽 분석 파이프라인")
+    parser.add_argument("--gm-ts", type=str, default=None, help="분석할 베트맨 회차 번호 (기본값: 최신 발매 회차 자동 감지)")
+    args = parser.parse_args()
+    run_full_pipeline(gm_ts=args.gm_ts)

@@ -159,6 +159,40 @@ current_cart_picks = [
     if seq in pred_map
 ]
 
+# -------------------------------------------------------------
+# 🛒 베트맨 실시간 투표용지 사이드바 위젯 (사이드바에는 실시간 투표용지만 배치)
+# -------------------------------------------------------------
+st.sidebar.markdown(f"### 🛒 실시간 투표용지 ({len(current_cart_picks)}폴더)")
+if not current_cart_picks:
+    st.sidebar.info("💡 경기 카드의 **[승 / 무 / 패]** 배당 버튼을 누르면 투표용지에 실시간으로 담깁니다.")
+else:
+    s_metrics = calculate_parlay_metrics(current_cart_picks)
+    if not s_metrics["valid"]:
+        st.sidebar.error(s_metrics["error"])
+    else:
+        st.sidebar.markdown(
+            f"<div class='cart-summary-box' style='padding:12px; margin-bottom:10px;'>"
+            f"• <b>선택 폴더:</b> <span style='color:#60a5fa; font-weight:bold;'>{s_metrics['folders']}경기</span><br>"
+            f"• <b>합산 배당률:</b> <span style='color:#2ed573; font-size:1.25rem; font-weight:800;'>{s_metrics['combined_odds']}배</span><br>"
+            f"• <b>AI 결합 승률:</b> {s_metrics['combined_prob_pct']}<br>"
+            f"• <b>조합 기대가치:</b> {s_metrics['combined_ev_pct']}"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+        for cp in current_cart_picks:
+            del_col1, del_col2 = st.sidebar.columns([4, 1])
+            with del_col1:
+                st.markdown(f"<span style='font-size:12px;'>#{cp['match_seq']} <b>{cp['selection_name']}</b> ({cp['odds']}배)</span>", unsafe_allow_html=True)
+            with del_col2:
+                if st.sidebar.button("✕", key=f"side_del_{cp['match_seq']}"):
+                    del st.session_state["cart_picks"][cp["match_seq"]]
+                    st.rerun()
+
+        st.sidebar.caption("👉 'Tab 2'에서 켈리 자금관리 및 복사 가능")
+        if st.sidebar.button("🗑️ 투표용지 비우기", key="side_clear_cart", use_container_width=True):
+            st.session_state["cart_picks"] = {}
+            st.rerun()
+
 # 타이틀 헤더
 st.title("⚽ 스포츠 승부 예측 & 가치 픽 (Value Bet) 대시보드")
 st.caption("베트맨(Betman) 프로토 배당률 및 Dixon-Coles 통계 모델 기반 기대가치(EV) 실시간 분석")
@@ -197,94 +231,8 @@ with tab1:
 
         st.divider()
 
-        # 2. 사이드바 필터 (리그, 게임유형, 한경기 전용, 정렬)
-        st.sidebar.header("🔍 검색 및 베팅 필터")
-        
-        # [필터 1] 리그 선택
-        leagues = sorted(list(set(m["league"] for m in predictions)))
-        selected_league = st.sidebar.selectbox("리그 선택", ["전체"] + leagues)
-
-        # [필터 2] 게임 유형 선택 (승무패, 핸디캡, 언더오버, 전반전)
-        categories = ["전체 보기", "일반 승무패", "핸디캡", "언더오버", "전반 승무패", "전반 핸디캡", "전반 언더오버"]
-        selected_category = st.sidebar.selectbox("게임 유형 선택", categories)
-
-        # [필터 3] 한경기(단통) 구매 전용 토글
-        only_single = st.sidebar.checkbox("⚡ 한경기(단통) 구매 가능만 보기", value=False)
-
-        # [필터 4] 추천 가치 픽만 보기
-        only_recommended = st.sidebar.checkbox("🔥 추천 가치 픽(EV > 0)만 보기", value=True)
-
-        # [필터 5] 팀 이름 실시간 검색
-        search_query = st.sidebar.text_input("🔎 팀 이름 검색", placeholder="예: 바르셀로나, 뮌헨, 인천")
-
-        # [필터 6] 정렬 기준
-        sort_by = st.sidebar.radio(
-            "정렬 기준",
-            ["기대가치(EV) 높은순 (AI 추천순)", "경기 시작 시간순", "홈 승률 높은순", "배당률 높은순"]
-        )
-
-        # [필터 7] 전적 데이터 유무 필터
-        only_has_form = st.sidebar.checkbox("📊 최근 5경기 전적 있는 경기만 보기", value=False)
-        show_all_details = st.sidebar.checkbox("📂 과거 5경기 스코어 상세 펼치기", value=False)
-
         # -------------------------------------------------------------
-        # 🛒 베트맨 실시간 투표용지 사이드바 위젯 (Live Bet Slip)
-        # -------------------------------------------------------------
-        st.sidebar.divider()
-        st.sidebar.markdown(f"### 🛒 실시간 투표용지 ({len(current_cart_picks)}폴더)")
-        if not current_cart_picks:
-            st.sidebar.info("💡 경기 카드의 **[승 / 무 / 패]** 배당 버튼을 누르면 투표용지에 실시간으로 담깁니다.")
-        else:
-            s_metrics = calculate_parlay_metrics(current_cart_picks)
-            if not s_metrics["valid"]:
-                st.sidebar.error(s_metrics["error"])
-            else:
-                st.sidebar.markdown(
-                    f"<div class='cart-summary-box' style='padding:12px; margin-bottom:10px;'>"
-                    f"• <b>선택 폴더:</b> <span style='color:#60a5fa; font-weight:bold;'>{s_metrics['folders']}경기</span><br>"
-                    f"• <b>합산 배당률:</b> <span style='color:#2ed573; font-size:1.25rem; font-weight:800;'>{s_metrics['combined_odds']}배</span><br>"
-                    f"• <b>AI 결합 승률:</b> {s_metrics['combined_prob_pct']}<br>"
-                    f"• <b>조합 기대가치:</b> {s_metrics['combined_ev_pct']}"
-                    f"</div>",
-                    unsafe_allow_html=True
-                )
-                for cp in current_cart_picks:
-                    del_col1, del_col2 = st.sidebar.columns([4, 1])
-                    with del_col1:
-                        st.markdown(f"<span style='font-size:12px;'>#{cp['match_seq']} <b>{cp['selection_name']}</b> ({cp['odds']}배)</span>", unsafe_allow_html=True)
-                    with del_col2:
-                        if st.sidebar.button("✕", key=f"side_del_{cp['match_seq']}"):
-                            del st.session_state["cart_picks"][cp["match_seq"]]
-                            st.rerun()
-
-                st.sidebar.caption("👉 'Tab 2'에서 켈리 자금관리 및 복사 가능")
-                if st.sidebar.button("🗑️ 투표용지 비우기", key="side_clear_cart", use_container_width=True):
-                    st.session_state["cart_picks"] = {}
-                    st.rerun()
-
-        filtered = predictions
-        if search_query:
-            filtered = [m for m in filtered if search_query.lower() in m["home_team"].lower() or search_query.lower() in m["away_team"].lower()]
-        if selected_league != "전체":
-            filtered = [m for m in filtered if m["league"] == selected_league]
-        if selected_category != "전체 보기":
-            filtered = [m for m in filtered if selected_category in m.get("category", "")]
-        if only_single:
-            filtered = [m for m in filtered if m.get("is_single", False)]
-        if only_recommended:
-            filtered = [m for m in filtered if m["evaluation"]["is_recommended"]]
-        if only_has_form:
-            filtered = [m for m in filtered if m.get("home_form", {}).get("has_data") or m.get("away_form", {}).get("has_data")]
-
-        if "기대가치" in sort_by:
-            filtered.sort(key=lambda x: x["evaluation"]["best_ev"], reverse=True)
-        elif "홈 승률" in sort_by:
-            filtered.sort(key=lambda x: x["model_probabilities"]["home_win"], reverse=True)
-        elif "배당률" in sort_by:
-            filtered.sort(key=lambda x: max(x["betman_odds"].values()), reverse=True)
-
-        # -------------------------------------------------------------
-        # [일자별 빠른 선택 Pills]
+        # 1. 일자별 빠른 선택 Pills (Image 2 위치 상단)
         # -------------------------------------------------------------
         date_map = {}
         for m in predictions:
@@ -307,12 +255,76 @@ with tab1:
                 d_label = f"⚡ 오늘 ({d_label})"
             date_options.append(d_label)
 
-        selected_date_pill = st.pills("📅 일자 빠른 필터", options=date_options, default="전체 일자")
+        if hasattr(st, "pills"):
+            selected_date_pill = st.pills("📅 일자 빠른 필터", options=date_options, default="전체 일자")
+        elif hasattr(st, "segmented_control"):
+            selected_date_pill = st.segmented_control("📅 일자 빠른 필터", options=date_options, default="전체 일자")
+        else:
+            selected_date_pill = st.radio("📅 일자 빠른 필터", options=date_options, horizontal=True)
+
+        # -------------------------------------------------------------
+        # 2. 🔍 검색 및 베팅 필터 (1번 이미지 기능 ➔ 2번 이미지 위치로 이동)
+        # -------------------------------------------------------------
+        with st.container(border=True):
+            st.markdown("##### 🔍 검색 및 베팅 필터")
+
+            f_col1, f_col2, f_col3 = st.columns([1.5, 1.2, 1.2])
+            with f_col1:
+                search_query = st.text_input("🔎 팀 이름 검색", placeholder="예: 바르셀로나, 뮌헨, 인천")
+            with f_col2:
+                leagues = sorted(list(set(m["league"] for m in predictions)))
+                selected_league = st.selectbox("리그 선택", ["전체"] + leagues)
+            with f_col3:
+                categories = ["전체 보기", "일반 승무패", "핸디캡", "언더오버", "전반 승무패", "전반 핸디캡", "전반 언더오버"]
+                selected_category = st.selectbox("게임 유형 선택", categories)
+
+            sort_by = st.radio(
+                "정렬 기준",
+                ["기대가치(EV) 높은순 (AI 추천순)", "경기 시작 시간순", "홈 승률 높은순", "배당률 높은순"],
+                horizontal=True
+            )
+
+            chk_col1, chk_col2, chk_col3, chk_col4 = st.columns(4)
+            with chk_col1:
+                only_recommended = st.checkbox("🔥 추천 가치 픽(EV > 0)만 보기", value=True)
+            with chk_col2:
+                only_single = st.checkbox("⚡ 한경기(단통) 구매 가능만 보기", value=False)
+            with chk_col3:
+                only_has_form = st.checkbox("📊 최근 5경기 전적 있는 경기만 보기", value=False)
+            with chk_col4:
+                show_all_details = st.checkbox("📂 과거 5경기 스코어 상세 펼치기", value=False)
+
+        # -------------------------------------------------------------
+        # 3. 필터링 및 정렬 처리
+        # -------------------------------------------------------------
+        filtered = predictions
         if selected_date_pill != "전체 일자":
             target_search = re.search(r"\d{2}\.\d{2}\.\d{2}", selected_date_pill)
             if target_search:
                 target_key = target_search.group(0)
                 filtered = [m for m in filtered if target_key in m.get("match_time", "")]
+
+        if search_query:
+            filtered = [m for m in filtered if search_query.lower() in m["home_team"].lower() or search_query.lower() in m["away_team"].lower()]
+        if selected_league != "전체":
+            filtered = [m for m in filtered if m["league"] == selected_league]
+        if selected_category != "전체 보기":
+            filtered = [m for m in filtered if selected_category in m.get("category", "")]
+        if only_single:
+            filtered = [m for m in filtered if m.get("is_single", False)]
+        if only_recommended:
+            filtered = [m for m in filtered if m["evaluation"]["is_recommended"]]
+        if only_has_form:
+            filtered = [m for m in filtered if m.get("home_form", {}).get("has_data") or m.get("away_form", {}).get("has_data")]
+
+        if "기대가치" in sort_by:
+            filtered.sort(key=lambda x: x["evaluation"]["best_ev"], reverse=True)
+        elif "경기 시작 시간" in sort_by:
+            filtered.sort(key=lambda x: x.get("match_time", ""))
+        elif "홈 승률" in sort_by:
+            filtered.sort(key=lambda x: x["model_probabilities"]["home_win"], reverse=True)
+        elif "배당률" in sort_by:
+            filtered.sort(key=lambda x: max(x["betman_odds"].values()), reverse=True)
 
         st.subheader(f"📋 경기 분석 결과 ({len(filtered)}경기)")
 
@@ -489,7 +501,7 @@ with tab1:
                                     st.markdown(f"<span style='font-size:12px; color:#a0aec0;'>• {lm['date']} ({lm['venue']}) vs {lm['opponent']} : <b style='color:{res_c};'>{lm['score']} ({lm['result']})</b></span>", unsafe_allow_html=True)
 
         if len(filtered) > 60:
-            st.info(f"💡 현재 상위 60개 경기를 표시 중입니다. (사이드바의 게임 유형 및 리그 필터를 활용해 보세요!)")
+            st.info(f"💡 현재 상위 60개 경기를 표시 중입니다. (상단의 게임 유형 및 리그 필터를 활용해 보세요!)")
 
 
 # ==============================================================================
