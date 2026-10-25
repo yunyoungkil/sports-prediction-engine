@@ -1,0 +1,76 @@
+{
+  "updated_at": "2026-10-25T15:03:48+00:00",
+  "stake_unit": 1000,
+  "strategies": {
+    "A_gem_single": {
+      "label": "A. 💎 단일",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "verdict": "판단 보류 (표본 부족)"
+    },
+    "B_fav_double": {
+      "label": "B. 강팀 2폴더 (≤1.3배·AI▲)",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "verdict": "판단 보류 (표본 부족)"
+    },
+    "C_finder_top": {
+      "label": "C. 조합 찾기 1순위",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "verdict": "판단 보류 (표본 부족)"
+    },
+    "D_banker_cover": {
+      "label": "D. 축 2 + 전배 (비교용)",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "verdict": "판단 보류 (표본 부족)"
+    },
+    "E_market_fav": {
+      "label": "E. 배당 1순위 단일 (기준선)",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "verdict": "판단 보류 (표본 부족)"
+    }
+  }
+}
