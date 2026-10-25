@@ -5,7 +5,7 @@
 
 ## 1. Git: GitHub Actions 봇이 저장소에 직접 커밋한다
 
-`pipeline.yml`이 수·금 09:30/14:30, 토·일 13:00(KST)에 실행되고, 갱신된 `data/`를 `master`에 **자동 커밋·푸시**한다 (`🤖 [자동 갱신] ...`).
+`pipeline.yml`이 **매일 09:30·18:30(KST)** 실행되고, 갱신된 `data/`를 `master`에 **자동 커밋·푸시**한다 (`🤖 [자동 갱신] ...`).
 
 - **작업 시작 전 항상** `git pull --rebase origin master`
 - **푸시 전 항상** `git pull --rebase origin master` → `git push origin master`

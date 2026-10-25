@@ -68,7 +68,7 @@ This skill defines the architectural blueprint, realistic design constraints, ev
 - **`notifier/telegram_bot.py`**: alerts via `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` env vars.
 - **`dashboard/app.py`**: Streamlit UI (predictions, parlay basket, past-match verification tab).
 - **`run_pipeline.py`**: single entry point (collect → score past rounds → predict → EV → JSON → notify).
-- **`.github/workflows/pipeline.yml`**: scheduled run (Wed/Fri 00:30, 05:30 UTC; Sat/Sun 04:00 UTC) with `contents: write`; the bot commits updated `data/` to `master`. Always `git pull --rebase` before starting work and before pushing.
+- **`.github/workflows/pipeline.yml`**: scheduled run twice daily (00:30 and 09:30 UTC; weekly retrain on the Wednesday morning run; overseas odds fetched at most once per 20h per round) with `contents: write`; the bot commits updated `data/` to `master`. Always `git pull --rebase` before starting work and before pushing.
 
 ## Known Issues (as of 2026-10-25)
 

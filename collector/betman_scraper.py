@@ -12,6 +12,7 @@ import http.cookiejar
 import urllib.request
 from datetime import datetime
 from pathlib import Path
+from collector.net_retry import open_with_retry
 
 if sys.platform.startswith('win'):
     try:
@@ -62,7 +63,7 @@ class BetmanScraper:
         for endpoint in endpoints:
             try:
                 req = urllib.request.Request(endpoint, data=payload, headers=headers)
-                with self.opener.open(req, timeout=8) as resp:
+                with open_with_retry(self.opener, req, timeout=8, label="회차 조회") as resp:
                     data = json.loads(resp.read().decode("utf-8"))
                 proto_games = data.get("protoGames", [])
                 matched_rounds = []
@@ -124,7 +125,7 @@ class BetmanScraper:
             }
             
             req_api = urllib.request.Request(api_url, data=json_body, headers=headers)
-            with self.opener.open(req_api, timeout=15) as resp:
+            with open_with_retry(self.opener, req_api, timeout=15, label="경기 목록 조회") as resp:
                 data = json.loads(resp.read().decode("utf-8"))
 
             schedules = data.get("schedules", [])

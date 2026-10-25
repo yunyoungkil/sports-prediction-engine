@@ -28,6 +28,8 @@ from models.odds_normalizer import remove_margin
 API_BASE = "https://api.the-odds-api.com/v4/sports"
 SNAPSHOT_DIR = Path("data/history/sharp_snapshots")
 MIN_REMAINING_CREDITS = 30   # 남은 크레딧이 이보다 적으면 조회 중단 (월 500회 무료 한도 보호)
+# 같은 회차는 이 시간 안에 다시 조회하지 않고 직전 스냅샷을 재사용 (하루 2회 실행 × 리그 수 → 월 한도 초과 방지)
+MIN_REFETCH_HOURS = float(os.getenv("SHARP_MIN_REFETCH_HOURS", "20"))
 KST = timezone(timedelta(hours=9))
 
 # 베트맨 리그명(부분 일치) → The Odds API sport key
@@ -209,6 +211,7 @@ def collect_round_sharp_odds(
     api_key: Optional[str] = None,
     snapshot_dir: Path = SNAPSHOT_DIR,
     team_map_path: str = "data/team_name_map.json",
+    force: bool = False,
 ) -> Dict[str, Dict[str, Any]]:
     """
     회차의 축구 3-way 경기에 해외 배당을 붙여 {match_seq: 정보}를 반환하고 스냅샷으로 저장합니다.
@@ -232,6 +235,22 @@ def collect_round_sharp_odds(
             targets.append((m, key))
     if not targets:
         return {}
+
+    # 최근 스냅샷이 충분히 새것이면 API를 부르지 않고 재사용
+    path = snapshot_dir / f"{gm_ts}.json"
+    if path.exists() and not force:
+        try:
+            prev = json.loads(path.read_text(encoding="utf-8")).get("snapshots", [])
+            if prev:
+                last = prev[-1]
+                age_h = (now - datetime.fromisoformat(last["captured_at"])).total_seconds() / 3600
+                if age_h < MIN_REFETCH_HOURS:
+                    want = {str(m["match_seq"]) for m, _ in targets}
+                    reused = {k: v for k, v in last.get("matches", {}).items() if k in want}
+                    print(f"🌍 [5.4] 해외 배당: {age_h:.1f}시간 전 스냅샷 재사용 ({len(reused)}경기, API 호출 없음)")
+                    return reused
+        except Exception:
+            pass
 
     try:
         team_map = json.loads(Path(team_map_path).read_text(encoding="utf-8"))
@@ -271,7 +290,6 @@ def collect_round_sharp_odds(
         }
 
     snapshot_dir.mkdir(parents=True, exist_ok=True)
-    path = snapshot_dir / f"{gm_ts}.json"
     data = {"gm_ts": gm_ts, "snapshots": []}
     if path.exists():
         try:

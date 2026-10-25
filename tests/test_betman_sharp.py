@@ -37,3 +37,25 @@ def test_match_by_name_and_reject_ambiguous():
 
     # 이름 매핑이 없고 같은 시각·비슷한 배당 후보가 둘이면 짝짓지 않는다
     assert match_betman_to_events(betman, events[:2], {}) is None
+
+
+def test_recent_snapshot_is_reused_without_api(tmp_path, monkeypatch):
+    """20시간 안에 찍은 스냅샷이 있으면 API를 부르지 않고 재사용한다 (무료 한도 보호)"""
+    import json
+    from datetime import timedelta
+    import collector.betman_sharp as bs
+    now = datetime.now(timezone.utc)
+    ko = (now + timedelta(days=1)).astimezone(bs.KST)
+    match_time = ko.strftime("%y.%m.%d (월) %H:%M")
+    m = {"match_seq": "7", "sport": "SC", "game_type": "축구 승무패", "league": "잉글랜드 프리미어리그",
+         "match_time": match_time, "home_team": "리버풀", "away_team": "아스널",
+         "odds": {"home_win": 2.0, "draw": 3.4, "away_win": 3.4}}
+    snap = {"gm_ts": 1, "snapshots": [{"captured_at": (now - timedelta(hours=3)).isoformat(),
+                                       "matches": {"7": {"sharp_probs": {"home_win": 0.5}}}}]}
+    (tmp_path / "1.json").write_text(json.dumps(snap), encoding="utf-8")
+
+    def boom(*a, **k):
+        raise AssertionError("API를 호출하면 안 됨")
+    monkeypatch.setattr(bs, "fetch_league_events", boom)
+    out = bs.collect_round_sharp_odds(1, [m], api_key="dummy", snapshot_dir=tmp_path)
+    assert out == {"7": {"sharp_probs": {"home_win": 0.5}}}

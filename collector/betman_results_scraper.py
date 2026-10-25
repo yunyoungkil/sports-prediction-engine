@@ -13,6 +13,7 @@ import http.cookiejar
 import urllib.request
 from pathlib import Path
 from typing import List, Dict, Any
+from collector.net_retry import open_with_retry
 
 if sys.platform.startswith('win'):
     try:
@@ -59,7 +60,7 @@ class BetmanResultsScraper:
                 headers=self.headers,
                 method="POST"
             )
-            res = self.opener.open(req, timeout=10)
+            res = open_with_retry(self.opener, req, timeout=10, label=f"{gm_ts}회차 결과 조회")
             data = json.loads(res.read().decode("utf-8"))
             raw_items = data.get("detlBody", [])
         except Exception as e:

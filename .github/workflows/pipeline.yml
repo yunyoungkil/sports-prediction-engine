@@ -2,12 +2,16 @@ name: Sports Prediction Engine Pipeline
 
 on:
   schedule:
-    # 프로토 승부식 발매 일정에 맞추어 매주 수요일, 금요일 한국시간 오전 09:30, 오후 14:30 실행
-    # UTC 기준: 00:30, 05:30 (수, 금)
-    - cron: '30 0,5 * * 3,5'
-    # 주말 주요 경기 시작 직전 마감 배당 추적(CLV) 및 최종 갱신 (토/일 한국시간 13:00 / UTC 04:00)
-    - cron: '0 4 * * 6,0'
+    # 매일 2회 (한국시간 09:30, 18:30 = UTC 00:30, 09:30)
+    # - 회차가 언제 열리든 경기 시작 전 예측 기록·가상 베팅이 빠지지 않도록 매일 실행
+    # - 해외 배당(The Odds API)은 회차당 20시간에 한 번만 조회해 월 무료 한도(500) 안에서 사용
+    - cron: '30 0,9 * * *'
   workflow_dispatch: # 깃허브 웹 화면에서 'Run workflow' 버튼으로 언제든 수동 즉시 실행 가능
+
+# 수동 실행과 예약 실행이 겹치면 커밋·푸시가 충돌하므로 한 번에 하나만 (뒤 실행은 대기)
+concurrency:
+  group: sports-pipeline
+  cancel-in-progress: false
 
 jobs:
   run-pipeline:
@@ -31,10 +35,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 4. 과거 데이터 동기화 (주 1회 수요일 정기 갱신 또는 최초 실행)
+      - name: 4. 과거 데이터 동기화 · 주간 재학습 (수요일 오전 실행 1회, 또는 최초 실행)
         run: |
-          # 파일이 없거나 매주 수요일(3)에 진행 중인 시즌의 최신 경기 결과 동기화
-          if [ ! -f "data/history/all_historical_matches.csv" ] || [ "$(date +%u)" -eq 3 ]; then
+          # 파일이 없거나, 수요일(3) 오전(UTC 3시 이전) 실행일 때만 — 하루 2회 실행이라 재학습이 두 번 돌지 않게 함
+          if [ ! -f "data/history/all_historical_matches.csv" ] || { [ "$(date -u +%u)" -eq 3 ] && [ "$(date -u +%H)" -lt 3 ]; }; then
             python collector/download_history.py
             # [Phase 5.3] 주 1회 시장 보정 모델 재학습 (게이트 미통과 시 파이프라인은 자동으로 시장 단독)
             python -m models.market_corrector
