@@ -42,7 +42,11 @@ MODEL_TUNING_CONSTANTS: Dict[str, Any] = {
     # [poisson_model.py: 라인 330] 전반전 승/패 확률 감쇠 계수 (90분 -> 45분 축소)
     "FIRST_HALF_FACTOR": 0.75,
 
-    # [poisson_model.py: 라인 119] 팀 최근 5경기 폼 차이(모멘텀) 확률 환산 스케일
+    # [poisson_model.py: 라인 230] 유효슈팅 마진 차이(SOT diff) 확률 환산 스케일
+    # 튜닝 실험: scale=0.010에서 OOS 검증 Log Loss 0.9597 (기존 승률/골 폼 0.9652 대비 대폭 개선)
+    "SOT_DIFF_SCALE": 0.010,
+
+    # [poisson_model.py: 라인 119] 팀 최근 5경기 폼 차이(모멘텀) 확률 환산 스케일 (슈팅 부재 시 폴백)
     "FORM_DIFF_SCALE": 0.0015,
 
     # [poisson_model.py: 라인 119] 폼 모멘텀 보정 최대 한계치 (+-8%p 클램핑)

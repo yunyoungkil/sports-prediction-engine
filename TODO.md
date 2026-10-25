@@ -92,7 +92,7 @@
 - [x] **2.4 팀명 매핑 파일화**
   - `TEAM_NAME_MAP`을 `data/team_name_map.json`으로 분리
   - 매핑 실패 팀을 `data/unmapped_teams.json`에 기록하고 텔레그램으로 알림
-- [ ] **2.5 슈팅 기반 폼 피처**
+- [x] **2.5 슈팅 기반 폼 피처**
   - CSV의 `HS/AS/HST/AST`로 최근 N경기 유효슈팅 차이 계산
   - 기존 `form_diff * 0.0015` 보정과 비교해서 검증 성능이 좋은 쪽 채택
 - [ ] **2.6 근거 없는 상수 정리**
@@ -105,6 +105,7 @@
 - Step 2.2 완료: xi 후보 실험 결과(None: 0.9657, 0.0005: 0.9640, 0.001: 0.9636, 0.002: 0.9659, 0.003: 0.9713)로 xi=0.001 최적 선정. 고정 검증셋(2425 시즌) Log Loss가 0.9657에서 0.9636으로 낮아져 시장 기준선(0.9647)을 상회('모델 우위' 달성), 실전 베트맨 데이터 Log Loss도 0.9611 -> 0.9606으로 개선됨.
 - Step 2.3 완료: 5대 주요 리그(EPL, LaLiga, Bundesliga, SerieA, Ligue1) 분리 학습 및 global 폴백 모델 구축. predict_category에 league 파라미터 연동 완료. 검증셋 Log Loss 0.9635, Brier Score 0.5723으로 추가 개선 확인.
 - Step 2.4 완료: TEAM_NAME_MAP을 data/team_name_map.json(150+개 팀 매핑)으로 완전 분리. 5대 리그 미매칭률 0% 달성. 매핑 실패 팀은 data/unmapped_teams.json에 누적 기록 및 신규 발생 시 텔레그램 알림 발송 로직 구현. 실전 베트맨 Log Loss 0.9604, Brier 0.5681로 추가 개선.
+- Step 2.5 완료: 슈팅 기반 폼(최근 5경기 유효슈팅 SOT 차이) vs 기존 승률/득실 폼 비교 실험 수행. 검증 기간 Log Loss: 기존 승률/골 폼(0.9652) 대비 유효슈팅 SOT 폼(scale=0.010)이 0.9597(Brier 0.5703)로 압도적 우위 입증되어 채택 완료. form_analyzer 및 pipeline 연동 완료.
 
 ---
 

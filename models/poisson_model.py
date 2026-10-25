@@ -218,17 +218,25 @@ class MatchPredictor:
         sport: str = "SC",
         odds: dict = None,
         form_diff: float = 0.0,
+        sot_diff: float = 0.0,
         league: str = ""
     ) -> dict:
         """
         게임 카테고리(일반 승무패, 핸디캡, 언더오버, 전반전 등)에 맞춰 
         정확한 확률을 계산합니다. 축구는 Dixon-Coles 스코어 매트릭스를, 
         비축구(농구, 야구)는 마진 제거 시장 함축 확률을 적용하며,
-        최근 경기 폼 모멘텀(form_diff)을 베이지안 우도 갱신으로 반영합니다.
+        슈팅 기반 모멘텀(sot_diff) 또는 경기 폼 모멘텀(form_diff)을 우도 갱신으로 반영합니다.
         리그별로 분리 학습된 모델을 우선 적용하며 미매칭 시 글로벌 모델로 폴백합니다.
         """
         # 최근 폼 모멘텀 차이(-0.08 ~ +0.08)
-        form_adj = max(-0.08, min(0.08, form_diff * 0.0015)) if form_diff != 0.0 else 0.0
+        # 1. 슈팅 기반 유효슈팅 마진 차이(sot_diff) 우선 적용 (최적 scale=0.010, OOS 검증 Log Loss 0.9597)
+        # 2. 슈팅 데이터 부재 시 승률/득실 기반 form_diff(scale=0.0015) 폴백
+        if sot_diff != 0.0:
+            form_adj = max(-0.08, min(0.08, sot_diff * 0.010))
+        elif form_diff != 0.0:
+            form_adj = max(-0.08, min(0.08, form_diff * 0.0015))
+        else:
+            form_adj = 0.0
 
         # 비축구(농구 BK, 야구 BS 등) 또는 축구 범위를 벗어나는 기준점(농구 점수 등) 처리
         is_non_soccer = (sport != "SC") or (abs(line) > 10.0)

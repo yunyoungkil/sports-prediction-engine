@@ -107,7 +107,12 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         a_score = (away_form['win_rate_pct'] + (away_form['avg_scored'] - away_form['avg_conceded']) * 15) if away_form.get('has_data') else 0
         form_diff = h_score - a_score
 
-        # 카테고리별(일반/핸디캡/언더오버/전반전) 정밀 AI 확률 계산 (폼 모멘텀 및 리그별 모델 반영)
+        # 슈팅 기반(유효슈팅 마진 차이) 피처 산출 (최근 5경기 SOT 차이)
+        sot_diff = 0.0
+        if home_form.get('has_sot') and away_form.get('has_sot'):
+            sot_diff = home_form.get('sot_diff', 0.0) - away_form.get('sot_diff', 0.0)
+
+        # 카테고리별(일반/핸디캡/언더오버/전반전) 정밀 AI 확률 계산 (슈팅 기반 폼 및 리그별 모델 반영)
         pred = predictor.predict_category(
             home, away,
             category=category,
@@ -115,6 +120,7 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             sport=m.get("sport", "SC"),
             odds=odds,
             form_diff=form_diff,
+            sot_diff=sot_diff,
             league=m.get("league", "")
         )
         model_probs = {

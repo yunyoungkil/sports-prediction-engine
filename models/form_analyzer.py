@@ -15,43 +15,19 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 import pandas as pd
 
-# 팀명 정규화 매핑 (유럽 5대 리그 영문 매핑)
-TEAM_NAME_MAP = {
-    # EPL
-    "아스널": "Arsenal", "리버풀": "Liverpool", "맨체스터C": "Man City", "맨체스C": "Man City",
-    "맨체스터U": "Man United", "맨체스U": "Man United", "첼시": "Chelsea", "토트넘": "Tottenham",
-    "뉴캐슬": "Newcastle", "애스턴빌라": "Aston Villa", "브라이턴": "Brighton", "웨스트햄": "West Ham",
-    "에버턴": "Everton", "풀럼": "Fulham", "울버햄프턴": "Wolves", "크리스탈": "Crystal Palace",
-    "본머스": "Bournemouth", "브렌트퍼드": "Brentford", "노팅엄": "Nott'm Forest", "사우샘프턴": "Southampton",
-    "레스터": "Leicester", "입스위치": "Ipswich",
-    
-    # La Liga
-    "레알마드리드": "Real Madrid", "레알마드": "Real Madrid", "바르셀로나": "Barcelona",
-    "아틀마드": "Ath Madrid", "아틀레티코": "Ath Madrid", "빌바오": "Ath Bilbao", "소시에다드": "Sociedad",
-    "비야레알": "Villarreal", "세비야": "Sevilla", "발렌시아": "Valencia", "베티스": "Betis",
-    "지로나": "Girona", "마요르카": "Mallorca", "오사수나": "Osasuna", "헤타페": "Getafe",
-    "에스파뇰": "Espanyol", "셀타비고": "Celta", "알라베스": "Alaves", "라스팔마스": "Las Palmas",
-    "바야돌리드": "Valladolid", "레가네스": "Leganes",
-    
-    # Serie A
-    "인터밀란": "Inter", "AC밀란": "Milan", "유벤투스": "Juventus", "나폴리": "Napoli",
-    "AS로마": "Roma", "라치오": "Lazio", "아탈란타": "Atalanta", "피오렌티나": "Fiorentina",
-    "토리노": "Torino", "볼로냐": "Bologna", "우디네세": "Udinese", "제노아": "Genoa",
-    "칼리아리": "Cagliari", "엠폴리": "Empoli", "파르마": "Parma", "몬차": "Monza",
-    "베로나": "Verona", "레체": "Lecce", "베네치아": "Venezia", "코모": "Como",
-    
-    # Bundesliga
-    "바이에른뮌헨": "Bayern Munich", "뮌헨": "Bayern Munich", "도르트문트": "Dortmund",
-    "레버쿠젠": "Leverkusen", "라이프치히": "RB Leipzig", "슈투트가르트": "Stuttgart",
-    "프랑크푸르트": "Ein Frankfurt", "프라이부르크": "Freiburg", "볼프스부르크": "Wolfsburg",
-    "묀헨글라트바흐": "M'gladbach", "베르더브레멘": "Werder Bremen", "아우크스부르크": "Augsburg",
-    "마인츠": "Mainz", "우니온베를린": "Union Berlin", "하이덴하임": "Heidenheim",
-    "호펜하임": "Hoffenheim", "장크트파울리": "St Pauli", "홀슈타인킬": "Holstein Kiel",
-    
-    # Ligue 1
-    "파리생제르맹": "Paris SG", "파리생제": "Paris SG", "모나코": "Monaco", "마르세유": "Marseille",
-    "릴": "Lille", "리옹": "Lyon", "랑스": "Lens", "스타드렌": "Rennes", "니스": "Nice"
-}
+def load_team_name_map(map_path: str = "data/team_name_map.json") -> dict:
+    """팀명 매핑 JSON 파일 로드 (부재 시 빈 딕셔너리)"""
+    p = Path(map_path)
+    if p.exists():
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+TEAM_NAME_MAP = load_team_name_map()
 
 PREFIXES = [
     "1.FC", "1. FC", "VfB", "ACF", "OGC", "RCD", "FSV", "TSG1899", "TSG", 
@@ -158,6 +134,8 @@ class FormAnalyzer:
         results = []
         scored_list = []
         conceded_list = []
+        sot_for_list = []
+        sot_against_list = []
         match_details = []
         seen_dates_opps = set()
 
@@ -248,6 +226,14 @@ class FormAnalyzer:
                         losses += 1
                     results.append(res_char)
 
+                    hst = row.get("HST")
+                    ast = row.get("AST")
+                    if pd.notnull(hst) and pd.notnull(ast):
+                        my_sot = float(hst if is_home else ast)
+                        opp_sot = float(ast if is_home else hst)
+                        sot_for_list.append(my_sot)
+                        sot_against_list.append(opp_sot)
+
                     match_details.append({
                         "date": date_str,
                         "venue": "홈" if is_home else "원정",
@@ -265,11 +251,15 @@ class FormAnalyzer:
                 "record_str": "기록 없음",
                 "avg_scored": 0.0,
                 "avg_conceded": 0.0,
+                "has_sot": False,
+                "sot_diff": 0.0,
                 "last_matches": []
             }
 
         avg_s = round(sum(scored_list) / count, 1) if count > 0 else 0.0
         avg_c = round(sum(conceded_list) / count, 1) if count > 0 else 0.0
+        has_sot = len(sot_for_list) > 0
+        avg_sot_diff = round((sum(sot_for_list) - sum(sot_against_list)) / len(sot_for_list), 2) if has_sot else 0.0
 
         return {
             "has_data": True,
@@ -280,6 +270,8 @@ class FormAnalyzer:
             "win_rate_pct": round((wins / count) * 100, 1) if count > 0 else 0.0,
             "avg_scored": avg_s,
             "avg_conceded": avg_c,
+            "has_sot": has_sot,
+            "sot_diff": avg_sot_diff,
             "last_matches": match_details
         }
 
