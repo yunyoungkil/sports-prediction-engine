@@ -26,8 +26,22 @@ LEAGUES = {
     "F1": "Ligue1 (프랑스 리그1)"
 }
 
-# 최근 시즌 목록 (예: 2324 = 2023-2024 시즌, 2425 = 2024-2025 시즌)
-SEASONS = ["2223", "2324", "2425"]
+from datetime import datetime
+
+
+def get_seasons_up_to_current(start_year: int = 2022) -> list:
+    """
+    현재 연도/월을 기준으로 2022-2023 시즌부터 현재 진행 중인 시즌까지
+    시즌 코드 목록을 자동 생성합니다 (예: ['2223', '2324', '2425', '2526', '2627']).
+    유럽 축구 시즌은 매년 7~8월에 시작하여 이듬해 5~6월에 종료됩니다.
+    """
+    now = datetime.now()
+    end_year = now.year if now.month >= 7 else now.year - 1
+    return [f"{str(y)[-2:]}{str(y+1)[-2:]}" for y in range(start_year, end_year + 1)]
+
+
+# 최근 시즌 목록 (동적 생성: 2223, 2324, 2425, 2526, 2627 ...)
+SEASONS = get_seasons_up_to_current(2022)
 
 BASE_URL = "https://www.football-data.co.uk/mmz4281"
 
@@ -85,9 +99,17 @@ def download_historical_data(target_dir: str = "data/history") -> dict:
         fpath = save_path / item["file"]
         if fpath.exists():
             df = pd.read_csv(fpath, encoding="latin1")
-            keep_cols = [c for c in ["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG", "FTR", "HS", "AS", "HST", "AST", "B365H", "B365D", "B365A"] if c in df.columns]
+            keep_cols = [
+                c for c in [
+                    "Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG", "FTR",
+                    "HS", "AS", "HST", "AST",
+                    "B365H", "B365D", "B365A",
+                    "PSH", "PSD", "PSA",       # Pinnacle 배당 (오프닝)
+                    "PSCH", "PSCD", "PSCA"     # Pinnacle 배당 (마감)
+                ] if c in df.columns
+            ]
             subset = df[keep_cols].dropna(subset=["HomeTeam", "AwayTeam", "FTHG", "FTAG"]).copy()
-            subset["Season"] = item["season"]
+            subset["Season"] = int(item["season"])
             subset["League"] = item["league"]
             all_dfs.append(subset)
 

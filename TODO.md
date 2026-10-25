@@ -77,7 +77,7 @@
 
 > 각 작업 후 `python -m evaluation.report`를 다시 돌려 BASELINE 대비 변화를 메모에 남긴다.
 
-- [ ] **2.1 과거 데이터 최신화**
+- [x] **2.1 과거 데이터 최신화**
   - 파일: `collector/download_history.py`
   - 2025/26, 2026/27 시즌 추가, 시즌 목록을 날짜 기준으로 자동 생성
   - Pinnacle 배당 컬럼(`PSH/PSD/PSA`, 마감 `PSCH/PSCD/PSCA`)도 함께 저장 (Phase 3에서 사용)
@@ -100,7 +100,7 @@
 
 **완료 기준:** 검증 기간 Log loss가 BASELINE보다 개선되고, 매핑 실패 팀이 0이거나 알림으로 관리된다.
 
-메모:
+메모: Step 2.1 완료. 2223~2627 시즌(총 7,428경기) 동적 생성 및 다운로드 구현 완료. Pinnacle 배당 컬럼(PSH, PSD, PSA, PSCH, PSCD, PSCA) 포함 저장 완료. GitHub Actions에서 매주 수요일 정기 갱신 트리거 연동 완료.
 
 ---
 
@@ -195,9 +195,11 @@
   - 새 파일: `tests/test_combo_builder.py`
   - 13개 조합 배당, 절사→절상 경계값(42.801 → 42.8), 동일 경기 거부, 11경기 거부, 1경기(한경기만 허용), 10만 원 초과 거부, 비과세 경계
 - [ ] **A.3 데이터 보강**
-  - 파일: `collector/betman_scraper.py`, `run_pipeline.py`
-  - `match_key`(홈팀|원정팀|경기시각) 추가 → 745/746/747/748처럼 같은 경기의 다른 유형을 묶는다
-  - 발매 마감 시각(`close_time`) 수집: 베트맨 API 응답 필드 확인, 마감된 경기는 선택 목록에서 제외
+  - 파일: `collector/betman_scraper.py` (`detailSchedule.do` 응답의 `schedules[]`에 이미 있는 필드를 저장만 추가)
+  - `match_key` ← `gameKey` (예: `알크마르:트벤테`, 745 승무패·746 핸디캡이 같은 값) → 동일 경기 조합 금지에 사용
+  - `close_time` ← `endDate` (ms 타임스탬프, 예: 745 → 26.10.25 23:00 마감) → 마감된 경기는 선택 목록에서 제외
+  - `kickoff_ts` ← `gameDate` (ms 타임스탬프, 정렬·비교용. 기존 `match_time` 문자열은 표시용으로 유지)
+  - 판매 상태: `buyReject`, `gameReject`, `protoStatus`, `matchState` 저장 → 마감·발매중지 경기와 값 비교해 의미 확정 후 필터에 사용
   - `ARCHITECTURE.md` 스키마 갱신
 - [ ] **A.4 STEP 01 맞춤조건설정 화면**
   - 파일: `dashboard/app.py` (또는 `dashboard/pages/` 분리)

@@ -28,9 +28,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 4. 과거 데이터 존재 확인 (없으면 다운로드)
+      - name: 4. 과거 데이터 동기화 (주 1회 수요일 정기 갱신 또는 최초 실행)
         run: |
-          if [ ! -f "data/history/all_historical_matches.csv" ]; then
+          # 파일이 없거나 매주 수요일(3)에 진행 중인 시즌의 최신 경기 결과 동기화
+          if [ ! -f "data/history/all_historical_matches.csv" ] || [ "$(date +%u)" -eq 3 ]; then
             python collector/download_history.py
           fi
 
