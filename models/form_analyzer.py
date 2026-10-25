@@ -55,7 +55,11 @@ def parse_date_value(date_val: Any) -> Optional[pd.Timestamp]:
             return pd.Timestamp(year=2000 + int(m.group(1)), month=int(m.group(2)), day=int(m.group(3)))
         except Exception:
             pass
-    res = pd.to_datetime(s, dayfirst=True, errors="coerce")
+    # ISO 형식(YYYY-MM-DD)은 dayfirst 없이 파싱 (dayfirst=True면 월/일이 뒤바뀜)
+    if re.match(r'^\d{4}-\d{2}-\d{2}', s):
+        res = pd.to_datetime(s, errors="coerce")
+    else:
+        res = pd.to_datetime(s, dayfirst=True, errors="coerce")
     return res if pd.notnull(res) else None
 
 

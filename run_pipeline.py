@@ -99,7 +99,8 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     predictor = MatchPredictor()
     form_analyzer = FormAnalyzer()
     from models.blender import MarketModelBlender
-    blender = MarketModelBlender()
+    # 튜닝 셋에서 적합된 계수(data/blender_params.json) 사용, 없으면 시장 단독
+    blender = MarketModelBlender.load()
     
     # 3. 각 경기별 예측 및 기대가치 평가
     print("\n🧠 [2/3] 전 경기 AI 승률 계산 및 기대가치(EV) 분석 중...")

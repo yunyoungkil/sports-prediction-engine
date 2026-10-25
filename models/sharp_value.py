@@ -108,19 +108,28 @@ def evaluate_historical_sharp_mispricing(
     df: pd.DataFrame,
     seasons: Optional[List[int]] = None,
     ev_threshold: float = 0.02,
-    flat_stake: int = 10000
+    flat_stake: int = 10000,
+    prefer_closing: bool = False
 ) -> Dict[str, Any]:
     """
     과거 경기 데이터(all_historical_matches.csv)에서
     샤프 배당 기준 EV > threshold 오가격 탐지 베팅의 시즌별 실전 ROI와 95% 신뢰구간을 검증합니다.
+
+    ⚠️ 누수 방지 (REVIEW R10):
+    - 기본값(prefer_closing=False)은 시가 샤프 배당(BFE*/PS*)만 사용합니다. 대상 배당(B365*)도 시가이므로
+      베팅 시점에 알 수 있는 정보끼리 비교합니다.
+    - prefer_closing=True(마감 BFEC*/PSC*)는 경기 직전 정보를 미리 쓰는 것이라 참고용 상한선일 뿐,
+      실전 성과의 근거로 쓰면 안 됩니다.
+    - 대상 배당은 베트맨이 아니라 Bet365입니다. 베트맨 과거 배당으로 검증하기 전까지는 베트맨 수익성 근거가 아닙니다.
     """
     from collector.sharp_odds import SharpOddsCollector
 
-    sharp_df = SharpOddsCollector.extract_historical_sharp_odds(df, prefer_closing=True)
+    sharp_df = SharpOddsCollector.extract_historical_sharp_odds(df, prefer_closing=prefer_closing)
     target_seasons = seasons or [2223, 2324, 2425, 2526]
 
     results_by_season = {}
     all_returns = []
+    source_counts: Dict[str, int] = {}
 
     for season in target_seasons:
         s_df = sharp_df[sharp_df["Season"] == season].copy()
@@ -129,6 +138,9 @@ def evaluate_historical_sharp_mispricing(
         wins_count = 0
 
         for _, row in s_df.iterrows():
+            # 샤프 배당이 없어 Bet365로 대체된 행은 자기 자신과 비교하게 되므로 제외
+            if row.get("sharp_source") in ("Bet365_Fallback", "None"):
+                continue
             sh_h = row.get("sharp_home")
             sh_d = row.get("sharp_draw")
             sh_a = row.get("sharp_away")
@@ -152,6 +164,8 @@ def evaluate_historical_sharp_mispricing(
             ret = (sel_odd - 1.0) if is_win else -1.0
             season_returns.append(ret)
             all_returns.append(ret)
+            src = row.get("sharp_source")
+            source_counts[src] = source_counts.get(src, 0) + 1
             bets_count += 1
             if is_win:
                 wins_count += 1
@@ -180,6 +194,9 @@ def evaluate_historical_sharp_mispricing(
 
     return {
         "ev_threshold": ev_threshold,
+        "prefer_closing": prefer_closing,
+        "lookahead": prefer_closing,
+        "sharp_source_counts": source_counts,
         "total_bets": len(all_returns),
         "total_roi_pct": round(total_roi, 2),
         "total_roi_ci_low": tot_low,
@@ -200,8 +217,11 @@ if __name__ == "__main__":
         sys.exit(1)
 
     df_all = pd.read_csv(csv_path)
-    for thresh in [0.0, 0.02, 0.04]:
-        res = evaluate_historical_sharp_mispricing(df_all, seasons=[2425, 2526], ev_threshold=thresh)
-        print(f"\n📊 [EV > {thresh*100:.0f}% 기준선] 전체 베팅: {res['total_bets']}건 | ROI: {res['total_roi_pct']:+.2f}% [{res['total_roi_ci_low']:+.2f}%, {res['total_roi_ci_high']:+.2f}%]")
-        for s, s_data in res["by_season"].items():
-            print(f"  • {s}시즌: {s_data['bets_count']}경기 베팅 | 적중률: {s_data['win_rate_pct']}% | ROI: {s_data['roi_pct']:+.2f}% [{s_data['roi_ci_low']:+.2f}%, {s_data['roi_ci_high']:+.2f}%]")
+    for closing, label in [(False, "시가 샤프 배당 (베팅 시점 정보, 실전 근거)"),
+                           (True, "마감 샤프 배당 (⚠️ 미래 정보 사용, 참고용 상한선)")]:
+        print(f"\n### {label}")
+        for thresh in [0.0, 0.02, 0.04]:
+            res = evaluate_historical_sharp_mispricing(df_all, seasons=[2425, 2526], ev_threshold=thresh, prefer_closing=closing)
+            print(f"\n📊 [EV > {thresh*100:.0f}% 기준선] 전체 베팅: {res['total_bets']}건 | ROI: {res['total_roi_pct']:+.2f}% [{res['total_roi_ci_low']:+.2f}%, {res['total_roi_ci_high']:+.2f}%] | 출처: {res['sharp_source_counts']}")
+            for s, s_data in res["by_season"].items():
+                print(f"  • {s}시즌: {s_data['bets_count']}경기 베팅 | 적중률: {s_data['win_rate_pct']}% | ROI: {s_data['roi_pct']:+.2f}% [{s_data['roi_ci_low']:+.2f}%, {s_data['roi_ci_high']:+.2f}%]")

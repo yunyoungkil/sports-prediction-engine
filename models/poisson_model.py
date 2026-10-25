@@ -149,7 +149,11 @@ class MatchPredictor:
             if self.train_seasons is not None:
                 self.df = self.df[self.df["Season"].isin(self.train_seasons)]
             if self.train_until is not None:
-                until_dt = pd.to_datetime(self.train_until, dayfirst=True)
+                # ISO(YYYY-MM-DD) 문자열에 dayfirst=True를 쓰면 월/일이 뒤바뀜 (2026-10-05 -> 05-10)
+                if re.match(r"^\d{4}-\d{2}-\d{2}", str(self.train_until)):
+                    until_dt = pd.Timestamp(str(self.train_until))
+                else:
+                    until_dt = pd.to_datetime(self.train_until, dayfirst=True)
                 if "ParsedDate" in self.df.columns:
                     self.df = self.df[self.df["ParsedDate"] < until_dt]
 
