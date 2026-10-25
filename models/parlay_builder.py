@@ -37,11 +37,11 @@ def get_pick_item(match: Dict[str, Any], selection: Optional[str] = None) -> Dic
         ev_val = (prob_val * odds_val) - 1.0 if (odds_val > 1.0 and prob_val > 0) else -1.0
         ev_val = round(ev_val, 4)
         if ev_val >= 0.02 and prob_val >= 0.50:
-            grade_val = "S (👑 초고승률 황금 픽)"
+            grade_val = "S (참고용 - 고승률)"
         elif ev_val >= 0.02 and prob_val >= 0.42:
-            grade_val = "A (🟢 밸런스 가치 픽)"
+            grade_val = "A (참고용 - 밸런스)"
         elif ev_val >= 0.06:
-            grade_val = "B (🔵 고배당 분산 픽)"
+            grade_val = "B (참고용 - 고배당)"
         else:
             grade_val = "PASS (가치 낮음)"
             

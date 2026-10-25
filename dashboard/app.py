@@ -26,6 +26,7 @@ from datetime import datetime
 import streamlit as st
 import pandas as pd
 
+from models.combo_builder import calculate_combined_odds, calculate_payout
 from models.parlay_builder import (
     build_recommended_parlays,
     build_banker_wheel_combinations,
@@ -157,7 +158,7 @@ def generate_bet_slip_text(picks, combined_odds, combined_prob_pct=None, combine
     lines.append(summary)
     
     if stake and stake > 0:
-        payout = int(stake * combined_odds)
+        payout = calculate_payout(combined_odds, stake)
         net_profit = payout - stake
         lines.append(f"💰 베팅금: {stake:,}원 ➔ 예상 환급금: {payout:,}원 (순수익: {net_profit:+,}원)")
         
@@ -249,7 +250,28 @@ with tab1:
                     f"현재 샤프 배당(Betfair Exchange)과의 결합 및 모델·시장 블렌딩(Phase 3)을 통한 고도화 작업이 진행 중입니다."
                 )
 
-        # 1. 상단 KPI 카드
+        # 실전 누적 검증 성과 & 95% 신뢰구간 (Step 4.3 대시보드 정직화)
+        if stats:
+            s_roi = stats.get("roi_pct", 0.0)
+            s_ci_low = stats.get("roi_ci_low", 0.0)
+            s_ci_high = stats.get("roi_ci_high", 0.0)
+            s_clv = stats.get("avg_clv_pct", 0.0)
+            s_clv_cnt = stats.get("clv_sample_count", 0)
+            stk_comp = stats.get("staking_comparison", {})
+            k_roi = stk_comp.get("kelly_roi_pct", 0.0)
+            with st.container(border=True):
+                st.markdown("##### 📊 실전 베트맨 누적 검증 성과 (과장 없는 투명 공개)")
+                hc1, hc2, hc3, hc4 = st.columns(4)
+                with hc1:
+                    st.metric("실전 누적 ROI (고정 1만원)", f"{s_roi:+.2f}%", f"95% CI: [{s_ci_low:+.1f}%, {s_ci_high:+.1f}%]")
+                with hc2:
+                    st.metric("1/4 켈리 동적 자금관리 ROI", f"{k_roi:+.2f}%", "최대 2% 상한선 적용")
+                with hc3:
+                    st.metric("CLV (마감 배당 대비 우위)", f"{s_clv:+.2f}%", f"스냅샷 표본: {s_clv_cnt}건")
+                with hc4:
+                    st.metric("전체 적중률", f"{stats.get('win_rate_pct', 0.0):.1f}%", f"{stats.get('won_bets', 0)}/{stats.get('total_bets_placed', 0)} 적중")
+
+        # 1. 상단 이번 회차 KPI 카드
         total_matches = len(predictions)
         rec_matches = [m for m in predictions if m["evaluation"]["is_recommended"]]
         rec_count = len(rec_matches)
@@ -368,7 +390,9 @@ with tab1:
         for m in filtered[:60]:  # 상위 60개 렌더링
             eval_info = m["evaluation"]
             odds = m["betman_odds"]
-            probs = m["model_probabilities"]
+            probs = m.get("model_probabilities", {})
+            mkt_probs = m.get("market_implied_probs", {})
+            blended_probs = m.get("blended_probabilities", {})
             sel_labels = m.get("selection_labels", {})
             m_seq = str(m["match_seq"])
             
@@ -439,9 +463,14 @@ with tab1:
                         else:
                             st.session_state["cart_picks"][m_seq] = "home_win"
                         st.rerun()
-                    ev_h = ((probs['home_win'] * odds['home_win']) - 1) * 100 if odds['home_win'] > 1.0 else 0
-                    st.caption(f"AI: **{probs['home_win']*100:.1f}%** | EV: **{ev_h:+.1f}%**")
-                    st.progress(probs['home_win'])
+                    m_h = probs.get('home_win', 0.0)
+                    mkt_h = mkt_probs.get('home', 0.0)
+                    b_h = blended_probs.get('home_win', m_h)
+                    diff_h = m_h - mkt_h
+                    ev_h = ((b_h * odds['home_win']) - 1) * 100 if odds['home_win'] > 1.0 else 0
+                    st.caption(f"모델: **{m_h*100:.1f}%** | 시장: **{mkt_h*100:.1f}%** ({diff_h*100:+.1f}%p)")
+                    st.caption(f"블렌딩: **{b_h*100:.1f}%** | EV: **{ev_h:+.1f}%**")
+                    st.progress(max(0.0, min(1.0, b_h)))
 
                 with col_d:
                     if odds['draw'] > 0:
@@ -454,9 +483,14 @@ with tab1:
                             else:
                                 st.session_state["cart_picks"][m_seq] = "draw"
                             st.rerun()
-                        ev_d = ((probs['draw'] * odds['draw']) - 1) * 100 if odds['draw'] > 1.0 else 0
-                        st.caption(f"AI: **{probs['draw']*100:.1f}%** | EV: **{ev_d:+.1f}%**")
-                        st.progress(probs['draw'])
+                        m_d = probs.get('draw', 0.0)
+                        mkt_d = mkt_probs.get('draw', 0.0)
+                        b_d = blended_probs.get('draw', m_d)
+                        diff_d = m_d - mkt_d
+                        ev_d = ((b_d * odds['draw']) - 1) * 100 if odds['draw'] > 1.0 else 0
+                        st.caption(f"모델: **{m_d*100:.1f}%** | 시장: **{mkt_d*100:.1f}%** ({diff_d*100:+.1f}%p)")
+                        st.caption(f"블렌딩: **{b_d*100:.1f}%** | EV: **{ev_d:+.1f}%**")
+                        st.progress(max(0.0, min(1.0, b_d)))
                     else:
                         st.caption("무승부 없음 (2지선다 게임)")
 
@@ -470,9 +504,14 @@ with tab1:
                         else:
                             st.session_state["cart_picks"][m_seq] = "away_win"
                         st.rerun()
-                    ev_a = ((probs['away_win'] * odds['away_win']) - 1) * 100 if odds['away_win'] > 1.0 else 0
-                    st.caption(f"AI: **{probs['away_win']*100:.1f}%** | EV: **{ev_a:+.1f}%**")
-                    st.progress(probs['away_win'])
+                    m_a = probs.get('away_win', 0.0)
+                    mkt_a = mkt_probs.get('away', 0.0)
+                    b_a = blended_probs.get('away_win', m_a)
+                    diff_a = m_a - mkt_a
+                    ev_a = ((b_a * odds['away_win']) - 1) * 100 if odds['away_win'] > 1.0 else 0
+                    st.caption(f"모델: **{m_a*100:.1f}%** | 시장: **{mkt_a*100:.1f}%** ({diff_a*100:+.1f}%p)")
+                    st.caption(f"블렌딩: **{b_a*100:.1f}%** | EV: **{ev_a:+.1f}%**")
+                    st.progress(max(0.0, min(1.0, b_a)))
 
                 # 스코어 및 부가 지표
                 if m.get("top_scores"):
@@ -554,8 +593,8 @@ with tab2:
         # -------------------------------------------------------------
         # 고정 축(Banker) + 변수 경기 전수 마킹(Wheel) 헤징 전략
         # -------------------------------------------------------------
-        st.markdown("### 🛡️ 고정 축(Banker 2경기) + 변수 경기 전수 마킹(Wheel 1경기) 헤징 전략")
-        st.caption("💡 확실한 승률 70%+ 축 2경기에 2배당 이상의 변수 경기 [승 / 무 / 패] 3가지를 전수 분할 마킹하여, 변수를 100% 방어하면서 고배당 수익을 확정 짓는 실전 노하우 전략입니다.")
+        st.markdown("### 🛡️ 고정 축(Banker 2경기) + 변수 경기 분할 마킹(Wheel 1경기) 전략")
+        st.caption("💡 승률 높은 축 2경기에 변수 경기 [승 / 무 / 패] 3가지를 분할 마킹하는 전략입니다. (주의: 축 2경기 중 하나라도 틀리면 3장 모두 미적중되어 전액 손실이 발생합니다)")
 
         wheel_data = build_banker_wheel_combinations(predictions)
         if wheel_data.get("valid"):
@@ -571,7 +610,7 @@ with tab2:
                 # 상단 헤더 요약 3열
                 wc1, wc2, wc3 = st.columns([1.5, 1.5, 1.2])
                 with wc1:
-                    st.markdown("##### 📌 확실한 축 (Bankers 2경기)")
+                    st.markdown("##### 📌 고정 축 (Bankers 2경기)")
                     st.markdown(
                         f"<div class='notranslate' style='font-size:0.95rem; line-height:1.6;'>"
                         f"• <b>#{b1['match_seq']} [{b1['league']}]</b> {b1['home_team']} vs {b1['away_team']}<br>"
@@ -584,7 +623,7 @@ with tab2:
                     st.markdown(f"🔒 **축 2경기 결합 배당:** `{bank_odds}배` (AI 결합 승률: `{bank_prob_pct}`)")
 
                 with wc2:
-                    st.markdown("##### 🎲 변수 타겟 (Wheel 1경기 전수 마킹)")
+                    st.markdown("##### 🎲 변수 타겟 (Wheel 1경기 분할 마킹)")
                     st.markdown(
                         f"<div class='notranslate' style='font-size:0.95rem; line-height:1.6;'>"
                         f"• <b>#{wm['match_seq']} [{wm['league']}]</b> {wm['home_team']} vs {wm['away_team']}<br>"
@@ -594,12 +633,12 @@ with tab2:
                         f"</div>",
                         unsafe_allow_html=True
                     )
-                    st.markdown("⚡ **[홈 / 무 / 원정] 3장으로 분할 마킹 ➔ 변수 경기 100% 적중!**")
+                    st.markdown("⚡ **[홈 / 무 / 원정] 3장 분할 마킹 (축 2경기 통과 시 1장 적중)**")
 
                 with wc3:
                     st.markdown("##### 🎯 전략 기대 성과")
-                    st.metric("최소 보장 배당률", f"{min_combo_odds} 배", "어떤 결과가 나와도 최소 이 배당!")
-                    st.metric("축 2경기 적중 확률", bank_prob_pct, "축만 통과하면 순수익 확정")
+                    st.metric("최소 결합 배당률", f"{min_combo_odds} 배", "3장 중 최저 배당 티켓")
+                    st.metric("축 2경기 결합 확률", bank_prob_pct, "축 2경기 모두 적중해야 환급")
 
                 st.divider()
 
@@ -608,20 +647,22 @@ with tab2:
                 sim_col1, sim_col2 = st.columns([1.5, 2.5])
                 with sim_col1:
                     w_stake = st.number_input(
-                        "티켓당 베팅 금액 (원)",
-                        min_value=1000,
+                        "티켓당 베팅 금액 (원, 조합 100원 단위)",
+                        min_value=100,
                         max_value=100000,
                         value=10000,
-                        step=1000,
+                        step=100,
                         key="wheel_stake_input"
                     )
                     total_w_stake = w_stake * 3
-                    st.caption(f"총 투자 금액: **3장 × {w_stake:,}원 = {total_w_stake:,}원**")
+                    st.caption(f"총 투자 금액: **3장 × {w_stake:,}원 = {total_w_stake:,}원** (1인 1회차 한도 10만 원)")
+                    if total_w_stake > 100000:
+                        st.warning("⚠️ 3장 총 투표금액이 1인 1회차 구매 한도(100,000원)를 초과했습니다.")
                 
                 with sim_col2:
                     st.info(
-                        f"💡 **수익 보장 원리:** 3장 중 반드시 1장만 당첨되므로, 당첨금에서 총 베팅금({total_w_stake:,}원)을 뺀 금액이 실제 순수익입니다. "
-                        f"축 2경기(승률 {bank_prob_pct})만 적중하면 100% 순이익이 남습니다."
+                        f"💡 **구조 안내:** 3장 중 최대 1장만 당첨됩니다. "
+                        f"축 2경기(승률 {bank_prob_pct})가 모두 적중할 때에만 당첨금이 발생하며, 축 경기 중 하나라도 틀리면 총 베팅금({total_w_stake:,}원) 전체가 손실됩니다."
                     )
 
                 # 3장 티켓별 결과 시뮬레이션 표
@@ -629,9 +670,9 @@ with tab2:
                 t2_odds = tickets[1]["combined_odds"]
                 t3_odds = tickets[2]["combined_odds"]
 
-                t1_ret = int(w_stake * t1_odds)
-                t2_ret = int(w_stake * t2_odds)
-                t3_ret = int(w_stake * t3_odds)
+                t1_ret = calculate_payout(t1_odds, w_stake)
+                t2_ret = calculate_payout(t2_odds, w_stake)
+                t3_ret = calculate_payout(t3_odds, w_stake)
 
                 t1_prof = t1_ret - total_w_stake
                 t2_prof = t2_ret - total_w_stake
@@ -660,7 +701,7 @@ with tab2:
                         "적중 시 환급금": f"{t2_ret:,}원",
                         "실질 순수익": f"{t2_prof:+,}원",
                         "수익률(ROI)": f"{t2_roi:+.1f}%",
-                        "결과 의미": "🔥 무캐기 고배당 잭팟"
+                        "결과 의미": "🔥 무캐기 고배당"
                     },
                     {
                         "티켓": "🎫 티켓 3 (원정승 ⚡)",
@@ -670,41 +711,52 @@ with tab2:
                         "적중 시 환급금": f"{t3_ret:,}원",
                         "실질 순수익": f"{t3_prof:+,}원",
                         "수익률(ROI)": f"{t3_roi:+.1f}%",
-                        "결과 의미": "⚡ 역배 완벽 방어"
+                        "결과 의미": "⚡ 역배 방어"
                     }
                 ])
                 st.dataframe(wheel_df, use_container_width=True, hide_index=True)
 
-                st.success(
-                    f"✨ **결과 요약:** 축 2경기(승률 {bank_prob_pct}) 적중 시, 변수 경기가 홈승/무승부/역배승 어떤 것으로 끝나도 "
-                    f"**최소 {t3_prof:+,}원 ({min(t1_roi, t2_roi, t3_roi):+.1f}%) ~ 최대 {t2_prof:+,}원 ({max(t1_roi, t2_roi, t3_roi):+.1f}%) 확정 순이익**을 얻습니다!"
-                )
+                min_prof = min(t1_prof, t2_prof, t3_prof)
+                max_prof = max(t1_prof, t2_prof, t3_prof)
+                min_roi = min(t1_roi, t2_roi, t3_roi)
+                max_roi = max(t1_roi, t2_roi, t3_roi)
 
-                # 개별 티켓 바구니 담기 버튼
+                if min_prof >= 0:
+                    st.success(
+                        f"✨ **결과 요약:** 축 2경기(승률 {bank_prob_pct}) 적중 시, 변수 경기 결과에 따라 "
+                        f"**최소 {min_prof:+,}원 ({min_roi:+.1f}%) ~ 최대 {max_prof:+,}원 ({max_roi:+.1f}%) 순이익**이 발생합니다."
+                    )
+                else:
+                    st.warning(
+                        f"⚠️ **결과 요약:** 축 2경기(승률 {bank_prob_pct})가 적중하더라도, 저배당 발생 시 "
+                        f"**최소 {min_prof:+,}원 ({min_roi:+.1f}%, 손실 가능) ~ 최대 {max_prof:+,}원 ({max_roi:+.1f}%)** 범위로 손실이 발생할 수 있습니다."
+                    )
+
+                # 개별 티켓 바구니 담기 버튼 (기존 바구니에 병합)
                 btn_cols = st.columns(3)
                 with btn_cols[0]:
                     if st.button("📥 티켓 1 경기들을 바구니에 담기", use_container_width=True):
-                        st.session_state["cart_picks"] = {
+                        st.session_state.setdefault("cart_picks", {}).update({
                             str(b1["match_seq"]): b1.get("chosen_selection", "home_win"),
                             str(b2["match_seq"]): b2.get("chosen_selection", "home_win"),
                             str(wm["match_seq"]): "home_win"
-                        }
+                        })
                         st.rerun()
                 with btn_cols[1]:
                     if st.button("📥 티켓 2 경기들을 바구니에 담기", use_container_width=True):
-                        st.session_state["cart_picks"] = {
+                        st.session_state.setdefault("cart_picks", {}).update({
                             str(b1["match_seq"]): b1.get("chosen_selection", "home_win"),
                             str(b2["match_seq"]): b2.get("chosen_selection", "home_win"),
                             str(wm["match_seq"]): "draw"
-                        }
+                        })
                         st.rerun()
                 with btn_cols[2]:
                     if st.button("📥 티켓 3 경기들을 바구니에 담기", use_container_width=True):
-                        st.session_state["cart_picks"] = {
+                        st.session_state.setdefault("cart_picks", {}).update({
                             str(b1["match_seq"]): b1.get("chosen_selection", "home_win"),
                             str(b2["match_seq"]): b2.get("chosen_selection", "home_win"),
                             str(wm["match_seq"]): "away_win"
-                        }
+                        })
                         st.rerun()
 
                 with st.expander("📋 헷징 3장 티켓 전체 마킹 슬립 복사 (클릭하여 펼치기)", expanded=False):
@@ -718,7 +770,7 @@ with tab2:
                         f"🎫 티켓 3 (역배승 방어): [축 2경기] + {wm['away_team']} 승 ({wm['odds_away']}배) ➔ 합산 {t3_odds}배 (환급: {t3_ret:,}원 | 순익: {t3_prof:+,}원)",
                         "────────────────────────────────────────",
                         f"💰 티켓당 {w_stake:,}원 베팅 (총 투자 {total_w_stake:,}원)",
-                        f"✨ 축 2경기(승률 {bank_prob_pct}) 적중 시 최소 {min(t1_prof, t2_prof, t3_prof):+,}원 확정 순이익!"
+                        f"✨ 축 2경기(승률 {bank_prob_pct}) 적중 시 예상 순익: {min_prof:+,}원 ~ {max_prof:+,}원"
                     ]
                     st.code("\n".join(wheel_slip_lines), language="text")
         else:
@@ -729,12 +781,13 @@ with tab2:
         # AI 추천 5대 프리셋 생성
         parlay_presets = build_recommended_parlays(predictions)
 
-        st.markdown("### 🌟 AI 추천 5대 최적 포트폴리오")
-        st.write("승률, 기대가치(EV), 카테고리 분산 기준에 따라 엄선된 황금 조합입니다:")
+        st.markdown("### 🌟 AI 추천 5대 포트폴리오 (시뮬레이션)")
+        st.write("승률, 기대가치(EV), 카테고리 분산 기준에 따라 구성된 조합 시뮬레이션입니다:")
+        st.caption("⚠️ **복리 마진 안내:** 2경기 이상 조합 시 베트맨 하우스 마진(약 18%)이 곱으로 누적(2폴더 ~27.8%, 3폴더 ~38.6%)됩니다. 단일 경기 EV가 검증되기 전까지 복수 조합은 **'참고용 시뮬레이션'**으로 제공됩니다.")
 
         preset_labels = {
             "safety_double": ("🛡️ 안정형 2폴더 (Safety Double)", "개별 승률 50% 이상 중심, 안정적인 환급 지향 (합산 2~4배)"),
-            "value_double": ("⚖️ 밸런스 가치 2폴더 (Value Double)", "양의 기대가치(EV)와 적중률의 황금 균형 (합산 3~6배)"),
+            "value_double": ("⚖️ 밸런스 가치 2폴더 (Value Double)", "양의 기대가치(EV)와 적중률의 균형 (합산 3~6배)"),
             "cross_double": ("🔀 크로스 2폴더 (승무패 + 언더오버)", "승패와 득점 기준점을 크로스 분산하여 경기 리스크 헤지"),
             "high_triple": ("🚀 고배당 실전 3폴더 (High-Yield Triple)", "소액 분산 투자용, 고배당 양의 EV 3폴더 조합"),
             "single_king": ("⚡ 단통 1경기 집중 픽 (Single King)", "다른 경기와 묶을 필요 없는 100% 단일 구매 추천 픽")
@@ -750,6 +803,8 @@ with tab2:
                 with col_info:
                     st.markdown(f"#### {title}")
                     st.caption(desc)
+                    if combo.get("compound_margin_pct"):
+                        st.caption(f"누적 복리 마진: `~{combo['compound_margin_pct']:.1f}%`")
                 with col_m1:
                     st.metric("합산 배당률", f"{combo['combined_odds']} 배")
                 with col_m2:
@@ -860,7 +915,7 @@ with tab2:
                 # 📐 켈리 기준(Kelly Criterion) 자금관리 계산기
                 # -------------------------------------------------------------
                 st.markdown("##### 📐 켈리 기준(Kelly Criterion) 자금관리 계산기")
-                st.caption("수학적으로 증명된 켈리 베팅 공식에 따라, 시드머니 규모와 기대가치(EV)에 맞는 최적 투자 금액을 산출합니다.")
+                st.caption("켈리 기준 공식에 따라 시드머니 규모와 기대가치(EV)에 맞춘 추천 베팅 금액을 산출합니다 (과도한 변동성 방지를 위해 1/4~1/2 켈리 권장).")
 
                 k_col1, k_col2, k_col3 = st.columns([1.5, 1.5, 1.2])
                 with k_col1:
@@ -879,17 +934,14 @@ with tab2:
                         "🛡️ 켈리 운용 전략 (위험 선호도)",
                         [
                             "1/4 켈리 (0.25x) - 안정 지향 / MDD 최소화 (권장 ⭐)",
-                            "1/2 켈리 (0.50x) - 밸런스 퀀트 베팅",
-                            "풀 켈리 (1.00x) - 공격형 자산 증식",
-                            "1/8 켈리 (0.125x) - 초보수적 소액 테스트"
+                            "1/2 켈리 (0.50x) - 밸런스 베팅 (허용 상한선)",
+                            "1/8 켈리 (0.125x) - 보수적 소액 테스트"
                         ],
                         index=0
                     )
                     multiplier = 0.25
                     if "1/2" in kelly_mode:
                         multiplier = 0.50
-                    elif "풀" in kelly_mode:
-                        multiplier = 1.00
                     elif "1/8" in kelly_mode:
                         multiplier = 0.125
 
@@ -897,6 +949,10 @@ with tab2:
                     c_odds = metrics["combined_odds"]
                     c_prob = metrics["combined_prob"]
                     c_ev = metrics["combined_ev"]
+                    folders_cnt = metrics.get("folders", len(cart_picks))
+                    is_single_match = (folders_cnt == 1)
+                    min_unit = 1000 if is_single_match else 100
+                    unit_desc = "한경기 1,000원 단위" if is_single_match else "조합 100원 단위"
                     
                     raw_kelly = 0.0
                     if c_odds > 1.0 and c_ev > 0:
@@ -906,7 +962,7 @@ with tab2:
                         
                     applied_kelly = raw_kelly * multiplier
                     rec_stake = int(total_bankroll * applied_kelly)
-                    rec_stake_proto = max(1000, (rec_stake // 1000) * 1000) if rec_stake >= 1000 else 1000
+                    rec_stake_proto = max(min_unit, (rec_stake // min_unit) * min_unit) if rec_stake >= min_unit else min_unit
                     rec_stake_proto = min(100000, rec_stake_proto)
                     
                     st.metric("추천 베팅 비중", f"{applied_kelly * 100:.2f}%", f"이론 100%: {raw_kelly * 100:.1f}%")
@@ -915,9 +971,9 @@ with tab2:
                     res_k1, res_k2, res_k3 = st.columns([1.5, 1.5, 1])
                     with res_k1:
                         st.markdown(f"**💡 수학적 권장 베팅액:** <span style='font-size:1.25rem; color:#2ed573; font-weight:800;'>{rec_stake_proto:,} 원</span>", unsafe_allow_html=True)
-                        st.caption(f"시드머니({total_bankroll:,}원)의 {rec_stake_proto/total_bankroll*100:.1f}% (베트맨 1,000원 단위 반영)")
+                        st.caption(f"시드머니({total_bankroll:,}원)의 {rec_stake_proto/total_bankroll*100:.1f}% (베트맨 {unit_desc} 반영 | 회차 한도 10만 원)")
                     with res_k2:
-                        est_ret = int(rec_stake_proto * c_odds)
+                        est_ret = calculate_payout(c_odds, rec_stake_proto)
                         est_pnl = est_ret - rec_stake_proto
                         st.markdown(f"**적중 시 순익:** <span style='color:#60a5fa; font-weight:700;'>{est_pnl:+,} 원</span> (환급: {est_ret:,}원)", unsafe_allow_html=True)
                         st.caption(f"수학적 기대 순익(EV): {int(rec_stake_proto * c_ev):+,}원")
@@ -928,17 +984,28 @@ with tab2:
 
                 # 모의 베팅 환급금 계산기
                 st.markdown("##### 💰 예상 환급금 & 기대 순익 시뮬레이터")
-                default_val = st.session_state.get("applied_stake", 10000)
-                stake_krw = st.number_input("베팅 희망 금액 (원)", min_value=1000, max_value=100000, value=default_val, step=1000, key="cart_stake_input")
+                default_val = st.session_state.get("applied_stake", 10000 if is_single_match else 1000)
+                default_val = max(min_unit, (default_val // min_unit) * min_unit)
+                default_val = min(100000, default_val)
+                stake_krw = st.number_input(
+                    f"베팅 희망 금액 (원, {unit_desc}, 최대 10만 원)",
+                    min_value=min_unit,
+                    max_value=100000,
+                    value=default_val,
+                    step=min_unit,
+                    key="cart_stake_input"
+                )
+                if stake_krw > 100000:
+                    st.warning("⚠️ 1인 1회차 구매 한도(100,000원)를 초과했습니다.")
                 
-                exp_return = int(stake_krw * metrics["combined_odds"])
-                exp_profit = int(stake_krw * metrics["combined_ev"])
+                exp_return = calculate_payout(metrics["combined_odds"], stake_krw)
+                exp_profit = exp_return - stake_krw
                 
                 res_col1, res_col2 = st.columns(2)
                 with res_col1:
-                    st.markdown(f"• 적중 시 예상 환급금: **`{exp_return:,} 원`** (순수익: {exp_return - stake_krw:+,}원)")
+                    st.markdown(f"• 적중 시 예상 환급금: **`{exp_return:,} 원`** (순수익: {exp_profit:+,}원)")
                 with res_col2:
-                    st.markdown(f"• 수학적 기대 이익(EV): **`{exp_profit:+,} 원`**")
+                    st.markdown(f"• 수학적 기대 이익(EV): **`{int(stake_krw * metrics['combined_ev']):+,} 원`**")
 
                 # 바구니 전체 베팅 슬립 복사
                 st.markdown("##### 📋 마킹 슬립 원클릭 복사 (카톡/베트맨 입력용)")
@@ -1011,7 +1078,7 @@ with tab3:
                 hit_filter = st.selectbox("🎯 적중 여부", ["전체 보기", "✅ 적중한 경기만", "❌ 미적중 경기만"])
 
             with f_col3:
-                grade_filter = st.selectbox("👑 AI 추천 등급", ["전체 등급", "GRADE S (초고승률)", "GRADE A (밸런스 가치)", "GRADE B (고배당)"])
+                grade_filter = st.selectbox("👑 AI 추천 등급", ["전체 등급", "GRADE S (참고용 - 고승률)", "GRADE A (참고용 - 밸런스)", "GRADE B (참고용 - 고배당)"])
 
             with f_col4:
                 team_search = st.text_input("🔎 팀 이름 검색", placeholder="예: 브리즈번, 플라멩구, 릴레스트룀")
@@ -1127,6 +1194,8 @@ with tab4:
         st.warning("⚠️ 아직 검증 통계 데이터가 없습니다. Tab 3의 '실시간 결과 재채점' 버튼을 눌러주세요.")
     else:
         sc1, sc2, sc3, sc4 = st.columns(4)
+        roi_ci_l = stats.get("roi_ci_low", 0.0)
+        roi_ci_h = stats.get("roi_ci_high", 0.0)
         with sc1:
             st.metric("분석 경기 (종료)", f"{stats.get('sample_matches_analyzed', 0):,} 건")
         with sc2:
@@ -1134,7 +1203,25 @@ with tab4:
         with sc3:
             st.metric("전체 적중률", f"{stats.get('win_rate_pct', 0)}%", f"{stats.get('won_bets', 0)}/{stats.get('total_bets_placed', 0)} 적중")
         with sc4:
-            st.metric("누적 수익률 (ROI)", f"{stats.get('roi_pct', 0):+.2f}%", f"{stats.get('net_profit_krw', 0):+,} 원")
+            st.metric("누적 수익률 (고정 1만원)", f"{stats.get('roi_pct', 0):+.2f}%", f"95% CI: [{roi_ci_l:+.1f}%, {roi_ci_h:+.1f}%]")
+
+        st.divider()
+
+        # 자금관리 비교 & CLV 성과
+        st.markdown("### ⚖️ 자금 관리 방식 비교 & 마감 배당 대비 성과 (CLV)")
+        stk = stats.get("staking_comparison", {})
+        c_col1, c_col2, c_col3 = st.columns(3)
+        with c_col1:
+            st.metric("고정 베팅 (1만 원)", f"{stk.get('flat_roi_pct', stats.get('roi_pct', 0)):+.2f}%", f"순익: {stk.get('flat_net_profit_krw', 0):+,}원")
+            st.caption("베트맨 1회차 1경기당 고정 10,000원 베팅")
+        with c_col2:
+            st.metric("1/4 켈리 동적 베팅", f"{stk.get('kelly_roi_pct', 0):+.2f}%", f"순익: {stk.get('kelly_net_profit_krw', 0):+,}원")
+            st.caption(f"초기 100만 원 잔고 ➔ 최종: {stk.get('kelly_final_bankroll_krw', 0):,}원 (최대 2% 상한)")
+        with c_col3:
+            clv_cnt = stats.get("clv_sample_count", 0)
+            clv_avg = stats.get("avg_clv_pct", 0.0)
+            st.metric("CLV (마감 대비 우위)", f"{clv_avg:+.2f}%", f"스냅샷 표본: {clv_cnt}건")
+            st.caption("예측 시점 배당 / 마감 배당 비율 (시장 장기 우위 지표)")
 
         st.divider()
 
@@ -1145,26 +1232,29 @@ with tab4:
         g_cols = st.columns(3)
         with g_cols[0]:
             s_data = gb.get("S", {})
-            st.markdown("#### 👑 GRADE S (초고승률 황금 픽)")
+            st.markdown("#### 👑 GRADE S (참고용 - 고승률)")
             st.write(f"• 베팅: **{s_data.get('bets', 0)}건** 중 **{s_data.get('wins', 0)}건 적중** ({s_data.get('win_rate_pct', 0)}%)")
             st.write(f"• 순익: **{s_data.get('returned', 0) - s_data.get('staked', 0):+,.0f}원**")
-            st.markdown(f"• 수익률: **`{s_data.get('roi_pct', 0):+.1f}%`** (주력 추천)")
+            st.markdown(f"• 수익률: **`{s_data.get('roi_pct', 0):+.1f}%`**")
+            st.caption(f"95% CI: [{s_data.get('roi_ci_low', 0.0):+.1f}%, {s_data.get('roi_ci_high', 0.0):+.1f}%]")
             
         with g_cols[1]:
             a_data = gb.get("A", {})
-            st.markdown("#### 🟢 GRADE A (밸런스 가치 픽)")
+            st.markdown("#### 🟢 GRADE A (참고용 - 밸런스)")
             st.write(f"• 베팅: **{a_data.get('bets', 0)}건** 중 **{a_data.get('wins', 0)}건 적중** ({a_data.get('win_rate_pct', 0)}%)")
             st.write(f"• 순익: **{a_data.get('returned', 0) - a_data.get('staked', 0):+,.0f}원**")
-            st.markdown(f"• 수익률: **`{a_data.get('roi_pct', 0):+.1f}%`** (수익 극대화)")
+            st.markdown(f"• 수익률: **`{a_data.get('roi_pct', 0):+.1f}%`**")
+            st.caption(f"95% CI: [{a_data.get('roi_ci_low', 0.0):+.1f}%, {a_data.get('roi_ci_high', 0.0):+.1f}%]")
 
         with g_cols[2]:
             b_data = gb.get("B", {})
-            st.markdown("#### 🔵 GRADE B (고배당 분산 픽)")
+            st.markdown("#### 🔵 GRADE B (참고용 - 고배당)")
             st.write(f"• 베팅: **{b_data.get('bets', 0)}건** 중 **{b_data.get('wins', 0)}건 적중** ({b_data.get('win_rate_pct', 0)}%)")
             st.write(f"• 순익: **{b_data.get('returned', 0) - b_data.get('staked', 0):+,.0f}원**")
-            st.markdown(f"• 수익률: **`{b_data.get('roi_pct', 0):+.1f}%`** (소액 분산)")
+            st.markdown(f"• 수익률: **`{b_data.get('roi_pct', 0):+.1f}%`**")
+            st.caption(f"95% CI: [{b_data.get('roi_ci_low', 0.0):+.1f}%, {b_data.get('roi_ci_high', 0.0):+.1f}%]")
 
-        st.info("💡 **핵심 인사이트 (미래 누수 100% 차단 시계열 검증):** 미래 경기 데이터를 엄격히 차단하고 순수 사전 폼만으로 검증한 실전 성과입니다. 베트맨의 18% 하우스 마진 속에서도 **GRADE A(+1.0% ROI)** 및 **GRADE S(적중률 53.7%)**로 강력한 방어력을 확인했습니다. 단통 1경기 대신 **승률 60% 이상의 고승률 2경기를 묶는 '안정형 2폴더(2~3배)'**를 활용할 때 기대수익이 극대화됩니다.")
+        st.info("💡 **핵심 인사이트 (미래 누수 차단 전수 시계열 검증):** 미래 경기 데이터를 엄격히 차단하고 순수 사전 폼만으로 검증한 실전 성과입니다. 베트맨의 약 18% 하우스 마진으로 인해 전체 누적 ROI는 -2.98% (95% CI: [-9.61%, +3.74%])입니다. 특히 복수 조합(2~3폴더)은 하우스 마진이 곱으로 누적(2폴더 ~27.8%, 3폴더 ~38.6%)되므로, 단일 경기에서 확실한 EV/CLV 우위가 검증되기 전까지는 조합 베팅을 주의하고 '시뮬레이션 전용'으로 활용해야 합니다.")
 
         # 회차별 성과 비교 테이블
         rb = stats.get("round_breakdown", {})
@@ -1178,7 +1268,8 @@ with tab4:
                     "적중 건수": f"{r_data.get('wins', 0)}건",
                     "적중률": f"{r_data.get('win_rate_pct', 0)}%",
                     "가상 순익": f"{r_data.get('net_profit', 0):+,}원",
-                    "수익률 (ROI)": f"{r_data.get('roi_pct', 0):+.1f}%"
+                    "수익률 (ROI)": f"{r_data.get('roi_pct', 0):+.1f}%",
+                    "95% CI": f"[{r_data.get('roi_ci_low', 0.0):+.1f}%, {r_data.get('roi_ci_high', 0.0):+.1f}%]"
                 })
             r_df = pd.DataFrame(r_rows)
             st.dataframe(r_df, use_container_width=True, hide_index=True)
