@@ -188,6 +188,13 @@ def load_scorecard():
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _metric_note(label, value, note=None):
+    """지표 + 화살표 없는 보조 설명 (st.metric의 delta는 ↑/↓ 화살표가 붙어 증감처럼 보이므로 설명에는 쓰지 않음)"""
+    st.metric(label, value)
+    if note:
+        st.caption(note)
+
+
 def get_grade_badge_html(grade_raw: str) -> str:
     """등급 문자열을 표준 HTML 배지로 변환합니다."""
     if "S (" in grade_raw:
@@ -680,11 +687,13 @@ with tab1:
             g1, g2, g3 = st.columns(3)
             g1.metric("결과 나온 경기 (현재 필터)", f"{len(mk_hits)}경기")
             g2.metric("배당 1순위 적중", f"{sum(mk_hits) / len(mk_hits) * 100:.1f}%")
-            if ai_pairs:
-                g3.metric(f"AI 1순위 적중 ({len(ai_pairs)}경기)", f"{sum(a for a, _ in ai_pairs) / len(ai_pairs) * 100:.1f}%",
-                          f"같은 경기 배당 1순위 {sum(b for _, b in ai_pairs) / len(ai_pairs) * 100:.1f}%", delta_color="off")
-            else:
-                g3.metric("AI 1순위 적중", "기록 없음", "경기 전 AI 기록은 260126회차부터", delta_color="off")
+            with g3:
+                if ai_pairs:
+                    st.metric(f"AI 1순위 적중 ({len(ai_pairs)}경기)", f"{sum(a for a, _ in ai_pairs) / len(ai_pairs) * 100:.1f}%")
+                    st.caption(f"같은 경기 배당 1순위 {sum(b for _, b in ai_pairs) / len(ai_pairs) * 100:.1f}%")
+                else:
+                    st.metric("AI 1순위 적중", "기록 없음")
+                    st.caption("경기 전 AI 기록은 260126회차부터")
             st.caption("적중률은 참고용입니다. 배당 1순위만 찍어도 비슷하게 맞으므로 AI는 '같은 경기'의 배당 1순위와 비교하세요. "
                        "AI 실력의 공식 지표는 '성과 검증' 탭의 성적표(Log loss)입니다.")
 
@@ -1032,9 +1041,9 @@ with tab1:
                 "선택": st.column_config.CheckboxColumn("선택", width="small"),
                 "#": st.column_config.NumberColumn("#", width="small"),
                 "배당": st.column_config.NumberColumn("배당", format="%.2f배", width="small"),
-                "투표금액": st.column_config.NumberColumn("투표금액 ✏️", min_value=unit, max_value=100000, step=unit,
-                                                     format="%d원", help=f"{unit:,}원 단위로 직접 수정할 수 있습니다"),
-                "적중 시 환급": st.column_config.NumberColumn("적중 시 환급", format="%d원"),
+                "투표금액": st.column_config.NumberColumn("투표금액(원) ✏️", min_value=unit, max_value=100000, step=unit,
+                                                     format="localized", help=f"{unit:,}원 단위로 직접 수정할 수 있습니다"),
+                "적중 시 환급": st.column_config.NumberColumn("적중 시 환급(원)", format="localized"),
                 "적중 확률": st.column_config.NumberColumn("적중 확률", format="%.2f%%", width="small"),
                 "기대가치": st.column_config.NumberColumn("기대가치", format="%+.1f%%", width="small"),
                 "비과세": st.column_config.TextColumn("비과세", width="small"),
@@ -1042,10 +1051,25 @@ with tab1:
             for name in match_cols.values():
                 col_cfg[name] = st.column_config.TextColumn(name, width="small")
 
+            editor_key = f"combo_editor_{sel_sig}_{sort_option}_{st.session_state.get('combo_editor_ver', 0)}"
+            row_ids = [c["combo_index"] for c in combos]
+
+            def _sync_editor(key=editor_key, ids=row_ids, unit_=unit):
+                """편집 직후(재실행 전) 세션에 반영하고 표를 새로 그린다.
+                이렇게 하지 않으면 '적중 시 환급' 같은 계산 열이 이전 금액 기준으로 한 번 늦게 표시된다."""
+                for pos, ch in st.session_state.get(key, {}).get("edited_rows", {}).items():
+                    idx = ids[int(pos)]
+                    if "선택" in ch:
+                        st.session_state[f"combo_chk_{idx}"] = bool(ch["선택"])
+                    if ch.get("투표금액") is not None:
+                        v = int(ch["투표금액"])
+                        st.session_state[f"stake_{idx}"] = max(unit_, min(100000, (v // unit_) * unit_))
+                _bump_editor()
+
             edited = st.data_editor(
                 pd.DataFrame(rows), hide_index=True, use_container_width=True, column_config=col_cfg,
                 disabled=[k for k in rows[0] if k not in ("선택", "투표금액")],
-                key=f"combo_editor_{sel_sig}_{sort_option}_{st.session_state.get('combo_editor_ver', 0)}",
+                key=editor_key, on_change=_sync_editor,
                 height=min(38 + 35 * len(rows), 460),
             )
 
@@ -1115,12 +1139,19 @@ with tab1:
                         st.warning("조건에 맞는 과거 회차가 없습니다. 배당 범위가 너무 특이한 조합일 수 있습니다.")
                     else:
                         r1, r2, r3, r4 = st.columns(4)
-                        r1.metric("적용된 과거 회차", f"{r['rounds']}회차", f"회차당 {r['combos_per_round']}조합", delta_color="off")
-                        r2.metric("적중한 회차", f"{r['hit_rate_pct']:.0f}%", f"{r['hit_rounds']}회", delta_color="off")
-                        r3.metric("실제 수익률", f"{r['roi_pct']:+.1f}%",
-                                  f"축 경기만 걸었다면 {r['bankers_only_roi_pct']:+.1f}%" if "bankers_only_roi_pct" in r else None,
-                                  delta_color="off")
-                        r4.metric("최대 연속 미적중", f"{r['max_losing_streak']}회차", f"최고 적중 {r['best_round_multiple']:.1f}배", delta_color="off")
+                        with r1:
+                            st.metric("적용된 과거 회차", f"{r['rounds']}회차")
+                            st.caption(f"회차당 {r['combos_per_round']}조합")
+                        with r2:
+                            st.metric("적중한 회차", f"{r['hit_rate_pct']:.0f}%")
+                            st.caption(f"{r['hit_rounds']}회 적중")
+                        with r3:
+                            st.metric("실제 수익률", f"{r['roi_pct']:+.1f}%")
+                            if "bankers_only_roi_pct" in r:
+                                st.caption(f"축 경기만 걸었다면 {r['bankers_only_roi_pct']:+.1f}%")
+                        with r4:
+                            st.metric("최대 연속 미적중", f"{r['max_losing_streak']}회차")
+                            st.caption(f"최고 적중 {r['best_round_multiple']:.1f}배")
                         st.line_chart(pd.DataFrame({"누적 손익 (회차당 투자 1 기준)": r["cum_curve"]}), height=180)
                         notes = []
                         if "bankers_only_roi_pct" in r and r["bankers_only_roi_pct"] > r["roi_pct"]:
@@ -1167,7 +1198,8 @@ with tab1:
                 app_k = min(0.05, raw_k * k_mult)
                 k_stake = min(100000, max(0, (int(bankroll * app_k) // unit) * unit))
                 with kc3:
-                    st.metric("권장 총 베팅액", f"{k_stake:,}원", f"자금의 {app_k * 100:.2f}%", delta_color="off")
+                    st.metric("권장 총 베팅액", f"{k_stake:,}원")
+                    st.caption(f"자금의 {app_k * 100:.2f}%")
                 if k_stake == 0:
                     st.info("기대 손익이 플러스가 아니어서 켈리 기준 권장 베팅액은 0원입니다.")
                 elif chosen:
@@ -1213,13 +1245,13 @@ with tab2:
 
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            st.metric("총 발매 경기", f"{total_matches} 개", f"한경기(단통) {single_count}개")
+            _metric_note("총 발매 경기", f"{total_matches} 개", f"한경기(단통) {single_count}개")
         with c2:
-            st.metric("추천 가치 픽 (EV > 0)", f"{rec_count} 개", delta=f"{rec_count/total_matches*100:.0f}% 비율")
+            _metric_note("추천 가치 픽 (EV > 0)", f"{rec_count} 개", f"{rec_count/total_matches*100:.0f}% 비율")
         with c3:
-            st.metric("최고 기대가치", highest_ev_match["evaluation"]["best_ev_pct"], f"{highest_ev_match['home_team']} vs {highest_ev_match['away_team']}")
+            _metric_note("최고 기대가치", highest_ev_match["evaluation"]["best_ev_pct"], f"{highest_ev_match['home_team']} vs {highest_ev_match['away_team']}")
         with c4:
-            st.metric("맞춤구매 담긴 경기", f"{len(st.session_state['selections'])} 개", "Tab 1 시뮬레이터 연동")
+            _metric_note("맞춤구매 담긴 경기", f"{len(st.session_state['selections'])} 개", "Tab 1 시뮬레이터 연동")
 
         st.divider()
 
@@ -1417,12 +1449,17 @@ with tab3:
     card = load_scorecard()
     if card and card.get("model_ll") is not None:
         k1, k2, k3, k4 = st.columns(4)
-        k1.metric("채점 경기", f"{card['graded_matches']:,}경기", f"회차 {len(card.get('rounds', []))}개")
-        k2.metric("Log loss (AI vs 시장)", f"{card['model_ll']:.4f}", f"시장 {card['market_ll']:.4f}", delta_color="off")
         ci = card.get("ll_diff_ci", [0, 0])
-        k3.metric("차이 (음수 = AI 우세)", f"{card['ll_diff']:+.4f}", f"95% CI [{ci[0]:+.4f}, {ci[1]:+.4f}]", delta_color="off")
-        k4.metric("AI 1순위 적중률", f"{card.get('hit_rate_top_pick', 0):.1f}%",
-                  f"EV>2% {card.get('value_bets', 0)}건 ROI {card.get('roi_pct', 0):+.1f}%", delta_color="off")
+        for col, label, val, sub in [
+            (k1, "채점 경기", f"{card['graded_matches']:,}경기", f"회차 {len(card.get('rounds', []))}개"),
+            (k2, "Log loss (AI)", f"{card['model_ll']:.4f}", f"시장 {card['market_ll']:.4f}"),
+            (k3, "차이 (음수 = AI 우세)", f"{card['ll_diff']:+.4f}", f"95% CI [{ci[0]:+.4f}, {ci[1]:+.4f}]"),
+            (k4, "AI 1순위 적중률", f"{card.get('hit_rate_top_pick', 0):.1f}%",
+             f"EV>2% {card.get('value_bets', 0)}건 ROI {card.get('roi_pct', 0):+.1f}%"),
+        ]:
+            with col:
+                st.metric(label, val)
+                st.caption(sub)
         st.markdown(f"**판정:** {card.get('verdict', '-')}")
         if card.get("gem_bets") is not None:
             gb = card["gem_bets"]
@@ -1484,13 +1521,13 @@ with tab3:
         roi_ci_l = stats.get("roi_ci_low", 0.0)
         roi_ci_h = stats.get("roi_ci_high", 0.0)
         with sc1:
-            st.metric("종료 분석 경기", f"{stats.get('sample_matches_analyzed', 0):,} 건", f"{stats.get('total_bets_placed', 0):,}건 추천")
+            _metric_note("종료 분석 경기", f"{stats.get('sample_matches_analyzed', 0):,} 건", f"{stats.get('total_bets_placed', 0):,}건 추천")
         with sc2:
-            st.metric("전체 적중률", f"{stats.get('win_rate_pct', 0.0):.1f}%", f"{stats.get('won_bets', 0)}/{stats.get('total_bets_placed', 0)} 적중")
+            _metric_note("전체 적중률", f"{stats.get('win_rate_pct', 0.0):.1f}%", f"{stats.get('won_bets', 0)}/{stats.get('total_bets_placed', 0)} 적중")
         with sc3:
-            st.metric("누적 수익률 (고정 1만원)", f"{stats.get('roi_pct', 0.0):+.2f}%", f"95% CI: [{roi_ci_l:+.1f}%, {roi_ci_h:+.1f}%]")
+            _metric_note("누적 수익률 (고정 1만원)", f"{stats.get('roi_pct', 0.0):+.2f}%", f"95% CI: [{roi_ci_l:+.1f}%, {roi_ci_h:+.1f}%]")
         with sc4:
-            st.metric("실전 순익 (1만원 고정)", f"{stats.get('net_profit_krw', 0):+,} 원", "과장 없는 투명 공개")
+            _metric_note("실전 순익 (1만원 고정)", f"{stats.get('net_profit_krw', 0):+,} 원", "과장 없는 투명 공개")
 
         st.divider()
 
@@ -1499,15 +1536,15 @@ with tab3:
         stk = stats.get("staking_comparison", {})
         c_col1, c_col2, c_col3 = st.columns(3)
         with c_col1:
-            st.metric("고정 베팅 (1만 원)", f"{stk.get('flat_roi_pct', stats.get('roi_pct', 0)):+.2f}%", f"순익: {stk.get('flat_net_profit_krw', 0):+,}원")
+            _metric_note("고정 베팅 (1만 원)", f"{stk.get('flat_roi_pct', stats.get('roi_pct', 0)):+.2f}%", f"순익: {stk.get('flat_net_profit_krw', 0):+,}원")
             st.caption("베트맨 1회차 1경기당 고정 10,000원 베팅")
         with c_col2:
-            st.metric("1/4 켈리 동적 베팅", f"{stk.get('kelly_roi_pct', 0):+.2f}%", f"순익: {stk.get('kelly_net_profit_krw', 0):+,}원")
+            _metric_note("1/4 켈리 동적 베팅", f"{stk.get('kelly_roi_pct', 0):+.2f}%", f"순익: {stk.get('kelly_net_profit_krw', 0):+,}원")
             st.caption(f"초기 100만 원 ➔ 최종: {stk.get('kelly_final_bankroll_krw', 0):,}원 (최대 2% 상한)")
         with c_col3:
             clv_cnt = stats.get("clv_sample_count", 0)
             clv_avg = stats.get("avg_clv_pct", 0.0)
-            st.metric("CLV (마감 대비 우위)", f"{clv_avg:+.2f}%", f"스냅샷 표본: {clv_cnt}건")
+            _metric_note("CLV (마감 대비 우위)", f"{clv_avg:+.2f}%", f"스냅샷 표본: {clv_cnt}건")
             st.caption("예측 시점 배당 / 마감 배당 비율 (장기 우위 지표)")
 
         st.divider()
