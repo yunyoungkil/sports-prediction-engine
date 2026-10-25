@@ -78,7 +78,13 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     try:
         evaluate_betman_results()
     except Exception as e:
-        print(f"⚠️ 베트맨 결과 채점 중 오류: {e}")
+        warn_msg = f"⚠️ 베트맨 결과 채점 중 오류: {e}"
+        print(warn_msg)
+        try:
+            from notifier.telegram_bot import send_telegram_warning
+            send_telegram_warning(f"베트맨 결과 채점 실패:\n{e}")
+        except Exception:
+            pass
     
     # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기 준비
     predictor = MatchPredictor()

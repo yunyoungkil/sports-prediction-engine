@@ -32,10 +32,10 @@
   - 파이프라인 실행 step에 `env: TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}`, `TELEGRAM_CHAT_ID` 추가
   - GitHub 저장소 Settings → Secrets에 두 값 등록
   - 확인: `workflow_dispatch`로 수동 실행 시 휴대폰에 알림이 온다
-- [ ] **0.4 실패를 조용히 넘기지 않기** 🔁 재작업: REVIEW R2 (채점 단계 예외가 알림 없이 무시됨)
+- [x] **0.4 실패를 조용히 넘기지 않기**
   - 파일: `run_pipeline.py`, `models/poisson_model.py`
-  - 실시간 수집 실패로 캐시를 쓸 때, 모델 학습 실패(`except Exception: pass`) 시 텔레그램 경고 전송
-  - 확인: 일부러 잘못된 회차를 넣으면 경고 알림이 온다
+  - 실시간 수집 실패로 캐시를 쓸 때, 모델 학습 실패, 결과 채점 실패 시 텔레그램 경고 전송 (R2 해결)
+  - 확인: 채점 단계 예외 발생 시 send_telegram_warning 호출 연동 및 tests/test_result_evaluator.py 통과
 
 **완료 기준:** 일주일 동안 손대지 않아도 새 회차 예측과 새 결과 채점이 자동으로 쌓인다.
 
@@ -116,7 +116,7 @@
 ## 🔁 리뷰 재작업 (Phase 3보다 먼저) — 상세: [REVIEW.md](./REVIEW.md)
 
 - [x] **R1 평가 누수 제거** (walk-forward 또는 학습/튜닝/검증 3분할, `train_until`·`as_of` 인자, xi·SOT 재튜닝, BASELINE.md 재작성)
-- [ ] **R2 실전 채점 `NameError` 수정** (`tracker/result_evaluator.py:143`) + 채점 실패 시 텔레그램 경고 + 스모크 테스트
+- [x] **R2 실전 채점 `NameError` 수정** (`tracker/result_evaluator.py:143`) + 채점 실패 시 텔레그램 경고 + 스모크 테스트
 - [ ] **R3 체크포인트 조치** (검증 셋에서 모델 < 시장이면 추천을 "참고용"으로, 대시보드에 비교 배너)
 - [ ] **R4 결과 수집 upsert** (최근 N회차 항상 재조회, 연도 경계 처리)
 - [ ] **R5 CLV 스냅샷** (회차별 예측 시점 배당 누적 저장, 스냅샷 없는 경기는 제외)

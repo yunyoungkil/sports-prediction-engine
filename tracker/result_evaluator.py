@@ -140,7 +140,7 @@ def evaluate_betman_results(
                 sport=sport,
                 odds=odds,
                 form_diff=form_diff,
-                league=item.get("league", "")
+                league=m.get("league", "")
             )
             model_probs = {
                 "home_win": pred["home_win"],
