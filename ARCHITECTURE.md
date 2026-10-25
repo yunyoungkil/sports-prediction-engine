@@ -94,35 +94,54 @@ sports-prediction-engine/
 [
   {
     "match_seq": "101",
-    "sport": "축구",
+    "match_key": "아스널:리버풀",
+    "sport": "SC",
     "league": "EPL",
-    "match_time": "2026-10-25 23:00",
+    "game_type": "일반 승무패",
+    "category": "일반 승무패",
+    "category_label": "일반 승무패",
+    "is_single": true,
+    "line": 0.0,
+    "match_time": "26.10.25 (일) 23:00",
+    "close_time": 1761400800000,
+    "kickoff_ts": 1761404400000,
+    "buy_reject": "N",
+    "game_reject": "N",
+    "proto_status": "O",
+    "match_state": "S",
     "home_team": "아스널",
     "away_team": "리버풀",
-    "rest_days": {
-      "home": 5,
-      "away": 3
-    },
     "betman_odds": {
       "home_win": 2.15,
       "draw": 3.30,
       "away_win": 2.85
+    },
+    "market_implied_probs": {
+      "home": 0.428,
+      "draw": 0.279,
+      "away": 0.293
     },
     "model_probabilities": {
       "home_win": 0.512,
       "draw": 0.265,
       "away_win": 0.223
     },
-    "expected_values": {
-      "home_win": 0.1008,
-      "draw": -0.1255,
-      "away_win": -0.3644
+    "blended_probabilities": {
+      "home_win": 0.478,
+      "draw": 0.271,
+      "away_win": 0.251
     },
-    "recommended_pick": {
-      "selection": "home_win",
-      "selection_name": "아스널 승",
-      "expected_value": 0.1008,
-      "grade": "A"
+    "top_scores": [
+      {"score": "2-1", "prob": 14.5},
+      {"score": "1-1", "prob": 12.8}
+    ],
+    "evaluation": {
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 아스널 승",
+      "best_ev": 0.0277,
+      "best_ev_pct": "+2.8%",
+      "grade": "A (참고용 - 밸런스)",
+      "is_recommended": true
     }
   }
 ]

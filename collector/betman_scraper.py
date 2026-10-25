@@ -170,6 +170,7 @@ class BetmanScraper:
 
                     matches.append({
                         "match_seq": str(s.get("matchSeq", "")),
+                        "match_key": s.get("gameKey") or f"{home_name.strip()}:{away_name.strip()}",
                         "sport": s.get("itemCode", "축구"),
                         "league": s.get("leagueName") or s.get("leagueShortName") or "기타",
                         "game_type": bet_nm,
@@ -180,6 +181,12 @@ class BetmanScraper:
                         "draw_txt": s.get("drawTxt", "무"),
                         "lose_txt": s.get("loseTxt", "패"),
                         "match_time": date_str or "",
+                        "close_time": s.get("endDate"),
+                        "kickoff_ts": s.get("gameDate"),
+                        "buy_reject": s.get("buyReject"),
+                        "game_reject": s.get("gameReject"),
+                        "proto_status": s.get("protoStatus"),
+                        "match_state": s.get("matchState"),
                         "home_team": home_name.strip(),
                         "away_team": away_name.strip(),
                         "odds": {

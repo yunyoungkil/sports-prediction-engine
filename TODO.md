@@ -246,13 +246,13 @@
 - [x] **A.2 조합 계산 테스트**
   - 새 파일: `tests/test_combo_builder.py`
   - 13개 조합 배당 경계값(42.801 → 42.8, 42.81 → 42.9, 1.85×1.84 → 3.4), 비과세 경계, 동일 경기 거부, 11경기 거부, 한경기 단통 허용, 10만 원 한도 초과 거부 전수 테스트 통과 (`tests/test_combo_builder.py` 4 passed)
-- [ ] **A.3 데이터 보강**
+- [x] **A.3 데이터 보강**
   - 파일: `collector/betman_scraper.py` (`detailSchedule.do` 응답의 `schedules[]`에 이미 있는 필드를 저장만 추가)
   - `match_key` ← `gameKey` (예: `알크마르:트벤테`, 745 승무패·746 핸디캡이 같은 값) → 동일 경기 조합 금지에 사용
   - `close_time` ← `endDate` (ms 타임스탬프, 예: 745 → 26.10.25 23:00 마감) → 마감된 경기는 선택 목록에서 제외
   - `kickoff_ts` ← `gameDate` (ms 타임스탬프, 정렬·비교용. 기존 `match_time` 문자열은 표시용으로 유지)
-  - 판매 상태: `buyReject`, `gameReject`, `protoStatus`, `matchState` 저장 → 마감·발매중지 경기와 값 비교해 의미 확정 후 필터에 사용
-  - `ARCHITECTURE.md` 스키마 갱신
+  - 판매 상태: `buyReject`, `gameReject`, `protoStatus`, `matchState` 저장 및 `run_pipeline.py` 예측 결과 스키마 연동 완료
+  - `ARCHITECTURE.md` 스키마 갱신 완료
 - [ ] **A.4 STEP 01 맞춤조건설정 화면**
   - 파일: `dashboard/app.py` (또는 `dashboard/pages/` 분리)
   - 필터: 날짜, 종목, 리그, 게임 유형, 마감 전만, 한경기만

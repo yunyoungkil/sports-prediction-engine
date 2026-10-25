@@ -164,6 +164,7 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         
         results.append({
             "match_seq": m["match_seq"],
+            "match_key": m.get("match_key") or f"{home}:{away}",
             "sport": m.get("sport", "축구"),
             "league": m.get("league", "기타"),
             "game_type": m.get("game_type", "승무패"),
@@ -173,6 +174,12 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             "is_single": is_single,
             "line": line,
             "match_time": m.get("match_time", ""),
+            "close_time": m.get("close_time"),
+            "kickoff_ts": m.get("kickoff_ts"),
+            "buy_reject": m.get("buy_reject"),
+            "game_reject": m.get("game_reject"),
+            "proto_status": m.get("proto_status"),
+            "match_state": m.get("match_state"),
             "home_team": home,
             "away_team": away,
             "betman_odds": odds,
