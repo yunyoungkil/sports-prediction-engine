@@ -515,12 +515,18 @@ with tab1:
             actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
 
             with st.container(border=True):
-                c1, c2, c3, c4, c5, c6 = st.columns([2.8, 3.0, 1.1, 1.4, 0.9, 1.3], vertical_alignment="center")
+                c1, c2, c3, c4, c5, c6 = st.columns([3.2, 2.8, 1.0, 1.4, 0.9, 1.2], vertical_alignment="center")
                 with c1:
+                    # 정보 줄은 한 줄 고정(넘치면 …), 마우스를 올리면 전체 표시
+                    tm = re.search(r"\d{2}\.(\d{2}\.\d{2})\s*\(([^)]*)\)\s*(\d{1,2}:\d{2})", str(m.get("match_time", "")))
+                    when = f"{tm.group(1)}({tm.group(2)}) {tm.group(3)}" if tm else m.get("match_time", "")
+                    cat_lbl = "홀/짝" if "SUM" in str(m.get("game_type", "")) else m.get("category_label", m.get("game_type", ""))
+                    meta = f"#{seq} · {when} · {m.get('league', '')} · {cat_lbl}{single}"
+                    nowrap = "white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
                     st.markdown(
-                        f"<div style='font-size:12px;color:#94a3b8'>#{seq} · {m.get('match_time', '')} · {m.get('league', '')} · "
-                        f"{m.get('category_label', m.get('game_type', ''))}{single}</div>"
-                        f"<div style='font-size:15px'><b>{m.get('home_team', '')}</b> vs <b>{m.get('away_team', '')}</b></div>",
+                        f"<div title='{meta}' style='font-size:12px;color:#94a3b8;{nowrap}'>{meta}</div>"
+                        f"<div title='{m.get('home_team', '')} vs {m.get('away_team', '')}' style='font-size:15px;{nowrap}'>"
+                        f"<b>{m.get('home_team', '')}</b> vs <b>{m.get('away_team', '')}</b></div>",
                         unsafe_allow_html=True)
                 with c2:
                     picked = st.pills(
