@@ -106,6 +106,26 @@ def load_data():
 predictions, stats = load_data()
 
 
+@st.cache_data(ttl=60)
+def load_baseline_summary():
+    """evaluation/BASELINE.md에서 최신 모델 vs 시장 기준선 검증 지표를 로드합니다."""
+    baseline_path = project_root / "evaluation" / "BASELINE.md"
+    if not baseline_path.exists():
+        return None
+    try:
+        content = baseline_path.read_text(encoding="utf-8")
+        m_bm = re.search(r"실전 베트맨.*?Log Loss:\s*모델\s*`([0-9.]+)`\s*vs\s*시장\s*`([0-9.]+)`", content, re.DOTALL)
+        m_csv = re.search(r"과거 유럽 5대 리그.*?Log Loss:\s*모델\s*`([0-9.]+)`\s*vs\s*시장\s*`([0-9.]+)`", content, re.DOTALL)
+        return {
+            "betman_model_ll": float(m_bm.group(1)) if m_bm else 0.9622,
+            "betman_market_ll": float(m_bm.group(2)) if m_bm else 0.9467,
+            "test_model_ll": float(m_csv.group(1)) if m_csv else 1.0010,
+            "test_market_ll": float(m_csv.group(2)) if m_csv else 0.9790,
+        }
+    except Exception:
+        return None
+
+
 def generate_bet_slip_text(picks, combined_odds, combined_prob_pct=None, combined_ev_pct=None, stake=None):
     """
     베트맨 프로토 마킹용 텍스트 슬립 생성 (카카오톡/메모장 복사용)
@@ -212,6 +232,23 @@ with tab1:
     if not predictions:
         st.warning("⚠️ 아직 분석된 예측 데이터가 없습니다. 먼저 터미널에서 `python run_pipeline.py`를 실행해 주세요.")
     else:
+        # Phase 1 체크포인트 조치 (REVIEW R3): 모델 Log Loss가 시장 기준선보다 열세일 때 투명하게 경고 배너 표시
+        b_sum = load_baseline_summary()
+        if b_sum:
+            b_m_ll = b_sum["betman_model_ll"]
+            b_mkt_ll = b_sum["betman_market_ll"]
+            t_m_ll = b_sum["test_model_ll"]
+            t_mkt_ll = b_sum["test_market_ll"]
+            if b_m_ll > b_mkt_ll or t_m_ll > t_mkt_ll:
+                st.warning(
+                    f"⚠️ **[공지: 모델 검증 안내 — 모든 추천 픽은 '참고용'으로 제공됩니다]**\n\n"
+                    f"현재 순수 AI 통계 모델은 검증 데이터에서 **시장 배당 기준선(Market Baseline)보다 Log Loss가 높아 예측 오차가 더 큽니다**.\n\n"
+                    f"- **실전 베트맨 검증셋:** AI 모델 `{b_m_ll:.4f}` vs 시장 기준선 `{b_mkt_ll:.4f}` (시장 우위: `+{b_m_ll - b_mkt_ll:.4f}`)\n"
+                    f"- **유럽 5대 리그 OOS 검증셋:** AI 모델 `{t_m_ll:.4f}` vs 시장 기준선 `{t_mkt_ll:.4f}` (시장 우위: `+{t_m_ll - t_mkt_ll:.4f}`)\n\n"
+                    f"이에 따라 Phase 1 체크포인트 규칙에 의거, 대시보드의 모든 추천 등급(S/A/B)은 무조건적 신뢰가 아닌 **'참고용(Reference Only)'**으로 표시됩니다. "
+                    f"현재 샤프 배당(Betfair Exchange)과의 결합 및 모델·시장 블렌딩(Phase 3)을 통한 고도화 작업이 진행 중입니다."
+                )
+
         # 1. 상단 KPI 카드
         total_matches = len(predictions)
         rec_matches = [m for m in predictions if m["evaluation"]["is_recommended"]]
@@ -338,11 +375,11 @@ with tab1:
             # 배지 스타일링
             grade_str = eval_info["grade"]
             if "S (" in grade_str:
-                badge_html = "<span class='badge-s'>GRADE S (꿀배당)</span>"
+                badge_html = "<span class='badge-s'>GRADE S (참고용 - 고승률)</span>"
             elif "A (" in grade_str:
-                badge_html = "<span class='badge-a'>GRADE A (강력 추천)</span>"
+                badge_html = "<span class='badge-a'>GRADE A (참고용 - 밸런스)</span>"
             elif "B (" in grade_str:
-                badge_html = "<span class='badge-b'>GRADE B (소액 추천)</span>"
+                badge_html = "<span class='badge-b'>GRADE B (참고용 - 고배당)</span>"
             else:
                 badge_html = "<span class='badge-pass'>PASS (가치 낮음)</span>"
 
