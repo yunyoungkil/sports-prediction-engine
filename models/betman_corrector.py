@@ -205,9 +205,50 @@ def load_archive_df(path: Path = ARCHIVE_CSV) -> pd.DataFrame:
     return df.drop_duplicates(subset=["home_team", "away_team", "kickoff"], keep="first").reset_index(drop=True)
 
 
+ELO_START = 1500.0
+ELO_HFA = 60.0                       # 홈 이점 (Elo 점수, 고정)
+ELO_CONFIGS = (15.0, 30.0)           # 실험용 K 값 (갱신 속도)
+
+
+class Elo:
+    """골 득실 가중 Elo (World Football Elo 방식). 레이팅은 경기 '이전' 값으로만 피처에 사용"""
+
+    def __init__(self, k: float, hfa: float = ELO_HFA):
+        self.k, self.hfa = k, hfa
+        self.r: Dict[str, float] = {}
+        self.n: Dict[str, int] = defaultdict(int)
+
+    def expected_home(self, home: str, away: str) -> float:
+        dr = self.r.get(home, ELO_START) + self.hfa - self.r.get(away, ELO_START)
+        return 1.0 / (1.0 + 10 ** (-dr / 400.0))
+
+    def update(self, home: str, away: str, hs: int, as_: int) -> None:
+        e = self.expected_home(home, away)
+        s = 1.0 if hs > as_ else (0.5 if hs == as_ else 0.0)
+        gd = abs(hs - as_)
+        g = 1.0 if gd <= 1 else (1.5 if gd == 2 else (11 + gd) / 8.0)
+        delta = self.k * g * (s - e)
+        self.r[home] = self.r.get(home, ELO_START) + delta
+        self.r[away] = self.r.get(away, ELO_START) - delta
+        self.n[home] += 1
+        self.n[away] += 1
+
+
+def elo_features(elo: Elo, home: str, away: str, p_market: np.ndarray, tag: str) -> Dict[str, float]:
+    """[실험 ④] Elo 기대 승점(홈) − 시장 기대 승점(홈승 + 무/2). 두 팀 모두 10경기 이상일 때만"""
+    known = min(elo.n.get(home, 0), elo.n.get(away, 0)) >= 10
+    e_elo = elo.expected_home(home, away)
+    e_mkt = float(p_market[0] + 0.5 * p_market[1])
+    dr = (elo.r.get(home, ELO_START) + elo.hfa - elo.r.get(away, ELO_START)) / 400.0
+    return {f"elo_vs_mkt_{tag}": (e_elo - e_mkt) if known else 0.0,
+            f"elo_diff_{tag}": dr if known else 0.0,
+            f"elo_known_{tag}": 1.0 if known else 0.0}
+
+
 def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """킥오프 순으로 행을 만들며 폼은 해당 경기 이전 결과만 반영 (같은 시각 경기끼리도 서로 반영 안 함)"""
     form = TeamForm()
+    elos = {f"k{int(k)}": Elo(k) for k in ELO_CONFIGS}
     last_seen: Dict[str, Any] = {}      # 팀별 직전 경기 킥오프 (휴식일 계산)
     rows: List[Dict[str, Any]] = []
     pending: List[tuple] = []
@@ -216,6 +257,8 @@ def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
         if last_ko is not None and r.kickoff != last_ko:
             for args in pending:
                 form.add(*args)
+                for e in elos.values():
+                    e.update(*args)
                 last_seen[args[0]] = last_seen[args[1]] = last_ko
             pending = []
         last_ko = r.kickoff
@@ -230,6 +273,8 @@ def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
         row.update(market_features(row["odds"], p))
         row.update(rest_features(last_seen, r.home_team, r.away_team, r.kickoff))
         row.update(ou_features(r._asdict(), p))
+        for tag, e in elos.items():
+            row.update(elo_features(e, r.home_team, r.away_team, p, tag))
         rows.append(row)
         pending.append((r.home_team, r.away_team, int(r.home_score), int(r.away_score)))
     return rows

@@ -37,6 +37,11 @@ CANDIDATES = {
     "+rest": BASE_MATCH + ["rest_diff", "congested_home", "congested_away"],
     "+market+rest": BASE_MATCH + ["closeness", "strength_diff", "margin", "rest_diff", "congested_home", "congested_away"],
 }
+# [실험 ④] Elo 레이팅 (K=15 / 30): 시장 대비 차이 또는 레이팅 차이
+ELO_CANDIDATES = {"base": BASE_MATCH}
+for _tag in ("k15", "k30"):
+    ELO_CANDIDATES[f"+elo_vs_mkt_{_tag}"] = BASE_MATCH + [f"elo_vs_mkt_{_tag}"]
+    ELO_CANDIDATES[f"+elo_diff_{_tag}"] = BASE_MATCH + [f"elo_diff_{_tag}", f"elo_known_{_tag}"]
 # [실험 ③] 같은 경기 언더/오버 → 득점 모델 확률(p_ou)과 시장 차이
 OU_CANDIDATES = {
     "base": BASE_MATCH,
@@ -127,7 +132,7 @@ if __name__ == "__main__":
     rows = build_rows(load_archive_df())
     print(f"전체 {len(rows)}경기. 값은 Log loss 차이(음수 = 더 정확).")
     which = sys.argv[1] if len(sys.argv) > 1 else "ou"
-    cands = OU_CANDIDATES if which == "ou" else CANDIDATES
+    cands = {"ou": OU_CANDIDATES, "elo": ELO_CANDIDATES}.get(which, CANDIDATES)
     print(f"언더/오버 배당이 있는 경기 비율: {np.mean([r['has_ou'] for r in rows]) * 100:.1f}%")
     per_set, mk_all = walk_forward(rows, cands)
     print("분기별 경기 수:", [len(m) for m in mk_all])
