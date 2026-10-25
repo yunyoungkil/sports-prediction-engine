@@ -143,10 +143,10 @@
   - 새 파일: `models/sharp_value.py` (`detect_sharp_mispricing`, `evaluate_historical_sharp_mispricing`)
   - `p_sharp = remove_margin(샤프 배당: Betfair Exchange / Pinnacle)`, `EV = p_sharp × 베트맨배당 − 1`
   - 과거 데이터 검증 완료: 2425/2526 시즌 EV > 2% 탐지 시 1,148건 베팅 ROI +3.28% (2425: +4.64%, 2526: +1.72%로 순수 OOS 양수 입증), EV > 4% 시 ROI +10.90% 입증 완료 (`tests/test_sharp_value.py` 통과)
-- [ ] **3.3 모델·시장 블렌딩**
-  - 새 파일: `models/blender.py`
-  - `logit(p) = a·logit(p_market) + b·logit(p_model) + c`를 학습 기간 데이터로 적합
-  - 계수 a, b, c와 검증 Log loss를 리포트에 출력
+- [x] **3.3 모델·시장 블렌딩**
+  - 새 파일: `models/blender.py` (`MarketModelBlender`)
+  - `logit(p) = a·logit(p_market) + b·logit(p_model) + c`를 학습 세트(2223~2324)로 적합 완료: a=0.4225, b=0.7659, c_home=-0.1471, c_away=-0.1543
+  - 검증 평가 및 체크포인트 확인 완료: 단독 포아송 모델 대비 블렌딩 Log Loss 개선 (2425: 1.0127 → 0.9874, 2526: 1.0183 → 0.9963). 시장 단독(0.9647/0.9790) 우위에 따라 3.2(샤프 오가격 탐지)와 결합하는 체크포인트 조치 확정 (`tests/test_blender.py` 통과)
 - [ ] **3.4 EV 계산을 블렌딩 확률 기준으로 교체**
   - 파일: `models/evaluator.py`, `run_pipeline.py`
 - [ ] **3.5 비축구 종목 추천 제외**
