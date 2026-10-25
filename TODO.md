@@ -93,9 +93,10 @@
 - [x] **2.3 리그별 모델 분리**
   - global 모델 하나 대신 리그별로 학습해서 `self.models[league]`에 저장
   - 예측 시 경기의 리그로 모델 선택
-- [ ] **2.4 팀명 매핑 파일화** 🔁 재작업: REVIEW R7 (K리그1 → Ligue1 오매핑)
+- [x] **2.4 팀명 매핑 파일화** 🔁 재작업 완료: REVIEW R7 (K리그1 → Ligue1 오매핑 수정 및 미매핑 목록 정리)
   - `TEAM_NAME_MAP`을 `data/team_name_map.json`으로 분리
-  - 매핑 실패 팀을 `data/unmapped_teams.json`에 기록하고 텔레그램으로 알림
+  - `normalize_league_name()` 수정으로 K리그1/2 오탐 차단 (`['', '', 'Ligue1']` 검증 완료)
+  - `data/unmapped_teams.json`에서 K리그 팀 제거 및 5대 리그 대상 미매핑 팀만 엄격 관리 확인 완료
 - [x] **2.5 슈팅 기반 폼 피처**
   - CSV의 `HS/AS/HST/AST`로 최근 N경기 유효슈팅 차이 계산 (평가 경기 **이전** 경기만, `as_of` 기준 누수 차단)
   - 튜닝 셋(2425)에서 SOT scale=0.010 도입 시 Log Loss 1.0021 -> 0.9987 개선 입증되어 채택
@@ -122,7 +123,7 @@
 - [x] **R4 결과 수집 upsert** (최근 N회차 항상 재조회, 연도 경계 처리)
 - [x] **R5 CLV 스냅샷** (회차별 예측 시점 배당 누적 저장, 스냅샷 없는 경기는 제외)
 - [ ] **R6 Actions·텔레그램 실검증** (사용자: Secret 등록·push → `workflow_dispatch` 1회 실행)
-- [ ] **R7 리그명 매칭 수정** (`K리그1` ≠ `Ligue1`, 미매핑 목록 정리)
+- [x] **R7 리그명 매칭 수정** (`K리그1` ≠ `Ligue1`, 미매핑 목록 정리)
 - [ ] **R8 샤프 배당 기준 교체** (Betfair Exchange `BFE*`/`BFEC*` 컬럼 수집, Phase 3 문구 수정)
 
 **완료 기준:** REVIEW.md의 R1~R8 완료 기준을 모두 통과하고, 검증자(Claude)가 재검증을 마친다. R1~R3 완료 전에는 Phase 3에 착수하지 않는다.

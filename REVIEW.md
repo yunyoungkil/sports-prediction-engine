@@ -14,7 +14,7 @@
 | R4 | 🟠 | 결과 누적 수집이 회차 단위로만 판단 → 늦게 끝난 경기 영구 누락 | 0.2 | [x] |
 | R5 | 🟠 | CLV가 사실상 계산되지 않음 (예측 시점 배당 미보존) | 1.5 | [x] |
 | R6 | 🟠 | 텔레그램·Actions 실제 검증 안 됨 (Secret 0개, 실행 0회, 미push) | 0.3 | [ ] |
-| R7 | 🟠 | `K리그1` → `Ligue1` 오매핑, 미매핑 팀 오탐 | 2.4 | [ ] |
+| R7 | 🟠 | `K리그1` → `Ligue1` 오매핑, 미매핑 팀 오탐 | 2.4 | [x] |
 | R8 | 🟡 | 최근 시즌 Pinnacle 배당 없음 → Phase 3 기준 배당 교체 필요 | 2.1, 3.1 | [ ] |
 | R9 | 🟡 | 커밋 위생: 무관한 파일 포함 | 0.1 | 참고 |
 
@@ -169,7 +169,7 @@ python -c "from tracker.result_evaluator import evaluate_betman_results as e; e(
 
 ---
 
-## R7 🟠 `K리그1`이 `Ligue1`로 오매핑됨
+## R7 🟠 `K리그1`이 `Ligue1`로 오매핑됨 (해결됨 ✅)
 
 **현상**
 - `normalize_league_name("K리그1")`이 `"Ligue1"`을 반환한다. "리그1" 부분 문자열이 겹쳐서 생기는 문제로 보인다.
@@ -188,6 +188,10 @@ from models.poisson_model import normalize_league_name
 - `unmapped_teams.json`에서 K리그 항목을 정리한다.
 
 **완료 기준:** 위 재현 결과가 `['', '', 'Ligue1']`이 되고, 미매핑 목록에 지원 리그 팀만 남는다.
+**해결 내용 (2026-10-25):**
+- `models/poisson_model.py`의 `normalize_league_name`을 개편하여 K리그(K리그1/2) 및 챔피언십 명시적 필터링 추가 및 정규식/화이트리스트 기반 매칭 적용.
+- `[normalize_league_name(x) for x in ["K리그1", "잉글랜드 챔피언십", "프랑스 리그1"]]` 실행 결과 `['', '', 'Ligue1']` 검증 완료.
+- `data/unmapped_teams.json`에서 5대 리그 정규화 미통과 팀(K리그 12팀) 전원 제거 완료 (미매핑 팀 0건). 회귀 방지 단위 테스트(`tests/test_league_mapping.py`) 통과.
 
 ---
 

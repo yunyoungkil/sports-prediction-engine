@@ -82,20 +82,37 @@ def normalize_league_name(name: str) -> str:
     """
     다양한 형식의 리그 명칭을 5대 주요 리그 표준 키로 정규화합니다.
     (EPL, LaLiga, Bundesliga, SerieA, Ligue1)
+    K리그 등 타 리그와의 오탐을 엄격히 방지합니다.
     """
     if not name:
         return ""
-    name_lower = str(name).lower()
-    if any(k in name_lower for k in ["epl", "프리미어", "e0", "premier"]):
+    clean = re.sub(r"\s+", " ", str(name)).strip()
+    clean_lower = clean.lower()
+
+    # K리그 등 타 리그 오매핑 방지
+    if any(k in clean_lower for k in ["k리그", "k-league", "kleague", "챔피언십", "championship"]):
+        return ""
+
+    # EPL (잉글랜드 프리미어리그)
+    if any(k in clean_lower for k in ["e0", "epl", "프리미어리그", "프리미어 리그", "잉글랜드 프리미어"]) or clean_lower == "premier league":
         return "EPL"
-    if any(k in name_lower for k in ["laliga", "라리가", "sp1"]):
+
+    # LaLiga (스페인 라리가)
+    if any(k in clean_lower for k in ["sp1", "laliga", "la liga", "라리가", "스페인 라리가", "프리메라리가"]):
         return "LaLiga"
-    if any(k in name_lower for k in ["bundesliga", "분데스", "d1"]):
+
+    # Bundesliga (독일 분데스리가)
+    if any(k in clean_lower for k in ["d1", "bundesliga", "분데스리가", "독일 분데스", "분데스"]):
         return "Bundesliga"
-    if any(k in name_lower for k in ["seriea", "세리에", "i1"]):
+
+    # SerieA (이탈리아 세리에A)
+    if any(k in clean_lower for k in ["i1", "seriea", "serie a", "세리에a", "세리에 a", "이탈리아 세리에", "세리에"]):
         return "SerieA"
-    if any(k in name_lower for k in ["ligue1", "리그1", "f1"]):
+
+    # Ligue1 (프랑스 리그1)
+    if any(k in clean_lower for k in ["f1", "ligue1", "ligue 1", "리그앙"]) or re.search(r"프랑스\s*리그\s*1", clean_lower):
         return "Ligue1"
+
     return ""
 
 
@@ -233,13 +250,17 @@ class MatchPredictor:
             try:
                 with open(p, "r", encoding="utf-8") as f:
                     for item in json.load(f):
-                        existing[item.get("team")] = item
+                        # 5대 리그 정규화가 통과하는 지원 대상 리그의 팀만 유지
+                        if normalize_league_name(item.get("league", "")):
+                            existing[item.get("team")] = item
             except Exception:
                 pass
 
         new_detected = []
         from datetime import datetime
         for team, league in getattr(self, "unmapped_teams", set()):
+            if not normalize_league_name(league):
+                continue
             if team not in existing:
                 item = {
                     "team": team,
