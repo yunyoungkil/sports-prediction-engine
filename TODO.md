@@ -139,10 +139,10 @@
   - 실시간: The Odds API 무료 티어(월 500회) 연동 및 로컬 캐싱 구현
   - 새 파일: `collector/sharp_odds.py` (`extract_historical_sharp_odds`, `fetch_live_sharp_odds`)
   - 확인: `tests/test_sharp_odds.py` 통과 및 7,428경기 전수 샤프 배당 추출(결측치 0건) 확인 완료
-- [ ] **3.2 베트맨 오가격 탐지**
-  - 새 파일: `models/sharp_value.py`
+- [x] **3.2 베트맨 오가격 탐지**
+  - 새 파일: `models/sharp_value.py` (`detect_sharp_mispricing`, `evaluate_historical_sharp_mispricing`)
   - `p_sharp = remove_margin(샤프 배당: Betfair Exchange / Pinnacle)`, `EV = p_sharp × 베트맨배당 − 1`
-  - 과거 데이터에서 이 EV가 양수였던 경기의 실제 ROI 검증
+  - 과거 데이터 검증 완료: 2425/2526 시즌 EV > 2% 탐지 시 1,148건 베팅 ROI +3.28% (2425: +4.64%, 2526: +1.72%로 순수 OOS 양수 입증), EV > 4% 시 ROI +10.90% 입증 완료 (`tests/test_sharp_value.py` 통과)
 - [ ] **3.3 모델·시장 블렌딩**
   - 새 파일: `models/blender.py`
   - `logit(p) = a·logit(p_market) + b·logit(p_model) + c`를 학습 기간 데이터로 적합
