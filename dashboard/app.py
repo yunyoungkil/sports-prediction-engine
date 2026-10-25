@@ -377,6 +377,12 @@ def category_group(m) -> str:
     return m.get("category") or m.get("game_type", "승무패")
 
 
+def is_sale_closed(m, now_ms: float) -> bool:
+    """베트맨 발매 마감 시각(close_time, ms)이 지났는지. 마감 정보가 없으면(지난 회차) 마감으로 본다."""
+    ct = m.get("close_time")
+    return True if not ct else float(ct) <= now_ms
+
+
 def available_picks(m) -> list:
     odds = m.get("betman_odds", {})
     return [k for k in PICK_KEYS if float(odds.get(k) or 0.0) > 1.0]
@@ -591,9 +597,8 @@ with tab1:
                 continue
             if sel_sport != "전체 종목" and m.get("sport") != sel_sport:
                 continue
-            if only_open and m.get("close_time"):
-                if float(m["close_time"]) <= now_ts:
-                    continue
+            if only_open and is_sale_closed(m, now_ts):
+                continue
             if only_single_opt and not m.get("is_single", False):
                 continue
             filtered_matches.append(m)
@@ -708,7 +713,14 @@ with tab1:
                        "AI 실력의 공식 지표는 '성과 검증' 탭의 성적표(Log loss)입니다.")
 
         if not page_matches:
-            st.info("선택하신 필터 조건에 해당하는 발매 경기가 없습니다.")
+            open_any = [m for m in predictions if not is_sale_closed(m, now_ts)]
+            if only_open and not open_any:
+                closes = [float(m["close_time"]) for m in predictions if m.get("close_time")]
+                last = datetime.fromtimestamp(max(closes) / 1000).strftime("%m/%d %H:%M") if closes else "-"
+                st.info(f"⏳ 지금은 발매 중인(마감 전) 경기가 없습니다. 현재 회차 발매가 {last}에 모두 마감되었고 다음 회차는 아직 열리지 않았습니다. "
+                        "다음 회차가 열리면 하루 2번(09:30·18:30) 자동 수집 때 표시됩니다.")
+            else:
+                st.info("선택하신 필터 조건에 해당하는 경기가 없습니다.")
 
         def _prob(probs, k):
             return float(probs.get(k, probs.get(k.replace("_win", ""), 0.0)) or 0.0) if probs else 0.0
@@ -743,6 +755,9 @@ with tab1:
             star_k = ai_k or mk_k
             disp = {k: f"{'💎' if k in gems else ''}{'⭐' if k == star_k else ''}{labels[k]} {float(odds[k]):.2f}" for k in opts}
             single = " · ⚡단통" if m.get("is_single") else ""
+            closed = is_sale_closed(m, now_ts) and not _past(m)
+            if closed and res is None:
+                single += " · 🔒발매 마감"
             actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
 
             with st.container(border=True):
@@ -764,7 +779,7 @@ with tab1:
                     picked = st.pills(
                         f"선택 #{seq}", options=opts, format_func=lambda k, d=disp: d[k], selection_mode="multi",
                         default=default, key=f"pick_{_ts(m)}_{m.get('_key', seq)}_{st.session_state['editor_version']}",
-                        label_visibility="collapsed", disabled=(res is not None or _past(m)))
+                        label_visibility="collapsed", disabled=(res is not None or _past(m) or closed))
                     ev = m.get("evaluation", {})
                     if res is None and ev.get("is_recommended"):
                         st.markdown(f"<div style='font-size:12px;margin-top:-6px'>🔥 가치 픽 {ev.get('best_ev_pct', '')}</div>",
@@ -799,10 +814,11 @@ with tab1:
                     if actual:
                         body = f"<div style='font-size:15px'><b>{labels.get(actual, '?')}</b></div>"
                     else:
-                        body = "<div style='font-size:13px;color:#94a3b8'>진행 전</div>"
+                        body = ("<div style='font-size:13px;color:#94a3b8'>마감 · 결과 대기</div>" if closed
+                                else "<div style='font-size:13px;color:#94a3b8'>진행 전</div>")
                     st.markdown(cap.format("결과") + body, unsafe_allow_html=True)
 
-            if res is None and not _past(m):
+            if res is None and not _past(m) and not closed:
                 picked = picked or []
                 if picked:
                     st.session_state["selections"][seq] = {SEL_KEY[k]: (k in picked) for k in PICK_KEYS}

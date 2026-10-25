@@ -56,7 +56,8 @@ def _open_soccer_1x2(predictions, now):
         if m.get("game_type") != "축구 승무패" or float(odds.get("draw") or 0) <= 1.0:
             continue
         ko = parse_betman_kickoff(m.get("match_time"))
-        if ko and ko > now:
+        closed = bool(m.get("close_time")) and float(m["close_time"]) <= now.timestamp() * 1000
+        if ko and ko > now and not closed:     # 실제로 살 수 있는 경기만 (발매 마감 전)
             out.append(m)
     return out
 

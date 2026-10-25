@@ -41,6 +41,9 @@ def candidate_legs(predictions: List[Dict[str, Any]], fav_range: Tuple[float, fl
         ko = parse_betman_kickoff(m.get("match_time"))
         if ko is None or ko <= now:
             continue
+        # 발매 마감 시각이 지났으면 실제로 살 수 없으므로 제외
+        if m.get("close_time") and float(m["close_time"]) <= now.timestamp() * 1000:
+            continue
         ai, mk = m.get("blended_probabilities") or {}, m.get("market_implied_probs") or {}
         o = {k: float(odds.get(k) or 0) for k in KEYS}
         fav = min(KEYS, key=lambda k: o[k])

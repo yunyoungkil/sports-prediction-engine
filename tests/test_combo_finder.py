@@ -36,3 +36,10 @@ def test_find_combos_distinct_matches_and_sorted():
     evs = [c["ev_ai"] for c in combos]
     assert evs == sorted(evs, reverse=True)
     assert all(abs(c["odds"] - (1.6 if len(c["legs"]) == 2 else 2.0)) < 1e-9 for c in combos)  # 1.25² = 1.5625 → 1.6
+
+
+def test_closed_sale_excluded():
+    """킥오프 전이라도 발매 마감 시각이 지난 경기는 후보에서 뺀다"""
+    m = _m("9", (1.25, 5.0, 9.0), (0.74, 0.17, 0.09), (0.70, 0.18, 0.12))
+    m["close_time"] = (NOW.timestamp() - 60) * 1000
+    assert candidate_legs([m], (1.0, 1.3), now=NOW) == []
