@@ -68,8 +68,13 @@ class MatchPredictor:
             )
             model.fit()
             self.models["global"] = model
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"❌ Dixon-Coles 모델 학습 실패: {e}")
+            try:
+                from notifier.telegram_bot import send_telegram_warning
+                send_telegram_warning(f"Dixon-Coles 모델 학습 실패: {e}\n(기본 배당/포아송 폴백 모드로 동작합니다)")
+            except Exception:
+                pass
 
     def normalize_team_name(self, name: str) -> str:
         clean = name.strip()

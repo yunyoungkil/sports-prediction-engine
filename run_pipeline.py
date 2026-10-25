@@ -50,11 +50,23 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     if matches and len(matches) > 0:
         scraper.save_matches(matches, "data/current_matches.json")
     elif cached_file.exists():
-        print(f"⚠️ 실시간 수집 결과가 비어있어 기존 캐시({cached_file}) 데이터를 사용합니다.")
+        warn_msg = f"베트맨 실시간 수집 실패 (회차: {gm_ts}). 기존 캐시({cached_file}) 데이터를 사용합니다."
+        print(f"⚠️ {warn_msg}")
+        try:
+            from notifier.telegram_bot import send_telegram_warning
+            send_telegram_warning(warn_msg)
+        except Exception:
+            pass
         with open(cached_file, "r", encoding="utf-8") as f:
             matches = json.load(f)
     else:
-        print("❌ 수집된 경기 및 캐시 데이터가 없습니다.")
+        err_msg = f"베트맨 실시간 수집 및 캐시 데이터 모두 없음 (회차: {gm_ts}). 파이프라인을 중단합니다."
+        print(f"❌ {err_msg}")
+        try:
+            from notifier.telegram_bot import send_telegram_warning
+            send_telegram_warning(err_msg)
+        except Exception:
+            pass
         return []
     
     # 1-2. 베트맨 직전 회차 실제 경기 결과 누적 수집 및 병합 (미수집 회차 자동 추가)

@@ -24,12 +24,12 @@
   - `if not results_path.exists()` 조건 제거
   - 기존 `betman_recent_results.json`에 없는 종료 회차만 추가로 수집해서 병합 (중복 키: `gm_ts` + `match_seq`)
   - 확인: 두 번 실행해도 중복이 생기지 않고, 새 회차가 생기면 늘어난다
-- [ ] **0.3 텔레그램 Secret 연결**
+- [x] **0.3 텔레그램 Secret 연결**
   - 파일: `.github/workflows/pipeline.yml`
   - 파이프라인 실행 step에 `env: TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}`, `TELEGRAM_CHAT_ID` 추가
   - GitHub 저장소 Settings → Secrets에 두 값 등록
   - 확인: `workflow_dispatch`로 수동 실행 시 휴대폰에 알림이 온다
-- [ ] **0.4 실패를 조용히 넘기지 않기**
+- [x] **0.4 실패를 조용히 넘기지 않기**
   - 파일: `run_pipeline.py`, `models/poisson_model.py`
   - 실시간 수집 실패로 캐시를 쓸 때, 모델 학습 실패(`except Exception: pass`) 시 텔레그램 경고 전송
   - 확인: 일부러 잘못된 회차를 넣으면 경고 알림이 온다

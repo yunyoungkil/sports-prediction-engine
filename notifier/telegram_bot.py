@@ -87,5 +87,33 @@ def send_telegram_alert(
         return False
 
 
+def send_telegram_warning(warning_text: str, bot_token: str = None, chat_id: str = None) -> bool:
+    """
+    파이프라인 실행 중 오류나 캐시 폴백 발생 시 텔레그램으로 경고를 발송합니다.
+    """
+    token = bot_token or os.environ.get("TELEGRAM_BOT_TOKEN")
+    cid = chat_id or os.environ.get("TELEGRAM_CHAT_ID")
+    if not token or not cid:
+        return False
+
+    text = f"⚠️ <b>[스포츠토토 AI 시스템 경고]</b>\n\n{warning_text}"
+    api_url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": cid,
+        "text": text,
+        "parse_mode": "HTML"
+    }
+    try:
+        data = urllib.parse.urlencode(payload).encode("utf-8")
+        req = urllib.request.Request(api_url, data=data)
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status == 200:
+                print("✓ 텔레그램 경고 알림 발송 완료!")
+                return True
+    except Exception as e:
+        print(f"⚠ 텔레그램 경고 발송 실패: {e}")
+        return False
+
+
 if __name__ == "__main__":
     send_telegram_alert()
