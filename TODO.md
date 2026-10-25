@@ -44,7 +44,7 @@
 
 > 모든 이후 작업은 이 단계의 리포트로 효과를 판단한다.
 
-- [ ] **1.1 평가 모듈 뼈대**
+- [x] **1.1 평가 모듈 뼈대**
   - 새 폴더: `evaluation/` (`__init__.py`, `metrics.py`, `report.py`)
   - `python -m evaluation.report` 로 실행되는 진입점
 - [ ] **1.2 시장 기준선 모델**
