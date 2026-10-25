@@ -258,6 +258,46 @@ def load_prediction_log(gm_ts: str):
         return json.load(f).get("matches", {})
 
 
+@st.cache_data(ttl=60)
+def load_past_round_matches(gm_ts: str) -> list:
+    """
+    과거 회차를 결과 파일(betman_recent_results.json)로부터 카드 형식으로 재구성 (조회 전용).
+    배당은 결과 파일에 기록된 값(발매 최종 배당)이며, 배당 예상은 그 배당의 마진 제거 확률.
+    """
+    from models.odds_normalizer import remove_margin
+    out = []
+    for rows in load_results_index().values():
+        for r in rows:
+            if str(r.get("gm_ts")) != str(gm_ts):
+                continue
+            gt = str(r.get("game_type", ""))
+            hw = r.get("handi_win") or 0
+            if "핸디캡" in gt:
+                cat, label = ("전반 핸디캡" if "전반" in gt else "핸디캡"), f"핸디캡 ({float(hw):+.1f})"
+            elif "언더오버" in gt:
+                cat, label = ("전반 언더오버" if "전반" in gt else "언더오버"), f"언더/오버 (기준 {float(hw):g})"
+            else:
+                cat = "전반 승무패" if "전반" in gt else "일반 승무패"
+                label = cat
+            odds = {"home_win": float(r.get("odds_win") or 0), "draw": float(r.get("odds_draw") or 0),
+                    "away_win": float(r.get("odds_lose") or 0)}
+            mkt = None
+            if odds["home_win"] > 1 and odds["away_win"] > 1:
+                mkt = remove_margin(odds["home_win"], odds["draw"] if odds["draw"] > 1 else 0, odds["away_win"])["true_probs"]
+            out.append({
+                "gm_ts": int(gm_ts), "match_seq": str(r.get("match_seq")), "match_time": r.get("match_time", ""),
+                "league": r.get("league", ""), "sport": r.get("sport", ""), "game_type": gt,
+                "category": cat, "category_label": label, "line": float(hw),
+                "home_team": r.get("home_team", ""), "away_team": r.get("away_team", ""),
+                "betman_odds": odds, "market_implied_probs": mkt, "is_single": False,
+                "prob_source": None, "evaluation": {}, "_result": r,
+                # 같은 경기번호에 기준선이 여러 개 있을 수 있어 카드 고유 키를 따로 둔다
+                "_key": f"{r.get('match_seq')}_{r.get('bettyp_cd', '')}_{r.get('handi_win', '')}_{r.get('handi_lose', '')}",
+            })
+    out.sort(key=lambda m: (m["match_time"], int(m["match_seq"]) if m["match_seq"].isdigit() else 0))
+    return out
+
+
 def detect_current_gm_ts(preds) -> str:
     for m in preds:
         if m.get("gm_ts"):
@@ -268,7 +308,9 @@ def detect_current_gm_ts(preds) -> str:
 
 
 def find_result(m, results_idx, gm_ts):
-    cands = results_idx.get((str(gm_ts), str(m.get("match_seq"))), [])
+    if m.get("_result") is not None:      # 과거 회차 카드는 결과 행에서 직접 만들어짐
+        return m["_result"]
+    cands =results_idx.get((str(gm_ts), str(m.get("match_seq"))), [])
     if len(cands) > 1:
         line = float(m.get("line") or 0.0)
         for c in cands:
@@ -286,6 +328,20 @@ def pick_labels(m) -> dict:
     if "핸디캡" in cat or "핸디캡" in gt:
         return {"home_win": "핸승", "draw": "핸무", "away_win": "핸패"}
     return {"home_win": "승", "draw": "무", "away_win": "패"}
+
+
+def category_display(m) -> str:
+    """표시·필터용 게임 유형 (홀/짝이 '일반 승무패'로 잘못 분류되는 문제(R14) 보정)"""
+    if "SUM" in str(m.get("game_type", "")):
+        return "홀/짝"
+    return m.get("category_label", m.get("game_type", "승무패"))
+
+
+def category_group(m) -> str:
+    """필터용 유형 묶음 (기준선 값은 무시): 일반 승무패 / 핸디캡 / 언더오버 / 홀/짝 / 전반 …"""
+    if "SUM" in str(m.get("game_type", "")):
+        return "홀/짝"
+    return m.get("category") or m.get("game_type", "승무패")
 
 
 def available_picks(m) -> list:
@@ -413,18 +469,29 @@ with tab1:
             unsafe_allow_html=True)
 
         # 필터 컨트롤
+        current_gm_ts = detect_current_gm_ts(predictions)
         with st.container(border=True):
+            # 회차 선택: 현재 판매 회차 + 결과가 있는 과거 회차 (과거는 조회 전용)
+            past_rounds = sorted({ts for ts, _ in load_results_index().keys() if ts and ts != str(current_gm_ts)}, reverse=True)
+            round_labels = {str(current_gm_ts): f"{current_gm_ts}회차 (현재 판매)"} if current_gm_ts else {}
+            round_labels.update({ts: f"{ts}회차 (종료·조회 전용)" for ts in past_rounds})
+            r1, _ = st.columns([1.5, 3.6])
+            with r1:
+                sel_round = st.selectbox("🗓️ 회차", list(round_labels), format_func=lambda x: round_labels[x], key="step1_round")
+            is_past = sel_round != str(current_gm_ts)
+            round_matches = load_past_round_matches(sel_round) if is_past else predictions
+
             f1, f2, f3, f4 = st.columns([1.5, 1.2, 1.2, 1.2])
             with f1:
                 search_kw = st.text_input("🔎 팀 대진 검색", placeholder="예: 아스널, 뮌헨, 인천", key="step1_search")
             with f2:
-                avail_leagues = sorted(list(set(m.get("league", "기타") for m in predictions)))
+                avail_leagues = sorted(list(set(m.get("league", "기타") for m in round_matches)))
                 sel_league = st.selectbox("리그 필터", ["전체 리그"] + avail_leagues, key="step1_league")
             with f3:
-                avail_cats = sorted(list(set(m.get("category_label", m.get("game_type", "승무패")) for m in predictions)))
+                avail_cats = sorted(list(set(category_group(m) for m in round_matches)))
                 sel_cat = st.selectbox("게임 유형 필터", ["전체 유형"] + avail_cats, key="step1_cat")
             with f4:
-                avail_sports = sorted(list(set(m.get("sport", "기타") for m in predictions)))
+                avail_sports = sorted(list(set(m.get("sport", "기타") for m in round_matches)))
                 sel_sport = st.selectbox("종목 필터", ["전체 종목"] + avail_sports, key="step1_sport")
 
             sub_c1, sub_c2, sub_c3 = st.columns(3)
@@ -438,14 +505,14 @@ with tab1:
         # 필터링 적용
         now_ts = datetime.now().timestamp() * 1000
         filtered_matches = []
-        for m in predictions:
+        for m in round_matches:
             if search_kw:
                 q = search_kw.lower()
                 if q not in m.get("home_team", "").lower() and q not in m.get("away_team", "").lower():
                     continue
             if sel_league != "전체 리그" and m.get("league") != sel_league:
                 continue
-            if sel_cat != "전체 유형" and m.get("category_label", m.get("game_type", "")) != sel_cat:
+            if sel_cat != "전체 유형" and category_group(m) != sel_cat:
                 continue
             if sel_sport != "전체 종목" and m.get("sport") != sel_sport:
                 continue
@@ -458,8 +525,11 @@ with tab1:
 
         # 경기 카드 목록: 배당 버튼을 눌러 바로 선택 (가로 스크롤 없이 휴대폰에서도 사용)
         results_idx = load_results_index()
-        cur_gm_ts = detect_current_gm_ts(predictions)
+        cur_gm_ts = sel_round
         pre_log = load_prediction_log(cur_gm_ts) if cur_gm_ts else {}
+        if is_past:
+            st.info(f"🗂️ {sel_round}회차는 종료된 회차입니다 (조회 전용). 배당은 최종 발매 배당이며, "
+                    + ("AI 예상은 경기 전에 기록된 경기만 표시됩니다." if pre_log else "이 회차에는 경기 전 AI 기록이 없어 배당 예상만 표시됩니다."))
 
         def _ai_probs(m, res, log):
             """AI 예상 확률: 축구 승무패만. 끝난 경기는 경기 전 고정 기록으로만 (경기 후 재계산 값은 결과가 섞일 수 있음)"""
@@ -510,25 +580,32 @@ with tab1:
                                    value=1, step=1, key=f"step1_page_{sel_day}_{n_pages}")
         page_matches = filtered_matches[(page - 1) * PAGE_SIZE: page * PAGE_SIZE]
 
-        # 이번 회차 채점 요약 (경기 전 기록만 사용, 같은 기준으로 배당 1순위와 비교)
-        graded = []
+        # 회차 채점 요약 (현재 필터 기준). 배당 1순위는 모든 종료 경기, AI 1순위는 경기 전 기록이 있는 경기만
+        mk_hits, ai_pairs = [], []
         for m in filtered_matches:
-            log = pre_log.get(str(m.get("match_seq")))
             res = find_result(m, results_idx, cur_gm_ts)
-            if not log or not res:
+            actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
+            if not actual:
                 continue
             opts = available_picks(m)
-            actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result")))
-            ai_k, _ = top_pick(log.get("model_probs"), opts)
-            mk_k, _ = top_pick(log.get("market_probs"), opts)
-            if actual:
-                graded.append((ai_k == actual, mk_k == actual))
-        if graded:
+            log = pre_log.get(str(m.get("match_seq")))
+            mk_k, _ = top_pick((log or {}).get("market_probs") or m.get("market_implied_probs"), opts)
+            if mk_k:
+                mk_hits.append(mk_k == actual)
+            if log and log.get("model_probs"):
+                ai_k, _ = top_pick(log["model_probs"], opts)
+                ai_pairs.append((ai_k == actual, mk_k == actual))
+        if mk_hits:
             g1, g2, g3 = st.columns(3)
-            g1.metric("채점된 경기 (경기 전 기록)", f"{len(graded)}경기")
-            g2.metric("AI 1순위 적중", f"{sum(a for a, _ in graded) / len(graded) * 100:.1f}%")
-            g3.metric("배당 1순위 적중 (비교)", f"{sum(b for _, b in graded) / len(graded) * 100:.1f}%")
-            st.caption("적중률은 참고용입니다. 배당 1순위만 찍어도 비슷하게 맞으므로 둘을 함께 보세요. AI 실력의 공식 지표는 '성과 검증' 탭의 성적표(Log loss)입니다.")
+            g1.metric("결과 나온 경기 (현재 필터)", f"{len(mk_hits)}경기")
+            g2.metric("배당 1순위 적중", f"{sum(mk_hits) / len(mk_hits) * 100:.1f}%")
+            if ai_pairs:
+                g3.metric(f"AI 1순위 적중 ({len(ai_pairs)}경기)", f"{sum(a for a, _ in ai_pairs) / len(ai_pairs) * 100:.1f}%",
+                          f"같은 경기 배당 1순위 {sum(b for _, b in ai_pairs) / len(ai_pairs) * 100:.1f}%", delta_color="off")
+            else:
+                g3.metric("AI 1순위 적중", "기록 없음", "경기 전 AI 기록은 260126회차부터", delta_color="off")
+            st.caption("적중률은 참고용입니다. 배당 1순위만 찍어도 비슷하게 맞으므로 AI는 '같은 경기'의 배당 1순위와 비교하세요. "
+                       "AI 실력의 공식 지표는 '성과 검증' 탭의 성적표(Log loss)입니다.")
 
         if not page_matches:
             st.info("선택하신 필터 조건에 해당하는 발매 경기가 없습니다.")
@@ -574,7 +651,7 @@ with tab1:
                     # 정보 줄은 한 줄 고정(넘치면 …), 마우스를 올리면 전체 표시
                     tm = re.search(r"\d{2}\.(\d{2}\.\d{2})\s*\(([^)]*)\)\s*(\d{1,2}:\d{2})", str(m.get("match_time", "")))
                     when = f"{tm.group(1)}({tm.group(2)}) {tm.group(3)}" if tm else m.get("match_time", "")
-                    cat_lbl = "홀/짝" if "SUM" in str(m.get("game_type", "")) else m.get("category_label", m.get("game_type", ""))
+                    cat_lbl = category_display(m)
                     meta = f"#{seq} · {when} · {m.get('league', '')} · {cat_lbl}{single}"
                     nowrap = "white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
                     st.markdown(
@@ -585,8 +662,8 @@ with tab1:
                 with c2:
                     picked = st.pills(
                         f"선택 #{seq}", options=opts, format_func=lambda k, d=disp: d[k], selection_mode="multi",
-                        default=default, key=f"pick_{seq}_{st.session_state['editor_version']}",
-                        label_visibility="collapsed", disabled=res is not None)
+                        default=default, key=f"pick_{cur_gm_ts}_{m.get('_key', seq)}_{st.session_state['editor_version']}",
+                        label_visibility="collapsed", disabled=(res is not None or is_past))
                     ev = m.get("evaluation", {})
                     if res is None and ev.get("is_recommended"):
                         st.markdown(f"<div style='font-size:12px;margin-top:-6px'>🔥 가치 픽 {ev.get('best_ev_pct', '')}</div>",
@@ -624,7 +701,7 @@ with tab1:
                         body = "<div style='font-size:13px;color:#94a3b8'>진행 전</div>"
                     st.markdown(cap.format("결과") + body, unsafe_allow_html=True)
 
-            if res is None:
+            if res is None and not is_past:
                 picked = picked or []
                 if picked:
                     st.session_state["selections"][seq] = {SEL_KEY[k]: (k in picked) for k in PICK_KEYS}
