@@ -90,7 +90,8 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     # 1-2. 베트맨 직전 회차 실제 경기 결과 누적 수집 및 병합 (미수집 회차 자동 추가)
     r_scraper = BetmanResultsScraper()
     target_ts = int(gm_ts) if gm_ts and str(gm_ts).isdigit() else 260126
-    r_scraper.sync_recent_results(current_ts=target_ts, n_rounds=8, filepath="data/history/betman_recent_results.json")
+    # 현재 판매 회차(target_ts)의 이미 끝난 경기 결과도 포함 (대시보드 적중 여부 표시용): target_ts+1 기준 직전 9개 회차
+    r_scraper.sync_recent_results(current_ts=target_ts + 1, n_rounds=9, filepath="data/history/betman_recent_results.json")
         
     # 1-3. 베트맨 최근 종료 경기 채점 및 실전 ROI 통계 자동 갱신
     try:
@@ -214,6 +215,7 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         )
         
         results.append({
+            "gm_ts": int(gm_ts) if gm_ts and str(gm_ts).isdigit() else gm_ts,
             "match_seq": m["match_seq"],
             "match_key": m.get("match_key") or f"{home}:{away}",
             "sport": m.get("sport", "축구"),

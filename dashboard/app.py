@@ -200,6 +200,79 @@ def generate_bet_slip_text(picks, combined_odds, combined_prob_pct=None, combine
     return "\n".join(lines)
 
 
+# 3-1. 경기 결과 · 경기 전 AI 예측 기록 (맞춤조건구매 목록의 적중 여부 표시용)
+PICK_KEYS = ("home_win", "draw", "away_win")
+SEL_KEY = {"home_win": "home", "draw": "draw", "away_win": "away"}
+RESULT_CODE_TO_KEY = {"0": "home_win", "1": "draw", "2": "away_win"}   # 2-way(언더/오버, 홀/짝)도 0=앞, 2=뒤
+AI_SOURCES = ("betman_corrector", "market_corrector")
+
+
+@st.cache_data(ttl=60)
+def load_results_index():
+    """(회차, 경기번호) → 결과 목록. 같은 번호에 기준선이 여러 개인 경우가 있어 리스트로 보관"""
+    path = project_root / "data" / "history" / "betman_recent_results.json"
+    idx = {}
+    if path.exists():
+        with open(path, "r", encoding="utf-8") as f:
+            for r in json.load(f):
+                idx.setdefault((str(r.get("gm_ts")), str(r.get("match_seq"))), []).append(r)
+    return idx
+
+
+@st.cache_data(ttl=60)
+def load_prediction_log(gm_ts: str):
+    """경기 시작 전에 고정 저장된 AI 예측 (사후 정보가 섞이지 않은 채점용 기록)"""
+    path = project_root / "data" / "history" / "prediction_log" / f"{gm_ts}.json"
+    if not path.exists():
+        return {}
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f).get("matches", {})
+
+
+def detect_current_gm_ts(preds) -> str:
+    for m in preds:
+        if m.get("gm_ts"):
+            return str(m["gm_ts"])
+    snap_dir = project_root / "data" / "history" / "odds_snapshots"
+    names = sorted(p.stem for p in snap_dir.glob("*.json")) if snap_dir.exists() else []
+    return names[-1] if names else ""
+
+
+def find_result(m, results_idx, gm_ts):
+    cands = results_idx.get((str(gm_ts), str(m.get("match_seq"))), [])
+    if len(cands) > 1:
+        line = float(m.get("line") or 0.0)
+        for c in cands:
+            if any(abs(float(c.get(k) or 0.0) - line) < 1e-9 for k in ("handi_win", "handi_val", "handi_lose")):
+                return c
+    return cands[0] if cands else None
+
+
+def pick_labels(m) -> dict:
+    gt, cat = str(m.get("game_type", "")), str(m.get("category", ""))
+    if "SUM" in gt:
+        return {"home_win": "홀", "draw": "-", "away_win": "짝"}
+    if "언더오버" in cat or "언더오버" in gt:
+        return {"home_win": "언더", "draw": "-", "away_win": "오버"}
+    if "핸디캡" in cat or "핸디캡" in gt:
+        return {"home_win": "핸승", "draw": "핸무", "away_win": "핸패"}
+    return {"home_win": "승", "draw": "무", "away_win": "패"}
+
+
+def available_picks(m) -> list:
+    odds = m.get("betman_odds", {})
+    return [k for k in PICK_KEYS if float(odds.get(k) or 0.0) > 1.0]
+
+
+def top_pick(probs: dict, opts: list):
+    """확률 1순위 선택 (probs 키는 home_win/draw/away_win 또는 home/draw/away)"""
+    if not probs or not opts:
+        return None, 0.0
+    get = lambda k: float(probs.get(k, probs.get(k.replace("_win", ""), 0.0)) or 0.0)
+    best = max(opts, key=get)
+    return best, get(best)
+
+
 # 4. 세션 상태 초기화 (단일 상태: selections)
 if "selections" not in st.session_state:
     st.session_state["selections"] = {}  # { match_seq: {"home": bool, "draw": bool, "away": bool} }
@@ -299,7 +372,7 @@ with tab1:
     # -------------------------------------------------------------
     if st.session_state["custom_step"] == 1:
         st.markdown("### 📋 STEP 01. 대상 경기 검색 및 승/무/패 다중 선택")
-        st.caption("표에서 원하는 경기의 [선택(승)], [선택(무)], [선택(패)] 체크박스를 선택하세요 (한 경기에서 복수 체크 시 가능한 모든 조합이 자동 전개됩니다).")
+        st.caption("경기마다 배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동 전개됩니다. ⭐ = AI 확률 1순위, 끝난 경기는 결과와 적중 여부(✅/❌)가 표시됩니다.")
 
         # 필터 컨트롤
         with st.container(border=True):
@@ -347,64 +420,123 @@ with tab1:
                 continue
             filtered_matches.append(m)
 
-        # 경기 데이터프레임 구성
-        rows = []
+        # 경기 카드 목록: 배당 버튼을 눌러 바로 선택 (가로 스크롤 없이 휴대폰에서도 사용)
+        results_idx = load_results_index()
+        cur_gm_ts = detect_current_gm_ts(predictions)
+        pre_log = load_prediction_log(cur_gm_ts) if cur_gm_ts else {}
+
+        def _match_day(m):
+            mt = re.search(r"\d{2}\.(\d{2})\.(\d{2})\s*(\([^)]*\))?", str(m.get("match_time", "")))
+            return f"{mt.group(1)}.{mt.group(2)} {mt.group(3) or ''}".strip() if mt else "날짜 미정"
+
+        lc1, lc2, lc3 = st.columns([1.4, 1.2, 1.4])
+        with lc1:
+            day_opts = ["전체 날짜"] + sorted({_match_day(m) for m in filtered_matches})
+            # 기본값: 아직 결과가 안 나온 경기가 있는 첫 날짜 (바로 고를 수 있는 경기부터 보이도록)
+            open_days = sorted({_match_day(m) for m in filtered_matches if find_result(m, results_idx, cur_gm_ts) is None})
+            day_idx = day_opts.index(open_days[0]) if open_days else 0
+            sel_day = st.selectbox("📅 경기 날짜", day_opts, index=day_idx, key="step1_day")
+        with lc2:
+            only_picked = st.checkbox("✔️ 선택한 경기만", value=False, key="step1_only_picked")
+        if sel_day != "전체 날짜":
+            filtered_matches = [m for m in filtered_matches if _match_day(m) == sel_day]
+        if only_picked:
+            filtered_matches = [m for m in filtered_matches if str(m.get("match_seq")) in st.session_state["selections"]]
+
+        # 아직 결과가 없는(선택 가능한) 경기를 먼저, 끝난 경기는 뒤로 (각각 원래 시간 순서 유지)
+        filtered_matches = sorted(filtered_matches, key=lambda m: find_result(m, results_idx, cur_gm_ts) is not None)
+
+        PAGE_SIZE = 25
+        n_pages = max(1, (len(filtered_matches) + PAGE_SIZE - 1) // PAGE_SIZE)
+        with lc3:
+            page = st.number_input(f"페이지 (총 {n_pages}쪽, {len(filtered_matches)}경기)", min_value=1, max_value=n_pages,
+                                   value=1, step=1, key=f"step1_page_{sel_day}_{n_pages}")
+        page_matches = filtered_matches[(page - 1) * PAGE_SIZE: page * PAGE_SIZE]
+
+        # 이번 회차 채점 요약 (경기 전 기록만 사용, 같은 기준으로 배당 1순위와 비교)
+        graded = []
         for m in filtered_matches:
-            m_seq = str(m.get("match_seq", ""))
-            cur_sel = st.session_state["selections"].get(m_seq, {"home": False, "draw": False, "away": False})
-            odds = m.get("betman_odds", {})
-            probs = m.get("blended_probabilities", m.get("model_probabilities", {}))
-            eval_info = m.get("evaluation", {})
+            log = pre_log.get(str(m.get("match_seq")))
+            res = find_result(m, results_idx, cur_gm_ts)
+            if not log or not res:
+                continue
+            opts = available_picks(m)
+            actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result")))
+            ai_k, _ = top_pick(log.get("model_probs"), opts)
+            mk_k, _ = top_pick(log.get("market_probs"), opts)
+            if actual:
+                graded.append((ai_k == actual, mk_k == actual))
+        if graded:
+            g1, g2, g3 = st.columns(3)
+            g1.metric("채점된 경기 (경기 전 기록)", f"{len(graded)}경기")
+            g2.metric("AI 1순위 적중", f"{sum(a for a, _ in graded) / len(graded) * 100:.1f}%")
+            g3.metric("배당 1순위 적중 (비교)", f"{sum(b for _, b in graded) / len(graded) * 100:.1f}%")
+            st.caption("적중률은 참고용입니다. 배당 1순위만 찍어도 비슷하게 맞으므로 둘을 함께 보세요. AI 실력의 공식 지표는 '성과 검증' 탭의 성적표(Log loss)입니다.")
 
-            rows.append({
-                "선택(승)": bool(cur_sel.get("home", False)),
-                "선택(무)": bool(cur_sel.get("draw", False)),
-                "선택(패)": bool(cur_sel.get("away", False)),
-                "경기번호": m_seq,
-                "일시": m.get("match_time", ""),
-                "리그": m.get("league", ""),
-                "유형": m.get("category_label", m.get("game_type", "승무패")),
-                "홈팀": m.get("home_team", ""),
-                "원정팀": m.get("away_team", ""),
-                "홈배당": float(odds.get("home_win", 0.0)),
-                "무배당": float(odds.get("draw", 0.0)),
-                "원정배당": float(odds.get("away_win", 0.0)),
-                "AI추천": eval_info.get("best_selection_name", "-"),
-                "기대가치": eval_info.get("best_ev_pct", "-"),
-                "단통": "⚡" if m.get("is_single") else ""
-            })
-
-        df_editor_source = pd.DataFrame(rows)
-
-        if df_editor_source.empty:
+        if not page_matches:
             st.info("선택하신 필터 조건에 해당하는 발매 경기가 없습니다.")
-        else:
-            edited_df = st.data_editor(
-                df_editor_source,
-                key=f"match_grid_editor_{st.session_state['editor_version']}",
-                use_container_width=True,
-                hide_index=True,
-                disabled=["경기번호", "일시", "리그", "유형", "홈팀", "원정팀", "홈배당", "무배당", "원정배당", "AI추천", "기대가치", "단통"],
-                column_config={
-                    "선택(승)": st.column_config.CheckboxColumn("선택(승)", default=False),
-                    "선택(무)": st.column_config.CheckboxColumn("선택(무)", default=False),
-                    "선택(패)": st.column_config.CheckboxColumn("선택(패)", default=False),
-                    "홈배당": st.column_config.NumberColumn(format="%.2f"),
-                    "무배당": st.column_config.NumberColumn(format="%.2f"),
-                    "원정배당": st.column_config.NumberColumn(format="%.2f"),
-                }
-            )
 
-            # 변경 사항을 st.session_state["selections"]에 동기화
-            for _, r in edited_df.iterrows():
-                seq_str = str(r["경기번호"])
-                h = bool(r["선택(승)"])
-                d = bool(r["선택(무)"])
-                a = bool(r["선택(패)"])
-                if h or d or a:
-                    st.session_state["selections"][seq_str] = {"home": h, "draw": d, "away": a}
-                elif seq_str in st.session_state["selections"]:
-                    del st.session_state["selections"][seq_str]
+        for m in page_matches:
+            seq = str(m.get("match_seq", ""))
+            odds = m.get("betman_odds", {})
+            labels = pick_labels(m)
+            opts = available_picks(m)
+            if not opts:
+                continue
+            log = pre_log.get(seq)
+            res = find_result(m, results_idx, cur_gm_ts)
+            is_ai = m.get("prob_source") in AI_SOURCES
+            # 끝난 경기는 경기 전 기록으로만 AI 예상을 보여준다 (경기 후 재계산 값은 결과 정보가 섞일 수 있음)
+            if res is not None:
+                # 기록이 없으면 경기 전에 확정된 배당 기준 1순위로 대신 표시 (배당은 사후 정보가 아님)
+                ai_probs = log.get("model_probs") if log else m.get("market_implied_probs")
+                src = "AI" if log else "배당"
+            else:
+                ai_probs = m.get("blended_probabilities") or m.get("market_implied_probs")
+                src = "AI" if is_ai else "배당"
+            ai_k, ai_p = top_pick(ai_probs, opts)
+
+            cur = st.session_state["selections"].get(seq, {})
+            default = [k for k in opts if cur.get(SEL_KEY[k])]
+            disp = {k: f"{'⭐' if k == ai_k else ''}{labels[k]} {float(odds[k]):.2f}" for k in opts}
+            single = " · ⚡단통" if m.get("is_single") else ""
+
+            with st.container(border=True):
+                c1, c2, c3 = st.columns([3.0, 3.4, 2.6], vertical_alignment="center")
+                with c1:
+                    st.markdown(
+                        f"<div style='font-size:12px;color:#94a3b8'>#{seq} · {m.get('match_time', '')} · {m.get('league', '')} · "
+                        f"{m.get('category_label', m.get('game_type', ''))}{single}</div>"
+                        f"<div style='font-size:15px'><b>{m.get('home_team', '')}</b> vs <b>{m.get('away_team', '')}</b></div>",
+                        unsafe_allow_html=True)
+                with c2:
+                    picked = st.pills(
+                        f"선택 #{seq}", options=opts, format_func=lambda k, d=disp: d[k], selection_mode="multi",
+                        default=default, key=f"pick_{seq}_{st.session_state['editor_version']}",
+                        label_visibility="collapsed", disabled=res is not None)
+                with c3:
+                    lines = []
+                    if ai_k:
+                        lines.append(f"{src} 예상 <b>{labels[ai_k]}</b> {ai_p * 100:.0f}%")
+                    ev = m.get("evaluation", {})
+                    if res is None and ev.get("is_recommended"):
+                        lines.append(f"🔥 가치 픽 {ev.get('best_ev_pct', '')}")
+                    if res is not None:
+                        actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result")))
+                        score = res.get("score", "")
+                        mark = ""
+                        if ai_k and actual:
+                            mark = " ✅" if ai_k == actual else " ❌"
+                        lines.append(f"결과 {score} → <b>{labels.get(actual, '?')}</b>{mark}")
+                    st.markdown("<div style='font-size:13px;line-height:1.5'>" + "<br>".join(lines) + "</div>",
+                                unsafe_allow_html=True)
+
+            if res is None:
+                picked = picked or []
+                if picked:
+                    st.session_state["selections"][seq] = {SEL_KEY[k]: (k in picked) for k in PICK_KEYS}
+                elif seq in st.session_state["selections"]:
+                    del st.session_state["selections"][seq]
 
         # 조합 구성 검증 및 전개 수 계산
         active_selections = {}
