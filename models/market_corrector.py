@@ -53,6 +53,12 @@ FEATURE_SETS = {
         "per_outcome": ["log_p_market"],
         "match": ["form_diff", "sot_diff"],
     },
+    # live + 해외 시가 샤프 배당 (Phase 5.4 실시간 수집으로 실전에서도 구할 수 있음)
+    # 실전 사용은 베트맨 스냅샷 검증(evaluation/sharp_vs_betman.py) 표본이 쌓인 뒤 판단
+    "live_sharp": {
+        "per_outcome": ["log_p_market", "sharp_diff"],
+        "match": ["form_diff", "sot_diff"],
+    },
 }
 LAMBDA_GRID = [0.0, 1e-4, 1e-3, 1e-2, 1e-1]
 EV_THRESHOLD = 0.02
@@ -207,14 +213,19 @@ class MarketCorrector:
         Xs = (X - self.mu) / self.sd
         return self._probs(log_mkt, F, Xs, self.beta, self.gamma, self.c)
 
-    def predict_proba(self, market_probs: Dict[str, float], form_diff: float = 0.0, sot_diff: float = 0.0) -> Dict[str, float]:
-        """실전 1경기 예측 (live 피처 세트 전용)"""
+    def predict_proba(self, market_probs: Dict[str, float], form_diff: float = 0.0, sot_diff: float = 0.0,
+                      sharp_probs: Optional[Dict[str, float]] = None) -> Dict[str, float]:
+        """실전 1경기 예측 (live / live_sharp 피처 세트). sharp_probs가 없으면 sharp_diff = 0"""
         p = np.array([
             float(market_probs.get("home_win") or market_probs.get("home") or 0.0),
             float(market_probs.get("draw") or 0.0),
             float(market_probs.get("away_win") or market_probs.get("away") or 0.0),
         ])
-        row = {"p_market": p / p.sum(), "p_avg": None, "p_sharp": None, "actual": 0,
+        ps = None
+        if sharp_probs:
+            ps = np.array([float(sharp_probs.get(k) or 0.0) for k in ("home_win", "draw", "away_win")])
+            ps = ps / ps.sum() if ps.min() > 0 else None
+        row = {"p_market": p / p.sum(), "p_avg": None, "p_sharp": ps, "actual": 0,
                "form_diff": float(form_diff), "sot_diff": float(sot_diff)}
         out = self.predict_rows([row])[0]
         return {"home_win": round(float(out[0]), 4), "draw": round(float(out[1]), 4), "away_win": round(float(out[2]), 4)}
@@ -349,11 +360,14 @@ if __name__ == "__main__":
     cache = {s: build_historical_rows(df_all, [s], fa) for s in TRAIN_SEASONS + TUNE_SEASONS + TEST_SEASONS + [2627]}
     betman_rows = build_betman_rows(load_betman_dataset(), fa)
 
-    models = {fs: run_experiment(fs, df_all, cache, betman_rows) for fs in ("full", "live")}
+    models = {fs: run_experiment(fs, df_all, cache, betman_rows) for fs in ("full", "live", "live_sharp")}
     for m in models.values():
         _print_report(m)
 
     models["live"].save()
     Path("data/market_corrector_full.json").write_text(
         json.dumps(models["full"].to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n💾 저장: {DEFAULT_PARAMS_PATH} (live), data/market_corrector_full.json (full, 연구용)")
+    Path("data/market_corrector_sharp.json").write_text(
+        json.dumps(models["live_sharp"].to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"\n💾 저장: {DEFAULT_PARAMS_PATH} (live), data/market_corrector_full.json (full, 연구용), "
+          "data/market_corrector_sharp.json (live_sharp, 베트맨 스냅샷 검증 대기)")

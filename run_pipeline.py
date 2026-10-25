@@ -78,6 +78,15 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         except Exception as e:
             print(f"⚠️ 배당 스냅샷 저장 중 오류 발생: {e}")
 
+    # 1-1b. [Phase 5.4] 해외 배당(The Odds API) 짝짓기 및 회차별 스냅샷 저장 (ODDS_API_KEY 필요)
+    sharp_by_seq = {}
+    if matches and gm_ts:
+        try:
+            from collector.betman_sharp import collect_round_sharp_odds
+            sharp_by_seq = collect_round_sharp_odds(gm_ts, matches)
+        except Exception as e:
+            print(f"⚠️ 해외 배당 비교 중 오류 발생: {e}")
+
     # 1-2. 베트맨 직전 회차 실제 경기 결과 누적 수집 및 병합 (미수집 회차 자동 추가)
     r_scraper = BetmanResultsScraper()
     target_ts = int(gm_ts) if gm_ts and str(gm_ts).isdigit() else 260126
@@ -94,7 +103,17 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             send_telegram_warning(f"베트맨 결과 채점 실패:\n{e}")
         except Exception:
             pass
-    
+
+    # 1-4. [Phase 5.4] 해외 배당 스냅샷 × 실전 결과 검증 리포트 갱신 (대시보드 표시용)
+    try:
+        from evaluation.sharp_vs_betman import evaluate as evaluate_sharp_vs_betman
+        sharp_report = evaluate_sharp_vs_betman()
+        Path("data/sharp_validation.json").write_text(
+            json.dumps(sharp_report, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"🌍 [5.4] 해외 배당 실전 검증: 결과 확인 {sharp_report['with_results']}건 (판정 기준 300건)")
+    except Exception as e:
+        print(f"⚠️ 해외 배당 검증 리포트 갱신 실패: {e}")
+
     # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기, 시장-모델 블렌더 준비
     predictor = MatchPredictor()
     form_analyzer = FormAnalyzer()
@@ -158,7 +177,12 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         blended_probs = blender.predict_proba(market_stats["true_probs"], model_probs)
         prob_source = "blender"
         # [Phase 5.2] 축구 일반 승무패는 시장 보정 모델 우선 (1X2 데이터로만 학습했으므로 다른 유형에는 쓰지 않음)
-        if corrector is not None and m.get("sport", "SC") == "SC" and category == "일반 승무패":
+        # (주의: "일반 승무패"에 홀/짝(축구 SUM)도 섞여 있으므로 game_type과 무승부 배당으로 3-way만 골라냄)
+        is_soccer_1x2 = (
+            m.get("sport", "SC") == "SC" and category == "일반 승무패"
+            and m.get("game_type") == "축구 승무패" and float(odds.get("draw") or 0.0) > 1.0
+        )
+        if corrector is not None and is_soccer_1x2:
             blended_probs = corrector.predict_proba(market_stats["true_probs"], form_diff=form_diff, sot_diff=sot_diff)
             prob_source = "market_corrector"
         
@@ -200,6 +224,8 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             "model_probabilities": model_probs,
             "blended_probabilities": blended_probs,
             "prob_source": prob_source,
+            # [Phase 5.4] 해외 배당 비교 (참고 정보, 아직 추천 판단에는 쓰지 않음 — 실전 검증 대기)
+            "sharp": sharp_by_seq.get(str(m["match_seq"])) if is_soccer_1x2 else None,
             "top_scores": pred.get("top_scores", []),
             "evaluation": eval_result,
             "home_form": home_form,

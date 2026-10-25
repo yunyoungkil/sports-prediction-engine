@@ -1,0 +1,1026 @@
+{
+  "gm_ts": "260126",
+  "snapshots": [
+    {
+      "captured_at": "2026-10-25T10:58:29.956427+00:00",
+      "credits_remaining": 493,
+      "targets": 29,
+      "matches": {
+        "626": {
+          "event_id": "f168373343a58c07d02f40538d04b404",
+          "home_team": "Fortuna Sittard",
+          "away_team": "Excelsior",
+          "commence_time": "2026-10-25T11:15:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.79,
+            "draw": 3.55,
+            "away_win": 2.54
+          },
+          "sharp_probs": {
+            "home_win": 0.3467,
+            "draw": 0.2725,
+            "away_win": 0.3808
+          },
+          "consensus_probs": {
+            "home_win": 0.34904444444444443,
+            "draw": 0.2776666666666667,
+            "away_win": 0.3732777777777778
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_single",
+          "prob_distance": 0.1048,
+          "sport_key": "soccer_netherlands_eredivisie",
+          "betman_odds": {
+            "home_win": 2.18,
+            "draw": 3.35,
+            "away_win": 2.55
+          },
+          "betman_home": "포르튀나 시타르트",
+          "betman_away": "엑셀시오르 로테르담",
+          "match_time": "26.10.25 (일) 20:15",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.2442,
+            "draw": -0.0871,
+            "away_win": -0.029
+          }
+        },
+        "630": {
+          "event_id": "c9b6c7048d8dc33dae618f67f462f67a",
+          "home_team": "Inter Milan",
+          "away_team": "Fiorentina",
+          "commence_time": "2026-10-25T11:30:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.36,
+            "draw": 5.75,
+            "away_win": 8.25
+          },
+          "sharp_probs": {
+            "home_win": 0.7136,
+            "draw": 0.1688,
+            "away_win": 0.1176
+          },
+          "consensus_probs": {
+            "home_win": 0.7037555555555556,
+            "draw": 0.17267777777777776,
+            "away_win": 0.12356666666666666
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0464,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 1.26,
+            "draw": 4.65,
+            "away_win": 7.1
+          },
+          "betman_home": "인테르나치오날레 밀라노",
+          "betman_away": "ACF피오렌티나",
+          "match_time": "26.10.25 (일) 20:30",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1009,
+            "draw": -0.2151,
+            "away_win": -0.165
+          }
+        },
+        "636": {
+          "event_id": "9c4254cba9944a839b421db27260504d",
+          "home_team": "Athletic Bilbao",
+          "away_team": "Getafe",
+          "commence_time": "2026-10-25T13:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.57,
+            "draw": 4.04,
+            "away_win": 6.69
+          },
+          "sharp_probs": {
+            "home_win": 0.616,
+            "draw": 0.2394,
+            "away_win": 0.1446
+          },
+          "consensus_probs": {
+            "home_win": 0.6136375,
+            "draw": 0.24025,
+            "away_win": 0.14611249999999998
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0808,
+          "sport_key": "soccer_spain_la_liga",
+          "betman_odds": {
+            "home_win": 1.51,
+            "draw": 3.3,
+            "away_win": 5.4
+          },
+          "betman_home": "아틀레틱 빌바오",
+          "betman_away": "헤타페",
+          "match_time": "26.10.25 (일) 22:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0698,
+            "draw": -0.21,
+            "away_win": -0.2192
+          }
+        },
+        "648": {
+          "event_id": "fe235b26408c477368c40672a4488694",
+          "home_team": "Crystal Palace",
+          "away_team": "Newcastle United",
+          "commence_time": "2026-10-25T14:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.9,
+            "draw": 3.66,
+            "away_win": 2.44
+          },
+          "sharp_probs": {
+            "home_win": 0.3355,
+            "draw": 0.2658,
+            "away_win": 0.3987
+          },
+          "consensus_probs": {
+            "home_win": 0.3313,
+            "draw": 0.2647555555555556,
+            "away_win": 0.4038999999999999
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0122,
+          "sport_key": "soccer_epl",
+          "betman_odds": {
+            "home_win": 2.55,
+            "draw": 3.35,
+            "away_win": 2.18
+          },
+          "betman_home": "크리스털 팰리스",
+          "betman_away": "뉴캐슬 유나이티드",
+          "match_time": "26.10.25 (일) 23:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1445,
+            "draw": -0.1096,
+            "away_win": -0.1308
+          }
+        },
+        "653": {
+          "event_id": "69493b5ebb84f24ab1d6023a30ee89f0",
+          "home_team": "Hull City",
+          "away_team": "Brentford",
+          "commence_time": "2026-10-25T14:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 5.08,
+            "draw": 4.13,
+            "away_win": 1.68
+          },
+          "sharp_probs": {
+            "home_win": 0.1903,
+            "draw": 0.2341,
+            "away_win": 0.5755
+          },
+          "consensus_probs": {
+            "home_win": 0.19214444444444445,
+            "draw": 0.23686666666666664,
+            "away_win": 0.5709888888888889
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0631,
+          "sport_key": "soccer_epl",
+          "betman_odds": {
+            "home_win": 4.2,
+            "draw": 3.5,
+            "away_win": 1.6
+          },
+          "betman_home": "헐 시티",
+          "betman_away": "브렌트퍼드",
+          "match_time": "26.10.25 (일) 23:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.2007,
+            "draw": -0.1806,
+            "away_win": -0.0792
+          }
+        },
+        "658": {
+          "event_id": "290ba8cd3f3a2e9252effca673bf5549",
+          "home_team": "Liverpool",
+          "away_team": "Brighton and Hove Albion",
+          "commence_time": "2026-10-25T14:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.14,
+            "draw": 3.85,
+            "away_win": 3.32
+          },
+          "sharp_probs": {
+            "home_win": 0.4545,
+            "draw": 0.2526,
+            "away_win": 0.2929
+          },
+          "consensus_probs": {
+            "home_win": 0.4512333333333333,
+            "draw": 0.2514,
+            "away_win": 0.29736666666666667
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.047,
+          "sport_key": "soccer_epl",
+          "betman_odds": {
+            "home_win": 2.0,
+            "draw": 3.5,
+            "away_win": 2.75
+          },
+          "betman_home": "리버풀",
+          "betman_away": "브라이턴&호브 앨비언",
+          "match_time": "26.10.25 (일) 23:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.091,
+            "draw": -0.1159,
+            "away_win": -0.1945
+          }
+        },
+        "663": {
+          "event_id": "33fb7467b23c91d57dc976d9ab05ea97",
+          "home_team": "Manchester United",
+          "away_team": "Bournemouth",
+          "commence_time": "2026-10-25T14:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.45,
+            "draw": 3.47,
+            "away_win": 3.01
+          },
+          "sharp_probs": {
+            "home_win": 0.3968,
+            "draw": 0.2802,
+            "away_win": 0.323
+          },
+          "consensus_probs": {
+            "home_win": 0.3980666666666666,
+            "draw": 0.27715555555555554,
+            "away_win": 0.3247666666666667
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0987,
+          "sport_key": "soccer_epl",
+          "betman_odds": {
+            "home_win": 1.95,
+            "draw": 3.5,
+            "away_win": 2.85
+          },
+          "betman_home": "맨체스터 유나이티드",
+          "betman_away": "AFC본머스",
+          "match_time": "26.10.25 (일) 23:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.2262,
+            "draw": -0.0193,
+            "away_win": -0.0794
+          }
+        },
+        "668": {
+          "event_id": "63aa6e3f679ee4c68de5b4bd8d3361bb",
+          "home_team": "Atalanta BC",
+          "away_team": "Frosinone",
+          "commence_time": "2026-10-25T14:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.9,
+            "draw": 4.15,
+            "away_win": 3.82
+          },
+          "sharp_probs": {
+            "home_win": 0.5115,
+            "draw": 0.2342,
+            "away_win": 0.2544
+          },
+          "consensus_probs": {
+            "home_win": 0.5079555555555556,
+            "draw": 0.23445555555555556,
+            "away_win": 0.2576
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0199,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 1.67,
+            "draw": 3.85,
+            "away_win": 3.45
+          },
+          "betman_home": "아탈란타BC",
+          "betman_away": "프로시노네",
+          "match_time": "26.10.25 (일) 23:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1458,
+            "draw": -0.0983,
+            "away_win": -0.1223
+          }
+        },
+        "672": {
+          "event_id": "95cfaecfe96bb7ced1fb6af974a4110b",
+          "home_team": "Genoa",
+          "away_team": "Venezia",
+          "commence_time": "2026-10-25T14:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.23,
+            "draw": 3.26,
+            "away_win": 3.67
+          },
+          "sharp_probs": {
+            "home_win": 0.4364,
+            "draw": 0.2985,
+            "away_win": 0.2651
+          },
+          "consensus_probs": {
+            "home_win": 0.43593333333333334,
+            "draw": 0.29455555555555557,
+            "away_win": 0.26953333333333335
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.045,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 1.96,
+            "draw": 3.15,
+            "away_win": 3.1
+          },
+          "betman_home": "제노아",
+          "betman_away": "베네치아",
+          "match_time": "26.10.25 (일) 23:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1447,
+            "draw": -0.0597,
+            "away_win": -0.1782
+          }
+        },
+        "676": {
+          "event_id": "c177a3c900d7febf9870ca8de90a9e35",
+          "home_team": "AS Monaco",
+          "away_team": "Lille",
+          "commence_time": "2026-10-25T14:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.98,
+            "draw": 3.53,
+            "away_win": 4.16
+          },
+          "sharp_probs": {
+            "home_win": 0.4909,
+            "draw": 0.2754,
+            "away_win": 0.2337
+          },
+          "consensus_probs": {
+            "home_win": 0.4818125,
+            "draw": 0.276075,
+            "away_win": 0.2421125
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0853,
+          "sport_key": "soccer_france_ligue_one",
+          "betman_odds": {
+            "home_win": 1.91,
+            "draw": 3.25,
+            "away_win": 3.15
+          },
+          "betman_home": "AS모나코",
+          "betman_away": "릴OSC",
+          "match_time": "26.10.25 (일) 23:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0624,
+            "draw": -0.105,
+            "away_win": -0.2638
+          }
+        },
+        "680": {
+          "event_id": "2fd479cbb110c8f057e363bb06195f2b",
+          "home_team": "TSG Hoffenheim",
+          "away_team": "Bayer Leverkusen",
+          "commence_time": "2026-10-25T14:30:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 3.32,
+            "draw": 4.14,
+            "away_win": 2.06
+          },
+          "sharp_probs": {
+            "home_win": 0.2929,
+            "draw": 0.2349,
+            "away_win": 0.4721
+          },
+          "consensus_probs": {
+            "home_win": 0.30114444444444444,
+            "draw": 0.2338444444444445,
+            "away_win": 0.4650222222222222
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0837,
+          "sport_key": "soccer_germany_bundesliga",
+          "betman_odds": {
+            "home_win": 2.6,
+            "draw": 3.75,
+            "away_win": 2.01
+          },
+          "betman_home": "TSG1899 호펜하임",
+          "betman_away": "바이어04 레버쿠젠",
+          "match_time": "26.10.25 (일) 23:30",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.2385,
+            "draw": -0.1191,
+            "away_win": -0.0511
+          }
+        },
+        "698": {
+          "event_id": "2013e3955186ebe5258e85eb741a7553",
+          "home_team": "Celta Vigo",
+          "away_team": "Real Betis",
+          "commence_time": "2026-10-25T15:15:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 3.23,
+            "draw": 3.47,
+            "away_win": 2.33
+          },
+          "sharp_probs": {
+            "home_win": 0.3015,
+            "draw": 0.2806,
+            "away_win": 0.4179
+          },
+          "consensus_probs": {
+            "home_win": 0.3022,
+            "draw": 0.2808625,
+            "away_win": 0.41693749999999996
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0418,
+          "sport_key": "soccer_spain_la_liga",
+          "betman_odds": {
+            "home_win": 2.7,
+            "draw": 3.15,
+            "away_win": 2.17
+          },
+          "betman_home": "RC셀타데비고",
+          "betman_away": "레알 베티스",
+          "match_time": "26.10.26 (월) 00:15",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1859,
+            "draw": -0.1161,
+            "away_win": -0.0932
+          }
+        },
+        "702": {
+          "event_id": "6a5709e9c094b7f5d089026af10fb820",
+          "home_team": "Sparta Rotterdam",
+          "away_team": "Ajax",
+          "commence_time": "2026-10-25T15:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 6.35,
+            "draw": 5.45,
+            "away_win": 1.43
+          },
+          "sharp_probs": {
+            "home_win": 0.1514,
+            "draw": 0.1764,
+            "away_win": 0.6722
+          },
+          "consensus_probs": {
+            "home_win": 0.1556,
+            "draw": 0.18562222222222224,
+            "away_win": 0.6587555555555555
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_single",
+          "prob_distance": 0.0912,
+          "sport_key": "soccer_netherlands_eredivisie",
+          "betman_odds": {
+            "home_win": 5.1,
+            "draw": 4.3,
+            "away_win": 1.39
+          },
+          "betman_home": "스파르타 로테르담",
+          "betman_away": "AFC아약스",
+          "match_time": "26.10.26 (월) 00:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.2279,
+            "draw": -0.2415,
+            "away_win": -0.0656
+          }
+        },
+        "382": {
+          "event_id": "18e4425261f7dd6b245f82056d424411",
+          "home_team": "Toulouse",
+          "away_team": "Troyes",
+          "commence_time": "2026-10-25T16:15:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.53,
+            "draw": 4.6,
+            "away_win": 6.27
+          },
+          "sharp_probs": {
+            "home_win": 0.6343,
+            "draw": 0.211,
+            "away_win": 0.1548
+          },
+          "consensus_probs": {
+            "home_win": 0.6287125,
+            "draw": 0.21442500000000003,
+            "away_win": 0.1568625
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0849,
+          "sport_key": "soccer_france_ligue_one",
+          "betman_odds": {
+            "home_win": 1.47,
+            "draw": 3.9,
+            "away_win": 4.7
+          },
+          "betman_home": "툴루즈",
+          "betman_away": "트루아AC",
+          "match_time": "26.10.26 (월) 01:15",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0676,
+            "draw": -0.1771,
+            "away_win": -0.2724
+          }
+        },
+        "708": {
+          "event_id": "1a83b5ebabe7cb572ae6e029b3149c42",
+          "home_team": "Angers",
+          "away_team": "Lorient",
+          "commence_time": "2026-10-25T16:15:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 3.15,
+            "draw": 3.34,
+            "away_win": 2.44
+          },
+          "sharp_probs": {
+            "home_win": 0.3092,
+            "draw": 0.2916,
+            "away_win": 0.3992
+          },
+          "consensus_probs": {
+            "home_win": 0.3141375,
+            "draw": 0.29364999999999997,
+            "away_win": 0.3922
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0265,
+          "sport_key": "soccer_france_ligue_one",
+          "betman_odds": {
+            "home_win": 2.7,
+            "draw": 3.05,
+            "away_win": 2.22
+          },
+          "betman_home": "앙제SCO",
+          "betman_away": "로리앙",
+          "match_time": "26.10.26 (월) 01:15",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1652,
+            "draw": -0.1106,
+            "away_win": -0.1138
+          }
+        },
+        "712": {
+          "event_id": "8eab078a37a63df32ffa443302a2a7ba",
+          "home_team": "Auxerre",
+          "away_team": "Le Mans FC",
+          "commence_time": "2026-10-25T16:15:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.16,
+            "draw": 3.65,
+            "away_win": 3.42
+          },
+          "sharp_probs": {
+            "home_win": 0.4498,
+            "draw": 0.2662,
+            "away_win": 0.2841
+          },
+          "consensus_probs": {
+            "home_win": 0.45245,
+            "draw": 0.26655,
+            "away_win": 0.2810125
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0121,
+          "sport_key": "soccer_france_ligue_one",
+          "betman_odds": {
+            "home_win": 1.95,
+            "draw": 3.3,
+            "away_win": 3.0
+          },
+          "betman_home": "AJ오세르",
+          "betman_away": "르망FC",
+          "match_time": "26.10.26 (월) 01:15",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1229,
+            "draw": -0.1215,
+            "away_win": -0.1477
+          }
+        },
+        "716": {
+          "event_id": "fcc34b753fc61a0cc0e11d7cb0a0c36b",
+          "home_team": "Marseille",
+          "away_team": "Le Havre",
+          "commence_time": "2026-10-25T16:15:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.49,
+            "draw": 4.98,
+            "away_win": 6.24
+          },
+          "sharp_probs": {
+            "home_win": 0.6502,
+            "draw": 0.1945,
+            "away_win": 0.1553
+          },
+          "consensus_probs": {
+            "home_win": 0.6465625,
+            "draw": 0.19602499999999998,
+            "away_win": 0.15741249999999998
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.1174,
+          "sport_key": "soccer_france_ligue_one",
+          "betman_odds": {
+            "home_win": 1.47,
+            "draw": 4.0,
+            "away_win": 4.55
+          },
+          "betman_home": "올랭피크드 마르세유",
+          "betman_away": "르아브르AC",
+          "match_time": "26.10.26 (월) 01:15",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0442,
+            "draw": -0.222,
+            "away_win": -0.2934
+          }
+        },
+        "720": {
+          "event_id": "31dcb6d13ed240fc4a5c7a696149967e",
+          "home_team": "Rennes",
+          "away_team": "Strasbourg",
+          "commence_time": "2026-10-25T16:15:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.79,
+            "draw": 4.31,
+            "away_win": 4.15
+          },
+          "sharp_probs": {
+            "home_win": 0.5415,
+            "draw": 0.2249,
+            "away_win": 0.2336
+          },
+          "consensus_probs": {
+            "home_win": 0.5365125,
+            "draw": 0.2295875,
+            "away_win": 0.2339
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0166,
+          "sport_key": "soccer_france_ligue_one",
+          "betman_odds": {
+            "home_win": 1.63,
+            "draw": 3.8,
+            "away_win": 3.65
+          },
+          "betman_home": "스타드 렌",
+          "betman_away": "RC스트라스부르",
+          "match_time": "26.10.26 (월) 01:15",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1174,
+            "draw": -0.1454,
+            "away_win": -0.1474
+          }
+        },
+        "724": {
+          "event_id": "e82f6b60fa41b82c8510f5b67ce61849",
+          "home_team": "Sunderland",
+          "away_team": "Leeds United",
+          "commence_time": "2026-10-25T16:30:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.98,
+            "draw": 3.16,
+            "away_win": 2.66
+          },
+          "sharp_probs": {
+            "home_win": 0.3264,
+            "draw": 0.3078,
+            "away_win": 0.3657
+          },
+          "consensus_probs": {
+            "home_win": 0.3251666666666667,
+            "draw": 0.30567777777777777,
+            "away_win": 0.3691222222222222
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0558,
+          "sport_key": "soccer_epl",
+          "betman_odds": {
+            "home_win": 2.75,
+            "draw": 3.0,
+            "away_win": 2.21
+          },
+          "betman_home": "선덜랜드",
+          "betman_away": "리즈 유나이티드",
+          "match_time": "26.10.26 (월) 01:30",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1024,
+            "draw": -0.0766,
+            "away_win": -0.1918
+          }
+        },
+        "729": {
+          "event_id": "f2bd909f25eea6b4ce42d2f52275e5c4",
+          "home_team": "SC Freiburg",
+          "away_team": "Bayern Munich",
+          "commence_time": "2026-10-25T16:30:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 5.46,
+            "draw": 5.08,
+            "away_win": 1.52
+          },
+          "sharp_probs": {
+            "home_win": 0.1765,
+            "draw": 0.1897,
+            "away_win": 0.6339
+          },
+          "consensus_probs": {
+            "home_win": 0.17132222222222224,
+            "draw": 0.1889,
+            "away_win": 0.6397888888888889
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0616,
+          "sport_key": "soccer_germany_bundesliga",
+          "betman_odds": {
+            "home_win": 5.4,
+            "draw": 5.0,
+            "away_win": 1.31
+          },
+          "betman_home": "SC프라이부르크",
+          "betman_away": "바이에른 뮌헨",
+          "match_time": "26.10.26 (월) 01:30",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0469,
+            "draw": -0.0515,
+            "away_win": -0.1696
+          }
+        },
+        "735": {
+          "event_id": "63af660d4d0d52f8ac7685172ef939c4",
+          "home_team": "Lecce",
+          "away_team": "Juventus",
+          "commence_time": "2026-10-25T17:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 6.31,
+            "draw": 4.3,
+            "away_win": 1.56
+          },
+          "sharp_probs": {
+            "home_win": 0.1536,
+            "draw": 0.2253,
+            "away_win": 0.6211
+          },
+          "consensus_probs": {
+            "home_win": 0.14975555555555553,
+            "draw": 0.23006666666666664,
+            "away_win": 0.6201777777777777
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0178,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 5.8,
+            "draw": 3.95,
+            "away_win": 1.38
+          },
+          "betman_home": "US레체",
+          "betman_away": "유벤투스",
+          "match_time": "26.10.26 (월) 02:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1091,
+            "draw": -0.1101,
+            "away_win": -0.1429
+          }
+        },
+        "741": {
+          "event_id": "3cb8660cd2375b60e81144a7572cfb89",
+          "home_team": "Real Sociedad",
+          "away_team": "Levante",
+          "commence_time": "2026-10-25T17:30:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.59,
+            "draw": 4.68,
+            "away_win": 5.21
+          },
+          "sharp_probs": {
+            "home_win": 0.6079,
+            "draw": 0.2065,
+            "away_win": 0.1855
+          },
+          "consensus_probs": {
+            "home_win": 0.6094125,
+            "draw": 0.20980000000000004,
+            "away_win": 0.1808125
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0471,
+          "sport_key": "soccer_spain_la_liga",
+          "betman_odds": {
+            "home_win": 1.49,
+            "draw": 4.0,
+            "away_win": 4.4
+          },
+          "betman_home": "레알 소시에다드",
+          "betman_away": "레반테",
+          "match_time": "26.10.26 (월) 02:30",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0942,
+            "draw": -0.174,
+            "away_win": -0.1838
+          }
+        },
+        "745": {
+          "event_id": "b435848f58054cad7d3fad610a96c4b5",
+          "home_team": "AZ Alkmaar",
+          "away_team": "FC Twente Enschede",
+          "commence_time": "2026-10-25T19:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.18,
+            "draw": 3.9,
+            "away_win": 3.14
+          },
+          "sharp_probs": {
+            "home_win": 0.4438,
+            "draw": 0.2481,
+            "away_win": 0.3081
+          },
+          "consensus_probs": {
+            "home_win": 0.4383666666666666,
+            "draw": 0.2516222222222222,
+            "away_win": 0.3100333333333333
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_single",
+          "prob_distance": 0.0282,
+          "sport_key": "soccer_netherlands_eredivisie",
+          "betman_odds": {
+            "home_win": 2.01,
+            "draw": 3.55,
+            "away_win": 2.7
+          },
+          "betman_home": "AZ알크마르",
+          "betman_away": "트벤테",
+          "match_time": "26.10.26 (월) 04:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.108,
+            "draw": -0.1192,
+            "away_win": -0.1681
+          }
+        },
+        "749": {
+          "event_id": "3564688383b255192409c9deb8e526ed",
+          "home_team": "Udinese",
+          "away_team": "AC Milan",
+          "commence_time": "2026-10-25T19:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 4.58,
+            "draw": 3.61,
+            "away_win": 1.86
+          },
+          "sharp_probs": {
+            "home_win": 0.2114,
+            "draw": 0.2682,
+            "away_win": 0.5205
+          },
+          "consensus_probs": {
+            "home_win": 0.21275555555555556,
+            "draw": 0.26461111111111113,
+            "away_win": 0.5226111111111111
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0331,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 4.2,
+            "draw": 3.4,
+            "away_win": 1.62
+          },
+          "betman_home": "우디네세",
+          "betman_away": "AC밀란",
+          "match_time": "26.10.26 (월) 04:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1121,
+            "draw": -0.0881,
+            "away_win": -0.1568
+          }
+        },
+        "759": {
+          "event_id": "72089d103a5fe6a922c35e17efba6ffc",
+          "home_team": "Barcelona",
+          "away_team": "Real Madrid",
+          "commence_time": "2026-10-25T20:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.61,
+            "draw": 6.05,
+            "away_win": 4.04
+          },
+          "sharp_probs": {
+            "home_win": 0.6007,
+            "draw": 0.1599,
+            "away_win": 0.2394
+          },
+          "consensus_probs": {
+            "home_win": 0.59695,
+            "draw": 0.16755,
+            "away_win": 0.2354625
+          },
+          "n_bookmakers": 8,
+          "match_method": "name",
+          "prob_distance": 0.0796,
+          "sport_key": "soccer_spain_la_liga",
+          "betman_odds": {
+            "home_win": 1.55,
+            "draw": 4.4,
+            "away_win": 3.6
+          },
+          "betman_home": "바르셀로나",
+          "betman_away": "레알 마드리드",
+          "match_time": "26.10.26 (월) 05:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0689,
+            "draw": -0.2964,
+            "away_win": -0.1382
+          }
+        },
+        "787": {
+          "event_id": "f635049de97c44eff491a027de0e4863",
+          "home_team": "Los Angeles FC",
+          "away_team": "LA Galaxy",
+          "commence_time": "2026-10-26T01:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.57,
+            "draw": 4.65,
+            "away_win": 5.24
+          },
+          "sharp_probs": {
+            "home_win": 0.6108,
+            "draw": 0.2062,
+            "away_win": 0.183
+          },
+          "consensus_probs": {
+            "home_win": 0.6106222222222223,
+            "draw": 0.20648888888888883,
+            "away_win": 0.18288888888888888
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_single",
+          "prob_distance": 0.0297,
+          "sport_key": "soccer_usa_mls",
+          "betman_odds": {
+            "home_win": 1.46,
+            "draw": 4.05,
+            "away_win": 4.6
+          },
+          "betman_home": "LAFC",
+          "betman_away": "LA 갤럭시",
+          "match_time": "26.10.26 (월) 10:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1082,
+            "draw": -0.1649,
+            "away_win": -0.1582
+          }
+        }
+      }
+    }
+  ]
+}
