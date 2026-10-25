@@ -160,6 +160,11 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             "h2h": h2h_stats
         })
 
+    # 미매핑 팀 목록 저장 및 신규 알림
+    unmapped_list = predictor.save_unmapped_teams()
+    if unmapped_list:
+        print(f"ℹ 미매핑 팀 관리 목록: 총 {len(unmapped_list)}개 팀 기록됨 (data/unmapped_teams.json)")
+
     # 4. 결과 JSON 저장
     output_path = Path("data/predictions.json")
     output_path.parent.mkdir(parents=True, exist_ok=True)

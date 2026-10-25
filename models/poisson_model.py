@@ -6,6 +6,7 @@ penaltyblog의 Dixon-Coles 및 포아송 모델을 활용하여
 베트맨의 모든 세부 게임 유형별 확률을 수학적으로 계산합니다.
 """
 
+import json
 import sys
 import math
 import re
@@ -20,30 +21,19 @@ if sys.platform.startswith('win'):
         pass
 
 
-TEAM_NAME_MAP = {
-    # EPL
-    "아스널": "Arsenal", "리버풀": "Liverpool", "맨체스터C": "Man City", "맨체스C": "Man City",
-    "맨체스터U": "Man United", "맨체스U": "Man United", "첼시": "Chelsea", "토트넘": "Tottenham",
-    "뉴캐슬": "Newcastle", "애스턴빌라": "Aston Villa", "브라이턴": "Brighton", "웨스트햄": "West Ham",
-    "에버턴": "Everton", "풀럼": "Fulham", "울버햄프턴": "Wolves", "크리스탈": "Crystal Palace",
-    "본머스": "Bournemouth", "브렌트퍼드": "Brentford", "노팅엄": "Nott'm Forest", "사우샘프턴": "Southampton",
-    "레스터": "Leicester", "입스위치": "Ipswich",
-    
-    # La Liga
-    "레알마드리드": "Real Madrid", "레알마드": "Real Madrid", "바르셀로나": "Barcelona",
-    "아틀마드": "Ath Madrid", "아틀레티코": "Ath Madrid", "빌바오": "Ath Bilbao", "소시에다드": "Sociedad",
-    "비야레알": "Villarreal", "세비야": "Sevilla", "발렌시아": "Valencia", "베티스": "Betis",
-    "지로나": "Girona", "마요르카": "Mallorca", "오사수나": "Osasuna",
-    
-    # Serie A
-    "인터밀란": "Inter", "AC밀란": "Milan", "유벤투스": "Juventus", "나폴리": "Napoli",
-    "AS로마": "Roma", "라치오": "Lazio", "아탈란타": "Atalanta", "피오렌티나": "Fiorentina",
-    
-    # Bundesliga
-    "바이에른뮌헨": "Bayern Munich", "뮌헨": "Bayern Munich", "도르트문트": "Dortmund",
-    "레버쿠젠": "Leverkusen", "라이프치히": "RB Leipzig", "슈투트가르트": "Stuttgart",
-    "프랑크푸르트": "Ein Frankfurt"
-}
+def load_team_name_map(map_path: str = "data/team_name_map.json") -> dict:
+    """팀명 매핑 JSON 파일 로드 (부재 시 기본 딕셔너리 폴백)"""
+    p = Path(map_path)
+    if p.exists():
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"⚠️ team_name_map.json 로드 실패 ({e}), 빈 매핑으로 시작합니다.")
+    return {}
+
+
+TEAM_NAME_MAP = load_team_name_map()
 
 
 def normalize_league_name(name: str) -> str:
@@ -71,12 +61,16 @@ class MatchPredictor:
     def __init__(
         self,
         history_csv_path: str = "data/history/all_historical_matches.csv",
-        xi: float = 0.001
+        xi: float = 0.001,
+        team_map_path: str = "data/team_name_map.json"
     ):
         self.history_path = Path(history_csv_path)
         self.xi = xi
+        self.team_map_path = Path(team_map_path)
+        self.team_name_map = load_team_name_map(self.team_map_path)
         self.models = {}
         self.df = None
+        self.unmapped_teams = set()
         self._load_and_train()
 
     def _load_and_train(self):
@@ -140,10 +134,11 @@ class MatchPredictor:
             except Exception:
                 pass
 
-    def normalize_team_name(self, name: str) -> str:
+    def normalize_team_name(self, name: str, league: str = "") -> str:
         clean = name.strip()
-        if clean in TEAM_NAME_MAP:
-            return TEAM_NAME_MAP[clean]
+        team_map = getattr(self, "team_name_map", None) or TEAM_NAME_MAP
+        if clean in team_map:
+            return team_map[clean]
             
         prefixes = ["1.FC", "1. FC", "VfB", "ACF", "OGC", "RCD", "FSV", "TSG1899", "TSG", "AFC", "AZ", "CF", "CR", "FC", "SC", "SV", "US", "RC", "UD", "CD", "AS", "AC", "RB", "AJ", "SS", "SSC", "PEC", "PSV", "NEC", "BSC"]
         t = clean
@@ -153,15 +148,66 @@ class MatchPredictor:
                 break
                 
         t_no_suffix = re.sub(r'(CF|FC|05|RCD|SC)$', '', t).strip()
-        if t in TEAM_NAME_MAP:
-            return TEAM_NAME_MAP[t]
-        if t_no_suffix in TEAM_NAME_MAP:
-            return TEAM_NAME_MAP[t_no_suffix]
+        if t in team_map:
+            return team_map[t]
+        if t_no_suffix in team_map:
+            return team_map[t_no_suffix]
             
-        for k, v in TEAM_NAME_MAP.items():
+        for k, v in team_map.items():
             if k in clean or clean in k or k in t or t in k:
                 return v
+
+        # 주요 5대 리그 경기인데 매핑에 실패한 경우 unmapped_teams에 기록
+        if league and normalize_league_name(league):
+            if hasattr(self, "unmapped_teams"):
+                self.unmapped_teams.add((clean, league))
+
         return clean
+
+    def save_unmapped_teams(self, file_path: str = "data/unmapped_teams.json") -> list:
+        """
+        매핑 실패 팀 목록을 data/unmapped_teams.json에 기록하고,
+        신규 미매핑 팀 발견 시 텔레그램으로 알림을 전송합니다.
+        """
+        p = Path(file_path)
+        existing = {}
+        if p.exists():
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    for item in json.load(f):
+                        existing[item.get("team")] = item
+            except Exception:
+                pass
+
+        new_detected = []
+        from datetime import datetime
+        for team, league in getattr(self, "unmapped_teams", set()):
+            if team not in existing:
+                item = {
+                    "team": team,
+                    "league": league,
+                    "detected_at": datetime.now().isoformat()
+                }
+                existing[team] = item
+                new_detected.append(f"{team} ({league})")
+
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(list(existing.values()), f, ensure_ascii=False, indent=2)
+
+        if new_detected:
+            try:
+                from notifier.telegram_bot import send_telegram_warning
+                msg = (
+                    f"⚠️ [팀명 매핑 실패 알림]\n"
+                    f"주요 리그 미매핑 팀 {len(new_detected)}건이 발견되었습니다:\n"
+                    + "\n".join(f"• {x}" for x in new_detected[:10])
+                )
+                send_telegram_warning(msg)
+            except Exception:
+                pass
+
+        return list(existing.values())
 
     def predict_category(
         self,
@@ -254,8 +300,8 @@ class MatchPredictor:
                     "top_scores": []
                 }
 
-        home_en = self.normalize_team_name(home_team)
-        away_en = self.normalize_team_name(away_team)
+        home_en = self.normalize_team_name(home_team, league=league)
+        away_en = self.normalize_team_name(away_team, league=league)
 
         # 리그별 분리 모델 우선 조회, 미매칭 시 global 모델 폴백
         league_key = normalize_league_name(league)
