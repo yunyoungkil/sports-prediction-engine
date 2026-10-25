@@ -25,6 +25,7 @@ if sys.platform.startswith('win'):
 
 from models.poisson_model import MatchPredictor
 from models.evaluator import evaluate_match_value
+from evaluation.metrics import bootstrap_roi_confidence_interval
 
 
 def evaluate_betman_results(
@@ -33,8 +34,8 @@ def evaluate_betman_results(
     flat_stake: int = 10000
 ) -> Dict[str, Any]:
     """
-    베트맨 공식 직전 회차 3,455개 실제 경기 결과를 대상으로
-    AI 모델의 가치 픽 추천 적중률 및 실전 모의 베팅 누적 수익률(ROI)을 자동 채점합니다.
+    베트맨 공식 직전 회차 실제 경기 결과를 대상으로
+    AI 모델의 가치 픽 추천 적중률 및 실전 모의 베팅 누적 수익률(ROI)과 95% 신뢰구간을 자동 산출합니다.
     """
     print("=" * 60)
     print("📊 [실전 채점] 베트맨 공식 경기 결과 기반 AI 적중률 및 ROI 분석 시작")
@@ -61,6 +62,10 @@ def evaluate_betman_results(
     won_bets = 0
     total_staked = 0
     total_returned = 0
+
+    all_returns = []
+    grade_returns = {"S": [], "A": [], "B": []}
+    round_returns = {}
 
     grade_stats = {
         "S": {"bets": 0, "wins": 0, "staked": 0, "returned": 0},
@@ -169,6 +174,11 @@ def evaluate_betman_results(
                 else:
                     net = -flat_stake
 
+                ret_ratio = (sel_odds - 1.0) if is_hit else -1.0
+                all_returns.append(ret_ratio)
+                grade_returns[g_key].append(ret_ratio)
+                round_returns.setdefault(str(gm_ts), []).append(ret_ratio)
+
                 cumulative_profit += net
 
                 if total_bets % 5 == 0 or total_bets <= 20:
@@ -228,20 +238,28 @@ def evaluate_betman_results(
     roi_pct = (net_profit / total_staked * 100.0) if total_staked > 0 else 0.0
     win_rate = (won_bets / total_bets * 100.0) if total_bets > 0 else 0.0
 
-    # 등급별 세부 성과 계산
+    _, roi_ci_low, roi_ci_high = bootstrap_roi_confidence_interval(all_returns)
+
+    # 등급별 세부 성과 계산 (부트스트랩 95% 신뢰구간 추가)
     for g, data in grade_stats.items():
         stk = data["staked"]
         ret = data["returned"]
         data["win_rate_pct"] = round((data["wins"] / data["bets"] * 100.0) if data["bets"] > 0 else 0.0, 1)
         data["roi_pct"] = round(((ret - stk) / stk * 100.0) if stk > 0 else 0.0, 1)
+        _, g_low, g_high = bootstrap_roi_confidence_interval(grade_returns.get(g, []))
+        data["roi_ci_low"] = g_low
+        data["roi_ci_high"] = g_high
 
-    # 회차별 세부 성과 계산
+    # 회차별 세부 성과 계산 (부트스트랩 95% 신뢰구간 추가)
     for r_key, r_data in round_stats.items():
         stk = r_data["staked"]
         ret = r_data["returned"]
         r_data["win_rate_pct"] = round((r_data["wins"] / r_data["bets"] * 100.0) if r_data["bets"] > 0 else 0.0, 1)
         r_data["net_profit"] = int(ret - stk)
         r_data["roi_pct"] = round(((ret - stk) / stk * 100.0) if stk > 0 else 0.0, 1)
+        _, r_low, r_high = bootstrap_roi_confidence_interval(round_returns.get(r_key, []))
+        r_data["roi_ci_low"] = r_low
+        r_data["roi_ci_high"] = r_high
 
     # 전체 평가된 경기 (역순: 최신이 위로)
     display_recent_picks = list(reversed(recent_evaluated_picks))
@@ -257,6 +275,8 @@ def evaluate_betman_results(
         "total_returned_krw": int(total_returned),
         "net_profit_krw": int(net_profit),
         "roi_pct": round(roi_pct, 2),
+        "roi_ci_low": roi_ci_low,
+        "roi_ci_high": roi_ci_high,
         "grade_breakdown": grade_stats,
         "round_breakdown": round_stats,
         "recent_evaluated_picks": display_recent_picks,
@@ -270,8 +290,8 @@ def evaluate_betman_results(
 
     print(f"✓ 베트맨 실제 분석 경기: {total_matches}건 중 AI 추천 {total_bets}건 채점 완료")
     print(f"✓ 전체 적중률: {win_rate:.1f}% ({won_bets}/{total_bets} 적중)")
-    print(f"✓ 가상 순손익: {net_profit:+,.0f}원 (ROI: {roi_pct:+.2f}%)")
-    print(f"✓ GRADE A (가치 픽) 적중률: {grade_stats['A']['win_rate_pct']}% | ROI: {grade_stats['A']['roi_pct']:+.1f}%")
+    print(f"✓ 가상 순손익: {net_profit:+,.0f}원 (ROI: {roi_pct:+.2f}%, 95% CI: [{roi_ci_low:+.2f}%, {roi_ci_high:+.2f}%])")
+    print(f"✓ GRADE A (가치 픽) 적중률: {grade_stats['A']['win_rate_pct']}% | ROI: {grade_stats['A']['roi_pct']:+.1f}% (95% CI: [{grade_stats['A']['roi_ci_low']:+.1f}%, {grade_stats['A']['roi_ci_high']:+.1f}%])")
     print(f"💾 통계 저장 완료: {out_file}")
 
     return stats

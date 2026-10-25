@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-25 11:50:51",
+  "updated_at": "2026-10-25 12:00:31",
   "source": "베트맨 공식 직전 8개 회차 실제 경기 전수 채점",
   "sample_matches_analyzed": 3392,
   "total_bets_placed": 1113,
@@ -9,6 +9,8 @@
   "total_returned_krw": 10644800,
   "net_profit_krw": -485200,
   "roi_pct": -4.36,
+  "roi_ci_low": -10.57,
+  "roi_ci_high": 2.16,
   "grade_breakdown": {
     "S": {
       "bets": 907,
@@ -16,7 +18,9 @@
       "staked": 9070000,
       "returned": 8502900.0,
       "win_rate_pct": 53.5,
-      "roi_pct": -6.3
+      "roi_pct": -6.3,
+      "roi_ci_low": -12.35,
+      "roi_ci_high": -0.35
     },
     "A": {
       "bets": 124,
@@ -24,7 +28,9 @@
       "staked": 1240000,
       "returned": 1240100.0,
       "win_rate_pct": 43.5,
-      "roi_pct": 0.0
+      "roi_pct": 0.0,
+      "roi_ci_low": -21.53,
+      "roi_ci_high": 19.32
     },
     "B": {
       "bets": 82,
@@ -32,7 +38,9 @@
       "staked": 820000,
       "returned": 901800.0,
       "win_rate_pct": 26.8,
-      "roi_pct": 10.0
+      "roi_pct": 10.0,
+      "roi_ci_low": -34.09,
+      "roi_ci_high": 61.69
     }
   },
   "round_breakdown": {
@@ -43,7 +51,9 @@
       "returned": 618500.0,
       "win_rate_pct": 48.0,
       "net_profit": -131500,
-      "roi_pct": -17.5
+      "roi_pct": -17.5,
+      "roi_ci_low": -35.95,
+      "roi_ci_high": 1.64
     },
     "260119": {
       "bets": 61,
@@ -52,7 +62,9 @@
       "returned": 700900.0,
       "win_rate_pct": 59.0,
       "net_profit": 90900,
-      "roi_pct": 14.9
+      "roi_pct": 14.9,
+      "roi_ci_low": -11.82,
+      "roi_ci_high": 40.99
     },
     "260120": {
       "bets": 231,
@@ -61,7 +73,9 @@
       "returned": 2324100.0,
       "win_rate_pct": 49.8,
       "net_profit": 14100,
-      "roi_pct": 0.6
+      "roi_pct": 0.6,
+      "roi_ci_low": -16.5,
+      "roi_ci_high": 19.27
     },
     "260121": {
       "bets": 96,
@@ -70,7 +84,9 @@
       "returned": 852800.0,
       "win_rate_pct": 49.0,
       "net_profit": -107200,
-      "roi_pct": -11.2
+      "roi_pct": -11.2,
+      "roi_ci_low": -30.08,
+      "roi_ci_high": 9.42
     },
     "260122": {
       "bets": 185,
@@ -79,7 +95,9 @@
       "returned": 1936500.0,
       "win_rate_pct": 55.7,
       "net_profit": 86500,
-      "roi_pct": 4.7
+      "roi_pct": 4.7,
+      "roi_ci_low": -9.1,
+      "roi_ci_high": 19.3
     },
     "260123": {
       "bets": 246,
@@ -88,7 +106,9 @@
       "returned": 2325700.0,
       "win_rate_pct": 50.0,
       "net_profit": -134300,
-      "roi_pct": -5.5
+      "roi_pct": -5.5,
+      "roi_ci_low": -17.86,
+      "roi_ci_high": 6.89
     },
     "260124": {
       "bets": 77,
@@ -97,7 +117,9 @@
       "returned": 597500.0,
       "win_rate_pct": 41.6,
       "net_profit": -172500,
-      "roi_pct": -22.4
+      "roi_pct": -22.4,
+      "roi_ci_low": -43.04,
+      "roi_ci_high": -1.38
     },
     "260125": {
       "bets": 142,
@@ -106,7 +128,9 @@
       "returned": 1288800.0,
       "win_rate_pct": 48.6,
       "net_profit": -131200,
-      "roi_pct": -9.2
+      "roi_pct": -9.2,
+      "roi_ci_low": -26.62,
+      "roi_ci_high": 8.63
     }
   },
   "recent_evaluated_picks": [

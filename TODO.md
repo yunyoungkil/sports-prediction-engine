@@ -47,13 +47,13 @@
 - [x] **1.1 평가 모듈 뼈대**
   - 새 폴더: `evaluation/` (`__init__.py`, `metrics.py`, `report.py`)
   - `python -m evaluation.report` 로 실행되는 진입점
-- [ ] **1.2 시장 기준선 모델**
+- [x] **1.2 시장 기준선 모델**
   - 같은 경기의 베트맨 배당에서 마진을 제거한 확률(`models/odds_normalizer.remove_margin`)을 "시장 모델"로 정의
   - 실전 결과(`betman_recent_results.json`)와 과거 CSV 두 데이터셋 모두에 적용
-- [ ] **1.3 확률 품질 지표**
+- [x] **1.3 확률 품질 지표**
   - `metrics.py`: Log loss, Brier score, 캘리브레이션 표(10% 구간별 예측 vs 실제)
   - 리포트에 "모델 vs 시장" 나란히 출력
-- [ ] **1.4 ROI 신뢰구간**
+- [x] **1.4 ROI 신뢰구간**
   - 등급별·회차별 ROI에 부트스트랩 95% 신뢰구간 추가
   - `data/performance_stats.json`에 `roi_ci_low`, `roi_ci_high` 필드 추가
 - [ ] **1.5 CLV(마감 배당 대비 성과) 추적**
