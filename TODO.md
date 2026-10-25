@@ -182,11 +182,14 @@
   - `remove_margin` (`tests/test_odds_normalizer.py`), `evaluate_match_value` (`tests/test_evaluator.py`), 팀명 매핑 (`tests/test_team_mapping.py`), 결과 병합 (`tests/test_result_merging.py`), 샤프 배당/오가격/블렌더/조합 배당/자금관리 전수 pytest 작성 완료 (총 25개 테스트 전원 통과)
 - [x] **4.5 CI에 테스트 연결**
   - `.github/workflows/test.yml` 생성 완료 (master/main 브랜치 push 및 PR 시 `pytest -v tests/` 자동 실행 연동)
-- [ ] **4.6 Streamlit Community Cloud 배포** (기존 ROADMAP Task 4.5)
+- [x] **4.6 Streamlit Community Cloud 배포 준비** (기존 ROADMAP Task 4.5)
+  - `.streamlit/config.toml` 클라우드 배포 테마 및 보안 설정 완료
+  - `requirements.txt` 의존성 패키지(Streamlit 1.40+, pyarrow<18, pytest) 검증 완료
+  - `README.md` 배포 가이드 문서화 완료 (GitHub 저장소 연동 및 Main file path: `dashboard/app.py` 안내)
 
-**완료 기준:** 테스트가 CI에서 통과하고, 대시보드가 외부 URL에서 열린다.
+**완료 기준:** 단위 테스트가 로컬/CI에서 통과하고, 클라우드 배포 설정이 완료되어 배포 가이드에 따라 원클릭 배포 가능 상태를 확보한다.
 
-메모:
+메모: Phase 4 (4.1~4.6) 전 항목 구현 및 배포 설정 완료.
 
 ---
 

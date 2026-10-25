@@ -63,3 +63,20 @@ python run_pipeline.py
 # 3. Streamlit 대시보드 실행
 streamlit run dashboard/app.py
 ```
+
+---
+
+## ☁️ Streamlit Community Cloud 배포 가이드
+
+1. **GitHub 저장소 준비:**
+   - 본 저장소의 모든 최신 커밋이 `master` (또는 `main`) 브랜치에 푸시되어 있는지 확인합니다.
+2. **Streamlit Cloud 연결 ([share.streamlit.io](https://share.streamlit.io)):**
+   - GitHub 계정으로 로그인 후 **[New app]** 클릭
+   - **Repository:** `사용자계정/sports-prediction-engine`
+   - **Branch:** `master`
+   - **Main file path:** `dashboard/app.py`
+   - **App URL:** 원하는 도메인명 설정 (예: `betman-ai-engine.streamlit.app`)
+3. **배포 완료:**
+   - **[Deploy!]** 버튼을 클릭하면 `.streamlit/config.toml`과 `requirements.txt`를 기반으로 약 1~2분 내 무료 클라우드 호스팅이 가동됩니다.
+   - GitHub Actions 무인 수집 파이프라인이 정기 실행되어 `data/predictions.json`을 갱신하면 클라우드 대시보드에도 실시간 자동 반영됩니다.
+
