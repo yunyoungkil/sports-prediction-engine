@@ -95,10 +95,10 @@
 - [x] **2.5 슈팅 기반 폼 피처**
   - CSV의 `HS/AS/HST/AST`로 최근 N경기 유효슈팅 차이 계산
   - 기존 `form_diff * 0.0015` 보정과 비교해서 검증 성능이 좋은 쪽 채택
-- [ ] **2.6 근거 없는 상수 정리**
+- [x] **2.6 근거 없는 상수 정리**
   - `poisson_model.py`의 하드코딩 상수를 상단 설정 딕셔너리로 모으고, 각 값의 출처(튜닝 기간/결과)를 주석으로 기록
 
-**완료 기준:** 검증 기간 Log loss가 BASELINE보다 개선되고, 매핑 실패 팀이 0이거나 알림으로 관리된다.
+**완료 기준:** 검증 기간 Log loss가 BASELINE보다 개선되고, 매핑 실패 팀이 0이거나 알림으로 관리된다. (✅ 기준 완벽 달성: OOS 검증 Log Loss 0.9657 -> 0.9597로 시장 0.9647 추월, 5대 리그 미매핑 0건 및 unmapped_teams.json 알림 체계 구축 완료)
 
 메모:
 - Step 2.1 완료: 2223~2627 시즌(총 7,428경기) 동적 생성/다운로드 및 Pinnacle 배당 컬럼 포함 완료.
@@ -106,6 +106,7 @@
 - Step 2.3 완료: 5대 주요 리그(EPL, LaLiga, Bundesliga, SerieA, Ligue1) 분리 학습 및 global 폴백 모델 구축. predict_category에 league 파라미터 연동 완료. 검증셋 Log Loss 0.9635, Brier Score 0.5723으로 추가 개선 확인.
 - Step 2.4 완료: TEAM_NAME_MAP을 data/team_name_map.json(150+개 팀 매핑)으로 완전 분리. 5대 리그 미매칭률 0% 달성. 매핑 실패 팀은 data/unmapped_teams.json에 누적 기록 및 신규 발생 시 텔레그램 알림 발송 로직 구현. 실전 베트맨 Log Loss 0.9604, Brier 0.5681로 추가 개선.
 - Step 2.5 완료: 슈팅 기반 폼(최근 5경기 유효슈팅 SOT 차이) vs 기존 승률/득실 폼 비교 실험 수행. 검증 기간 Log Loss: 기존 승률/골 폼(0.9652) 대비 유효슈팅 SOT 폼(scale=0.010)이 0.9597(Brier 0.5703)로 압도적 우위 입증되어 채택 완료. form_analyzer 및 pipeline 연동 완료.
+- Step 2.6 완료: poisson_model.py 내 모든 하드코딩 수치(DIXON_COLES_XI, SOT_DIFF_SCALE, FORM_DIFF_SCALE, FORM_MAX_CLAMP, TOTAL_EXPECTED_GOALS, HOME_ADVANTAGE_MULTIPLIER, AWAY_LAMBDA_OFFSET, FIRST_HALF_FACTOR, FIRST_HALF_GOAL_RATIO, MIN/MAX_PROB_CLAMP)를 MODEL_CONFIG 딕셔너리로 일원화하고, 각 값의 학습 검증 출처 주석 기록 완료. 중복 연산 버그 제거.
 
 ---
 
