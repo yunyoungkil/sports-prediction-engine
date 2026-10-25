@@ -538,7 +538,7 @@ with tab1:
                         st.markdown(f"<div style='font-size:12px;margin-top:-6px'>🔥 가치 픽 {ev.get('best_ev_pct', '')}</div>",
                                     unsafe_allow_html=True)
                 with c3:
-                    body = f"<b>{labels[mk_k]}</b> {mk_p * 100:.0f}%" if mk_k else "-"
+                    body = f"<b>{labels[mk_k]}</b> {mk_p * 100:.0f}% {_mark(mk_k, actual)}" if mk_k else "-"
                     st.markdown(cap.format("배당 예상") + f"<div style='font-size:14px'>{body}</div>", unsafe_allow_html=True)
                 with c4:
                     if ai_k and ai_k == mk_k:
@@ -552,6 +552,8 @@ with tab1:
                         body = "<span style='color:#94a3b8;font-size:12px'>경기 전 기록 없음</span>"
                     else:
                         body = "<span style='color:#94a3b8'>-</span>"
+                    if ai_k:
+                        body += f" {_mark(ai_k, actual)}"
                     st.markdown(cap.format("AI 예상") + f"<div style='font-size:14px'>{body}</div>", unsafe_allow_html=True)
                 with c5:
                     score = res.get("score", "") if res is not None else "-"
@@ -560,8 +562,7 @@ with tab1:
                                 unsafe_allow_html=True)
                 with c6:
                     if actual:
-                        marks = f"배당 {_mark(mk_k, actual)}" + (f" · AI {_mark(ai_k, actual)}" if ai_k else "")
-                        body = f"<div style='font-size:15px'><b>{labels.get(actual, '?')}</b></div><div style='font-size:12px'>{marks}</div>"
+                        body = f"<div style='font-size:15px'><b>{labels.get(actual, '?')}</b></div>"
                     else:
                         body = "<div style='font-size:13px;color:#94a3b8'>진행 전</div>"
                     st.markdown(cap.format("결과") + body, unsafe_allow_html=True)
