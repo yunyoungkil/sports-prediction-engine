@@ -13,6 +13,7 @@ import re
 import pandas as pd
 from pathlib import Path
 import penaltyblog as pb
+from typing import Any, List, Optional, Dict
 
 if sys.platform.startswith('win'):
     try:
@@ -103,12 +104,16 @@ class MatchPredictor:
         self,
         history_csv_path: str = "data/history/all_historical_matches.csv",
         xi: float = None,
-        team_map_path: str = "data/team_name_map.json"
+        team_map_path: str = "data/team_name_map.json",
+        train_seasons: list = None,
+        train_until: Any = None
     ):
         self.history_path = Path(history_csv_path)
         self.xi = xi if xi is not None else MODEL_CONFIG["DIXON_COLES_XI"]
         self.team_map_path = Path(team_map_path)
         self.team_name_map = load_team_name_map(self.team_map_path)
+        self.train_seasons = train_seasons
+        self.train_until = train_until
         self.models = {}
         self.df = None
         self.unmapped_teams = set()
@@ -120,12 +125,25 @@ class MatchPredictor:
         try:
             self.df = pd.read_csv(self.history_path)
             self.df = self.df.dropna(subset=["HomeTeam", "AwayTeam", "FTHG", "FTAG"])
+            if "Date" in self.df.columns:
+                self.df["ParsedDate"] = pd.to_datetime(self.df["Date"], dayfirst=True, errors="coerce")
             
+            # 미래 데이터 누수 방지: 학습 시즌 및 기준일 이전 데이터만 슬라이싱
+            if self.train_seasons is not None:
+                self.df = self.df[self.df["Season"].isin(self.train_seasons)]
+            if self.train_until is not None:
+                until_dt = pd.to_datetime(self.train_until, dayfirst=True)
+                if "ParsedDate" in self.df.columns:
+                    self.df = self.df[self.df["ParsedDate"] < until_dt]
+
+            if len(self.df) < 50:
+                print(f"⚠️ 학습 데이터 부족({len(self.df)}경기)으로 모델 학습을 건너뜁니다.")
+                return
+
             weights = None
-            if self.xi is not None and "Date" in self.df.columns:
+            if self.xi is not None and "ParsedDate" in self.df.columns:
                 try:
-                    dates = pd.to_datetime(self.df["Date"], dayfirst=True)
-                    weights = pb.models.dixon_coles_weights(dates, xi=self.xi)
+                    weights = pb.models.dixon_coles_weights(self.df["ParsedDate"], xi=self.xi)
                 except Exception as we:
                     print(f"⚠️ Dixon-Coles 시간 가중치 계산 건너뜀 ({we})")
                     weights = None
@@ -149,10 +167,9 @@ class MatchPredictor:
                     if len(sub_df) < 50:
                         continue
                     l_weights = None
-                    if self.xi is not None and "Date" in sub_df.columns:
+                    if self.xi is not None and "ParsedDate" in sub_df.columns:
                         try:
-                            s_dates = pd.to_datetime(sub_df["Date"], dayfirst=True)
-                            l_weights = pb.models.dixon_coles_weights(s_dates, xi=self.xi)
+                            l_weights = pb.models.dixon_coles_weights(sub_df["ParsedDate"], xi=self.xi)
                         except Exception:
                             l_weights = None
                     try:

@@ -120,7 +120,8 @@ def load_betman_dataset(
             "away_team": item.get("away_team", "").strip(),
             "odds": {"home": h_odds, "draw": d_odds, "away": a_odds},
             "actual": actual,
-            "score": item.get("score", "")
+            "score": item.get("score", ""),
+            "match_time": item.get("match_time", "")
         })
 
     return samples

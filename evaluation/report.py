@@ -12,7 +12,7 @@ evaluation/report.py
 import sys
 import json
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 project_root = Path(__file__).resolve().parent.parent
 if str(project_root) not in sys.path:
@@ -25,7 +25,14 @@ if sys.platform.startswith('win'):
         pass
 
 from models.poisson_model import MatchPredictor
-from evaluation.config import VAL_SEASONS, TRAIN_SEASONS
+from models.form_analyzer import FormAnalyzer
+from evaluation.config import (
+    TRAIN_SEASONS,
+    TUNE_SEASONS,
+    TEST_SEASONS,
+    VAL_SEASONS,
+    BETMAN_CUTOFF_DATE
+)
 from evaluation.market_model import MarketBaselineModel, load_betman_dataset, load_historical_csv_dataset
 from evaluation.metrics import (
     calculate_log_loss,
@@ -38,9 +45,13 @@ from evaluation.metrics import (
 def evaluate_single_dataset(
     samples: List[Dict[str, Any]],
     dataset_name: str,
-    predictor: MatchPredictor
+    predictor: MatchPredictor,
+    form_analyzer: Optional[FormAnalyzer] = None
 ) -> Dict[str, Any]:
-    """단일 데이터셋에 대해 모델 vs 시장 기준선 비교 평가 수행"""
+    """
+    단일 데이터셋에 대해 모델 vs 시장 기준선 비교 평가 수행.
+    form_analyzer 전달 시 각 경기의 날짜(as_of) 기준 이전 데이터만으로 폼/슈팅 피처를 산출합니다.
+    """
     if not samples:
         print(f"⚠️ {dataset_name}: 표본이 없습니다.")
         return {}
@@ -59,12 +70,29 @@ def evaluate_single_dataset(
         mkt_p = MarketBaselineModel.predict_proba(odds["home"], odds["draw"], odds["away"])
         market_probs_list.append(mkt_p)
 
+        # 폼 및 슈팅 피처 산출 (as_of 날짜 기준으로 미래 누수 차단)
+        form_diff = 0.0
+        sot_diff = 0.0
+        if form_analyzer is not None:
+            match_dt = s.get("date") or s.get("match_time")
+            home_form = form_analyzer.get_team_recent_form(s["home_team"], as_of=match_dt)
+            away_form = form_analyzer.get_team_recent_form(s["away_team"], as_of=match_dt)
+
+            h_score = (home_form['win_rate_pct'] + (home_form['avg_scored'] - home_form['avg_conceded']) * 15) if home_form.get('has_data') else 0
+            a_score = (away_form['win_rate_pct'] + (away_form['avg_scored'] - away_form['avg_conceded']) * 15) if away_form.get('has_data') else 0
+            form_diff = h_score - a_score
+
+            if home_form.get('has_sot') and away_form.get('has_sot'):
+                sot_diff = home_form.get('sot_diff', 0.0) - away_form.get('sot_diff', 0.0)
+
         # 2. AI 모델 예측 확률 (리그별 분리 모델 활용)
         pred = predictor.predict_category(
             s["home_team"], s["away_team"],
             category="일반 승무패",
             sport="SC",
             odds={"home_win": odds["home"], "draw": odds["draw"], "away_win": odds["away"]},
+            form_diff=form_diff,
+            sot_diff=sot_diff,
             league=s.get("league", "")
         )
         mod_p = {
@@ -123,20 +151,35 @@ def evaluate_single_dataset(
     }
 
 
-def run_full_evaluation(save_baseline: bool = False) -> Dict[str, Any]:
+def run_full_evaluation(save_baseline: bool = False, eval_seasons: List[int] = None) -> Dict[str, Any]:
     print("=" * 75)
     print("📊 [Phase 1] 스포츠 승부 예측 모델 vs 시장 기준선(Market Baseline) 종합 리포트")
     print("=" * 75)
 
-    predictor = MatchPredictor()
+    target_seasons = eval_seasons or TEST_SEASONS
+    form_analyzer = FormAnalyzer()
 
-    # 1. 실전 베트맨 경기 결과 평가 (Dataset 1)
+    # 1. 실전 베트맨 경기 결과 평가 (Dataset 1: 2026-10-05 이전 과거 데이터로만 모델 학습하여 누수 차단)
+    predictor_betman = MatchPredictor(train_until=BETMAN_CUTOFF_DATE)
     betman_samples = load_betman_dataset()
-    res_betman = evaluate_single_dataset(betman_samples, "실전 베트맨 결과 (betman_recent_results.json)", predictor)
+    res_betman = evaluate_single_dataset(
+        betman_samples,
+        f"실전 베트맨 결과 (betman_recent_results.json, 학습컷: {BETMAN_CUTOFF_DATE})",
+        predictor_betman,
+        form_analyzer=form_analyzer
+    )
 
-    # 2. 과거 유럽 5대 리그 데이터 평가 (고정 검증 시즌 VAL_SEASONS)
-    csv_samples = load_historical_csv_dataset(seasons=VAL_SEASONS)
-    res_csv = evaluate_single_dataset(csv_samples, f"과거 유럽 5대 리그 고정 검증셋 (시즌 {VAL_SEASONS})", predictor)
+    # 2. 과거 유럽 5대 리그 데이터 평가 (Dataset 2: 검증 대상 시즌 이전 데이터로만 학습)
+    # TEST_SEASONS([2526]) 평가 시에는 2223, 2324, 2425 시즌 데이터로 학습
+    train_for_test = [s for s in TRAIN_SEASONS + TUNE_SEASONS if s not in target_seasons]
+    predictor_csv = MatchPredictor(train_seasons=train_for_test)
+    csv_samples = load_historical_csv_dataset(seasons=target_seasons)
+    res_csv = evaluate_single_dataset(
+        csv_samples,
+        f"과거 유럽 5대 리그 최종 검증셋 (시즌 {target_seasons}, 학습 시즌: {train_for_test})",
+        predictor_csv,
+        form_analyzer=form_analyzer
+    )
 
     # 캘리브레이션 표 출력 (실전 데이터 기준)
     if res_betman and "calibration" in res_betman:
@@ -160,7 +203,14 @@ def save_baseline_markdown(res_betman: Dict[str, Any], res_csv: Dict[str, Any], 
     md = f"""# 🏛️ 모델 평가 기준선 리포트 (BASELINE)
 
 > 본 문서는 Phase 1(측정 기반)에서 확정된 초기 모델의 공식 평가 기준선입니다.
+> 데이터 누수를 엄격히 차단하기 위해 **3분할 체계(학습 22/23~23/24, 튜닝 24/25, 최종 검증 25/26)** 및 **평가 대상 경기 시점 이전 데이터(as_of)만을 사용**하여 산출되었습니다.
 > 이후 Phase 2 및 Phase 3의 모든 개선 작업은 본 리포트의 지표(Log Loss, Brier, ROI)와 비교하여 검증합니다.
+
+## 분할 기간 명세
+- **학습 기간 (Train):** 2022/23 ~ 2023/24 시즌 (총 3,578경기)
+- **튜닝 기간 (Tune):** 2024/25 시즌 (총 1,752경기, 하이퍼파라미터 xi, SOT_DIFF_SCALE 선정)
+- **최종 검증 기간 (Test):** 2025/26 시즌 (총 1,752경기, 순수 OOS 최종 평가용)
+- **실전 베트맨 누수 차단:** {BETMAN_CUTOFF_DATE} 이전 데이터로만 학습 및 경기 시점 이전 기록으로 폼 산출
 
 ## 1. 실전 베트맨 결과 데이터셋 (betman_recent_results.json)
 - **표본수:** {res_betman['sample_count']}경기 (축구 3-way 일반 승무패)
@@ -169,7 +219,7 @@ def save_baseline_markdown(res_betman: Dict[str, Any], res_csv: Dict[str, Any], 
 - **가치 픽 ROI:** `{res_betman['roi_mean']:+.2f}%` (95% CI: `[{res_betman['roi_ci_low']:+.2f}%, {res_betman['roi_ci_high']:+.2f}%]`, {res_betman['value_bet_count']}건)
 
 ## 2. 과거 유럽 5대 리그 고정 검증셋 ({res_csv['dataset_name']})
-- **표본수:** {res_csv['sample_count']}경기 (검증 전용 시즌 {VAL_SEASONS})
+- **표본수:** {res_csv['sample_count']}경기 (검증 전용 시즌 {TEST_SEASONS})
 - **Log Loss:** 모델 `{res_csv['model_log_loss']:.4f}` vs 시장 `{res_csv['market_log_loss']:.4f}` (차이: `{res_csv['log_loss_diff']:+.4f}`)
 - **Brier Score:** 모델 `{res_csv['model_brier_score']:.4f}` vs 시장 `{res_csv['market_brier_score']:.4f}` (차이: `{res_csv['brier_diff']:+.4f}`)
 - **가치 픽 ROI:** `{res_csv['roi_mean']:+.2f}%` (95% CI: `[{res_csv['roi_ci_low']:+.2f}%, {res_csv['roi_ci_high']:+.2f}%]`, {res_csv['value_bet_count']}건)
@@ -193,3 +243,4 @@ if __name__ == "__main__":
     parser.add_argument("--save-baseline", action="store_true", default=False, help="평가 결과를 evaluation/BASELINE.md에 저장")
     args = parser.parse_args()
     run_full_evaluation(save_baseline=args.save_baseline)
+

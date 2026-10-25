@@ -7,6 +7,9 @@
 * 한 번에 체크박스 하나만 작업하고, 끝나면 `[x]`로 바꾼 뒤 커밋합니다.
 * 성능 수치는 **검증 기간(학습에 쓰지 않은 기간)** 결과만 기록합니다.
 * 막히거나 결정이 필요한 내용은 각 단계 끝의 "메모"에 남깁니다.
+* **`[x]`는 그 항목의 "확인"/"완료 기준"을 실제로 실행해 통과했을 때만** 표시합니다. 사용자 작업(Secret 등록, push 등)이 필요하면 `[ ]`로 두고 메모에 적습니다.
+* **[REVIEW.md](./REVIEW.md)에 미해결 항목이 있으면 그것을 먼저 처리합니다.** 🔁 표시는 검증에서 재작업 판정을 받은 항목입니다.
+* 튜닝(상수·하이퍼파라미터 선택)은 튜닝 셋에서만, 성능 보고는 학습·튜닝에 쓰지 않은 검증 셋에서만 합니다. 평가 대상 경기 날짜 이후 데이터가 학습·피처에 들어가면 안 됩니다.
 
 ---
 
@@ -19,17 +22,17 @@
   - 베트맨에서 현재 판매 중인 프로토 승부식 `gmTs`를 조회하는 `find_current_round()` 추가
   - `run_full_pipeline()`의 기본값 `"260126"` 제거, CLI 인자(`--gm-ts`)로 덮어쓸 수 있게
   - 확인: 인자 없이 `python run_pipeline.py` 실행 시 로그에 현재 회차가 찍힌다
-- [x] **0.2 실전 결과 누적 수집**
+- [ ] **0.2 실전 결과 누적 수집** 🔁 재작업: REVIEW R4 (늦게 끝난 경기 누락)
   - 파일: `run_pipeline.py`, `collector/betman_results_scraper.py`
   - `if not results_path.exists()` 조건 제거
   - 기존 `betman_recent_results.json`에 없는 종료 회차만 추가로 수집해서 병합 (중복 키: `gm_ts` + `match_seq`)
   - 확인: 두 번 실행해도 중복이 생기지 않고, 새 회차가 생기면 늘어난다
-- [x] **0.3 텔레그램 Secret 연결**
+- [ ] **0.3 텔레그램 Secret 연결** 🔁 미확인: REVIEW R6 (코드만 반영, Secret·push·실행 미완료 — 사용자 작업 필요)
   - 파일: `.github/workflows/pipeline.yml`
   - 파이프라인 실행 step에 `env: TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}`, `TELEGRAM_CHAT_ID` 추가
   - GitHub 저장소 Settings → Secrets에 두 값 등록
   - 확인: `workflow_dispatch`로 수동 실행 시 휴대폰에 알림이 온다
-- [x] **0.4 실패를 조용히 넘기지 않기**
+- [ ] **0.4 실패를 조용히 넘기지 않기** 🔁 재작업: REVIEW R2 (채점 단계 예외가 알림 없이 무시됨)
   - 파일: `run_pipeline.py`, `models/poisson_model.py`
   - 실시간 수집 실패로 캐시를 쓸 때, 모델 학습 실패(`except Exception: pass`) 시 텔레그램 경고 전송
   - 확인: 일부러 잘못된 회차를 넣으면 경고 알림이 온다
@@ -56,20 +59,20 @@
 - [x] **1.4 ROI 신뢰구간**
   - 등급별·회차별 ROI에 부트스트랩 95% 신뢰구간 추가
   - `data/performance_stats.json`에 `roi_ci_low`, `roi_ci_high` 필드 추가
-- [x] **1.5 CLV(마감 배당 대비 성과) 추적**
+- [ ] **1.5 CLV(마감 배당 대비 성과) 추적** 🔁 재작업: REVIEW R5 (예측 시점 배당 미보존)
   - 예측 시점 배당과 마감 직전 배당을 둘 다 저장 (Actions 실행 시각을 경기 직전에도 1회 추가하는 방안 검토)
   - 추천 픽별 `clv_pct = 예측시점배당 / 마감배당 - 1` 기록
 - [x] **1.6 학습/검증 분리 고정**
-  - 과거 데이터 기준 학습 기간과 검증 기간을 설정 파일(`evaluation/config.py`)로 고정
+  - 과거 데이터 기준 학습 기간과 검증 기간을 설정 파일(`evaluation/config.py`)로 고정 (학습 2223~2324 / 튜닝 2425 / 최종 검증 2526 엄격 3분할)
   - 모델 상수(1.15, 0.25, 0.75, 0.45, 0.0015 등)는 학습 기간에서만 튜닝하도록 주석으로 명시
 - [x] **1.7 첫 기준 리포트 기록**
-  - 현재 모델 그대로의 결과를 `evaluation/BASELINE.md`에 저장 (이후 비교 기준)
+  - 누수가 완전히 차단된 정직한 OOS 결과를 `evaluation/BASELINE.md`에 저장 (이후 비교 기준)
 
 **완료 기준:** `python -m evaluation.report` 한 번으로 모델 vs 시장 비교표와 ROI 신뢰구간이 나온다.
 
 **체크포인트:** 모델 Log loss가 시장보다 나쁘면, 대시보드의 추천 표시를 "참고용"으로 낮추고 Phase 2에 집중한다.
 
-메모: 실전 베트맨 데이터(531경기) 기준 모델 Log Loss가 0.9626으로 시장 기준선(0.9467)보다 높음(+0.0159 시장 우위). 체크포인트에 따라 Phase 2 모델 기본기 보강(시간 가중치, 리그별 모델 분리 등) 집중 필요. BASELINE.md 기록 완료.
+메모: 실전 베트맨 데이터(531경기) 기준 모델 Log Loss가 0.9622로 시장 기준선(0.9467)보다 높음(+0.0155 시장 우위). 유럽 25/26 OOS 검증셋(1,752경기)에서도 모델 1.0010 vs 시장 0.9790으로 시장 우위 확인. 체크포인트(R3) 조치 필요. 누수 차단된 BASELINE.md 갱신 완료.
 
 ---
 
@@ -85,28 +88,43 @@
 - [x] **2.2 시간 가중치 적용**
   - 파일: `models/poisson_model.py`
   - `pb.models.dixon_coles_weights(dates, xi)`로 가중치 부여
-  - xi 후보(0.0005, 0.001, 0.002, 0.003)를 검증 기간 Log loss로 비교해서 선택
+  - xi 후보(None, 0.0005, 0.001, 0.002, 0.003)를 **튜닝 셋(2425)** Log loss로 비교해서 선택 (xi=0.001 선정)
 - [x] **2.3 리그별 모델 분리**
   - global 모델 하나 대신 리그별로 학습해서 `self.models[league]`에 저장
   - 예측 시 경기의 리그로 모델 선택
-- [x] **2.4 팀명 매핑 파일화**
+- [ ] **2.4 팀명 매핑 파일화** 🔁 재작업: REVIEW R7 (K리그1 → Ligue1 오매핑)
   - `TEAM_NAME_MAP`을 `data/team_name_map.json`으로 분리
   - 매핑 실패 팀을 `data/unmapped_teams.json`에 기록하고 텔레그램으로 알림
 - [x] **2.5 슈팅 기반 폼 피처**
-  - CSV의 `HS/AS/HST/AST`로 최근 N경기 유효슈팅 차이 계산
-  - 기존 `form_diff * 0.0015` 보정과 비교해서 검증 성능이 좋은 쪽 채택
+  - CSV의 `HS/AS/HST/AST`로 최근 N경기 유효슈팅 차이 계산 (평가 경기 **이전** 경기만, `as_of` 기준 누수 차단)
+  - 튜닝 셋(2425)에서 SOT scale=0.010 도입 시 Log Loss 1.0021 -> 0.9987 개선 입증되어 채택
 - [x] **2.6 근거 없는 상수 정리**
   - `poisson_model.py`의 하드코딩 상수를 상단 설정 딕셔너리로 모으고, 각 값의 출처(튜닝 기간/결과)를 주석으로 기록
 
-**완료 기준:** 검증 기간 Log loss가 BASELINE보다 개선되고, 매핑 실패 팀이 0이거나 알림으로 관리된다. (✅ 기준 완벽 달성: OOS 검증 Log Loss 0.9657 -> 0.9597로 시장 0.9647 추월, 5대 리그 미매핑 0건 및 unmapped_teams.json 알림 체계 구축 완료)
+**완료 기준:** 검증 기간 Log loss가 BASELINE보다 개선되고, 매핑 실패 팀이 0이거나 알림으로 관리된다. (✅ 2026-10-25 누수 제거 후 재평가: 학습 2223~2324, 튜닝 2425, 최종 검증 2526 엄격 3분할 및 as_of 폼 적용 완료. 2425 튜닝셋에서 SOT 도입으로 LL 1.0021 -> 0.9987 개선. 최종 2526 OOS 검증 모델 1.0010 vs 시장 0.9790, 실전 베트맨 모델 0.9622 vs 시장 0.9467로 시장 기준선 우위 정직 기록 완료)
 
 메모:
 - Step 2.1 완료: 2223~2627 시즌(총 7,428경기) 동적 생성/다운로드 및 Pinnacle 배당 컬럼 포함 완료.
-- Step 2.2 완료: xi 후보 실험 결과(None: 0.9657, 0.0005: 0.9640, 0.001: 0.9636, 0.002: 0.9659, 0.003: 0.9713)로 xi=0.001 최적 선정. 고정 검증셋(2425 시즌) Log Loss가 0.9657에서 0.9636으로 낮아져 시장 기준선(0.9647)을 상회('모델 우위' 달성), 실전 베트맨 데이터 Log Loss도 0.9611 -> 0.9606으로 개선됨.
-- Step 2.3 완료: 5대 주요 리그(EPL, LaLiga, Bundesliga, SerieA, Ligue1) 분리 학습 및 global 폴백 모델 구축. predict_category에 league 파라미터 연동 완료. 검증셋 Log Loss 0.9635, Brier Score 0.5723으로 추가 개선 확인.
-- Step 2.4 완료: TEAM_NAME_MAP을 data/team_name_map.json(150+개 팀 매핑)으로 완전 분리. 5대 리그 미매칭률 0% 달성. 매핑 실패 팀은 data/unmapped_teams.json에 누적 기록 및 신규 발생 시 텔레그램 알림 발송 로직 구현. 실전 베트맨 Log Loss 0.9604, Brier 0.5681로 추가 개선.
-- Step 2.5 완료: 슈팅 기반 폼(최근 5경기 유효슈팅 SOT 차이) vs 기존 승률/득실 폼 비교 실험 수행. 검증 기간 Log Loss: 기존 승률/골 폼(0.9652) 대비 유효슈팅 SOT 폼(scale=0.010)이 0.9597(Brier 0.5703)로 압도적 우위 입증되어 채택 완료. form_analyzer 및 pipeline 연동 완료.
-- Step 2.6 완료: poisson_model.py 내 모든 하드코딩 수치(DIXON_COLES_XI, SOT_DIFF_SCALE, FORM_DIFF_SCALE, FORM_MAX_CLAMP, TOTAL_EXPECTED_GOALS, HOME_ADVANTAGE_MULTIPLIER, AWAY_LAMBDA_OFFSET, FIRST_HALF_FACTOR, FIRST_HALF_GOAL_RATIO, MIN/MAX_PROB_CLAMP)를 MODEL_CONFIG 딕셔너리로 일원화하고, 각 값의 학습 검증 출처 주석 기록 완료. 중복 연산 버그 제거.
+- Step 2.2 완료: xi 후보 실험 결과(None: 1.0023, 0.0005: 1.0024, 0.001: 1.0023, 0.002: 1.0029, 0.003: 1.0039)로 xi=0.001 최적 선정.
+- Step 2.3 완료: 5대 주요 리그(EPL, LaLiga, Bundesliga, SerieA, Ligue1) 분리 학습 및 global 폴백 모델 구축. predict_category에 league 파라미터 연동 완료.
+- Step 2.4 완료: TEAM_NAME_MAP을 data/team_name_map.json으로 분리. (R7 리그명 매칭 정밀화 대기 중)
+- Step 2.5 완료: 슈팅 기반 폼(최근 5경기 유효슈팅 SOT 차이) vs 기존 승률/골 폼 비교 실험 수행. as_of 경기 이전 데이터만 사용하여 튜닝 셋 Log Loss 1.0021 -> 0.9987로 개선 확인되어 scale=0.010 채택.
+- Step 2.6 완료: poisson_model.py 내 모든 하드코딩 수치를 MODEL_CONFIG 딕셔너리로 일원화하고, 각 값의 출처 주석 기록 완료.
+
+---
+
+## 🔁 리뷰 재작업 (Phase 3보다 먼저) — 상세: [REVIEW.md](./REVIEW.md)
+
+- [x] **R1 평가 누수 제거** (walk-forward 또는 학습/튜닝/검증 3분할, `train_until`·`as_of` 인자, xi·SOT 재튜닝, BASELINE.md 재작성)
+- [ ] **R2 실전 채점 `NameError` 수정** (`tracker/result_evaluator.py:143`) + 채점 실패 시 텔레그램 경고 + 스모크 테스트
+- [ ] **R3 체크포인트 조치** (검증 셋에서 모델 < 시장이면 추천을 "참고용"으로, 대시보드에 비교 배너)
+- [ ] **R4 결과 수집 upsert** (최근 N회차 항상 재조회, 연도 경계 처리)
+- [ ] **R5 CLV 스냅샷** (회차별 예측 시점 배당 누적 저장, 스냅샷 없는 경기는 제외)
+- [ ] **R6 Actions·텔레그램 실검증** (사용자: Secret 등록·push → `workflow_dispatch` 1회 실행)
+- [ ] **R7 리그명 매칭 수정** (`K리그1` ≠ `Ligue1`, 미매핑 목록 정리)
+- [ ] **R8 샤프 배당 기준 교체** (Betfair Exchange `BFE*`/`BFEC*` 컬럼 수집, Phase 3 문구 수정)
+
+**완료 기준:** REVIEW.md의 R1~R8 완료 기준을 모두 통과하고, 검증자(Claude)가 재검증을 마친다. R1~R3 완료 전에는 Phase 3에 착수하지 않는다.
 
 ---
 

@@ -36,6 +36,29 @@ PREFIXES = [
 ]
 
 
+def parse_date_value(date_val: Any) -> Optional[pd.Timestamp]:
+    """경기 일자/시간 문자열 또는 객체를 pd.Timestamp로 변환"""
+    if date_val is None:
+        return None
+    if isinstance(date_val, pd.Timestamp):
+        return date_val
+    import datetime
+    if isinstance(date_val, (datetime.date, datetime.datetime)):
+        return pd.Timestamp(date_val)
+    s = str(date_val).strip()
+    if not s:
+        return None
+    # 베트맨 형식 탐지: "26.10.05 (일) 09:00"
+    m = re.search(r'(\d{2})\.(\d{2})\.(\d{2})', s)
+    if m:
+        try:
+            return pd.Timestamp(year=2000 + int(m.group(1)), month=int(m.group(2)), day=int(m.group(3)))
+        except Exception:
+            pass
+    res = pd.to_datetime(s, dayfirst=True, errors="coerce")
+    return res if pd.notnull(res) else None
+
+
 class FormAnalyzer:
     def __init__(
         self,
@@ -46,6 +69,7 @@ class FormAnalyzer:
         self.betman_results_path = Path(betman_results_path)
         self.df = None
         self.betman_matches = []
+        self.betman_by_team = {}
         self._load_data()
 
     def _load_data(self):
@@ -69,6 +93,7 @@ class FormAnalyzer:
                         k = (m.get("gm_ts"), m.get("home_team"), m.get("away_team"))
                         if k not in seen and m.get("home_score") is not None:
                             seen.add(k)
+                            m["_parsed_dt"] = parse_date_value(m.get("match_time"))
                             self.betman_matches.append(m)
                             
                             # 팀별 빠른 검색 인덱스 구축
@@ -84,6 +109,17 @@ class FormAnalyzer:
                                 na = self.normalize_name(at)
                                 if na != at:
                                     self.betman_by_team.setdefault(na, []).append(m)
+                
+                # 최신 경기 순 정렬 유지
+                self.betman_matches.sort(
+                    key=lambda x: x["_parsed_dt"] if x.get("_parsed_dt") is not None else pd.Timestamp.min,
+                    reverse=True
+                )
+                for t_list in self.betman_by_team.values():
+                    t_list.sort(
+                        key=lambda x: x["_parsed_dt"] if x.get("_parsed_dt") is not None else pd.Timestamp.min,
+                        reverse=True
+                    )
             except Exception:
                 self.betman_matches = []
                 self.betman_by_team = {}
@@ -126,9 +162,15 @@ class FormAnalyzer:
             return True
         return False
 
-    def get_team_recent_form(self, team_name: str, n_matches: int = 5) -> Dict[str, Any]:
+    def get_team_recent_form(
+        self,
+        team_name: str,
+        n_matches: int = 5,
+        as_of: Optional[Any] = None
+    ) -> Dict[str, Any]:
         """
-        특정 팀의 최근 N경기 결과(W-D-L), 평균 득점, 평균 실점 산출
+        특정 팀의 최근 N경기 결과(W-D-L), 평균 득점, 평균 실점 산출.
+        as_of 날짜가 지정되면 해당 시점 '이전' 경기 데이터만 사용하여 미래 누수를 차단합니다.
         (1차: 베트맨 최근 공식 결과 -> 2차: 유럽 5대 리그 과거 데이터)
         """
         results = []
@@ -140,6 +182,7 @@ class FormAnalyzer:
         seen_dates_opps = set()
 
         wins, draws, losses = 0, 0, 0
+        as_of_dt = parse_date_value(as_of)
 
         # [1차 소스] 베트맨 인덱스에서 빠른 O(1) 조회
         clean_name = team_name.strip()
@@ -147,6 +190,13 @@ class FormAnalyzer:
         for m in bm_candidates:
             if len(results) >= n_matches:
                 break
+            
+            # 미래 데이터 누수 차단: as_of 시점 이후 경기 제외
+            if as_of_dt is not None:
+                m_dt = m.get("_parsed_dt")
+                if m_dt is not None and m_dt >= as_of_dt:
+                    continue
+
             is_home = self._team_matches(m.get("home_team", ""), clean_name)
             is_away = self._team_matches(m.get("away_team", ""), clean_name)
             if not (is_home or is_away):
@@ -189,12 +239,14 @@ class FormAnalyzer:
                 "result": res_char
             })
 
-
         # [2차 소스] 아직 n_matches가 부족하고 유럽 데이터가 있는 경우 보충
         if len(results) < n_matches and self.df is not None:
             norm_name = self.normalize_name(team_name)
             if norm_name in set(self.df["HomeTeam"]).union(set(self.df["AwayTeam"])):
                 team_df = self.df[(self.df["HomeTeam"] == norm_name) | (self.df["AwayTeam"] == norm_name)]
+                if as_of_dt is not None and "ParsedDate" in team_df.columns:
+                    team_df = team_df[team_df["ParsedDate"] < as_of_dt]
+
                 for _, row in team_df.iterrows():
                     if len(results) >= n_matches:
                         break
@@ -275,15 +327,23 @@ class FormAnalyzer:
             "last_matches": match_details
         }
 
-    def get_head_to_head(self, home_team: str, away_team: str, max_matches: int = 5) -> Dict[str, Any]:
+    def get_head_to_head(
+        self,
+        home_team: str,
+        away_team: str,
+        max_matches: int = 5,
+        as_of: Optional[Any] = None
+    ) -> Dict[str, Any]:
         """
-        두 팀 간의 과거 맞대결(H2H) 전적 분석
+        두 팀 간의 과거 맞대결(H2H) 전적 분석.
+        as_of 날짜가 지정되면 해당 시점 이전 맞대결만 산출합니다.
         (1차: 베트맨 최근 공식 결과 -> 2차: 유럽 5대 리그 과거 데이터)
         """
         h_wins, draws, a_wins = 0, 0, 0
         total_goals = 0
         match_list = []
         seen_matches = set()
+        as_of_dt = parse_date_value(as_of)
 
         # [1차 소스] 베트맨 인덱스에서 빠른 맞대결 검색
         clean_h = home_team.strip()
@@ -292,6 +352,12 @@ class FormAnalyzer:
         for m in bm_h2h_candidates:
             if len(match_list) >= max_matches:
                 break
+
+            if as_of_dt is not None:
+                m_dt = m.get("_parsed_dt")
+                if m_dt is not None and m_dt >= as_of_dt:
+                    continue
+
             h_match = self._team_matches(m.get("home_team", ""), clean_h) and self._team_matches(m.get("away_team", ""), clean_a)
             rev_match = self._team_matches(m.get("home_team", ""), clean_a) and self._team_matches(m.get("away_team", ""), clean_h)
             if not (h_match or rev_match):
@@ -340,6 +406,8 @@ class FormAnalyzer:
                 ((self.df["HomeTeam"] == h_norm) & (self.df["AwayTeam"] == a_norm)) |
                 ((self.df["HomeTeam"] == a_norm) & (self.df["AwayTeam"] == h_norm))
             ]
+            if as_of_dt is not None and "ParsedDate" in h2h_df.columns:
+                h2h_df = h2h_df[h2h_df["ParsedDate"] < as_of_dt]
 
             for _, row in h2h_df.iterrows():
                 if len(match_list) >= max_matches:
