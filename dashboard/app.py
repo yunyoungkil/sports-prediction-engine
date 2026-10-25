@@ -530,7 +530,7 @@ with tab1:
                         if bt.get("rounds"):
                             st.caption(f"과거 반복: {bt['rounds']}회차 · 적중 {bt['hit_rate_pct']:.0f}% · 실제 수익률 {bt['roi_pct']:+.1f}%")
                     with cc3:
-                        st.button("🛒 담기", key=f"finder_pick_{ci}", use_container_width=True,
+                        st.button("🛒 담기", key=f"finder_pick_{ci}", width="stretch",
                                   on_click=_pick_combo, args=(c["legs"],))
             st.caption("⚠️ 대부분의 조합은 기대 손익이 마이너스입니다. AI 확률은 검증 중이며, 과거 반복 결과는 비슷한 배당 경기로 같은 방식을 적용한 실제 결과입니다.")
 
@@ -899,7 +899,7 @@ with tab1:
                 st.warning(val_msg)
 
         with sum_c4:
-            st.button("➡️ STEP 02 결과보기", type="primary", disabled=not is_step1_valid, use_container_width=True,
+            st.button("➡️ STEP 02 결과보기", type="primary", disabled=not is_step1_valid, width="stretch",
                       on_click=_go_step, args=(2,))
 
     # -------------------------------------------------------------
@@ -941,7 +941,7 @@ with tab1:
         with h1:
             st.markdown("### 🎯 STEP 02. 조합 결과 & 베팅 시뮬레이션")
         with h2:
-            st.button("⬅️ 경기 다시 고르기", use_container_width=True, on_click=_go_step, args=(1,))
+            st.button("⬅️ 경기 다시 고르기", width="stretch", on_click=_go_step, args=(1,))
 
         if not combos:
             st.warning("선택된 조합이 없습니다. STEP 01로 돌아가 경기를 선택해 주세요.")
@@ -980,7 +980,7 @@ with tab1:
                                                value=max(unit, (int(st.session_state["batch_stake"]) // unit) * unit),
                                                step=unit, key="batch_stake_input")
                 with b2:
-                    if st.button("모든 조합에 적용", use_container_width=True):
+                    if st.button("모든 조합에 적용", width="stretch"):
                         st.session_state["batch_stake"] = batch_in
                         for c in combos:
                             st.session_state[f"stake_{c['combo_index']}"] = batch_in
@@ -992,11 +992,11 @@ with tab1:
                 with b4:
                     q1, q2, q3 = st.columns(3)
                     quick = None
-                    if q1.button("전체 선택", use_container_width=True):
+                    if q1.button("전체 선택", width="stretch"):
                         quick = "all"
-                    if q2.button("전체 해제", use_container_width=True):
+                    if q2.button("전체 해제", width="stretch"):
                         quick = "none"
-                    if q3.button("EV+만", use_container_width=True, help="기대가치가 플러스인 조합만 선택"):
+                    if q3.button("EV+만", width="stretch", help="기대가치가 플러스인 조합만 선택"):
                         quick = "ev"
                     if quick:
                         for c in combos:
@@ -1075,7 +1075,7 @@ with tab1:
                 _bump_editor()
 
             edited = st.data_editor(
-                pd.DataFrame(rows), hide_index=True, use_container_width=True, column_config=col_cfg,
+                pd.DataFrame(rows), hide_index=True, width="stretch", column_config=col_cfg,
                 disabled=[k for k in rows[0] if k not in ("선택", "투표금액")],
                 key=editor_key, on_change=_sync_editor,
                 height=min(38 + 35 * len(rows), 460),
@@ -1138,7 +1138,7 @@ with tab1:
                     else:
                         st.caption("축구 일반 승무패 경기로만 구성된 조합에서 사용할 수 있습니다 (과거 데이터가 축구 승무패만 있음).")
                 with bt_c2:
-                    run_bt = st.button("과거 결과로 확인", use_container_width=True, disabled=not rule, key="run_backtest")
+                    run_bt = st.button("과거 결과로 확인", width="stretch", disabled=not rule, key="run_backtest")
                 if run_bt and rule:
                     st.session_state["bt_result"] = (describe_rule(rule), backtest(rule, load_archive_for_backtest()))
                 if st.session_state.get("bt_result") and rule and st.session_state["bt_result"][0] == describe_rule(rule):
@@ -1340,7 +1340,7 @@ with tab2:
             })
 
         df_matches = pd.DataFrame(t_rows)
-        st.dataframe(df_matches, use_container_width=True, hide_index=True)
+        st.dataframe(df_matches, width="stretch", hide_index=True)
 
         st.divider()
 
@@ -1380,7 +1380,7 @@ with tab2:
                     with d_c2:
                         st.markdown(f"**EV 최고 선택:** <span style='color:#10b981; font-weight:800;'>{eval_info.get('best_selection_name')}</span>", unsafe_allow_html=True)
                         st.markdown(f"기대가치: **`{eval_info.get('best_ev_pct')}`**")
-                        if st.button("🛒 맞춤조건구매에 담기", use_container_width=True):
+                        if st.button("🛒 맞춤조건구매에 담기", width="stretch"):
                             b_sel = eval_info.get("best_selection", "home_win")
                             st.session_state["selections"][selected_seq] = {
                                 "home": (b_sel == "home_win"),
@@ -1495,7 +1495,7 @@ with tab3:
                 rows_bt.append({"시험": label, "경기 수": s["samples"], "AI LL": s["model_ll"], "시장 LL": s["market_ll"],
                                 "차이": f"{s['ll_diff']:+.4f}", "95% CI": f"[{ci[0]:+.4f}, {ci[1]:+.4f}]",
                                 "EV>2% 베팅": s.get("bets", 0)})
-            st.dataframe(pd.DataFrame(rows_bt), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(rows_bt), width="stretch", hide_index=True)
 
     # ------------------------------------------------------------------
     # A-2. 가상 베팅 리그 — 전략별 자동 가상 베팅 (실제 구매 없음)
@@ -1517,7 +1517,7 @@ with tab3:
                 "가상 수익률": f"{v['roi_pct']:+.1f}%" if v["bets"] else "-",
                 "95% CI": ci, "누적 손익(원)": v["profit"], "판정": v["verdict"],
             })
-        st.dataframe(pd.DataFrame(pt_rows), hide_index=True, use_container_width=True,
+        st.dataframe(pd.DataFrame(pt_rows), hide_index=True, width="stretch",
                      column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized")})
         curves = {v["label"]: pd.Series(v["cum_profit"]) for v in pt["strategies"].values() if len(v["cum_profit"]) >= 2}
         if curves:
@@ -1537,7 +1537,7 @@ with tab3:
                    "실력 판단은 위의 공식 성적표를 보세요.")
     with col_t_btn:
         st.write("")
-        if st.button("🔄 구 모델 재채점", key="re_evaluate_btn_tab3", use_container_width=True):
+        if st.button("🔄 구 모델 재채점", key="re_evaluate_btn_tab3", width="stretch"):
             with st.spinner("베트맨 최근 경기 결과 전수 채점 중..."):
                 try:
                     from tracker.result_evaluator import evaluate_betman_results
@@ -1634,7 +1634,7 @@ with tab3:
                     "95% CI": f"[{r_data.get('roi_ci_low', 0.0):+.1f}%, {r_data.get('roi_ci_high', 0.0):+.1f}%]"
                 })
             r_df = pd.DataFrame(r_rows)
-            st.dataframe(r_df, use_container_width=True, hide_index=True)
+            st.dataframe(r_df, width="stretch", hide_index=True)
 
         st.divider()
 
@@ -1694,4 +1694,4 @@ with tab3:
             rec_df = rec_df.rename(columns=rename_map)
             if "적중 여부" in rec_df.columns:
                 rec_df["적중 여부"] = rec_df["적중 여부"].apply(lambda x: "✅ 적중" if x else "❌ 미적중")
-            st.dataframe(rec_df, use_container_width=True, hide_index=True)
+            st.dataframe(rec_df, width="stretch", hide_index=True)
