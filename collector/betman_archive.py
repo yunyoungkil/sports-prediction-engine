@@ -36,7 +36,10 @@ from collector.betman_results_scraper import BetmanResultsScraper, BASE_URL
 ARCHIVE_CSV = Path("data/history/betman_soccer_1x2.csv")
 ROUNDS_JSON = Path("data/history/betman_archive_rounds.json")
 FIELDS = ["gm_ts", "match_seq", "kickoff_ms", "match_time", "league", "home_team", "away_team",
-          "odds_win", "odds_draw", "odds_lose", "home_score", "away_score"]
+          "odds_win", "odds_draw", "odds_lose", "home_score", "away_score",
+          # [5.7] 같은 경기의 풀타임 언더/오버 배당 (기준 2.5 / 3.5). ODDS_WIN=언더, ODDS_LOSE=오버
+          "uo25_under", "uo25_over", "uo35_under", "uo35_over"]
+UO_LINES = (2.5, 3.5)
 REQUEST_DELAY_SEC = 0.7
 MAX_EMPTY_STREAK = 6   # 연속으로 빈 회차가 이만큼 나오면 그 해는 끝난 것으로 판단
 
@@ -55,7 +58,29 @@ def fetch_raw_round(scraper: BetmanResultsScraper, gm_ts: int) -> List[Dict[str,
     return data.get("detlBody") or []
 
 
+def _parse_ou(raw: List[Dict[str, Any]]) -> Dict[tuple, Dict[str, float]]:
+    """같은 경기(홈·원정·시각)의 풀타임 언더/오버 배당 (전반 언더오버 제외)"""
+    out: Dict[tuple, Dict[str, float]] = {}
+    for it in raw:
+        if it.get("MCH_SPORT_CD") != "SC" or it.get("HANDI_VAL") != 9:
+            continue
+        if "전반" in str(it.get("BETTYP_NM") or ""):
+            continue
+        try:
+            line, u, o = float(it.get("HANDI_WIN") or 0), float(it.get("ODDS_WIN") or 0), float(it.get("ODDS_LOSE") or 0)
+        except (TypeError, ValueError):
+            continue
+        if line not in UO_LINES or u <= 1.0 or o <= 1.0:
+            continue
+        key = (str(it.get("HOME_TEAM", "")).strip(), str(it.get("AWAY_TEAM", "")).strip(), it.get("MCH_DTM", ""))
+        tag = f"uo{int(line * 10)}"
+        out.setdefault(key, {})[f"{tag}_under"] = u
+        out[key][f"{tag}_over"] = o
+    return out
+
+
 def parse_soccer_1x2(raw: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    ou = _parse_ou(raw)
     best: Dict[tuple, Dict[str, Any]] = {}
     for it in raw:
         if it.get("MCH_SPORT_CD") != "SC" or it.get("HANDI_VAL") != 0:
@@ -83,6 +108,7 @@ def parse_soccer_1x2(raw: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             "odds_win": ow, "odds_draw": od, "odds_lose": ol, "home_score": hs, "away_score": as_,
         }
         key = (row["home_team"], row["away_team"], row["match_time"])
+        row.update(ou.get(key, {}))
         if key not in best or od > best[key]["odds_draw"]:
             best[key] = row
     return list(best.values())
@@ -95,8 +121,8 @@ def load_archive() -> List[Dict[str, Any]]:
         return list(csv.DictReader(f))
 
 
-def sync_archive(years: List[int], refetch_last: int = 3) -> Dict[str, Any]:
-    done = set(json.loads(ROUNDS_JSON.read_text(encoding="utf-8"))) if ROUNDS_JSON.exists() else set()
+def sync_archive(years: List[int], refetch_last: int = 3, full: bool = False) -> Dict[str, Any]:
+    done = set(json.loads(ROUNDS_JSON.read_text(encoding="utf-8"))) if (ROUNDS_JSON.exists() and not full) else set()
     rows = {(int(r["gm_ts"]), r["match_seq"]): r for r in load_archive()}
     scraper = BetmanResultsScraper()
     # 최근 회차는 늦게 끝난 경기가 있을 수 있어 다시 받는다
@@ -111,11 +137,15 @@ def sync_archive(years: List[int], refetch_last: int = 3) -> Dict[str, Any]:
             if ts in done:
                 empty_streak = 0
                 continue
-            try:
-                raw = fetch_raw_round(scraper, ts)
-            except Exception as e:
-                print(f"  ⚠ {ts} 조회 실패: {e}")
-                raw = []
+            raw = []
+            for attempt in range(3):   # 일시적 연결 끊김 재시도
+                try:
+                    raw = fetch_raw_round(scraper, ts)
+                    break
+                except Exception as e:
+                    if attempt == 2:
+                        print(f"  ⚠ {ts} 조회 실패: {e}")
+                    time.sleep(2 + attempt * 3)
             time.sleep(REQUEST_DELAY_SEC)
             if not raw:
                 empty_streak += 1
@@ -148,6 +178,7 @@ def sync_archive(years: List[int], refetch_last: int = 3) -> Dict[str, Any]:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="베트맨 과거 축구 승무패 아카이브 수집")
     ap.add_argument("--years", type=int, nargs="+", default=[24, 25, 26])
+    ap.add_argument("--full", action="store_true", help="이미 받은 회차도 모두 다시 받기 (컬럼 추가 시)")
     args = ap.parse_args()
-    res = sync_archive(args.years)
+    res = sync_archive(args.years, full=args.full)
     print(f"✅ 베트맨 아카이브: 이번에 {res['rounds_fetched']}회차 조회, 총 {res['total_matches']}경기 → {ARCHIVE_CSV}")

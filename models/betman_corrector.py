@@ -105,6 +105,98 @@ def _features(form: TeamForm, home: str, away: str, league: str) -> Dict[str, fl
     return feats
 
 
+REST_CAP_DAYS = 14.0
+
+
+def market_features(odds, p: np.ndarray) -> Dict[str, float]:
+    """[실험 ①] 배당 구조 피처 — 모두 베팅 시점에 아는 값"""
+    o = [float(x) for x in odds]
+    return {
+        "closeness": 1.0 - abs(float(p[0]) - float(p[2])),        # 1에 가까울수록 팽팽 (무승부 편향 후보)
+        "strength_diff": float(p[0]) - float(p[2]),               # 홈 강세(+) / 원정 강세(-)
+        "margin": sum(1.0 / x for x in o) - 1.0,                   # 경기별 베트맨 마진
+    }
+
+
+def rest_features(last_ko: Dict[str, Any], home: str, away: str, kickoff) -> Dict[str, float]:
+    """[실험 ②] 일정 피처 — 베트맨에 실린 직전 경기 기준 휴식일 (모르면 상한값으로 간주)"""
+    def rest(team):
+        prev = last_ko.get(team)
+        if prev is None:
+            return REST_CAP_DAYS
+        return min(REST_CAP_DAYS, max(0.0, (kickoff - prev).total_seconds() / 86400.0))
+    rh, ra = rest(home), rest(away)
+    return {"rest_diff": rh - ra, "congested_home": 1.0 if rh <= 3.0 else 0.0, "congested_away": 1.0 if ra <= 3.0 else 0.0}
+
+
+_K = np.arange(0, 16)
+_LOG_FACT = np.array([np.sum(np.log(np.arange(1, k + 1))) for k in _K])
+
+
+def _pois_pmf(lam: float) -> np.ndarray:
+    return np.exp(_K * np.log(max(lam, 1e-9)) - lam - _LOG_FACT)
+
+
+def total_goals_from_ou(line: float, under: float, over: float) -> Optional[float]:
+    """언더/오버 배당(마진 제거) → 포아송 총득점 기대값 λ (P(합계 ≤ ⌊line⌋) = p_under 가 되도록 이분법)"""
+    pu = (1 / under) / ((1 / under) + (1 / over))
+    k = int(np.floor(line))
+    lo, hi = 0.05, 8.0
+    for _ in range(50):
+        mid = (lo + hi) / 2
+        cdf = _pois_pmf(mid)[: k + 1].sum()
+        if cdf > pu:
+            lo = mid      # λ가 작아 언더 확률이 너무 큼 → λ 키움
+        else:
+            hi = mid
+    lam = (lo + hi) / 2
+    return lam if 0.1 < lam < 7.9 else None
+
+
+def ou_view(lam_total: float, p_market: np.ndarray) -> np.ndarray:
+    """
+    총득점 λ와 시장의 홈:원정 비율로 득점 모델(독립 포아송) 승/무/패 확률을 만든다.
+    홈 득점 비중 s 를 시장의 P(홈)/(P(홈)+P(원정))에 맞춰 이분법으로 찾는다.
+    """
+    target = p_market[0] / (p_market[0] + p_market[2])
+
+    def probs(sh):
+        ph, pa = _pois_pmf(lam_total * sh), _pois_pmf(lam_total * (1 - sh))
+        m = np.outer(ph, pa)
+        return np.array([np.tril(m, -1).sum(), np.trace(m), np.triu(m, 1).sum()])
+
+    lo, hi = 0.02, 0.98
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        p = probs(mid)
+        if p[0] / (p[0] + p[2]) < target:
+            lo = mid
+        else:
+            hi = mid
+    p = probs((lo + hi) / 2)
+    return p / p.sum()
+
+
+def ou_features(row_like, p_market: np.ndarray) -> Dict[str, Any]:
+    """[실험 ③] 같은 경기 언더/오버 배당 → 예상 총득점, 득점 모델 확률(p_ou), 무승부 차이"""
+    lams = []
+    for line, u_key, o_key in ((2.5, "uo25_under", "uo25_over"), (3.5, "uo35_under", "uo35_over")):
+        u, o = row_like.get(u_key), row_like.get(o_key)
+        try:
+            u, o = float(u), float(o)
+        except (TypeError, ValueError):
+            continue
+        if u > 1.0 and o > 1.0 and np.isfinite(u) and np.isfinite(o):
+            lam = total_goals_from_ou(line, u, o)
+            if lam:
+                lams.append(lam)
+    if not lams:
+        return {"p_ou": None, "has_ou": 0.0, "goals_total": 0.0, "draw_gap": 0.0}
+    lam = float(np.mean(lams))
+    p_ou = ou_view(lam, p_market)
+    return {"p_ou": p_ou, "has_ou": 1.0, "goals_total": lam - 2.6, "draw_gap": float(p_ou[1] - p_market[1])}
+
+
 def load_archive_df(path: Path = ARCHIVE_CSV) -> pd.DataFrame:
     df = pd.read_csv(path, encoding="utf-8-sig")
     df["kickoff"] = pd.to_datetime(df["kickoff_ms"], unit="ms", utc=True)
@@ -116,6 +208,7 @@ def load_archive_df(path: Path = ARCHIVE_CSV) -> pd.DataFrame:
 def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """킥오프 순으로 행을 만들며 폼은 해당 경기 이전 결과만 반영 (같은 시각 경기끼리도 서로 반영 안 함)"""
     form = TeamForm()
+    last_seen: Dict[str, Any] = {}      # 팀별 직전 경기 킥오프 (휴식일 계산)
     rows: List[Dict[str, Any]] = []
     pending: List[tuple] = []
     last_ko = None
@@ -123,6 +216,7 @@ def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
         if last_ko is not None and r.kickoff != last_ko:
             for args in pending:
                 form.add(*args)
+                last_seen[args[0]] = last_seen[args[1]] = last_ko
             pending = []
         last_ko = r.kickoff
         p = _fair_probs(r.odds_win, r.odds_draw, r.odds_lose)
@@ -133,6 +227,9 @@ def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
                "actual": y, "odds": np.array([r.odds_win, r.odds_draw, r.odds_lose], dtype=float),
                "p_market": p, "p_avg": None, "p_sharp": None}
         row.update(_features(form, r.home_team, r.away_team, r.league))
+        row.update(market_features(row["odds"], p))
+        row.update(rest_features(last_seen, r.home_team, r.away_team, r.kickoff))
+        row.update(ou_features(r._asdict(), p))
         rows.append(row)
         pending.append((r.home_team, r.away_team, int(r.home_score), int(r.away_score)))
     return rows

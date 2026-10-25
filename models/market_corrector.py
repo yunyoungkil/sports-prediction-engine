@@ -168,6 +168,9 @@ class MarketCorrector:
                     F[i, :, j] = np.log(r["p_avg"]) - log_mkt[i]
                 elif name == "sharp_diff" and r["p_sharp"] is not None:
                     F[i, :, j] = np.log(r["p_sharp"]) - log_mkt[i]
+                elif name.endswith("_diff") and r.get("p_" + name[:-5]) is not None:
+                    # 일반화: 행에 p_<이름> 확률이 있으면 log(그 확률) - log(시장) (예: ou_diff ← p_ou)
+                    F[i, :, j] = np.log(np.clip(r["p_" + name[:-5]], 1e-12, None)) - log_mkt[i]
         X = np.array([[r[name] for name in self.match] for r in rows], dtype=float).reshape(n, len(self.match))
         y = np.array([r["actual"] for r in rows], dtype=int)
         return log_mkt, F, X, y
