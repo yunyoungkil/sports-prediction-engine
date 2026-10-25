@@ -21,19 +21,39 @@ project_root = Path(__file__).resolve().parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-# 개발 모드(환경변수 STREAMLIT_DEV_MODE=1)에서만 모듈 캐시 강제 무효화
-if os.environ.get("STREAMLIT_DEV_MODE") == "1":
-    for mod_name in list(sys.modules.keys()):
-        if mod_name.startswith("models") or mod_name.startswith("tracker"):
-            del sys.modules[mod_name]
+import importlib
 
-from models.combo_builder import (
-    calculate_combined_odds,
-    calculate_payout,
-    is_tax_free,
-    validate_combo,
-    expand_combinations
-)
+# Streamlit 세션 유지 중 코드 변경 시 서브모듈 핫 리로딩 보장
+for mod_name in list(sys.modules.keys()):
+    if mod_name.startswith("models") or mod_name.startswith("tracker"):
+        del sys.modules[mod_name]
+
+importlib.invalidate_caches()
+
+try:
+    from models.combo_builder import (
+        calculate_combined_odds,
+        calculate_payout,
+        is_tax_free,
+        validate_combo,
+        expand_combinations
+    )
+except ImportError:
+    import models.combo_builder as _cb
+    importlib.reload(_cb)
+    calculate_combined_odds = getattr(_cb, "calculate_combined_odds")
+    calculate_payout = getattr(_cb, "calculate_payout")
+    validate_combo = getattr(_cb, "validate_combo")
+    expand_combinations = getattr(_cb, "expand_combinations")
+    if hasattr(_cb, "is_tax_free"):
+        is_tax_free = getattr(_cb, "is_tax_free")
+    else:
+        def is_tax_free(odds: float, payout: int) -> bool:
+            if payout <= 100_000:
+                return True
+            if odds <= 100.0 and payout <= 2_000_000:
+                return True
+            return False
 
 # 1. 페이지 기본 설정
 st.set_page_config(
