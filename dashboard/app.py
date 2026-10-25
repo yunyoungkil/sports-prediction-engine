@@ -1070,14 +1070,24 @@ with tab1:
 
             with summary_box:
                 s1, s2, s3, s4 = st.columns(4)
-                s1.metric("총 투표금액", f"{total_stake:,}원", f"{len(chosen)} / {len(combos)} 조합 선택", delta_color="off")
-                s2.metric("적중 시 환급", f"{max(pays):,}원" if pays else "-",
-                          f"최저 {min(pays):,}원" if len(pays) > 1 else None, delta_color="off")
-                s3.metric("하나라도 맞을 확률", f"{hit_any * 100:.1f}%",
-                          help="선택한 조합 중 하나가 적중할 확률 (조합끼리는 동시에 맞지 않음)")
-                s4.metric("기대 손익", f"{int(exp_pnl):+,}원",
-                          f"{exp_pnl / total_stake * 100:+.1f}%" if total_stake else None,
-                          delta_color="normal" if exp_pnl >= 0 else "inverse")
+                # 보조 설명은 화살표 없는 캡션으로 (delta를 쓰면 ↑/↓ 화살표가 붙어 증감처럼 보임)
+                with s1:
+                    st.metric("총 투표금액", f"{total_stake:,}원")
+                    st.caption(f"{len(chosen)} / {len(combos)} 조합 선택")
+                with s2:
+                    st.metric("적중 시 환급", f"{max(pays):,}원" if pays else "-")
+                    if len(pays) > 1:
+                        st.caption(f"최저 {min(pays):,}원")
+                with s3:
+                    st.metric("하나라도 맞을 확률", f"{hit_any * 100:.1f}%",
+                              help="선택한 조합 중 하나가 적중할 확률 (조합끼리는 동시에 맞지 않음)")
+                with s4:
+                    st.metric("기대 손익", f"{int(exp_pnl):+,}원",
+                              f"{exp_pnl / total_stake * 100:+.1f}%" if total_stake else None,
+                              delta_color="normal",   # 손실 = 빨강, 이익 = 초록
+                              help="같은 베팅을 아주 많이 반복했을 때 한 번당 평균 손익 = Σ(조합 적중 확률 × 적중 시 환급) − 총 투표금액")
+                    if total_stake:
+                        st.caption(f"평균 기대 회수액 {int(exp_return):,}원")
                 if total_stake > 100000:
                     st.error("⚠️ 총 투표금액이 베트맨 1인 1회차 구매 한도(100,000원)를 넘습니다.")
                 elif total_stake and exp_pnl < 0:
