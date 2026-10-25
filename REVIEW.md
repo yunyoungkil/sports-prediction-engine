@@ -11,8 +11,8 @@
 | R1 | 🔴 | 평가에 검증 데이터가 학습으로 섞임 → BASELINE·튜닝 결과 무효 | 1.6, 1.7, 2.2, 2.5 | [x] |
 | R2 | 🔴 | 실전 채점 `evaluate_betman_results()`가 `NameError`로 매번 실패, 조용히 무시됨 | 2.3, 0.4 | [x] |
 | R3 | 🔴 | 체크포인트(모델 < 시장) 충족됐는데 조치 없음 | Phase 1 체크포인트 | [x] |
-| R4 | 🟠 | 결과 누적 수집이 회차 단위로만 판단 → 늦게 끝난 경기 영구 누락 | 0.2 | [ ] |
-| R5 | 🟠 | CLV가 사실상 계산되지 않음 (예측 시점 배당 미보존) | 1.5 | [ ] |
+| R4 | 🟠 | 결과 누적 수집이 회차 단위로만 판단 → 늦게 끝난 경기 영구 누락 | 0.2 | [x] |
+| R5 | 🟠 | CLV가 사실상 계산되지 않음 (예측 시점 배당 미보존) | 1.5 | [x] |
 | R6 | 🟠 | 텔레그램·Actions 실제 검증 안 됨 (Secret 0개, 실행 0회, 미push) | 0.3 | [ ] |
 | R7 | 🟠 | `K리그1` → `Ligue1` 오매핑, 미매핑 팀 오탐 | 2.4 | [ ] |
 | R8 | 🟡 | 최근 시즌 Pinnacle 배당 없음 → Phase 3 기준 배당 교체 필요 | 2.1, 3.1 | [ ] |
@@ -132,7 +132,7 @@ python -c "from tracker.result_evaluator import evaluate_betman_results as e; e(
 
 ---
 
-## R5 🟠 CLV가 사실상 계산되지 않음
+## R5 🟠 CLV가 사실상 계산되지 않음 (해결됨 ✅)
 
 **현상**
 - 예측 시점 배당을 `data/predictions.json`에서 `match_seq`로 찾는다. 하지만 이 파일은 매 실행마다 **현재 회차로 덮어써진다.**
@@ -145,6 +145,12 @@ python -c "from tracker.result_evaluator import evaluate_betman_results as e; e(
 - CLV 계산 시 해당 회차 스냅샷 중 **가장 이른 시점** 배당을 사용한다. 스냅샷이 없는 경기는 CLV 계산에서 제외한다 (0으로 채우지 않음).
 
 **완료 기준:** `performance_stats.json`에 `clv_sample_count`가 표시되고, 스냅샷이 있는 경기만 평균에 포함된다.
+**해결 내용 (2026-10-25):**
+- `tracker/odds_snapshot.py` 모듈 신설 (`save_odds_snapshot`, `get_earliest_odds`).
+- `run_pipeline.py`에서 회차별 예측 시점 배당 스냅샷 누적 저장 (`data/history/odds_snapshots/{gm_ts}.json`).
+- `tracker/result_evaluator.py`에서 해당 회차의 최초 스냅샷 배당으로 `clv_pct = (init_odds / closing_odds) - 1.0` 산출.
+- 스냅샷이 없는 과거 경기(260118~260125 등)는 0.0을 채우지 않고 `None` 처리하여 CLV 평균 계산에서 제외.
+- `performance_stats.json`에 `clv_sample_count` 및 `avg_clv_pct` 정상 기록. 단위 테스트(`tests/test_result_evaluator.py`) 검증 완료.
 
 ---
 

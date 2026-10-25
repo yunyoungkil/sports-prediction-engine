@@ -26,11 +26,13 @@ if sys.platform.startswith('win'):
 from models.poisson_model import MatchPredictor
 from models.evaluator import evaluate_match_value
 from evaluation.metrics import bootstrap_roi_confidence_interval
+from tracker.odds_snapshot import get_earliest_odds
 
 
 def evaluate_betman_results(
     results_path: str = "data/history/betman_recent_results.json",
     output_path: str = "data/performance_stats.json",
+    snapshots_dir: str = "data/history/odds_snapshots",
     flat_stake: int = 10000
 ) -> Dict[str, Any]:
     """
@@ -57,17 +59,8 @@ def evaluate_betman_results(
     predictor = MatchPredictor()
     form_analyzer = FormAnalyzer()
 
-    # 예측 시점 배당 조회를 위한 기존 predictions 로드 (CLV 추적용)
-    pred_file = Path("data/predictions.json")
-    pred_odds_lookup = {}
-    if pred_file.exists():
-        try:
-            with open(pred_file, "r", encoding="utf-8") as f:
-                for sp in json.load(f):
-                    sp_seq = str(sp.get("match_seq", ""))
-                    pred_odds_lookup[sp_seq] = sp.get("prediction_odds") or sp.get("betman_odds", {})
-        except Exception:
-            pass
+    # 회차별 최초 예측 시점 배당 스냅샷 캐시 (CLV 추적용)
+    round_snapshots_cache: Dict[str, Optional[Dict[str, Any]]] = {}
 
     total_matches = 0
     total_bets = 0
@@ -224,9 +217,26 @@ def evaluate_betman_results(
                         actual_res_text = "원정승" if "승" in g_type else "오버"
 
                 closing_odds = sel_odds
-                init_odds = pred_odds_lookup.get(str(m.get("match_seq", "")), {}).get(sel, closing_odds)
-                clv_pct = round(((init_odds / closing_odds) - 1.0) * 100.0, 2) if closing_odds > 0 else 0.0
-                all_clv_list.append(clv_pct)
+                init_odds = None
+                clv_pct = None
+
+                # 해당 회차의 최초 예측 시점 배당 스냅샷에서 배당 조회
+                gm_ts_str = str(gm_ts)
+                if gm_ts_str not in round_snapshots_cache:
+                    round_snapshots_cache[gm_ts_str] = get_earliest_odds(gm_ts_str, snapshot_dir=snapshots_dir)
+
+                snap_matches = round_snapshots_cache.get(gm_ts_str)
+                if snap_matches:
+                    seq_str = str(m.get("match_seq", ""))
+                    comp_key = f"{seq_str}_{cat}_{m.get('line', 0.0)}"
+                    snap_item = snap_matches.get(comp_key) or snap_matches.get(seq_str)
+                    if snap_item:
+                        snap_odds_dict = snap_item.get("odds", {})
+                        raw_init = snap_odds_dict.get(sel)
+                        if raw_init is not None and float(raw_init) > 1.0 and closing_odds > 0:
+                            init_odds = float(raw_init)
+                            clv_pct = round(((init_odds / closing_odds) - 1.0) * 100.0, 2)
+                            all_clv_list.append(clv_pct)
 
                 recent_evaluated_picks.append({
                     "date": match_dt,
@@ -291,7 +301,8 @@ def evaluate_betman_results(
 
     # 전체 평가된 경기 (역순: 최신이 위로)
     display_recent_picks = list(reversed(recent_evaluated_picks))
-    avg_clv_pct = round(float(sum(all_clv_list) / len(all_clv_list)), 2) if all_clv_list else 0.0
+    clv_sample_count = len(all_clv_list)
+    avg_clv_pct = round(float(sum(all_clv_list) / clv_sample_count), 2) if clv_sample_count > 0 else 0.0
 
     stats = {
         "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -306,6 +317,7 @@ def evaluate_betman_results(
         "roi_pct": round(roi_pct, 2),
         "roi_ci_low": roi_ci_low,
         "roi_ci_high": roi_ci_high,
+        "clv_sample_count": clv_sample_count,
         "avg_clv_pct": avg_clv_pct,
         "grade_breakdown": grade_stats,
         "round_breakdown": round_stats,
@@ -321,6 +333,7 @@ def evaluate_betman_results(
     print(f"✓ 베트맨 실제 분석 경기: {total_matches}건 중 AI 추천 {total_bets}건 채점 완료")
     print(f"✓ 전체 적중률: {win_rate:.1f}% ({won_bets}/{total_bets} 적중)")
     print(f"✓ 가상 순손익: {net_profit:+,.0f}원 (ROI: {roi_pct:+.2f}%, 95% CI: [{roi_ci_low:+.2f}%, {roi_ci_high:+.2f}%])")
+    print(f"✓ CLV(마감 배당 대비 성과): 평균 {avg_clv_pct:+.2f}% (스냅샷 유효 샘플: {clv_sample_count}건)")
     print(f"✓ GRADE A (가치 픽) 적중률: {grade_stats['A']['win_rate_pct']}% | ROI: {grade_stats['A']['roi_pct']:+.1f}% (95% CI: [{grade_stats['A']['roi_ci_low']:+.1f}%, {grade_stats['A']['roi_ci_high']:+.1f}%])")
     print(f"💾 통계 저장 완료: {out_file}")
 

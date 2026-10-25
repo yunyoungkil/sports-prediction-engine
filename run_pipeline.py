@@ -69,6 +69,15 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             pass
         return []
     
+    # 1-1. 예측 시점 배당 스냅샷 회차별 누적 보존 (CLV 마감 배당 대비 성과 추적용)
+    if matches and gm_ts:
+        try:
+            from tracker.odds_snapshot import save_odds_snapshot
+            snap_path = save_odds_snapshot(gm_ts, matches)
+            print(f"📸 [{gm_ts}회차] 예측 시점 배당 스냅샷 저장 완료: {snap_path}")
+        except Exception as e:
+            print(f"⚠️ 배당 스냅샷 저장 중 오류 발생: {e}")
+
     # 1-2. 베트맨 직전 회차 실제 경기 결과 누적 수집 및 병합 (미수집 회차 자동 추가)
     r_scraper = BetmanResultsScraper()
     target_ts = int(gm_ts) if gm_ts and str(gm_ts).isdigit() else 260126

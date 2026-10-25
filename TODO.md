@@ -59,9 +59,10 @@
 - [x] **1.4 ROI 신뢰구간**
   - 등급별·회차별 ROI에 부트스트랩 95% 신뢰구간 추가
   - `data/performance_stats.json`에 `roi_ci_low`, `roi_ci_high` 필드 추가
-- [ ] **1.5 CLV(마감 배당 대비 성과) 추적** 🔁 재작업: REVIEW R5 (예측 시점 배당 미보존)
-  - 예측 시점 배당과 마감 직전 배당을 둘 다 저장 (Actions 실행 시각을 경기 직전에도 1회 추가하는 방안 검토)
-  - 추천 픽별 `clv_pct = 예측시점배당 / 마감배당 - 1` 기록
+- [x] **1.5 CLV(마감 배당 대비 성과) 추적** 🔁 재작업 완료: REVIEW R5 (예측 시점 배당 스냅샷 누적 보존 및 스냅샷 보유 경기만 CLV 계산)
+  - 예측 시점 배당을 `data/history/odds_snapshots/{gm_ts}.json`에 누적 저장 (`tracker/odds_snapshot.py`)
+  - 추천 픽별 `clv_pct = 예측시점배당 / 마감배당 - 1` 기록 및 스냅샷 없는 경기 제외 (`clv_sample_count` 추적)
+  - 확인: `tests/test_result_evaluator.py` 통과 및 `performance_stats.json`에 `clv_sample_count` 반영 확인 완료
 - [x] **1.6 학습/검증 분리 고정**
   - 과거 데이터 기준 학습 기간과 검증 기간을 설정 파일(`evaluation/config.py`)로 고정 (학습 2223~2324 / 튜닝 2425 / 최종 검증 2526 엄격 3분할)
   - 모델 상수(1.15, 0.25, 0.75, 0.45, 0.0015 등)는 학습 기간에서만 튜닝하도록 주석으로 명시
@@ -118,8 +119,8 @@
 - [x] **R1 평가 누수 제거** (walk-forward 또는 학습/튜닝/검증 3분할, `train_until`·`as_of` 인자, xi·SOT 재튜닝, BASELINE.md 재작성)
 - [x] **R2 실전 채점 `NameError` 수정** (`tracker/result_evaluator.py:143`) + 채점 실패 시 텔레그램 경고 + 스모크 테스트
 - [x] **R3 체크포인트 조치** (검증 셋에서 모델 < 시장이면 추천을 "참고용"으로, 대시보드에 비교 배너)
-- [ ] **R4 결과 수집 upsert** (최근 N회차 항상 재조회, 연도 경계 처리)
-- [ ] **R5 CLV 스냅샷** (회차별 예측 시점 배당 누적 저장, 스냅샷 없는 경기는 제외)
+- [x] **R4 결과 수집 upsert** (최근 N회차 항상 재조회, 연도 경계 처리)
+- [x] **R5 CLV 스냅샷** (회차별 예측 시점 배당 누적 저장, 스냅샷 없는 경기는 제외)
 - [ ] **R6 Actions·텔레그램 실검증** (사용자: Secret 등록·push → `workflow_dispatch` 1회 실행)
 - [ ] **R7 리그명 매칭 수정** (`K리그1` ≠ `Ligue1`, 미매핑 목록 정리)
 - [ ] **R8 샤프 배당 기준 교체** (Betfair Exchange `BFE*`/`BFEC*` 컬럼 수집, Phase 3 문구 수정)
