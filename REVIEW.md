@@ -15,7 +15,7 @@
 | R5 | 🟠 | CLV가 사실상 계산되지 않음 (예측 시점 배당 미보존) | 1.5 | [x] |
 | R6 | 🟠 | 텔레그램·Actions 실제 검증 안 됨 (Secret 0개, 실행 0회, 미push) | 0.3 | [ ] |
 | R7 | 🟠 | `K리그1` → `Ligue1` 오매핑, 미매핑 팀 오탐 | 2.4 | [x] |
-| R8 | 🟡 | 최근 시즌 Pinnacle 배당 없음 → Phase 3 기준 배당 교체 필요 | 2.1, 3.1 | [ ] |
+| R8 | 🟡 | 최근 시즌 Pinnacle 배당 없음 → Phase 3 기준 배당 교체 필요 | 2.1, 3.1 | [x] |
 | R9 | 🟡 | 커밋 위생: 무관한 파일 포함 | 0.1 | 참고 |
 
 통과 확인: 0.1(실조회로 260126 탐지), 0.2 중복 방지(0건), 1.1~1.4 지표 수식, 2.1 시즌 자동 생성·중복 0건, 2.3 리그별 모델 5개 + global 생성.
@@ -195,7 +195,7 @@ from models.poisson_model import normalize_league_name
 
 ---
 
-## R8 🟡 최근 시즌 Pinnacle 배당 없음
+## R8 🟡 최근 시즌 Pinnacle 배당 없음 (해결됨 ✅)
 
 **현상**
 - `PSH` 채움 비율: 2425 100%, 2526 51%, 2627 0%. football-data의 Pinnacle 컬럼 제공이 중단된 것으로 보인다.
@@ -207,6 +207,10 @@ from models.poisson_model import normalize_league_name
   - 2627 CSV에 존재함을 확인했다.
 - `download_history.py`에서 이 컬럼들을 함께 저장한다.
 - TODO 2.1과 3.x의 "Pinnacle" 표기를 "샤프 배당(Betfair Exchange, 과거 시즌은 Pinnacle)"으로 고친다.
+**해결 내용 (2026-10-25):**
+- `collector/download_history.py`의 `keep_cols`에 `BFEH/BFED/BFEA`(오프닝) 및 `BFECH/BFECD/BFECA`(마감) 반영.
+- `download_historical_data()` 실행하여 `data/history/all_historical_matches.csv`에 총 7,428개 경기 통합 생성 및 BFE 컬럼 추출 확인(2425: 1752건 100%, 2526: 1641건 94%, 2627: 346건 100%).
+- `TODO.md`의 2.1 및 Phase 3.1, 3.2 문구를 "샤프 배당(Betfair Exchange / Pinnacle)"으로 수정 완료.
 
 ---
 

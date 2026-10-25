@@ -84,7 +84,7 @@
 - [x] **2.1 과거 데이터 최신화**
   - 파일: `collector/download_history.py`
   - 2025/26, 2026/27 시즌 추가, 시즌 목록을 날짜 기준으로 자동 생성
-  - Pinnacle 배당 컬럼(`PSH/PSD/PSA`, 마감 `PSCH/PSCD/PSCA`)도 함께 저장 (Phase 3에서 사용)
+  - 샤프 배당 컬럼(Betfair Exchange `BFE*`/`BFEC*`, 과거 시즌은 Pinnacle `PS*`)도 함께 저장 완료 (Phase 3에서 사용)
   - Actions에서 주 1회 갱신 (현재는 파일이 없을 때만 다운로드)
 - [x] **2.2 시간 가중치 적용**
   - 파일: `models/poisson_model.py`
@@ -124,7 +124,7 @@
 - [x] **R5 CLV 스냅샷** (회차별 예측 시점 배당 누적 저장, 스냅샷 없는 경기는 제외)
 - [ ] **R6 Actions·텔레그램 실검증** (사용자: Secret 등록·push → `workflow_dispatch` 1회 실행)
 - [x] **R7 리그명 매칭 수정** (`K리그1` ≠ `Ligue1`, 미매핑 목록 정리)
-- [ ] **R8 샤프 배당 기준 교체** (Betfair Exchange `BFE*`/`BFEC*` 컬럼 수집, Phase 3 문구 수정)
+- [x] **R8 샤프 배당 기준 교체** (Betfair Exchange `BFE*`/`BFEC*` 컬럼 수집, Phase 3 문구 수정)
 
 **완료 기준:** REVIEW.md의 R1~R8 완료 기준을 모두 통과하고, 검증자(Claude)가 재검증을 마친다. R1~R3 완료 전에는 Phase 3에 착수하지 않는다.
 
@@ -135,12 +135,12 @@
 > 현실적으로 수익 가능성이 가장 큰 방향.
 
 - [ ] **3.1 샤프 배당 데이터 소스 확보**
-  - 과거: football-data CSV의 Pinnacle 컬럼 (2.1에서 수집)
+  - 과거: football-data CSV의 샤프 배당 컬럼 (Betfair Exchange `BFE*`/`BFEC*`, 과거 시즌은 Pinnacle `PS*`) (2.1에서 수집 완료)
   - 실시간: The Odds API 무료 티어(월 500회) 사용 가능 여부와 리그 커버리지 확인
   - 새 파일: `collector/sharp_odds.py`
 - [ ] **3.2 베트맨 오가격 탐지**
   - 새 파일: `models/sharp_value.py`
-  - `p_sharp = remove_margin(Pinnacle 배당)`, `EV = p_sharp × 베트맨배당 − 1`
+  - `p_sharp = remove_margin(샤프 배당: Betfair Exchange / Pinnacle)`, `EV = p_sharp × 베트맨배당 − 1`
   - 과거 데이터에서 이 EV가 양수였던 경기의 실제 ROI 검증
 - [ ] **3.3 모델·시장 블렌딩**
   - 새 파일: `models/blender.py`
