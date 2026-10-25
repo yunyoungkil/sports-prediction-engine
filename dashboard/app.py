@@ -401,7 +401,16 @@ with tab1:
     # -------------------------------------------------------------
     if st.session_state["custom_step"] == 1:
         st.markdown("### 📋 STEP 01. 대상 경기 검색 및 승/무/패 다중 선택")
-        st.caption("경기마다 배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동 전개됩니다. ⭐ = AI 확률 1순위(AI가 없으면 배당 1순위). 💎 = AI 기준 기대가치 플러스(축구 승무패만, **검증 중 — 과거 표본이 적어 믿을 근거 부족**). AI 예상이 배당과 다르면 ⚠️로 표시되고, 끝난 경기는 각 예상의 적중 여부(✅/❌)가 나옵니다.")
+        st.caption("배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동으로 계산됩니다.")
+        _chip = "display:inline-block;margin:0 14px 6px 0;font-size:13px;color:#cbd5e1"
+        st.markdown(
+            "<div style='margin:-4px 0 8px 0'>"
+            f"<span style='{_chip}'>⭐ AI 확률 1순위 <span style='color:#94a3b8'>(AI 없으면 배당 1순위)</span></span>"
+            f"<span style='{_chip}'>💎 AI 기준 기대가치 플러스 <span style='color:#f59e0b'>(검증 중)</span></span>"
+            f"<span style='{_chip}'>⚠️ AI 예상이 배당과 다름</span>"
+            f"<span style='{_chip}'>✅ ❌ 끝난 경기의 적중 여부</span>"
+            "</div>",
+            unsafe_allow_html=True)
 
         # 필터 컨트롤
         with st.container(border=True):
