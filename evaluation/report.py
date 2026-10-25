@@ -25,6 +25,7 @@ if sys.platform.startswith('win'):
         pass
 
 from models.poisson_model import MatchPredictor
+from evaluation.config import VAL_SEASONS, TRAIN_SEASONS
 from evaluation.market_model import MarketBaselineModel, load_betman_dataset, load_historical_csv_dataset
 from evaluation.metrics import (
     calculate_log_loss,
@@ -132,9 +133,9 @@ def run_full_evaluation(save_baseline: bool = False) -> Dict[str, Any]:
     betman_samples = load_betman_dataset()
     res_betman = evaluate_single_dataset(betman_samples, "실전 베트맨 결과 (betman_recent_results.json)", predictor)
 
-    # 2. 과거 유럽 5대 리그 데이터 평가 (Dataset 2)
-    csv_samples = load_historical_csv_dataset()
-    res_csv = evaluate_single_dataset(csv_samples, "과거 유럽 5대 리그 (all_historical_matches.csv, 22/23~24/25)", predictor)
+    # 2. 과거 유럽 5대 리그 데이터 평가 (고정 검증 시즌 VAL_SEASONS)
+    csv_samples = load_historical_csv_dataset(seasons=VAL_SEASONS)
+    res_csv = evaluate_single_dataset(csv_samples, f"과거 유럽 5대 리그 고정 검증셋 (시즌 {VAL_SEASONS})", predictor)
 
     # 캘리브레이션 표 출력 (실전 데이터 기준)
     if res_betman and "calibration" in res_betman:
@@ -157,14 +158,17 @@ def save_baseline_markdown(res_betman: Dict[str, Any], res_csv: Dict[str, Any], 
     """기준선 리포트를 마크다운 파일로 저장"""
     md = f"""# 🏛️ 모델 평가 기준선 리포트 (BASELINE)
 
+> 본 문서는 Phase 1(측정 기반)에서 확정된 초기 모델의 공식 평가 기준선입니다.
+> 이후 Phase 2 및 Phase 3의 모든 개선 작업은 본 리포트의 지표(Log Loss, Brier, ROI)와 비교하여 검증합니다.
+
 ## 1. 실전 베트맨 결과 데이터셋 (betman_recent_results.json)
 - **표본수:** {res_betman['sample_count']}경기 (축구 3-way 일반 승무패)
 - **Log Loss:** 모델 `{res_betman['model_log_loss']:.4f}` vs 시장 `{res_betman['market_log_loss']:.4f}` (차이: `{res_betman['log_loss_diff']:+.4f}`)
 - **Brier Score:** 모델 `{res_betman['model_brier_score']:.4f}` vs 시장 `{res_betman['market_brier_score']:.4f}` (차이: `{res_betman['brier_diff']:+.4f}`)
 - **가치 픽 ROI:** `{res_betman['roi_mean']:+.2f}%` (95% CI: `[{res_betman['roi_ci_low']:+.2f}%, {res_betman['roi_ci_high']:+.2f}%]`, {res_betman['value_bet_count']}건)
 
-## 2. 과거 유럽 5대 리그 데이터셋 (all_historical_matches.csv)
-- **표본수:** {res_csv['sample_count']}경기 (EPL, 라리가, 세리에A, 분데스리가, 리그1)
+## 2. 과거 유럽 5대 리그 고정 검증셋 ({res_csv['dataset_name']})
+- **표본수:** {res_csv['sample_count']}경기 (검증 전용 시즌 {VAL_SEASONS})
 - **Log Loss:** 모델 `{res_csv['model_log_loss']:.4f}` vs 시장 `{res_csv['market_log_loss']:.4f}` (차이: `{res_csv['log_loss_diff']:+.4f}`)
 - **Brier Score:** 모델 `{res_csv['model_brier_score']:.4f}` vs 시장 `{res_csv['market_brier_score']:.4f}` (차이: `{res_csv['brier_diff']:+.4f}`)
 - **가치 픽 ROI:** `{res_csv['roi_mean']:+.2f}%` (95% CI: `[{res_csv['roi_ci_low']:+.2f}%, {res_csv['roi_ci_high']:+.2f}%]`, {res_csv['value_bet_count']}건)
@@ -183,4 +187,8 @@ def save_baseline_markdown(res_betman: Dict[str, Any], res_csv: Dict[str, Any], 
 
 
 if __name__ == "__main__":
-    run_full_evaluation(save_baseline=False)
+    import argparse
+    parser = argparse.ArgumentParser(description="스포츠 승부 예측 모델 vs 시장 기준선 평가 리포트")
+    parser.add_argument("--save-baseline", action="store_true", default=False, help="평가 결과를 evaluation/BASELINE.md에 저장")
+    args = parser.parse_args()
+    run_full_evaluation(save_baseline=args.save_baseline)

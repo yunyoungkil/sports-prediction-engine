@@ -57,6 +57,18 @@ def evaluate_betman_results(
     predictor = MatchPredictor()
     form_analyzer = FormAnalyzer()
 
+    # 예측 시점 배당 조회를 위한 기존 predictions 로드 (CLV 추적용)
+    pred_file = Path("data/predictions.json")
+    pred_odds_lookup = {}
+    if pred_file.exists():
+        try:
+            with open(pred_file, "r", encoding="utf-8") as f:
+                for sp in json.load(f):
+                    sp_seq = str(sp.get("match_seq", ""))
+                    pred_odds_lookup[sp_seq] = sp.get("prediction_odds") or sp.get("betman_odds", {})
+        except Exception:
+            pass
+
     total_matches = 0
     total_bets = 0
     won_bets = 0
@@ -64,6 +76,7 @@ def evaluate_betman_results(
     total_returned = 0
 
     all_returns = []
+    all_clv_list = []
     grade_returns = {"S": [], "A": [], "B": []}
     round_returns = {}
 
@@ -203,6 +216,11 @@ def evaluate_betman_results(
                     elif gr == "2":
                         actual_res_text = "원정승" if "승" in g_type else "오버"
 
+                closing_odds = sel_odds
+                init_odds = pred_odds_lookup.get(str(m.get("match_seq", "")), {}).get(sel, closing_odds)
+                clv_pct = round(((init_odds / closing_odds) - 1.0) * 100.0, 2) if closing_odds > 0 else 0.0
+                all_clv_list.append(clv_pct)
+
                 recent_evaluated_picks.append({
                     "date": match_dt,
                     "round": str(gm_ts),
@@ -220,6 +238,9 @@ def evaluate_betman_results(
                     "ai_prob": round(model_probs.get(sel, 0.0) * 100, 1),
                     "ev_pct": eval_res.get("best_ev_pct", "+0.0%"),
                     "odds": sel_odds,
+                    "closing_odds": closing_odds,
+                    "init_odds": init_odds,
+                    "clv_pct": clv_pct,
                     "is_hit": is_hit,
                     "net_pnl": f"{net:+,.0f}원",
                     "net_pnl_num": net
@@ -263,6 +284,7 @@ def evaluate_betman_results(
 
     # 전체 평가된 경기 (역순: 최신이 위로)
     display_recent_picks = list(reversed(recent_evaluated_picks))
+    avg_clv_pct = round(float(sum(all_clv_list) / len(all_clv_list)), 2) if all_clv_list else 0.0
 
     stats = {
         "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -277,6 +299,7 @@ def evaluate_betman_results(
         "roi_pct": round(roi_pct, 2),
         "roi_ci_low": roi_ci_low,
         "roi_ci_high": roi_ci_high,
+        "avg_clv_pct": avg_clv_pct,
         "grade_breakdown": grade_stats,
         "round_breakdown": round_stats,
         "recent_evaluated_picks": display_recent_picks,
