@@ -304,6 +304,10 @@ def evaluate_betman_results(
     clv_sample_count = len(all_clv_list)
     avg_clv_pct = round(float(sum(all_clv_list) / clv_sample_count), 2) if clv_sample_count > 0 else 0.0
 
+    # [Step 4.1] 분수 켈리(1/4 켈리, 2% 상한) 동적 자금 관리 시뮬레이션
+    from models.staking import simulate_kelly_backtest
+    kelly_res = simulate_kelly_backtest(recent_evaluated_picks, initial_bankroll=1_000_000, fraction=0.25, max_cap_ratio=0.02)
+
     stats = {
         "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "source": "베트맨 공식 직전 8개 회차 실제 경기 전수 채점",
@@ -319,10 +323,23 @@ def evaluate_betman_results(
         "roi_ci_high": roi_ci_high,
         "clv_sample_count": clv_sample_count,
         "avg_clv_pct": avg_clv_pct,
+        "staking_comparison": {
+            "flat_stake_krw": flat_stake,
+            "flat_roi_pct": round(roi_pct, 2),
+            "flat_net_profit_krw": int(net_profit),
+            "kelly_fraction": 0.25,
+            "kelly_max_cap_pct": 2.0,
+            "kelly_initial_bankroll_krw": kelly_res["initial_bankroll"],
+            "kelly_final_bankroll_krw": kelly_res["final_bankroll"],
+            "kelly_net_profit_krw": kelly_res["net_profit"],
+            "kelly_roi_pct": kelly_res["roi_pct"],
+            "kelly_bets_placed": kelly_res["total_bets_placed"]
+        },
         "grade_breakdown": grade_stats,
         "round_breakdown": round_stats,
         "recent_evaluated_picks": display_recent_picks,
-        "profit_curve": profit_curve
+        "profit_curve": profit_curve,
+        "kelly_bankroll_curve": kelly_res["bankroll_curve"]
     }
 
     out_file = Path(output_path)
@@ -332,7 +349,8 @@ def evaluate_betman_results(
 
     print(f"✓ 베트맨 실제 분석 경기: {total_matches}건 중 AI 추천 {total_bets}건 채점 완료")
     print(f"✓ 전체 적중률: {win_rate:.1f}% ({won_bets}/{total_bets} 적중)")
-    print(f"✓ 가상 순손익: {net_profit:+,.0f}원 (ROI: {roi_pct:+.2f}%, 95% CI: [{roi_ci_low:+.2f}%, {roi_ci_high:+.2f}%])")
+    print(f"✓ 고정 베팅 순손익: {net_profit:+,.0f}원 (ROI: {roi_pct:+.2f}%, 95% CI: [{roi_ci_low:+.2f}%, {roi_ci_high:+.2f}%])")
+    print(f"✓ 1/4 켈리 순손익: {kelly_res['net_profit']:+,.0f}원 (ROI: {kelly_res['roi_pct']:+.2f}%, 최종 잔고: {kelly_res['final_bankroll']:,}원)")
     print(f"✓ CLV(마감 배당 대비 성과): 평균 {avg_clv_pct:+.2f}% (스냅샷 유효 샘플: {clv_sample_count}건)")
     print(f"✓ GRADE A (가치 픽) 적중률: {grade_stats['A']['win_rate_pct']}% | ROI: {grade_stats['A']['roi_pct']:+.1f}% (95% CI: [{grade_stats['A']['roi_ci_low']:+.1f}%, {grade_stats['A']['roi_ci_high']:+.1f}%])")
     print(f"💾 통계 저장 완료: {out_file}")

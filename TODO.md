@@ -164,10 +164,10 @@
 
 ## Phase 4. 자금 관리와 제품 (2~3주)
 
-- [ ] **4.1 분수 켈리 베팅 금액**
-  - 새 파일: `models/staking.py`
-  - 켈리 비율의 1/4, 한 경기 상한은 자금의 2%
-  - `tracker/result_evaluator.py`의 고정 1만 원 채점을 켈리 금액 채점과 함께 표시
+- [x] **4.1 분수 켈리 베팅 금액**
+  - 새 파일: `models/staking.py` (`calculate_fractional_kelly_stake`, `simulate_kelly_backtest`)
+  - 1/4 켈리(fraction=0.25), 단일 경기 자금 2% 상한 제약(max_cap_ratio=0.02), 베트맨 100원 단위 절사 구현 완료
+  - `tracker/result_evaluator.py`에 고정 1만 원 채점과 1/4 켈리 채점(`staking_comparison`) 병행 표시 연동 완료 (`tests/test_staking.py` 통과)
 - [ ] **4.2 조합(파레이) 재검토**
   - 파일: `models/parlay_builder.py`
   - 조합 시 마진이 곱으로 누적됨(0.85² ≈ 0.72)을 반영
