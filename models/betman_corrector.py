@@ -182,12 +182,36 @@ def run(df: pd.DataFrame) -> MarketCorrector:
     return eval_model
 
 
-class BetmanLivePredictor:
-    """실전용: 게이트 통과 모델 + 아카이브로 만든 현재 팀 폼"""
+class TimedTeamForm:
+    """팀별 경기 기록을 킥오프 시각과 함께 보관하고, 특정 시각 '이전' 경기만으로 폼을 계산"""
 
-    def __init__(self, model: MarketCorrector, form: TeamForm):
+    def __init__(self, n: int = FORM_N):
+        self.n = n
+        self.hist: Dict[str, List[tuple]] = defaultdict(list)   # team -> [(kickoff, pts, gd)] 시간순
+
+    def add(self, kickoff, home: str, away: str, hs: int, as_: int) -> None:
+        hp, ap = (3, 0) if hs > as_ else ((1, 1) if hs == as_ else (0, 3))
+        self.hist[home].append((kickoff, hp, hs - as_))
+        self.hist[away].append((kickoff, ap, as_ - hs))
+
+    def at(self, before) -> "TeamForm":
+        """before(킥오프) 이전 경기만 반영한 TeamForm 뷰. before가 None이면 전체"""
+        view = TeamForm(self.n)
+        for team, games in self.hist.items():
+            for ko, pts, gd in games:
+                if before is None or ko < before:
+                    view.hist[team].append((pts, gd))
+        return view
+
+
+class BetmanLivePredictor:
+    """실전용: 게이트 통과 모델 + 아카이브로 만든 팀 폼 (예측 대상 경기 킥오프 이전 경기만 반영)"""
+
+    def __init__(self, model: MarketCorrector, form: TimedTeamForm):
         self.model = model
-        self.form = form
+        self.timed_form = form
+        self.form = form.at(None)          # 기본(가장 최근까지) 폼
+        self._views: Dict[Any, TeamForm] = {}
 
     @classmethod
     def load(cls, params_path: Path = PARAMS_PATH, archive_path: Path = ARCHIVE_CSV) -> Optional["BetmanLivePredictor"]:
@@ -200,17 +224,26 @@ class BetmanLivePredictor:
         m.beta, m.gamma, m.c = np.array(d["beta"]), np.array(d["gamma"]), np.array(d["c"])
         m.mu, m.sd = np.array(d["mu"]), np.array(d["sd"])
         m.report, m.is_fitted = d.get("report", {}), True
-        form = TeamForm()
+        form = TimedTeamForm()
         for r in load_archive_df(archive_path).itertuples(index=False):
-            form.add(r.home_team, r.away_team, int(r.home_score), int(r.away_score))
+            form.add(r.kickoff, r.home_team, r.away_team, int(r.home_score), int(r.away_score))
         return cls(m, form)
 
-    def predict_proba(self, odds: Dict[str, float], home: str, away: str, league: str) -> Optional[Dict[str, float]]:
+    def _form_before(self, kickoff) -> TeamForm:
+        if kickoff is None:
+            return self.form
+        if kickoff not in self._views:
+            self._views[kickoff] = self.timed_form.at(pd.Timestamp(kickoff))
+        return self._views[kickoff]
+
+    def predict_proba(self, odds: Dict[str, float], home: str, away: str, league: str,
+                      kickoff=None) -> Optional[Dict[str, float]]:
+        """kickoff(UTC)를 주면 그 이전 경기만으로 폼 계산 — 이미 끝난 경기를 다시 예측할 때 자기 결과가 섞이지 않음"""
         p = _fair_probs(odds.get("home_win"), odds.get("draw"), odds.get("away_win"))
         if p is None:
             return None
         row = {"p_market": p, "p_avg": None, "p_sharp": None, "actual": 0}
-        row.update(_features(self.form, home, away, league))
+        row.update(_features(self._form_before(kickoff), home, away, league))
         out = self.model.predict_rows([row])[0]
         return {"home_win": round(float(out[0]), 4), "draw": round(float(out[1]), 4), "away_win": round(float(out[2]), 4)}
 

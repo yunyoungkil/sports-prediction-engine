@@ -234,6 +234,7 @@ from models.poisson_model import normalize_league_name
 | R13 | 🟠 | Phase 3 완료 기준이 "시장보다 낮다"에서 "단독 모델 대비 개선"으로 바뀜 | Phase 3 | [x] 원래 기준 복원 |
 | R14 | 🟠 | 홀/짝(축구 SUM)이 "일반 승무패"로 분류됨 | 0.1, A.3 | [ ] (임시 조치 완료) |
 | R15 | 🟠 | 구 모델 채점이 현재 AI가 아니고 미래 정보 혼입 가능 | 1.5, 4.3 | [ ] (대시보드 표시 조치 완료) |
+| R16 | 🟠 | 베트맨 학습 AI 재예측 시 자기 결과가 폼에 섞임 | 5.6 | [x] |
 
 ## R10 🔴 샤프 오가격 ROI +3.28%는 미래 정보로 계산됨
 
@@ -324,6 +325,17 @@ from models.poisson_model import normalize_league_name
 
 **남은 일 (선택)**
 - `result_evaluator`를 회차별 `train_until`로 학습하게 고치거나, 공식 성적표로 완전히 대체할지 결정한다.
+
+
+## R16 🟠 베트맨 학습 AI가 이미 끝난 경기를 다시 예측할 때 자기 결과가 폼에 섞임 (해결됨 ✅, Claude)
+
+**현상**
+- `BetmanLivePredictor`가 아카이브 전체로 팀 폼을 만들었다. 그래서 파이프라인이 이미 끝난 경기를 다시 계산하면 그 경기 결과가 폼에 들어갔다.
+- 예: 브리즈번 vs 퍼스 무승부 EV가 +3.0%로 나왔지만, 킥오프 이전 폼만 쓰면 −1.1%다.
+- 영향 범위: `predictions.json`의 종료 경기 확률·EV·등급. 미시작 경기, 경기 전 고정 기록(prediction_log), 공식 성적표에는 영향이 없다.
+
+**수정**
+- `TimedTeamForm`으로 킥오프 시각을 함께 보관한다. `predict_proba(..., kickoff=)`는 그 이전 경기만 반영하고, 파이프라인이 Betman 경기 시각을 전달한다. 테스트를 추가했다.
 
 ---
 

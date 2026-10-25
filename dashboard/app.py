@@ -433,7 +433,7 @@ with tab1:
             with sub_c2:
                 only_single_opt = st.checkbox("⚡ 한경기(단통) 가능만 보기", value=False, key="step1_only_single")
             with sub_c3:
-                only_rec_opt = st.checkbox("🔥 AI 추천 가치 픽(EV > 0)만 보기", value=False, key="step1_only_rec")
+                only_rec_opt = st.checkbox("💎 AI 기대가치 플러스만 보기", value=False, key="step1_only_rec")
 
         # 필터링 적용
         now_ts = datetime.now().timestamp() * 1000
@@ -454,14 +454,29 @@ with tab1:
                     continue
             if only_single_opt and not m.get("is_single", False):
                 continue
-            if only_rec_opt and not m.get("evaluation", {}).get("is_recommended", False):
-                continue
             filtered_matches.append(m)
 
         # 경기 카드 목록: 배당 버튼을 눌러 바로 선택 (가로 스크롤 없이 휴대폰에서도 사용)
         results_idx = load_results_index()
         cur_gm_ts = detect_current_gm_ts(predictions)
         pre_log = load_prediction_log(cur_gm_ts) if cur_gm_ts else {}
+
+        def _ai_probs(m, res, log):
+            """AI 예상 확률: 축구 승무패만. 끝난 경기는 경기 전 고정 기록으로만 (경기 후 재계산 값은 결과가 섞일 수 있음)"""
+            if res is not None:
+                return log.get("model_probs") if log else None
+            return m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
+
+        def _gems(m, ai_probs, opts):
+            """💎 = AI 확률 기준 기대가치(EV) 플러스 선택지 (1순위가 아니어도 표시)"""
+            out = {}
+            if ai_probs:
+                for k in opts:
+                    p_k = float(ai_probs.get(k, ai_probs.get(k.replace("_win", ""), 0.0)) or 0.0)
+                    ev_k = p_k * float(m.get("betman_odds", {}).get(k, 0.0)) - 1.0
+                    if ev_k > 0:
+                        out[k] = ev_k
+            return out
 
         def _match_day(m):
             mt = re.search(r"\d{2}\.(\d{2})\.(\d{2})\s*(\([^)]*\))?", str(m.get("match_time", "")))
@@ -478,6 +493,10 @@ with tab1:
             only_picked = st.checkbox("✔️ 선택한 경기만", value=False, key="step1_only_picked")
         if sel_day != "전체 날짜":
             filtered_matches = [m for m in filtered_matches if _match_day(m) == sel_day]
+        if only_rec_opt:
+            filtered_matches = [m for m in filtered_matches if _gems(
+                m, _ai_probs(m, find_result(m, results_idx, cur_gm_ts), pre_log.get(str(m.get("match_seq")))),
+                available_picks(m))]
         if only_picked:
             filtered_matches = [m for m in filtered_matches if str(m.get("match_seq")) in st.session_state["selections"]]
 
@@ -538,19 +557,9 @@ with tab1:
             # 배당 예상: 경기 전에 확정된 배당(마진 제거) 기준 → 사후 정보 없음
             mk_probs = (log or {}).get("market_probs") or m.get("market_implied_probs")
             mk_k, mk_p = top_pick(mk_probs, opts)
-            # AI 예상: 축구 승무패만. 끝난 경기는 경기 전 고정 기록으로만 (경기 후 재계산 값은 결과가 섞일 수 있음)
-            if res is not None:
-                ai_probs = log.get("model_probs") if log else None
-            else:
-                ai_probs = m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
+            ai_probs = _ai_probs(m, res, log)
             ai_k, ai_p = top_pick(ai_probs, opts)
-            # 💎 = AI 확률 기준 기대가치(EV) 플러스 선택지 (AI 적용 경기만, 1순위가 아니어도 표시)
-            gems = {}
-            if ai_probs:
-                for k in opts:
-                    ev_k = _prob(ai_probs, k) * float(odds[k]) - 1.0
-                    if ev_k > 0:
-                        gems[k] = ev_k
+            gems = _gems(m, ai_probs, opts)
 
             cur = st.session_state["selections"].get(seq, {})
             default = [k for k in opts if cur.get(SEL_KEY[k])]

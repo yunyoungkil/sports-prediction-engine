@@ -49,3 +49,16 @@ def test_form_uses_only_earlier_matches():
     assert rows[0]["form_pts_diff"] == 0.0 and rows[1]["form_pts_diff"] == 0.0
     assert rows[2]["form_pts_diff"] == 3.0     # A 3점 - C 0점
     assert rows[2]["form_gd_diff"] == 5.0      # A +3 - C -2
+
+
+def test_live_form_excludes_matches_at_or_after_kickoff():
+    """실전 예측 폼은 예측 대상 킥오프 이전 경기만 반영 (끝난 경기 재예측 시 자기 결과 혼입 방지)"""
+    from models.betman_corrector import TimedTeamForm
+    t0 = pd.Timestamp("2026-10-01", tz="UTC")
+    f = TimedTeamForm()
+    f.add(t0, "A", "B", 2, 0)
+    f.add(t0 + pd.Timedelta(days=7), "A", "C", 0, 3)
+    before_second = f.at(t0 + pd.Timedelta(days=7))
+    assert before_second.get("A") == {"pts": 3.0, "gd": 2.0}      # 두 번째 경기(자기 자신) 제외
+    assert f.at(None).get("A") == {"pts": 1.5, "gd": -0.5}       # 전체
+    assert f.at(t0).get("A") is None

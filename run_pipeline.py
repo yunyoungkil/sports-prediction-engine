@@ -196,7 +196,11 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             m.get("sport", "SC") == "SC" and category == "일반 승무패"
             and m.get("game_type") == "축구 승무패" and float(odds.get("draw") or 0.0) > 1.0
         )
-        bm_probs = betman_model.predict_proba(odds, home, away, m.get("league", "")) if (betman_model and is_soccer_1x2) else None
+        bm_probs = None
+        if betman_model and is_soccer_1x2:
+            from collector.betman_sharp import parse_betman_kickoff
+            bm_probs = betman_model.predict_proba(odds, home, away, m.get("league", ""),
+                                                  kickoff=parse_betman_kickoff(m.get("match_time")))
         if bm_probs:
             blended_probs = bm_probs
             prob_source = "betman_corrector"
