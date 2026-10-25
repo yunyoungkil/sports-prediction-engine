@@ -131,7 +131,12 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     # [Phase 5.2] 시장 보정 모델: 검증 게이트(TEST·베트맨 실전 모두 시장보다 LL 낮음)를 통과한 경우에만 사용
     from models.market_corrector import MarketCorrector
     corrector = MarketCorrector.load()
-    print(f"ℹ 확률 기준: {'시장 보정 모델(Phase 5.1, 검증 중)' if corrector else '시장 단독'} (축구 일반 승무패)")
+    # [Phase 5.6] 베트맨 자체 과거 데이터로 학습한 보정 모델 (게이트 통과 시 최우선, 모든 리그 적용)
+    from models.betman_corrector import BetmanLivePredictor
+    betman_model = BetmanLivePredictor.load()
+    prob_label = ("베트맨 학습 보정 모델(5.6)" if betman_model
+                  else "유럽 학습 보정 모델(5.1)" if corrector else "시장 단독")
+    print(f"ℹ 확률 기준: {prob_label} (축구 일반 승무패, 검증 중)")
     
     # 3. 각 경기별 예측 및 기대가치 평가
     print("\n🧠 [2/3] 전 경기 AI 승률 계산 및 기대가치(EV) 분석 중...")
@@ -190,7 +195,11 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             m.get("sport", "SC") == "SC" and category == "일반 승무패"
             and m.get("game_type") == "축구 승무패" and float(odds.get("draw") or 0.0) > 1.0
         )
-        if corrector is not None and is_soccer_1x2:
+        bm_probs = betman_model.predict_proba(odds, home, away, m.get("league", "")) if (betman_model and is_soccer_1x2) else None
+        if bm_probs:
+            blended_probs = bm_probs
+            prob_source = "betman_corrector"
+        elif corrector is not None and is_soccer_1x2:
             blended_probs = corrector.predict_proba(market_stats["true_probs"], form_diff=form_diff, sot_diff=sot_diff)
             prob_source = "market_corrector"
         
@@ -257,7 +266,8 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     if gm_ts:
         try:
             from tracker.prediction_log import save_prediction_log
-            version = corrector.report.get("trained_at") if corrector else None
+            version = (f"betman:{betman_model.model.report.get('trained_at')}" if betman_model
+                       else f"europe:{corrector.report.get('trained_at')}" if corrector else None)
             log_stat = save_prediction_log(gm_ts, results, model_version=version)
             print(f"📝 [5.3] 경기 전 예측 기록: {log_stat['updated']}경기 갱신 (이미 시작 {log_stat['frozen_or_started']}경기는 고정)")
         except Exception as e:

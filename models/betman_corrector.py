@@ -1,0 +1,244 @@
+"""
+models/betman_corrector.py
+==========================
+[Phase 5.6] 베트맨 자체 과거 데이터로 학습하는 시장 보정 모델.
+
+models/market_corrector.py와 같은 구조(시장 확률 오프셋 + 보정 학습)이지만,
+- 기준 시장 = 베트맨 배당 (실제로 베팅하는 시장의 편향을 직접 학습)
+- 대상 = 베트맨이 파는 모든 축구 승무패 (K리그·J리그·MLS·국가대표전 포함)
+- 피처: 리그 그룹별 홈/원정 보정, 베트맨 결과로 계산한 최근 폼(킥오프 이전 경기만)
+
+시간 순 분할 (킥오프 기준):
+    TRAIN  < 2025-07-01
+    TUNE   2025-07-01 ~ 2026-01-01   (정규화 강도 선택)
+    TEST   2026-01-01 ~ BETMAN_CUTOFF_DATE (최종 평가)
+    HOLDOUT ≥ BETMAN_CUTOFF_DATE     (최근 실전 회차, 추가 확인)
+
+실행:
+    python -m models.betman_corrector
+"""
+
+import json
+import sys
+from collections import defaultdict, deque
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import numpy as np
+import pandas as pd
+
+if sys.platform.startswith('win'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
+from models.market_corrector import FEATURE_SETS, LAMBDA_GRID, MarketCorrector, _fair_probs
+from evaluation.config import BETMAN_CUTOFF_DATE
+
+ARCHIVE_CSV = Path("data/history/betman_soccer_1x2.csv")
+PARAMS_PATH = Path("data/betman_corrector.json")
+
+TUNE_START = pd.Timestamp("2025-07-01", tz="UTC")
+TEST_START = pd.Timestamp("2026-01-01", tz="UTC")
+HOLDOUT_START = pd.Timestamp(BETMAN_CUTOFF_DATE, tz="UTC")
+
+# 리그명(부분 일치) → 그룹. 순서대로 먼저 맞는 것을 사용
+LEAGUE_GROUPS = [
+    ("kleague", ["K리그"]),
+    ("jleague", ["J1", "J2", "J리그", "일본"]),
+    ("mls", ["메이저리그사커", "MLS"]),
+    ("china_aus", ["중국", "호주", "A리그"]),
+    ("uefa_cup", ["챔피언스리그", "유로파", "컨퍼런스", "UEFA"]),
+    ("national", ["월드컵", "친선", "네이션스", "골드컵", "아시안컵", "유로", "선수권", "코파 아메리카", "국가", "U20", "U23", "올림픽"]),
+    ("europe_top", ["프리미어리그", "라리가", "분데스리가", "세리에", "리그1"]),
+    ("europe_other", ["챔피언십", "EFL", "에레디비시", "포르투갈", "스코틀랜드", "벨기에", "튀르키예", "터키"]),
+]
+GROUP_NAMES = [g for g, _ in LEAGUE_GROUPS]   # 나머지는 "other" (기준 그룹, 더미 없음)
+FORM_N = 5
+
+FEATURE_SETS["betman"] = {
+    "per_outcome": ["log_p_market"],
+    "match": ["form_pts_diff", "form_gd_diff"] + [f"g_{g}" for g in GROUP_NAMES],
+}
+
+
+def league_group(league: str) -> str:
+    s = str(league or "")
+    # "AFC 챔피언스리그"는 UEFA 대회가 아니므로 기타로
+    if "AFC" in s:
+        return "other"
+    for g, tokens in LEAGUE_GROUPS:
+        if any(t in s for t in tokens):
+            return g
+    return "other"
+
+
+class TeamForm:
+    """킥오프 순서로 경기를 넣으면서, 각 팀의 '그 경기 이전' 최근 N경기 폼을 제공"""
+
+    def __init__(self, n: int = FORM_N):
+        self.hist: Dict[str, deque] = defaultdict(lambda: deque(maxlen=n))
+
+    def get(self, team: str) -> Optional[Dict[str, float]]:
+        h = self.hist.get(team)
+        if not h:
+            return None
+        return {"pts": sum(p for p, _ in h) / len(h), "gd": sum(g for _, g in h) / len(h)}
+
+    def add(self, home: str, away: str, hs: int, as_: int) -> None:
+        hp, ap = (3, 0) if hs > as_ else ((1, 1) if hs == as_ else (0, 3))
+        self.hist[home].append((hp, hs - as_))
+        self.hist[away].append((ap, as_ - hs))
+
+
+def _features(form: TeamForm, home: str, away: str, league: str) -> Dict[str, float]:
+    hf, af = form.get(home), form.get(away)
+    feats = {
+        "form_pts_diff": (hf["pts"] - af["pts"]) if hf and af else 0.0,
+        "form_gd_diff": (hf["gd"] - af["gd"]) if hf and af else 0.0,
+    }
+    g = league_group(league)
+    for name in GROUP_NAMES:
+        feats[f"g_{name}"] = 1.0 if g == name else 0.0
+    return feats
+
+
+def load_archive_df(path: Path = ARCHIVE_CSV) -> pd.DataFrame:
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    df["kickoff"] = pd.to_datetime(df["kickoff_ms"], unit="ms", utc=True)
+    df = df.dropna(subset=["kickoff"]).sort_values(["kickoff", "gm_ts", "match_seq"])
+    # 같은 경기가 여러 회차에 실릴 수 있으므로 (팀, 킥오프) 기준 중복 제거 — 먼저 실린 회차 유지
+    return df.drop_duplicates(subset=["home_team", "away_team", "kickoff"], keep="first").reset_index(drop=True)
+
+
+def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
+    """킥오프 순으로 행을 만들며 폼은 해당 경기 이전 결과만 반영 (같은 시각 경기끼리도 서로 반영 안 함)"""
+    form = TeamForm()
+    rows: List[Dict[str, Any]] = []
+    pending: List[tuple] = []
+    last_ko = None
+    for r in df.itertuples(index=False):
+        if last_ko is not None and r.kickoff != last_ko:
+            for args in pending:
+                form.add(*args)
+            pending = []
+        last_ko = r.kickoff
+        p = _fair_probs(r.odds_win, r.odds_draw, r.odds_lose)
+        if p is None:
+            continue
+        y = 0 if r.home_score > r.away_score else (1 if r.home_score == r.away_score else 2)
+        row = {"kickoff": r.kickoff, "gm_ts": int(r.gm_ts), "league": r.league, "group": league_group(r.league),
+               "actual": y, "odds": np.array([r.odds_win, r.odds_draw, r.odds_lose], dtype=float),
+               "p_market": p, "p_avg": None, "p_sharp": None}
+        row.update(_features(form, r.home_team, r.away_team, r.league))
+        rows.append(row)
+        pending.append((r.home_team, r.away_team, int(r.home_score), int(r.away_score)))
+    return rows
+
+
+def run(df: pd.DataFrame) -> MarketCorrector:
+    rows = build_rows(df)
+    split = {
+        "train": [r for r in rows if r["kickoff"] < TUNE_START],
+        "tune": [r for r in rows if TUNE_START <= r["kickoff"] < TEST_START],
+        "test": [r for r in rows if TEST_START <= r["kickoff"] < HOLDOUT_START],
+        "holdout": [r for r in rows if r["kickoff"] >= HOLDOUT_START],
+    }
+    tune_scores = {}
+    for lam in LAMBDA_GRID + [1.0]:
+        m = MarketCorrector("betman", lam).fit(split["train"])
+        tune_scores[lam] = MarketCorrector.score(split["tune"], m.predict_rows(split["tune"]))["model_ll"]
+    best_lam = min(tune_scores, key=tune_scores.get)
+
+    eval_model = MarketCorrector("betman", best_lam).fit(split["train"] + split["tune"])
+    report: Dict[str, Any] = {
+        "sizes": {k: len(v) for k, v in split.items()},
+        "tune_ll_by_lambda": {str(k): v for k, v in tune_scores.items()},
+        "chosen_lambda": best_lam,
+    }
+    for name in ("test", "holdout"):
+        if split[name]:
+            report[name] = MarketCorrector.score(split[name], eval_model.predict_rows(split[name]))
+            # 리그 그룹별 LL 차이 (어디서 이득/손해인지)
+            by_group = {}
+            for g in GROUP_NAMES + ["other"]:
+                sub = [r for r in split[name] if r["group"] == g]
+                if len(sub) >= 30:
+                    s = MarketCorrector.score(sub, eval_model.predict_rows(sub))
+                    by_group[g] = {"n": s["samples"], "ll_diff": s["ll_diff"], "ll_diff_ci": s["ll_diff_ci"]}
+            report[f"{name}_by_group"] = by_group
+
+    report["passes_gate"] = bool(report.get("test", {}).get("ll_diff", 1) < 0
+                                 and report.get("holdout", {}).get("ll_diff", 1) < 0)
+    if report["passes_gate"]:
+        production = MarketCorrector("betman", best_lam).fit(rows)
+        report["production_rows"] = len(rows)
+        report["trained_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        production.report = report
+        return production
+    eval_model.report = report
+    return eval_model
+
+
+class BetmanLivePredictor:
+    """실전용: 게이트 통과 모델 + 아카이브로 만든 현재 팀 폼"""
+
+    def __init__(self, model: MarketCorrector, form: TeamForm):
+        self.model = model
+        self.form = form
+
+    @classmethod
+    def load(cls, params_path: Path = PARAMS_PATH, archive_path: Path = ARCHIVE_CSV) -> Optional["BetmanLivePredictor"]:
+        if not params_path.exists() or not archive_path.exists():
+            return None
+        d = json.loads(params_path.read_text(encoding="utf-8"))
+        if not d.get("report", {}).get("passes_gate", False):
+            return None
+        m = MarketCorrector("betman", d["lam"])
+        m.beta, m.gamma, m.c = np.array(d["beta"]), np.array(d["gamma"]), np.array(d["c"])
+        m.mu, m.sd = np.array(d["mu"]), np.array(d["sd"])
+        m.report, m.is_fitted = d.get("report", {}), True
+        form = TeamForm()
+        for r in load_archive_df(archive_path).itertuples(index=False):
+            form.add(r.home_team, r.away_team, int(r.home_score), int(r.away_score))
+        return cls(m, form)
+
+    def predict_proba(self, odds: Dict[str, float], home: str, away: str, league: str) -> Optional[Dict[str, float]]:
+        p = _fair_probs(odds.get("home_win"), odds.get("draw"), odds.get("away_win"))
+        if p is None:
+            return None
+        row = {"p_market": p, "p_avg": None, "p_sharp": None, "actual": 0}
+        row.update(_features(self.form, home, away, league))
+        out = self.model.predict_rows([row])[0]
+        return {"home_win": round(float(out[0]), 4), "draw": round(float(out[1]), 4), "away_win": round(float(out[2]), 4)}
+
+
+def _print(model: MarketCorrector) -> None:
+    r = model.report
+    print(f"표본: {r['sizes']}  | 선택 λ = {r['chosen_lambda']}")
+    print("TUNE LL by λ: " + ", ".join(f"{k}: {v:.4f}" for k, v in r["tune_ll_by_lambda"].items()))
+    print(f"β {np.round(model.beta, 4).tolist()}  c {np.round(model.c, 4).tolist()}")
+    for k, name in enumerate(model.match):
+        print(f"  {name:<16} 홈 {model.gamma[0][k]:+.4f}  원정 {model.gamma[1][k]:+.4f}")
+    for name, label in (("test", "TEST 2026-01~10"), ("holdout", "HOLDOUT ≥ 컷오프")):
+        if name in r:
+            s = r[name]
+            mark = "✅" if s["ll_diff"] < 0 else "❌"
+            print(f"{mark} {label:<16} n={s['samples']:<5} LL 모델 {s['model_ll']:.4f} vs 베트맨 {s['market_ll']:.4f} "
+                  f"({s['ll_diff']:+.4f}, CI [{s['ll_diff_ci'][0]:+.4f}, {s['ll_diff_ci'][1]:+.4f}]) | "
+                  f"EV>2% {s['bets']}건 ROI {s['roi_pct']:+.2f}% [{s['roi_ci_low']:+.2f}, {s['roi_ci_high']:+.2f}]")
+            for g, v in r.get(f"{name}_by_group", {}).items():
+                print(f"     · {g:<13} n={v['n']:<5} {v['ll_diff']:+.4f} CI {v['ll_diff_ci']}")
+    print(f"실전 게이트: {'✅ 통과' if r['passes_gate'] else '❌ 미통과'}")
+
+
+if __name__ == "__main__":
+    print("=" * 75)
+    print("🇰🇷 [Phase 5.6] 베트맨 자체 데이터 시장 보정 모델")
+    print("=" * 75)
+    model = run(load_archive_df())
+    _print(model)
+    PARAMS_PATH.write_text(json.dumps(model.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"💾 저장: {PARAMS_PATH}")

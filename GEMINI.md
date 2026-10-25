@@ -12,7 +12,8 @@
 - 로컬에서 `run_pipeline.py`를 돌려 생긴 데이터 파일은 **커밋하지 않는다** (봇과 충돌함):
   `data/current_matches.json`, `data/predictions.json`, `data/performance_stats.json`, `data/sharp_validation.json`,
   `data/history/betman_recent_results.json`, `data/history/odds_snapshots/`, `data/history/sharp_snapshots/`,
-  `data/history/prediction_log/`, `data/model_scorecard.json`, 수요일 재학습 산출물 `data/market_corrector*.json`
+  `data/history/prediction_log/`, `data/model_scorecard.json`, 수요일 재학습 산출물 `data/market_corrector*.json`, `data/betman_corrector.json`,
+  `data/history/betman_soccer_1x2.csv`, `data/history/betman_archive_rounds.json`
   → 커밋 전 `git checkout -- <파일>`로 되돌리거나, 처음부터 저장소 밖 복사본에서 실행한다.
 - rebase 중 위 데이터 파일이 충돌하면 **원격(봇) 버전을 채택**한다.
 - 커밋에는 해당 TODO 항목과 관련된 파일만 스테이징한다 (`git add -A` 금지, REVIEW R9).
@@ -51,3 +52,4 @@
 - **해외 배당 비교(5.4, `collector/betman_sharp.py`)**: 회차마다 `data/history/sharp_snapshots/`에 누적하고, 실전 검증은 `evaluation/sharp_vs_betman.py`로 한다 (300건 쌓이면 판정).
 - 추천 픽은 0건이 정상이다 (보정 폭 < 베트맨 마진 약 15%).
 - **주간 재학습·성적표(5.3)**: 수요일 Actions가 `python -m models.market_corrector`로 재학습한다(게이트 통과 시 전체 데이터로 실전 모델 재적합). 매 실행마다 킥오프 전 예측을 `data/history/prediction_log/`에 고정 저장하고, `evaluation/scorecard.py`가 결과와 붙여 `data/model_scorecard.json`(날짜별 history)을 만든다. **AI 실력의 공식 지표는 이 성적표다.**
+- **베트맨 학습 보정 모델(5.6, `models/betman_corrector.py`)**: 베트맨 과거 23,323경기(K리그·J리그·MLS 포함)로 학습한 모델이다. TEST 4,306경기에서 베트맨 시장보다 LL −0.0021 [−0.0044, +0.0001]로, 현재 실전 1순위 확률이다. 아카이브는 `collector/betman_archive.py`로 증분 수집한다.
