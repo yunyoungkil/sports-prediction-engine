@@ -473,13 +473,20 @@ with tab1:
         with st.container(border=True):
             # 회차 선택: 현재 판매 회차 + 결과가 있는 과거 회차 (과거는 조회 전용)
             past_rounds = sorted({ts for ts, _ in load_results_index().keys() if ts and ts != str(current_gm_ts)}, reverse=True)
-            round_labels = {str(current_gm_ts): f"{current_gm_ts}회차 (현재 판매)"} if current_gm_ts else {}
+            round_labels = {"ALL": f"전체 회차 (현재 + 지난 {len(past_rounds)}개)"}
+            if current_gm_ts:
+                round_labels[str(current_gm_ts)] = f"{current_gm_ts}회차 (현재 판매)"
             round_labels.update({ts: f"{ts}회차 (종료·조회 전용)" for ts in past_rounds})
             r1, _ = st.columns([1.5, 3.6])
             with r1:
-                sel_round = st.selectbox("🗓️ 회차", list(round_labels), format_func=lambda x: round_labels[x], key="step1_round")
-            is_past = sel_round != str(current_gm_ts)
-            round_matches = load_past_round_matches(sel_round) if is_past else predictions
+                sel_round = st.selectbox("🗓️ 회차", list(round_labels), index=1 if current_gm_ts else 0,
+                                         format_func=lambda x: round_labels[x], key="step1_round")
+            is_all = sel_round == "ALL"
+            is_past = (not is_all) and sel_round != str(current_gm_ts)
+            if is_all:
+                round_matches = list(predictions) + [m for ts in past_rounds for m in load_past_round_matches(ts)]
+            else:
+                round_matches = load_past_round_matches(sel_round) if is_past else predictions
 
             f1, f2, f3, f4 = st.columns([1.5, 1.2, 1.2, 1.2])
             with f1:
@@ -525,11 +532,27 @@ with tab1:
 
         # 경기 카드 목록: 배당 버튼을 눌러 바로 선택 (가로 스크롤 없이 휴대폰에서도 사용)
         results_idx = load_results_index()
-        cur_gm_ts = sel_round
-        pre_log = load_prediction_log(cur_gm_ts) if cur_gm_ts else {}
+        # 경기마다 자기 회차 기준으로 결과·경기 전 AI 기록을 찾는다 (전체 회차 보기 지원)
+        def _ts(m):
+            return str(m.get("gm_ts") or current_gm_ts)
+
+        def _res(m):
+            return find_result(m, results_idx, _ts(m))
+
+        def _log(m):
+            return load_prediction_log(_ts(m)).get(str(m.get("match_seq")))
+
+        def _past(m):
+            return _ts(m) != str(current_gm_ts)
+
         if is_past:
+            has_log = bool(load_prediction_log(sel_round))
             st.info(f"🗂️ {sel_round}회차는 종료된 회차입니다 (조회 전용). 배당은 최종 발매 배당이며, "
-                    + ("AI 예상은 경기 전에 기록된 경기만 표시됩니다." if pre_log else "이 회차에는 경기 전 AI 기록이 없어 배당 예상만 표시됩니다."))
+                    + ("AI 예상은 경기 전에 기록된 경기만 표시됩니다." if has_log else "이 회차에는 경기 전 AI 기록이 없어 배당 예상만 표시됩니다."))
+        if is_all:
+            logged = [ts for ts in [str(current_gm_ts)] + past_rounds if load_prediction_log(ts)]
+            st.info(f"🗂️ 전체 회차 보기: 현재 회차는 선택 가능, 지난 회차는 조회 전용입니다. "
+                    f"AI 예상·💎는 경기 전 AI 기록이 있는 회차({', '.join(logged) or '없음'})에서만 나옵니다.")
 
         def _ai_probs(m, res, log):
             """AI 예상 확률: 축구 승무패만. 끝난 경기는 경기 전 고정 기록으로만 (경기 후 재계산 값은 결과가 섞일 수 있음)"""
@@ -556,22 +579,29 @@ with tab1:
         with lc1:
             day_opts = ["전체 날짜"] + sorted({_match_day(m) for m in filtered_matches})
             # 기본값: 아직 결과가 안 나온 경기가 있는 첫 날짜 (바로 고를 수 있는 경기부터 보이도록)
-            open_days = sorted({_match_day(m) for m in filtered_matches if find_result(m, results_idx, cur_gm_ts) is None})
-            day_idx = day_opts.index(open_days[0]) if open_days else 0
-            sel_day = st.selectbox("📅 경기 날짜", day_opts, index=day_idx, key="step1_day")
+            open_days = sorted({_match_day(m) for m in filtered_matches if _res(m) is None})
+            day_idx = day_opts.index(open_days[0]) if (open_days and not is_all) else 0
+            sel_day = st.selectbox("📅 경기 날짜", day_opts, index=day_idx, key=f"step1_day_{sel_round}")
         with lc2:
             only_picked = st.checkbox("✔️ 선택한 경기만", value=False, key="step1_only_picked")
         if sel_day != "전체 날짜":
             filtered_matches = [m for m in filtered_matches if _match_day(m) == sel_day]
         if only_rec_opt:
             filtered_matches = [m for m in filtered_matches if _gems(
-                m, _ai_probs(m, find_result(m, results_idx, cur_gm_ts), pre_log.get(str(m.get("match_seq")))),
+                m, _ai_probs(m, _res(m), _log(m)),
                 available_picks(m))]
         if only_picked:
             filtered_matches = [m for m in filtered_matches if str(m.get("match_seq")) in st.session_state["selections"]]
 
         # 아직 결과가 없는(선택 가능한) 경기를 먼저, 끝난 경기는 뒤로 (각각 원래 시간 순서 유지)
-        filtered_matches = sorted(filtered_matches, key=lambda m: find_result(m, results_idx, cur_gm_ts) is not None)
+        def _time_key(m):
+            t = re.search(r"(\d{2})\.(\d{2})\.(\d{2}).*?(\d{1,2}):(\d{2})", str(m.get("match_time", "")))
+            return "".join(f"{int(x):02d}" for x in t.groups()) if t else ""
+
+        # 선택 가능한(결과 없는) 경기는 시간 순으로 먼저, 끝난 경기는 최근 경기부터
+        open_ms = sorted([m for m in filtered_matches if _res(m) is None], key=_time_key)
+        done_ms = sorted([m for m in filtered_matches if _res(m) is not None], key=_time_key, reverse=True)
+        filtered_matches = open_ms + done_ms
 
         PAGE_SIZE = 25
         n_pages = max(1, (len(filtered_matches) + PAGE_SIZE - 1) // PAGE_SIZE)
@@ -583,12 +613,12 @@ with tab1:
         # 회차 채점 요약 (현재 필터 기준). 배당 1순위는 모든 종료 경기, AI 1순위는 경기 전 기록이 있는 경기만
         mk_hits, ai_pairs = [], []
         for m in filtered_matches:
-            res = find_result(m, results_idx, cur_gm_ts)
+            res = _res(m)
             actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
             if not actual:
                 continue
             opts = available_picks(m)
-            log = pre_log.get(str(m.get("match_seq")))
+            log = _log(m)
             mk_k, _ = top_pick((log or {}).get("market_probs") or m.get("market_implied_probs"), opts)
             if mk_k:
                 mk_hits.append(mk_k == actual)
@@ -628,8 +658,8 @@ with tab1:
             opts = available_picks(m)
             if not opts:
                 continue
-            log = pre_log.get(seq)
-            res = find_result(m, results_idx, cur_gm_ts)
+            log = _log(m)
+            res = _res(m)
 
             # 배당 예상: 경기 전에 확정된 배당(마진 제거) 기준 → 사후 정보 없음
             mk_probs = (log or {}).get("market_probs") or m.get("market_implied_probs")
@@ -652,7 +682,8 @@ with tab1:
                     tm = re.search(r"\d{2}\.(\d{2}\.\d{2})\s*\(([^)]*)\)\s*(\d{1,2}:\d{2})", str(m.get("match_time", "")))
                     when = f"{tm.group(1)}({tm.group(2)}) {tm.group(3)}" if tm else m.get("match_time", "")
                     cat_lbl = category_display(m)
-                    meta = f"#{seq} · {when} · {m.get('league', '')} · {cat_lbl}{single}"
+                    rnd = f"{_ts(m)}회 · " if is_all else ""
+                    meta = f"{rnd}#{seq} · {when} · {m.get('league', '')} · {cat_lbl}{single}"
                     nowrap = "white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
                     st.markdown(
                         f"<div title='{meta}' style='font-size:12px;color:#94a3b8;{nowrap}'>{meta}</div>"
@@ -662,8 +693,8 @@ with tab1:
                 with c2:
                     picked = st.pills(
                         f"선택 #{seq}", options=opts, format_func=lambda k, d=disp: d[k], selection_mode="multi",
-                        default=default, key=f"pick_{cur_gm_ts}_{m.get('_key', seq)}_{st.session_state['editor_version']}",
-                        label_visibility="collapsed", disabled=(res is not None or is_past))
+                        default=default, key=f"pick_{_ts(m)}_{m.get('_key', seq)}_{st.session_state['editor_version']}",
+                        label_visibility="collapsed", disabled=(res is not None or _past(m)))
                     ev = m.get("evaluation", {})
                     if res is None and ev.get("is_recommended"):
                         st.markdown(f"<div style='font-size:12px;margin-top:-6px'>🔥 가치 픽 {ev.get('best_ev_pct', '')}</div>",
@@ -701,7 +732,7 @@ with tab1:
                         body = "<div style='font-size:13px;color:#94a3b8'>진행 전</div>"
                     st.markdown(cap.format("결과") + body, unsafe_allow_html=True)
 
-            if res is None and not is_past:
+            if res is None and not _past(m):
                 picked = picked or []
                 if picked:
                     st.session_state["selections"][seq] = {SEL_KEY[k]: (k in picked) for k in PICK_KEYS}
