@@ -22,11 +22,11 @@
   - 베트맨에서 현재 판매 중인 프로토 승부식 `gmTs`를 조회하는 `find_current_round()` 추가
   - `run_full_pipeline()`의 기본값 `"260126"` 제거, CLI 인자(`--gm-ts`)로 덮어쓸 수 있게
   - 확인: 인자 없이 `python run_pipeline.py` 실행 시 로그에 현재 회차가 찍힌다
-- [ ] **0.2 실전 결과 누적 수집** 🔁 재작업: REVIEW R4 (늦게 끝난 경기 누락)
+- [x] **0.2 실전 결과 누적 수집** 🔁 재작업 완료: REVIEW R4 (복합 키 기준 upsert, 늦게 끝난 경기 누락 및 연도 경계 해결)
   - 파일: `run_pipeline.py`, `collector/betman_results_scraper.py`
   - `if not results_path.exists()` 조건 제거
-  - 기존 `betman_recent_results.json`에 없는 종료 회차만 추가로 수집해서 병합 (중복 키: `gm_ts` + `match_seq`)
-  - 확인: 두 번 실행해도 중복이 생기지 않고, 새 회차가 생기면 늘어난다
+  - 최근 N개 회차 전수 재조회 및 복합 키(`gm_ts` + `match_seq` + `bettyp_cd` + `handi_win` + `handi_lose`) upsert 병합
+  - 확인: 260123(687건), 260124(209건), 260125(440건) 서버 건수 일치 및 반복 실행 시 중복 0건 유지 확인 완료
 - [ ] **0.3 텔레그램 Secret 연결** 🔁 미확인: REVIEW R6 (코드만 반영, Secret·push·실행 미완료 — 사용자 작업 필요)
   - 파일: `.github/workflows/pipeline.yml`
   - 파이프라인 실행 step에 `env: TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}`, `TELEGRAM_CHAT_ID` 추가

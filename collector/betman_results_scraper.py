@@ -92,6 +92,9 @@ class BetmanResultsScraper:
             results.append({
                 "gm_ts": gm_ts,
                 "match_seq": str(item.get("GM_SEQ", "")),
+                "bettyp_cd": str(item.get("BETTYP_CD", "")),
+                "handi_win": item.get("HANDI_WIN", 0),
+                "handi_lose": item.get("HANDI_LOSE", 0),
                 "sport": item.get("MCH_SPORT_CD", "SC"),
                 "league": league,
                 "game_type": game_type,
@@ -112,6 +115,43 @@ class BetmanResultsScraper:
 
         return results
 
+    @staticmethod
+    def get_previous_rounds(current_ts: int, n_rounds: int, known_rounds: set = None) -> List[int]:
+        """
+        현재 회차(current_ts) 기준 직전 N개 회차 번호를 생성합니다.
+        연도 경계(예: 270001 -> 2601xx)를 안전하게 처리합니다.
+        """
+        rounds = []
+        curr = int(current_ts)
+        known = sorted([int(r) for r in (known_rounds or set()) if str(r).isdigit()])
+
+        for _ in range(n_rounds):
+            year = curr // 10000
+            seq = curr % 10000
+            if seq > 1:
+                curr = year * 10000 + (seq - 1)
+            else:
+                # 연도 경계: 직전 연도의 마지막 회차 찾기
+                prev_year = year - 1
+                prev_year_known = [r for r in known if r // 10000 == prev_year]
+                if prev_year_known:
+                    curr = max(prev_year_known)
+                else:
+                    curr = prev_year * 10000 + 150
+            rounds.append(curr)
+        return rounds
+
+    @staticmethod
+    def make_match_key(item: Dict[str, Any]) -> tuple:
+        """동일 경기번호(GM_SEQ) 내 핸디캡/언더오버 복수 기준선까지 구분하는 고유 복합 키"""
+        return (
+            str(item.get("gm_ts", "")),
+            str(item.get("match_seq", "")),
+            str(item.get("bettyp_cd", item.get("game_type", ""))),
+            str(item.get("handi_win", item.get("handi_val", ""))),
+            str(item.get("handi_lose", ""))
+        )
+
     def sync_recent_results(
         self,
         current_ts: int = 260126,
@@ -119,8 +159,9 @@ class BetmanResultsScraper:
         filepath: str = "data/history/betman_recent_results.json"
     ) -> List[Dict[str, Any]]:
         """
-        기존 결과 파일(betman_recent_results.json)을 로드하여,
-        아직 수집되지 않은 최근 종료 회차만 API로 추가 수집하고 중복 없이(gm_ts + match_seq) 병합 저장합니다.
+        기존 결과 파일(betman_recent_results.json)을 로드하고,
+        최근 N개 회차를 전수 재조회하여 복합 키 기준 upsert(삽입/갱신)합니다.
+        늦게 종료된 경기 누락 및 결과 정정을 완벽히 반영하며 중복을 방지합니다.
         """
         path = Path(filepath)
         existing_results: List[Dict[str, Any]] = []
@@ -132,36 +173,34 @@ class BetmanResultsScraper:
                 print(f"⚠️ 기존 결과 파일 읽기 실패 ({e}), 새로 생성합니다.")
                 existing_results = []
 
-        # 기존 수집된 회차 및 유니크 키 맵 구성
-        existing_rounds = set()
-        existing_map = {}
-        for item in existing_results:
-            ts = int(item.get("gm_ts", 0)) if str(item.get("gm_ts", "")).isdigit() else item.get("gm_ts")
-            existing_rounds.add(ts)
-            key = (str(item.get("gm_ts")), str(item.get("match_seq")))
-            existing_map[key] = item
-
+        existing_rounds = set(
+            int(item.get("gm_ts", 0)) for item in existing_results if str(item.get("gm_ts", "")).isdigit()
+        )
         print(f"📂 기존 실전 경기 결과: {len(existing_results)}건 (수집 회차: {sorted(list(existing_rounds))})")
 
-        # 확인할 최근 N개 회차 목록
-        target_rounds = [current_ts - i for i in range(1, n_rounds + 1)]
-        missing_rounds = [ts for ts in target_rounds if ts not in existing_rounds]
+        # 확인할 최근 N개 회차 목록 (연도 경계 처리)
+        target_rounds = self.get_previous_rounds(current_ts, n_rounds, existing_rounds)
+        print(f"📥 최근 {n_rounds}개 회차({target_rounds}) 최신 결과 재조회 및 upsert 병합 시작...")
 
-        if not missing_rounds:
-            print("  ✓ 최근 종료 회차 데이터가 이미 모두 수집되어 최신 상태입니다.")
-            return existing_results
+        # 갱신 대상 회차 이외의 과거 누적 회차 보존
+        target_round_set = set(target_rounds)
+        existing_map = {}
+        for item in existing_results:
+            ts = int(item.get("gm_ts", 0)) if str(item.get("gm_ts", "")).isdigit() else 0
+            if ts not in target_round_set:
+                key = self.make_match_key(item)
+                existing_map[key] = item
 
-        print(f"📥 신규 미수집 회차 발견: {missing_rounds} -> 결과 수집 시작...")
-        new_added = 0
-        for ts in missing_rounds:
+        initial_count = len(existing_map)
+
+        for ts in target_rounds:
             r_list = self.fetch_round_results(ts)
-            print(f"  ✓ {ts}회차: 유효 종료 경기 {len(r_list)}건 수집 완료")
+            print(f"  ✓ {ts}회차: 유효 종료 경기 {len(r_list)}건 조회 완료")
             for item in r_list:
-                key = (str(item.get("gm_ts")), str(item.get("match_seq")))
-                if key not in existing_map:
-                    existing_map[key] = item
-                    existing_results.append(item)
-                    new_added += 1
+                key = self.make_match_key(item)
+                existing_map[key] = item
+
+        merged_results = list(existing_map.values())
 
         # 회차 및 경기 순번 기준 정렬
         def sort_key(x):
@@ -170,10 +209,10 @@ class BetmanResultsScraper:
             except Exception:
                 return (0, 0)
 
-        existing_results.sort(key=sort_key)
-        self.save_results(existing_results, filepath=filepath)
-        print(f"✅ 신규 {new_added}건 병합 완료 (총 누적: {len(existing_results)}건)")
-        return existing_results
+        merged_results.sort(key=sort_key)
+        self.save_results(merged_results, filepath=filepath)
+        print(f"✅ 결과 갱신 완료: 총 {len(merged_results)}건 저장 완료 (보존 과거: {initial_count}건, 갱신 회차: {len(merged_results) - initial_count}건)")
+        return merged_results
 
     def fetch_recent_rounds(self, current_ts: int = 260126, n_rounds: int = 4) -> List[Dict[str, Any]]:
         """현재 회차 직전 N개 회차의 결과를 일괄 수집"""

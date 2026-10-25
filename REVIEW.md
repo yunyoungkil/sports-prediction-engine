@@ -106,7 +106,7 @@ python -c "from tracker.result_evaluator import evaluate_betman_results as e; e(
 
 ---
 
-## R4 🟠 결과 누적 수집에서 늦게 끝난 경기가 영구 누락
+## R4 🟠 결과 누적 수집에서 늦게 끝난 경기가 영구 누락 (해결됨 ✅)
 
 **현상**
 - `sync_recent_results()`는 회차가 기존 파일에 한 건이라도 있으면 그 회차를 다시 조회하지 않는다(`missing_rounds = ts not in existing_rounds`).
@@ -125,6 +125,10 @@ python -c "from tracker.result_evaluator import evaluate_betman_results as e; e(
 - 이전 회차 목록은 산술 계산 대신 베트맨 API 응답의 실제 회차 목록으로 얻거나, 연도 경계를 처리한다.
 
 **완료 기준:** 위 3개 회차의 저장 건수가 서버 건수와 같고, 두 번 실행해도 중복이 생기지 않는다.
+**해결 내용 (2026-10-25):**
+- 동일 경기번호(GM_SEQ) 내 핸디캡/언더오버 복수 기준선을 구분하는 `(gm_ts, match_seq, bettyp_cd, handi_win, handi_lose)` 복합 키 도입.
+- 연도 경계를 처리하는 `get_previous_rounds()` 구현 및 최근 N개 회차 자동 upsert.
+- 검증 결과: 260123(687건), 260124(209건), 260125(440건) 서버 건수와 100% 일치하며 재실행 시 중복 0건 유지.
 
 ---
 
