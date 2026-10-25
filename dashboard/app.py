@@ -397,11 +397,18 @@ with tab1:
     """, unsafe_allow_html=True)
 
     # 상단 단계 전환 라디오
+    STEP_LABELS = ["STEP 01: 맞춤 조건 설정 (경기 및 승무패 선택)", "STEP 02: 조합 결과 및 시뮬레이션"]
+
+    def _go_step(n: int):
+        """버튼 콜백: 단계 값과 라디오 위젯 상태를 함께 바꾼다 (라디오 상태가 남아 단계가 되돌아가는 문제 방지)"""
+        st.session_state["custom_step"] = n
+        st.session_state["step_radio_selector"] = STEP_LABELS[n - 1]
+
     step_col1, step_col2 = st.columns([2.5, 1.5])
     with step_col1:
         step_choice = st.radio(
             "진행 단계",
-            ["STEP 01: 맞춤 조건 설정 (경기 및 승무패 선택)", "STEP 02: 조합 결과 및 시뮬레이션"],
+            STEP_LABELS,
             index=0 if st.session_state["custom_step"] == 1 else 1,
             horizontal=True,
             key="step_radio_selector"
@@ -831,9 +838,8 @@ with tab1:
                 st.warning(val_msg)
 
         with sum_c4:
-            if st.button("➡️ STEP 02 결과보기", type="primary", disabled=not is_step1_valid, use_container_width=True):
-                st.session_state["custom_step"] = 2
-                st.rerun()
+            st.button("➡️ STEP 02 결과보기", type="primary", disabled=not is_step1_valid, use_container_width=True,
+                      on_click=_go_step, args=(2,))
 
     # -------------------------------------------------------------
     # STEP 02: 조합 결과 및 시뮬레이션 화면
@@ -891,9 +897,7 @@ with tab1:
 
         if not combos:
             st.warning("선택된 조합이 없습니다. STEP 01로 돌아가 경기를 선택해 주세요.")
-            if st.button("⬅️ STEP 01로 돌아가기"):
-                st.session_state["custom_step"] = 1
-                st.rerun()
+            st.button("⬅️ STEP 01로 돌아가기", on_click=_go_step, args=(1,))
         else:
             # 1. 일괄 금액 적용 바
             with st.container(border=True):
@@ -930,9 +934,7 @@ with tab1:
                 with bc4:
                     st.write("")
                     st.write("")
-                    if st.button("⬅️ 조건 재설정", use_container_width=True):
-                        st.session_state["custom_step"] = 1
-                        st.rerun()
+                    st.button("⬅️ 조건 재설정", use_container_width=True, on_click=_go_step, args=(1,))
 
             # 정렬 적용
             if sort_option == "예상 배당률 높은순":
