@@ -177,11 +177,11 @@
   - "황금 픽" 등 과장 표현 제거 및 등급명 통일(`참고용 - 고승률 / 밸런스 / 고배당`), 버튼별 "모델 확률 / 시장 확률 / 차이 / 블렌딩 확률 / EV" 투명 비교 노출
   - 첫 화면(Tab 1) 상단에 실전 누적 ROI(-2.98%), 95% 부트스트랩 신뢰구간([-9.61%, +3.74%]), 1/4 켈리 ROI, CLV 및 시장 기준선 배너 표기
   - Tab 4에 95% 신뢰구간, CLV 통계, 고정 베팅 vs 1/4 켈리 동적 베팅 성과 비교표 및 마진 복리 누적 주의 정직한 인사이트 반영
-- [ ] **4.4 테스트 추가**
+- [x] **4.4 테스트 추가**
   - 새 폴더: `tests/`
-  - `remove_margin`, `evaluate_match_value`, 팀명 매핑, 결과 병합(0.2)에 pytest 작성
-- [ ] **4.5 CI에 테스트 연결**
-  - `.github/workflows/`에 push 시 `pytest` 실행하는 워크플로 추가
+  - `remove_margin` (`tests/test_odds_normalizer.py`), `evaluate_match_value` (`tests/test_evaluator.py`), 팀명 매핑 (`tests/test_team_mapping.py`), 결과 병합 (`tests/test_result_merging.py`), 샤프 배당/오가격/블렌더/조합 배당/자금관리 전수 pytest 작성 완료 (총 25개 테스트 전원 통과)
+- [x] **4.5 CI에 테스트 연결**
+  - `.github/workflows/test.yml` 생성 완료 (master/main 브랜치 push 및 PR 시 `pytest -v tests/` 자동 실행 연동)
 - [ ] **4.6 Streamlit Community Cloud 배포** (기존 ROADMAP Task 4.5)
 
 **완료 기준:** 테스트가 CI에서 통과하고, 대시보드가 외부 URL에서 열린다.
