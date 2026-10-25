@@ -502,7 +502,7 @@ with tab1:
             single = " · ⚡단통" if m.get("is_single") else ""
 
             with st.container(border=True):
-                c1, c2, c3 = st.columns([3.0, 3.4, 2.6], vertical_alignment="center")
+                c1, c2, c3, c4 = st.columns([3.0, 3.6, 0.9, 1.5], vertical_alignment="center")
                 with c1:
                     st.markdown(
                         f"<div style='font-size:12px;color:#94a3b8'>#{seq} · {m.get('match_time', '')} · {m.get('league', '')} · "
@@ -514,22 +514,36 @@ with tab1:
                         f"선택 #{seq}", options=opts, format_func=lambda k, d=disp: d[k], selection_mode="multi",
                         default=default, key=f"pick_{seq}_{st.session_state['editor_version']}",
                         label_visibility="collapsed", disabled=res is not None)
-                with c3:
-                    lines = []
+                    # 예상은 배당 버튼 바로 아래
+                    hint = []
                     if ai_k:
-                        lines.append(f"{src} 예상 <b>{labels[ai_k]}</b> {ai_p * 100:.0f}%")
+                        hint.append(f"{src} 예상 <b>{labels[ai_k]}</b> {ai_p * 100:.0f}%")
                     ev = m.get("evaluation", {})
                     if res is None and ev.get("is_recommended"):
-                        lines.append(f"🔥 가치 픽 {ev.get('best_ev_pct', '')}")
-                    if res is not None:
-                        actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result")))
-                        score = res.get("score", "")
-                        mark = ""
-                        if ai_k and actual:
-                            mark = " ✅" if ai_k == actual else " ❌"
-                        lines.append(f"결과 {score} → <b>{labels.get(actual, '?')}</b>{mark}")
-                    st.markdown("<div style='font-size:13px;line-height:1.5'>" + "<br>".join(lines) + "</div>",
+                        hint.append(f"🔥 가치 픽 {ev.get('best_ev_pct', '')}")
+                    if hint:
+                        st.markdown("<div style='font-size:12px;color:#cbd5e1;margin-top:-6px'>" + " · ".join(hint) + "</div>",
+                                    unsafe_allow_html=True)
+
+                cap = "<div style='font-size:11px;color:#94a3b8'>{}</div>"
+                actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
+                with c3:
+                    score = res.get("score", "") if res is not None else "-"
+                    note = " (핸디 적용)" if res is not None and ("핸디캡" in str(m.get("category", ""))) else ""
+                    st.markdown(cap.format("점수" + note) + f"<div style='font-size:16px;font-weight:700'>{score}</div>",
                                 unsafe_allow_html=True)
+                with c4:
+                    if actual:
+                        if ai_k:
+                            ok = ai_k == actual
+                            color = "#10b981" if ok else "#ef4444"
+                            mark = f" <span style='color:{color}'>{'✅ 적중' if ok else '❌ 실패'}</span>"
+                        else:
+                            mark = ""
+                        body = f"<div style='font-size:15px'><b>{labels.get(actual, '?')}</b>{mark}</div>"
+                    else:
+                        body = "<div style='font-size:13px;color:#94a3b8'>진행 전</div>"
+                    st.markdown(cap.format("결과") + body, unsafe_allow_html=True)
 
             if res is None:
                 picked = picked or []
