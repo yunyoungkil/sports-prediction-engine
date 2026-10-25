@@ -181,6 +181,14 @@ def load_model_status():
 
 
 @st.cache_data(ttl=60)
+def load_paper_trading():
+    path = project_root / "data" / "paper_trading.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@st.cache_data(ttl=60)
 def load_scorecard():
     path = project_root / "data" / "model_scorecard.json"
     if not path.exists():
@@ -1488,6 +1496,33 @@ with tab3:
                                 "차이": f"{s['ll_diff']:+.4f}", "95% CI": f"[{ci[0]:+.4f}, {ci[1]:+.4f}]",
                                 "EV>2% 베팅": s.get("bets", 0)})
             st.dataframe(pd.DataFrame(rows_bt), use_container_width=True, hide_index=True)
+
+    # ------------------------------------------------------------------
+    # A-2. 가상 베팅 리그 — 전략별 자동 가상 베팅 (실제 구매 없음)
+    # ------------------------------------------------------------------
+    st.divider()
+    st.subheader("🧪 가상 베팅 리그 (자동 · 실제 구매 없음)")
+    st.caption("새 회차마다 파이프라인이 전략별로 경기 시작 전에 가상 베팅(1,000원 단위)을 만들어 고정 저장하고, 결과가 나오면 자동 채점합니다. "
+               "AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있으며, 300건 이상 + 수익률 신뢰구간 하한 > 0 일 때만 '수익 입증'입니다.")
+    pt = load_paper_trading()
+    if not pt or not pt.get("strategies"):
+        st.info("⏳ 아직 가상 베팅 기록이 없습니다. 다음 파이프라인 실행부터 쌓입니다.")
+    else:
+        pt_rows = []
+        for key, v in pt["strategies"].items():
+            ci = f"[{v['roi_ci_low']:+.1f}%, {v['roi_ci_high']:+.1f}%]" if v["bets"] else "-"
+            pt_rows.append({
+                "전략": v["label"], "정산": v["bets"], "대기": v["pending"],
+                "적중률": f"{v['hits'] / v['bets'] * 100:.0f}%" if v["bets"] else "-",
+                "가상 수익률": f"{v['roi_pct']:+.1f}%" if v["bets"] else "-",
+                "95% CI": ci, "누적 손익(원)": v["profit"], "판정": v["verdict"],
+            })
+        st.dataframe(pd.DataFrame(pt_rows), hide_index=True, use_container_width=True,
+                     column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized")})
+        curves = {v["label"]: pd.Series(v["cum_profit"]) for v in pt["strategies"].values() if len(v["cum_profit"]) >= 2}
+        if curves:
+            st.line_chart(pd.DataFrame(curves), height=220)
+            st.caption("가로축: 정산된 베팅 순서 · 세로축: 누적 가상 손익(원)")
 
     st.divider()
 

@@ -115,6 +115,15 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     except Exception as e:
         print(f"⚠️ 해외 배당 검증 리포트 갱신 실패: {e}")
 
+    # 1-4b. [Phase 5.9] 가상 베팅 리그 채점 (결과가 나온 가상 베팅 정산)
+    try:
+        from models.paper_trading import settle_and_summarize
+        pt = settle_and_summarize()
+        print("🧪 [5.9] 가상 베팅 리그: " + ", ".join(
+            f"{v['label'].split('.')[0]} {v['bets']}건 {v['roi_pct']:+.1f}%" for v in pt["strategies"].values()))
+    except Exception as e:
+        print(f"⚠️ 가상 베팅 채점 실패: {e}")
+
     # 1-5. [Phase 5.3] AI 성적표 갱신 (경기 전 예측 기록 × 실전 결과)
     try:
         from evaluation.scorecard import update_scorecard
@@ -278,6 +287,13 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             print(f"📝 [5.3] 경기 전 예측 기록: {log_stat['updated']}경기 갱신 (이미 시작 {log_stat['frozen_or_started']}경기는 고정)")
         except Exception as e:
             print(f"⚠️ 예측 기록 저장 실패: {e}")
+        # 4-2. [Phase 5.9] 전략별 가상 베팅 생성 (경기 시작 전, 기존 베팅은 수정하지 않음)
+        try:
+            from models.paper_trading import save_new_bets
+            added = save_new_bets(gm_ts, results)
+            print(f"🧪 [5.9] 가상 베팅 추가: {added or '없음'}")
+        except Exception as e:
+            print(f"⚠️ 가상 베팅 생성 실패: {e}")
     
     # 요약 출력
     print("\n" + "=" * 60)
