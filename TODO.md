@@ -168,10 +168,10 @@
   - 새 파일: `models/staking.py` (`calculate_fractional_kelly_stake`, `simulate_kelly_backtest`)
   - 1/4 켈리(fraction=0.25), 단일 경기 자금 2% 상한 제약(max_cap_ratio=0.02), 베트맨 100원 단위 절사 구현 완료
   - `tracker/result_evaluator.py`에 고정 1만 원 채점과 1/4 켈리 채점(`staking_comparison`) 병행 표시 연동 완료 (`tests/test_staking.py` 통과)
-- [ ] **4.2 조합(파레이) 재검토**
-  - 파일: `models/parlay_builder.py`
-  - 조합 시 마진이 곱으로 누적됨(0.85² ≈ 0.72)을 반영
-  - 단일 경기 EV가 검증되기 전까지는 조합 추천을 기본 비활성화
+- [x] **4.2 조합(파레이) 재검토**
+  - 파일: `models/parlay_builder.py`, `models/combo_builder.py`
+  - 조합 시 마진이 곱으로 누적됨(2폴더 마진 ~27.8%, 3폴더 마진 ~38.6%)을 반영하여 `compound_margin_pct` 계산 추가
+  - 단일 경기 EV가 검증되기 전까지는 조합 추천을 기본 비활성화(`is_recommended = False`, "시뮬레이션 전용 (복수 조합 시 마진 누적으로 추천 비활성화)") 처리 완료 (`tests/test_parlay_builder.py` 통과)
 - [ ] **4.3 대시보드 정직화**
   - 파일: `dashboard/app.py`
   - "황금 픽" 등 표현을 "모델 확률 / 시장 확률 / 차이 / 신뢰구간"으로 교체
@@ -213,9 +213,10 @@
 ### 할 일
 
 - [ ] **A.0 즉시 수정 (지금 화면이 틀린 숫자·문구를 보여주는 문제, 1~2시간)**
-  - [ ] **A.0.1 조합 배당 반올림을 공식 규칙으로**
-    - 파일: `models/parlay_builder.py` (`calculate_parlay_metrics` L122 `round(곱, 2)`, `build_banker_wheel_combinations` L304·L363 이중 반올림)
-    - `models/combo_builder.py`에 `combined_odds()`를 먼저 만들고(A.1의 일부) 두 함수가 이를 사용 → 축 배당을 미리 반올림하지 말고 3경기 원배당을 한 번에 곱한다
+  - [x] **A.0.1 조합 배당 반올림을 공식 규칙으로**
+    - 파일: `models/parlay_builder.py`, `models/combo_builder.py`
+    - `models/combo_builder.py`에 `calculate_combined_odds()` 생성 (베트맨 공식: 연속 곱 → 소수 셋째 자리 이하 절사 → 둘째 자리에서 1자리로 올림)
+    - `calculate_parlay_metrics`, `build_banker_wheel_combinations`에서 3경기 원배당을 한 번에 곱하도록 이중 반올림 버그 수정 완료 (`tests/test_parlay_builder.py` 통과)
   - [ ] **A.0.2 금액 단위 수정**
     - 파일: `dashboard/app.py` (켈리 L872 "1,000원 단위", 시뮬레이터 L895·Wheel L573 `min_value=1000, step=1000`)
     - 조합 100원 단위, 한경기 1,000원 단위로 분기. 회차 총액 10만 원 한도 표시

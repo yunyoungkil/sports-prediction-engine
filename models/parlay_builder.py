@@ -11,6 +11,7 @@ models/parlay_builder.py
 
 from typing import List, Dict, Any, Optional
 import itertools
+from models.combo_builder import calculate_combined_odds
 
 
 def get_pick_item(match: Dict[str, Any], selection: Optional[str] = None) -> Dict[str, Any]:
@@ -113,14 +114,15 @@ def calculate_parlay_metrics(picks: List[Dict[str, Any]]) -> Dict[str, Any]:
             "picks": picks
         }
 
-    combined_odds = 1.0
+    combined_odds = calculate_combined_odds([p["odds"] for p in picks])
     combined_prob = 1.0
     for p in picks:
-        combined_odds *= p["odds"]
         combined_prob *= p["prob"]
         
-    combined_odds = round(combined_odds, 2)
     combined_ev = (combined_prob * combined_odds) - 1.0
+    k = len(picks)
+    compound_payout = round((0.85 ** k) * 100.0, 1)
+    compound_margin = round(100.0 - compound_payout, 1)
     
     # 켈리 기준 (Kelly Criterion): f* = (p * b - q) / b, where b = odds - 1
     kelly = 0.0
@@ -131,15 +133,26 @@ def calculate_parlay_metrics(picks: List[Dict[str, Any]]) -> Dict[str, Any]:
         # 보수적 분할 켈리 (Fractional Kelly, 25%) 적용
         kelly = min(0.10, kelly * 0.25)
         
+    # [Step 4.2] 다폴더 조합 시 마진 누적 반영 및 기본 추천 비활성화
+    is_rec = (combined_ev > 0.0) if k == 1 else False
+    rec_warn = (
+        f"⚠️ 다폴더 조합 시 베트맨 마진이 곱으로 누적({k}폴더 마진: 약 {compound_margin}%, 환급률: {compound_payout}%)되어 장기 기대값이 악화됩니다. 단일 경기 EV 검증 전까지 조합 추천은 기본 비활성화(참고/계산 시뮬레이션 전용)됩니다."
+        if k > 1 else None
+    )
+
     return {
         "valid": True,
         "error": None,
-        "folders": len(picks),
+        "folders": k,
         "combined_odds": combined_odds,
         "combined_prob": round(combined_prob, 4),
         "combined_prob_pct": f"{combined_prob * 100:.1f}%",
         "combined_ev": round(combined_ev, 4),
         "combined_ev_pct": f"{combined_ev * 100:+.1f}%",
+        "compound_payout_pct": f"{compound_payout}%",
+        "compound_margin_pct": f"{compound_margin}%",
+        "is_recommended": is_rec,
+        "recommendation_warning": rec_warn,
         "kelly_fraction": round(kelly, 4),
         "kelly_pct": f"{kelly * 100:.1f}%",
         "picks": picks
@@ -360,9 +373,9 @@ def build_banker_wheel_combinations(predictions: List[Dict[str, Any]]) -> Dict[s
         "probs": tm.get("model_probabilities", {})
     }
 
-    t1_odds = round(bank_odds * ho, 2)
-    t2_odds = round(bank_odds * do, 2)
-    t3_odds = round(bank_odds * ao, 2)
+    t1_odds = calculate_combined_odds([b1["odds"], b2["odds"], ho])
+    t2_odds = calculate_combined_odds([b1["odds"], b2["odds"], do])
+    t3_odds = calculate_combined_odds([b1["odds"], b2["odds"], ao])
 
     tickets = [
         {
