@@ -236,17 +236,16 @@
     - 전체 ROI, 1/4 켈리 ROI, 등급별(S/A/B), 회차별 성과 테이블에 `roi_ci_low/high` 95% 부트스트랩 신뢰구간 표시 완료
   - 확인: 551·555·745·749 조합의 배당이 베트맨 화면과 일치하고, 조합 100원 단위 입력 및 10만 원 한도가 적용됨 확인 완료
 
-- [ ] **A.1 조합 계산 모듈**
+- [x] **A.1 조합 계산 모듈**
   - 새 파일: `models/combo_builder.py` (UI와 무관한 순수 함수)
-  - `expand_combinations(selections)`: `{경기번호: {"home_win","draw",...}}` → `itertools.product`로 전 조합
-  - `combined_odds(odds_list)`: `Decimal` 곱 → `quantize(0.01, ROUND_DOWN)` → `quantize(0.1, ROUND_CEILING)`, 한 경기면 둘째 자리 그대로
-  - `expected_payout(stake, odds)`: 원 단위 절사, `is_tax_free(odds, payout)` 비과세 여부
-  - `validate(selections, stakes)`: 경기 수 2~10(한경기 1), 동일 `match_key` 중복 금지, 금액 단위(100원/1,000원), 총액 10만 원 한도
-  - AI 값: 조합 적중확률 = 선택별 모델 확률 곱, 조합 EV = 적중확률 × 적중배당률 − 1
-  - 확인: 위 13개 조합 배당이 그대로 재현된다
-- [ ] **A.2 조합 계산 테스트**
+  - `expand_combinations(selections)`: 경기별 복수 선택지 직교 곱(Cartesian Product) 전개 및 개별 조합 EV/승률/검증 산출
+  - `combined_odds(odds_list)`: Decimal 곱 → quantize(0.01, ROUND_DOWN) → quantize(0.1, ROUND_CEILING) 공식 규칙 적용
+  - `expected_payout(stake, odds)`: 원 단위 절사 계산
+  - `is_tax_free(odds, payout)`: 배당 100배 & 환급금 200만 원 이하 또는 환급금 10만 원 이하 비과세 판정
+  - `validate_combo`: 경기 수 2~10 (한경기 단통 1), 동일 경기(match_key/seq) 중복 금지, 100원/1,000원 단위, 10만 원 한도 검증 완료
+- [x] **A.2 조합 계산 테스트**
   - 새 파일: `tests/test_combo_builder.py`
-  - 13개 조합 배당, 절사→절상 경계값(42.801 → 42.8), 동일 경기 거부, 11경기 거부, 1경기(한경기만 허용), 10만 원 초과 거부, 비과세 경계
+  - 13개 조합 배당 경계값(42.801 → 42.8, 42.81 → 42.9, 1.85×1.84 → 3.4), 비과세 경계, 동일 경기 거부, 11경기 거부, 한경기 단통 허용, 10만 원 한도 초과 거부 전수 테스트 통과 (`tests/test_combo_builder.py` 4 passed)
 - [ ] **A.3 데이터 보강**
   - 파일: `collector/betman_scraper.py` (`detailSchedule.do` 응답의 `schedules[]`에 이미 있는 필드를 저장만 추가)
   - `match_key` ← `gameKey` (예: `알크마르:트벤테`, 745 승무패·746 핸디캡이 같은 값) → 동일 경기 조합 금지에 사용
