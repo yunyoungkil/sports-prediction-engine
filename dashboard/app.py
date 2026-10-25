@@ -55,6 +55,8 @@ except ImportError:
                 return True
             return False
 
+from models.strategy_backtest import backtest, describe_rule, extract_rule
+
 # 1. 페이지 기본 설정
 st.set_page_config(
     page_title="스포츠 승부예측 & 맞춤조건구매 대시보드",
@@ -141,6 +143,12 @@ def load_baseline_summary():
         }
     except Exception:
         return None
+
+
+@st.cache_data(ttl=3600)
+def load_archive_for_backtest():
+    from models.betman_corrector import load_archive_df
+    return load_archive_df()
 
 
 @st.cache_data(ttl=60)
@@ -1040,6 +1048,43 @@ with tab1:
                     st.caption(f"ℹ️ 기대 손익이 마이너스입니다. 베트맨 마진(약 15%)이 경기 수만큼 곱해져 "
                                f"{len(active_selections)}경기 조합의 평균 환급률은 약 {0.85 ** len(active_selections) * 100:.0f}%입니다.")
                 st.caption("확률: 축구 일반 승무패는 AI 확률, 그 외 유형은 배당(마진 제거) 확률. 표의 선택·투표금액 ✏️ 칸은 직접 수정할 수 있습니다.")
+
+            # 4-1) 이 방식을 과거에 반복했다면? (실제 결과 기준 백테스트)
+            with st.container(border=True):
+                bt_c1, bt_c2 = st.columns([3, 1.3], vertical_alignment="center")
+                rule = extract_rule(active_selections, pred_map)
+                with bt_c1:
+                    st.markdown("##### 🔁 이 방식을 과거에 반복했다면?")
+                    if rule:
+                        st.caption(f"규칙: {describe_rule(rule)} — 과거 회차마다 배당이 가장 비슷한(±20%) 경기로 똑같이 걸고 **실제 결과**로 계산합니다.")
+                    else:
+                        st.caption("축구 일반 승무패 경기로만 구성된 조합에서 사용할 수 있습니다 (과거 데이터가 축구 승무패만 있음).")
+                with bt_c2:
+                    run_bt = st.button("과거 결과로 확인", use_container_width=True, disabled=not rule, key="run_backtest")
+                if run_bt and rule:
+                    st.session_state["bt_result"] = (describe_rule(rule), backtest(rule, load_archive_for_backtest()))
+                if st.session_state.get("bt_result") and rule and st.session_state["bt_result"][0] == describe_rule(rule):
+                    r = st.session_state["bt_result"][1]
+                    if not r.get("rounds"):
+                        st.warning("조건에 맞는 과거 회차가 없습니다. 배당 범위가 너무 특이한 조합일 수 있습니다.")
+                    else:
+                        r1, r2, r3, r4 = st.columns(4)
+                        r1.metric("적용된 과거 회차", f"{r['rounds']}회차", f"회차당 {r['combos_per_round']}조합", delta_color="off")
+                        r2.metric("적중한 회차", f"{r['hit_rate_pct']:.0f}%", f"{r['hit_rounds']}회", delta_color="off")
+                        r3.metric("실제 수익률", f"{r['roi_pct']:+.1f}%",
+                                  f"축 경기만 걸었다면 {r['bankers_only_roi_pct']:+.1f}%" if "bankers_only_roi_pct" in r else None,
+                                  delta_color="off")
+                        r4.metric("최대 연속 미적중", f"{r['max_losing_streak']}회차", f"최고 적중 {r['best_round_multiple']:.1f}배", delta_color="off")
+                        st.line_chart(pd.DataFrame({"누적 손익 (회차당 투자 1 기준)": r["cum_curve"]}), height=180)
+                        notes = []
+                        if "bankers_only_roi_pct" in r and r["bankers_only_roi_pct"] > r["roi_pct"]:
+                            notes.append("커버(2~3개 선택)를 붙이면 그 경기의 마진을 추가로 내게 되어 **축 경기만 걸 때보다 손실이 커집니다.**")
+                        if r["hit_rate_pct"] >= 50 and r["roi_pct"] < 0:
+                            notes.append("자주 맞지만 장기적으로는 잃는 방식입니다. 적중률보다 **수익률**을 보세요.")
+                        if r["roi_pct"] >= 0:
+                            notes.append("과거에는 플러스였지만, 같은 데이터로 규칙을 고르면 우연히 좋아 보일 수 있습니다. 회차 수가 충분한지 함께 확인하세요.")
+                        for n in notes:
+                            st.caption("💡 " + n)
 
             # 5) 베팅 슬립 (복사용)
             with st.expander(f"📋 베팅 슬립 복사 ({len(chosen)}개 조합)", expanded=False):
