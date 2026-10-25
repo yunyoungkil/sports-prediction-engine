@@ -28,6 +28,24 @@ DEFAULT_USER_AGENT = (
 )
 
 
+def categorize_bet(bet_nm: str, win_txt: str = None) -> str:
+    """베트맨 게임 유형명 → 내부 카테고리. 홀/짝(SUM)은 '홀짝' (REVIEW R14: 이전에는 '일반 승무패'로 잘못 분류)"""
+    bet_nm = bet_nm or ""
+    if "전반" in bet_nm:
+        if "언더오버" in bet_nm:
+            return "전반 언더오버"
+        if "핸디캡" in bet_nm:
+            return "전반 핸디캡"
+        return "전반 승무패"
+    if "핸디캡" in bet_nm:
+        return "핸디캡"
+    if "언더오버" in bet_nm:
+        return "언더오버"
+    if "SUM" in bet_nm.upper() or win_txt == "홀":
+        return "홀짝"
+    return "일반 승무패"
+
+
 class BetmanScraper:
     def __init__(self, gm_id: str = "G101"):
         self.gm_id = gm_id
@@ -154,20 +172,8 @@ class BetmanScraper:
                     is_single = (str(s.get("sgl")) == "1")
                     line_val = float(s.get("winHandi") or 0.0)
 
-                    # 카테고리 세분화 (일반 승무패, 핸디캡, 언더오버, 전반전 등)
-                    if "전반" in bet_nm:
-                        if "언더오버" in bet_nm:
-                            category = "전반 언더오버"
-                        elif "핸디캡" in bet_nm:
-                            category = "전반 핸디캡"
-                        else:
-                            category = "전반 승무패"
-                    elif "핸디캡" in bet_nm:
-                        category = "핸디캡"
-                    elif "언더오버" in bet_nm:
-                        category = "언더오버"
-                    else:
-                        category = "일반 승무패"
+                    # 카테고리 세분화 (일반 승무패, 핸디캡, 언더오버, 홀짝, 전반전 등)
+                    category = categorize_bet(bet_nm, s.get("winTxt"))
 
                     matches.append({
                         "match_seq": str(s.get("matchSeq", "")),

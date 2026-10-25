@@ -22,7 +22,6 @@ from models.poisson_model import MatchPredictor
 from models.evaluator import evaluate_match_value
 from models.odds_normalizer import remove_margin
 from models.form_analyzer import FormAnalyzer
-from tracker.result_evaluator import evaluate_betman_results
 
 
 def run_full_pipeline(gm_ts: str = None) -> list:
@@ -93,17 +92,10 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     # 현재 판매 회차(target_ts)의 이미 끝난 경기 결과도 포함 (대시보드 적중 여부 표시용): target_ts+1 기준 직전 9개 회차
     r_scraper.sync_recent_results(current_ts=target_ts + 1, n_rounds=9, filepath="data/history/betman_recent_results.json")
         
-    # 1-3. 베트맨 최근 종료 경기 채점 및 실전 ROI 통계 자동 갱신
-    try:
-        evaluate_betman_results()
-    except Exception as e:
-        warn_msg = f"⚠️ 베트맨 결과 채점 중 오류: {e}"
-        print(warn_msg)
-        try:
-            from notifier.telegram_bot import send_telegram_warning
-            send_telegram_warning(f"베트맨 결과 채점 실패:\n{e}")
-        except Exception:
-            pass
+    # 1-3. (중단) 구 Dixon-Coles 모델 재채점(tracker/result_evaluator.py)은 2026-10-26부터 실행하지 않는다.
+    #      현재 실전 AI가 아닌 모델을 채점했고 미래 정보가 섞일 수 있었다(REVIEW R15).
+    #      실력 지표는 공식 성적표(evaluation/scorecard.py)와 가상 베팅 리그(models/paper_trading.py)로 대체했다.
+    #      필요하면 대시보드 ③의 '구 모델 재채점' 버튼으로 수동 실행할 수 있다.
 
     # 1-4. [Phase 5.4] 해외 배당 스냅샷 × 실전 결과 검증 리포트 갱신 (대시보드 표시용)
     try:

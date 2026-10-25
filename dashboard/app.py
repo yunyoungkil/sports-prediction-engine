@@ -307,6 +307,8 @@ def load_past_round_matches(gm_ts: str) -> list:
                 cat, label = ("전반 핸디캡" if "전반" in gt else "핸디캡"), f"핸디캡 ({float(hw):+.1f})"
             elif "언더오버" in gt:
                 cat, label = ("전반 언더오버" if "전반" in gt else "언더오버"), f"언더/오버 (기준 {float(hw):g})"
+            elif "SUM" in gt:
+                cat, label = "홀짝", "홀/짝"
             else:
                 cat = "전반 승무패" if "전반" in gt else "일반 승무패"
                 label = cat
@@ -1273,7 +1275,7 @@ with tab2:
                 t_leagues = sorted(list(set(m["league"] for m in predictions)))
                 t_sel_league = st.selectbox("리그 선택", ["전체 리그"] + t_leagues, key="tab2_league")
             with q_col3:
-                t_cats = ["전체 보기", "일반 승무패", "핸디캡", "언더오버", "전반 승무패", "전반 핸디캡", "전반 언더오버"]
+                t_cats = ["전체 보기", "일반 승무패", "핸디캡", "언더오버", "홀짝", "전반 승무패", "전반 핸디캡", "전반 언더오버"]
                 t_sel_cat = st.selectbox("게임 유형 선택", t_cats, key="tab2_cat")
 
             t_sort = st.radio(
@@ -1531,7 +1533,7 @@ with tab3:
     # ------------------------------------------------------------------
     col_t_title, col_t_btn = st.columns([3, 1.2])
     with col_t_title:
-        st.subheader("🗂️ 구 모델(Dixon-Coles) 추천 채점 기록 — 참고용")
+        st.subheader("🗂️ 구 모델(Dixon-Coles) 추천 채점 기록 — 참고용 · 자동 갱신 중단")
         st.warning("이 섹션은 **현재 실전 AI가 아닌 예전 Dixon-Coles 모델**이 과거 회차에 낸 추천을 다시 계산해 채점한 기록입니다. "
                    "모델이 채점 경기 이후의 데이터까지 학습했을 수 있어(미래 정보 혼입 가능) **실력 지표로 쓰면 안 됩니다.** "
                    "실력 판단은 위의 공식 성적표를 보세요.")

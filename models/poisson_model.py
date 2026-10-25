@@ -311,6 +311,19 @@ class MatchPredictor:
         슈팅 기반 모멘텀(sot_diff) 또는 경기 폼 모멘텀(form_diff)을 우도 갱신으로 반영합니다.
         리그별로 분리 학습된 모델을 우선 적용하며 미매칭 시 글로벌 모델로 폴백합니다.
         """
+        # 홀/짝(SUM): 승무패 모델과 무관한 시장이므로 배당(마진 제거) 확률만 사용 (REVIEW R14)
+        if category == "홀짝":
+            o = odds or {}
+            inv_o = 1.0 / o["home_win"] if o.get("home_win", 0) > 1.0 else 0.5
+            inv_e = 1.0 / o["away_win"] if o.get("away_win", 0) > 1.0 else 0.5
+            tot = inv_o + inv_e
+            return {
+                "home_win": round(inv_o / tot, 4), "draw": 0.0, "away_win": round(inv_e / tot, 4),
+                "category_label": "홀/짝",
+                "selection_labels": {"home_win": "홀 (총득점 홀수)", "draw": "-", "away_win": "짝 (총득점 짝수)"},
+                "top_scores": [],
+            }
+
         # 최근 폼 모멘텀 차이(-0.08 ~ +0.08)
         # 1. 슈팅 기반 유효슈팅 마진 차이(sot_diff) 우선 적용 (최적 scale=0.010, OOS 검증 Log Loss 0.9597)
         # 2. 슈팅 데이터 부재 시 승률/득실 기반 form_diff(scale=0.0015) 폴백

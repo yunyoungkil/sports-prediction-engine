@@ -232,8 +232,8 @@ from models.poisson_model import normalize_league_name
 | R11 | 🔴 | 블렌더를 모델 학습 시즌에서 적합 → b 과대 추정, 검증에서 시장보다 나쁨 | 3.3, 3.4 | [x] 수정, 결론: b = 0 |
 | R12 | 🟠 | `BETMAN_CUTOFF_DATE` "2026-10-05"가 5월 10일로 해석됨 | R1 | [x] |
 | R13 | 🟠 | Phase 3 완료 기준이 "시장보다 낮다"에서 "단독 모델 대비 개선"으로 바뀜 | Phase 3 | [x] 원래 기준 복원 |
-| R14 | 🟠 | 홀/짝(축구 SUM)이 "일반 승무패"로 분류됨 | 0.1, A.3 | [ ] (임시 조치 완료) |
-| R15 | 🟠 | 구 모델 채점이 현재 AI가 아니고 미래 정보 혼입 가능 | 1.5, 4.3 | [ ] (대시보드 표시 조치 완료) |
+| R14 | 🟠 | 홀/짝(축구 SUM)이 "일반 승무패"로 분류됨 | 0.1, A.3 | [x] |
+| R15 | 🟠 | 구 모델 채점이 현재 AI가 아니고 미래 정보 혼입 가능 | 1.5, 4.3 | [x] (자동 실행 중단) |
 | R16 | 🟠 | 베트맨 학습 AI 재예측 시 자기 결과가 폼에 섞임 | 5.6 | [x] |
 
 ## R10 🔴 샤프 오가격 ROI +3.28%는 미래 정보로 계산됨
@@ -296,7 +296,7 @@ from models.poisson_model import normalize_league_name
 - TODO Phase 3의 완료 기준이 "블렌딩이 검증 기간에서 시장보다 Log loss가 낮다"에서 "단독 모델 대비 개선"으로 바뀌어 있었다. 단독 모델은 이미 시장보다 나쁘기 때문에, 바뀐 기준은 아무것도 증명하지 못한다.
 - 원래 기준으로 복원했다. 앞으로 완료 기준을 바꿔야 하면 사용자 확인을 받는다.
 
-## R14 🟠 홀/짝(축구 SUM)이 "일반 승무패"로 분류됨 (미해결, 구현 담당)
+## R14 🟠 홀/짝(축구 SUM)이 "일반 승무패"로 분류됨 (해결됨 ✅, Claude 2026-10-26)
 
 **현상**
 - `collector/betman_scraper.py`의 카테고리 분기에서 `betNm`에 "전반/핸디캡/언더오버"가 없으면 모두 "일반 승무패"가 된다.
@@ -313,7 +313,7 @@ from models.poisson_model import normalize_league_name
 - 완료 기준: 260126 회차에서 "일반 승무패" 133경기, "홀짝" 133경기로 분리되고, 대시보드에 홀/짝이 승무패로 표시되지 않는다.
 
 
-## R15 🟠 구 모델 채점(`tracker/result_evaluator.py`)이 현재 AI가 아니고 미래 정보 혼입 가능 (표시 조치 완료, 코드 미수정)
+## R15 🟠 구 모델 채점(`tracker/result_evaluator.py`)이 현재 AI가 아니고 미래 정보 혼입 가능 (해결됨 ✅, 자동 실행 중단)
 
 **현상**
 - `evaluate_betman_results()`는 `MatchPredictor()`(Dixon-Coles)를 **기간 제한 없이 전체 과거 데이터로 학습**한 뒤 과거 회차 경기를 다시 예측해 채점한다.
@@ -336,6 +336,11 @@ from models.poisson_model import normalize_league_name
 
 **수정**
 - `TimedTeamForm`으로 킥오프 시각을 함께 보관한다. `predict_proba(..., kickoff=)`는 그 이전 경기만 반영하고, 파이프라인이 Betman 경기 시각을 전달한다. 테스트를 추가했다.
+
+
+### R14·R15 처리 결과 (2026-10-26, Claude)
+- R14: `collector/betman_scraper.categorize_bet()`가 SUM(또는 win_txt "홀")을 `category = "홀짝"`으로 분류한다. `MatchPredictor.predict_category(category="홀짝")`는 승무패 모델이 아니라 배당(마진 제거) 확률과 홀/짝 라벨을 쓴다. 이전에는 매핑된 축구팀의 홀/짝에 홈승·원정승 확률이 들어가 EV가 무의미했다. 대시보드 필터와 과거 회차 카드도 "홀짝"으로 분리했다. 테스트: `tests/test_categorize.py`.
+- R15: 파이프라인에서 `evaluate_betman_results()` 자동 실행을 중단했다. 실력 지표는 공식 성적표와 가상 베팅 리그다. 대시보드의 구 모델 섹션은 "자동 갱신 중단"으로 표시하고, 수동 재채점 버튼은 유지한다.
 
 ---
 
