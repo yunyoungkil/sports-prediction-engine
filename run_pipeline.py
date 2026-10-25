@@ -57,12 +57,10 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         print("❌ 수집된 경기 및 캐시 데이터가 없습니다.")
         return []
     
-    # 1-2. 베트맨 직전 회차 실제 경기 결과 및 스코어 확인 (없으면 수집)
-    results_path = Path("data/history/betman_recent_results.json")
-    if not results_path.exists():
-        r_scraper = BetmanResultsScraper()
-        res_list = r_scraper.fetch_recent_rounds(current_ts=int(gm_ts), n_rounds=8)
-        r_scraper.save_results(res_list)
+    # 1-2. 베트맨 직전 회차 실제 경기 결과 누적 수집 및 병합 (미수집 회차 자동 추가)
+    r_scraper = BetmanResultsScraper()
+    target_ts = int(gm_ts) if gm_ts and str(gm_ts).isdigit() else 260126
+    r_scraper.sync_recent_results(current_ts=target_ts, n_rounds=8, filepath="data/history/betman_recent_results.json")
         
     # 1-3. 베트맨 최근 종료 경기 채점 및 실전 ROI 통계 자동 갱신
     try:

@@ -112,6 +112,69 @@ class BetmanResultsScraper:
 
         return results
 
+    def sync_recent_results(
+        self,
+        current_ts: int = 260126,
+        n_rounds: int = 8,
+        filepath: str = "data/history/betman_recent_results.json"
+    ) -> List[Dict[str, Any]]:
+        """
+        기존 결과 파일(betman_recent_results.json)을 로드하여,
+        아직 수집되지 않은 최근 종료 회차만 API로 추가 수집하고 중복 없이(gm_ts + match_seq) 병합 저장합니다.
+        """
+        path = Path(filepath)
+        existing_results: List[Dict[str, Any]] = []
+        if path.exists():
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    existing_results = json.load(f)
+            except Exception as e:
+                print(f"⚠️ 기존 결과 파일 읽기 실패 ({e}), 새로 생성합니다.")
+                existing_results = []
+
+        # 기존 수집된 회차 및 유니크 키 맵 구성
+        existing_rounds = set()
+        existing_map = {}
+        for item in existing_results:
+            ts = int(item.get("gm_ts", 0)) if str(item.get("gm_ts", "")).isdigit() else item.get("gm_ts")
+            existing_rounds.add(ts)
+            key = (str(item.get("gm_ts")), str(item.get("match_seq")))
+            existing_map[key] = item
+
+        print(f"📂 기존 실전 경기 결과: {len(existing_results)}건 (수집 회차: {sorted(list(existing_rounds))})")
+
+        # 확인할 최근 N개 회차 목록
+        target_rounds = [current_ts - i for i in range(1, n_rounds + 1)]
+        missing_rounds = [ts for ts in target_rounds if ts not in existing_rounds]
+
+        if not missing_rounds:
+            print("  ✓ 최근 종료 회차 데이터가 이미 모두 수집되어 최신 상태입니다.")
+            return existing_results
+
+        print(f"📥 신규 미수집 회차 발견: {missing_rounds} -> 결과 수집 시작...")
+        new_added = 0
+        for ts in missing_rounds:
+            r_list = self.fetch_round_results(ts)
+            print(f"  ✓ {ts}회차: 유효 종료 경기 {len(r_list)}건 수집 완료")
+            for item in r_list:
+                key = (str(item.get("gm_ts")), str(item.get("match_seq")))
+                if key not in existing_map:
+                    existing_map[key] = item
+                    existing_results.append(item)
+                    new_added += 1
+
+        # 회차 및 경기 순번 기준 정렬
+        def sort_key(x):
+            try:
+                return (int(x.get("gm_ts", 0)), int(x.get("match_seq", 0)))
+            except Exception:
+                return (0, 0)
+
+        existing_results.sort(key=sort_key)
+        self.save_results(existing_results, filepath=filepath)
+        print(f"✅ 신규 {new_added}건 병합 완료 (총 누적: {len(existing_results)}건)")
+        return existing_results
+
     def fetch_recent_rounds(self, current_ts: int = 260126, n_rounds: int = 4) -> List[Dict[str, Any]]:
         """현재 회차 직전 N개 회차의 결과를 일괄 수집"""
         all_results = []
@@ -133,6 +196,5 @@ class BetmanResultsScraper:
 
 if __name__ == "__main__":
     scraper = BetmanResultsScraper()
-    # 최근 3개 회차(260125, 260124, 260123) 결과 수집 테스트
-    res = scraper.fetch_recent_rounds(current_ts=260126, n_rounds=3)
-    scraper.save_results(res)
+    # 최근 종료 회차 누적 동기화
+    scraper.sync_recent_results(current_ts=260126, n_rounds=8)

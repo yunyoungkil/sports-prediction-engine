@@ -19,7 +19,7 @@
   - 베트맨에서 현재 판매 중인 프로토 승부식 `gmTs`를 조회하는 `find_current_round()` 추가
   - `run_full_pipeline()`의 기본값 `"260126"` 제거, CLI 인자(`--gm-ts`)로 덮어쓸 수 있게
   - 확인: 인자 없이 `python run_pipeline.py` 실행 시 로그에 현재 회차가 찍힌다
-- [ ] **0.2 실전 결과 누적 수집**
+- [x] **0.2 실전 결과 누적 수집**
   - 파일: `run_pipeline.py`, `collector/betman_results_scraper.py`
   - `if not results_path.exists()` 조건 제거
   - 기존 `betman_recent_results.json`에 없는 종료 회차만 추가로 수집해서 병합 (중복 키: `gm_ts` + `match_seq`)
