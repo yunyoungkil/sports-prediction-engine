@@ -27,7 +27,9 @@ This skill defines the architectural blueprint, realistic design constraints, ev
 
 4. **Market Is the Baseline:**
    - The margin-removed Betman probability (`models/odds_normalizer.remove_margin`) is the baseline model. A model change is only an improvement if it beats this baseline on held-out data.
-   - Sharp bookmaker odds (Pinnacle, `PSH/PSD/PSA`, closing `PSCH/PSCD/PSCA` in football-data CSVs) are the best available "true probability" reference.
+   - Sharp bookmaker odds are the best available "true probability" reference. Historical: Pinnacle opening `PSH/PSD/PSA` (missing from 2526 on) and Betfair Exchange opening `BFEH/BFED/BFEA`. Live: The Odds API (`collector/betman_sharp.py`).
+   - Closing odds (`PSC*`, `BFEC*`, `B365C*`) are lookahead. Use them only as a labeled upper bound, never as a feature or bet trigger.
+   - Current approach (Phase 5): start from market probabilities and learn only corrections (`models/market_corrector.py`). From-scratch Dixon-Coles adds nothing over the market (blend b = 0).
 
 5. **100% Free Serverless Architecture:**
    - Pipeline: Betman Scraper -> Statistical Model (`penaltyblog`) -> GitHub Repository (JSON as DB) -> Streamlit Community Cloud UI -> Telegram Bot (optional).
@@ -35,7 +37,9 @@ This skill defines the architectural blueprint, realistic design constraints, ev
 ## Evaluation Rules (MUST follow)
 
 - **No lookahead:** Train only on data before the evaluated match date (strict chronological walk-forward).
-- **Fixed train/validation split:** Tune constants (xi, form weights, λ scaling, grade thresholds) on the training period only. Report validation-period numbers only.
+- **Fixed 3-way split (`evaluation/config.py`):** TRAIN 2223–2324 → choose constants/regularization on TUNE 2425 → report TEST 2526 only (plus in-progress 2627 and Betman live results as extra held-out sets). A fitted coefficient must come from a model that did not train on the fit season.
+- **Gates for live use:** `MarketModelBlender.load()` and `MarketCorrector.load()` return market-only unless the saved params beat the market on held-out data. Keep this fallback.
+- **Do not edit completion criteria in TODO.md** to make an item pass. Ask the user first.
 - **Report probability quality first:** Log loss, Brier score, and calibration — always side by side with the market baseline.
 - **Report uncertainty:** Any ROI must come with a bootstrap 95% CI and sample size. Do not claim an edge from < 300 bets or from a CI that includes 0.
 - **Track CLV:** Compare pick-time odds with closing odds; consistently positive CLV is the fastest signal of a real edge.
@@ -46,37 +50,44 @@ This skill defines the architectural blueprint, realistic design constraints, ev
 - **`collector/`**
   - `betman_scraper.py`: current round matches & odds via `gameScheduleDetlIFR.do` (session) + `buyPsblGame/detailSchedule.do` (`gmId=G101`).
   - `betman_results_scraper.py`: finished round results via `winrstDetl.do`.
-  - `download_history.py`: football-data.co.uk CSVs for the top 5 European leagues → `data/history/all_historical_matches.csv`.
+  - `download_history.py`: football-data.co.uk CSVs for the top 5 European leagues → `data/history/all_historical_matches.csv` (keeps B365, PS, BFE, Avg, Max odds; opening and closing).
+  - `betman_sharp.py`: maps Betman leagues to The Odds API sport keys, 1 credit per league call, matches events by kickoff ±75 min / team-name similarity / odds distance (skips ambiguous), saves `data/history/sharp_snapshots/{gm_ts}.json`. Needs `ODDS_API_KEY`.
+  - `sharp_odds.py`: historical sharp-odds extraction (`prefer_closing=False` by default).
 - **`models/`**
   - `poisson_model.py`: `MatchPredictor` — Dixon-Coles fit + per-category probabilities (승무패, 핸디캡, 언더오버, 전반전). Falls back to odds-derived λ when a team is unmapped or the sport is non-soccer.
   - `odds_normalizer.py`: proportional margin removal (2-way and 3-way).
   - `evaluator.py`: EV calculation and S/A/B/PASS grading.
   - `form_analyzer.py`: recent form (W-D-L) and H2H.
   - `parlay_builder.py`: 2~3 fold combinations, Banker + Wheel hedging.
+  - `combo_builder.py`: Betman 맞춤조건구매 rules (odds product truncated to 2 decimals then ceil to 1 decimal).
+  - `blender.py`: market/model logit blend, fitted on TUNE → `data/blender_params.json` (currently fails gate → market-only).
+  - `market_corrector.py`: Phase 5.1 market-offset multinomial logit. Feature sets `live` (used in production when gate passes), `live_sharp` (waiting for Betman validation), `full` (research). Run `python -m models.market_corrector`.
+  - `sharp_value.py`: historical sharp-vs-target mispricing backtest (opening odds by default).
+- **`evaluation/`**: `report.py` (model vs market → `BASELINE.md`), `sharp_vs_betman.py` (Phase 5.4 live validation, verdict at ≥ 300 matched results).
 - **`tracker/result_evaluator.py`**: scores past rounds and writes `data/performance_stats.json`.
 - **`notifier/telegram_bot.py`**: alerts via `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` env vars.
 - **`dashboard/app.py`**: Streamlit UI (predictions, parlay basket, past-match verification tab).
 - **`run_pipeline.py`**: single entry point (collect → score past rounds → predict → EV → JSON → notify).
-- **`.github/workflows/pipeline.yml`**: scheduled run (Wed/Fri) that commits updated `data/` back to the repo.
+- **`.github/workflows/pipeline.yml`**: scheduled run (Wed/Fri 00:30, 05:30 UTC; Sat/Sun 04:00 UTC) with `contents: write`; the bot commits updated `data/` to `master`. Always `git pull --rebase` before starting work and before pushing.
 
-## Known Issues (as of 2026-10)
+## Known Issues (as of 2026-10-25)
 
-Fix these before trusting automation output (tracked in `TODO.md` Step 0):
+Open items are tracked in `REVIEW.md`:
 
-- Round number is hardcoded to `260126` (`run_pipeline.py`, `betman_scraper.py`, `betman_results_scraper.py`) — scheduled runs re-fetch the same round and fall back to cache.
-- `data/history/betman_recent_results.json` is only fetched when missing, so live scoring is stuck at rounds 260118–260125.
-- `pipeline.yml` does not pass Telegram secrets as `env`, so alerts never fire in Actions.
-- `MatchPredictor._load_and_train` swallows training errors (`except Exception: pass`).
-- Historical data stops at the 2024/25 season, has no time-decay weights, and uses one global model across leagues.
-- Many constants (`* 1.15`, `+ 0.25`, `* 0.75`, `0.45`, `form_diff * 0.0015`) have no documented tuning source.
+- **R6:** Telegram secrets not registered in GitHub (user action). `ODDS_API_KEY` is registered.
+- **R14:** `betman_scraper.py` labels 홀/짝 (`game_type == "축구 SUM"`, draw odds 0) as category "일반 승무패" (133 of 266 in round 260126). Any 3-way logic must filter `game_type == "축구 승무패"` and draw odds > 1.
+- K리그, J2, and the Chinese Super League are not covered by The Odds API, and are not in the historical training data.
+- `calculate_payout` floors at 1원. Betman's "원단위 절삭" may mean 10원 units (unverified).
 
 ## Roadmap & Workflow
 
 - **v1 (ROADMAP.md Phase 1~5):** built, except Streamlit Cloud deployment.
 - **v2 upgrade plan:** summarized in `README.md` (🚀 고도화 계획) and broken into checkboxes in **`TODO.md`**:
-  - Step 0 무인 자동화 복구 → Phase 1 측정 기반 → Phase 2 모델 기본기 보강 → Phase 3 시장과 결합 → Phase 4 자금 관리와 제품
+  - Step 0 무인 자동화 복구 → Phase 1 측정 기반 → Phase 2 모델 기본기 보강 → Phase 3 시장과 결합 → Phase 4 자금 관리와 제품 → **Phase 5 AI 정확도 향상** (market corrector, live sharp odds, weekly retraining, xG/lineups, more Betman leagues)
 - When picking up work: take the **first unchecked item in `TODO.md`**, do one item at a time, mark it `[x]`, and add before/after evaluation numbers to the progress table at the bottom.
-- Respect the decision checkpoints in `TODO.md` (e.g., if the blended-model coefficient for our model ≈ 0, pivot to sharp-odds mispricing instead of model tuning).
+- Respect the decision checkpoints in `TODO.md`. The Phase 3 checkpoint fired (b = 0), and that led to Phase 5.
+- Collaboration: Gemini implements, Claude verifies and logs findings in `REVIEW.md` (R-numbers). Read `GEMINI.md` at the repo root for git, secret, and API-credit rules.
+- The Odds API free tier is 500 credits/month. Don't call it in loops during development; cache responses and stub `collector.betman_sharp.fetch_league_events`.
 
 ## Coding Conventions
 
@@ -84,3 +95,5 @@ Fix these before trusting automation output (tracked in `TODO.md` Step 0):
 - User-facing logs, docs, and dashboard text are in Korean; code identifiers in English.
 - Data files are JSON/CSV under `data/` — keep schemas compatible with `ARCHITECTURE.md` and update it when a schema changes.
 - Commit messages use conventional prefixes (`feat:`, `fix:`, `perf:`, `docs:`).
+- Don't commit data files produced by local pipeline runs (`data/predictions.json`, `current_matches.json`, `performance_stats.json`, `sharp_validation.json`, `history/betman_recent_results.json`, `history/*_snapshots/`). The Actions bot owns them.
+- Parse ISO dates without `dayfirst=True`.
