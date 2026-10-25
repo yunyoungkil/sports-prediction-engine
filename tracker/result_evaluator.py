@@ -133,8 +133,15 @@ def evaluate_betman_results(
             a_rate = (a_w / len(a_hist) * 100) if a_hist else 50.0
             form_diff = h_rate - a_rate
 
-            # AI 모델 확률 산출 (과거 데이터 기반 폼 반영)
-            pred = predictor.predict_category(home, away, category=cat, sport=sport, odds=odds, form_diff=form_diff)
+            # AI 모델 확률 산출 (과거 데이터 기반 폼 및 리그별 분리 모델 반영)
+            pred = predictor.predict_category(
+                home, away,
+                category=cat,
+                sport=sport,
+                odds=odds,
+                form_diff=form_diff,
+                league=item.get("league", "")
+            )
             model_probs = {
                 "home_win": pred["home_win"],
                 "draw": pred["draw"],

@@ -107,8 +107,16 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         a_score = (away_form['win_rate_pct'] + (away_form['avg_scored'] - away_form['avg_conceded']) * 15) if away_form.get('has_data') else 0
         form_diff = h_score - a_score
 
-        # 카테고리별(일반/핸디캡/언더오버/전반전) 정밀 AI 확률 계산 (폼 모멘텀 반영)
-        pred = predictor.predict_category(home, away, category=category, line=line, sport=m.get("sport", "SC"), odds=odds, form_diff=form_diff)
+        # 카테고리별(일반/핸디캡/언더오버/전반전) 정밀 AI 확률 계산 (폼 모멘텀 및 리그별 모델 반영)
+        pred = predictor.predict_category(
+            home, away,
+            category=category,
+            line=line,
+            sport=m.get("sport", "SC"),
+            odds=odds,
+            form_diff=form_diff,
+            league=m.get("league", "")
+        )
         model_probs = {
             "home_win": pred["home_win"],
             "draw": pred["draw"],

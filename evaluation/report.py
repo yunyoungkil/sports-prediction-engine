@@ -59,12 +59,13 @@ def evaluate_single_dataset(
         mkt_p = MarketBaselineModel.predict_proba(odds["home"], odds["draw"], odds["away"])
         market_probs_list.append(mkt_p)
 
-        # 2. AI 모델 예측 확률
+        # 2. AI 모델 예측 확률 (리그별 분리 모델 활용)
         pred = predictor.predict_category(
             s["home_team"], s["away_team"],
             category="일반 승무패",
             sport="SC",
-            odds={"home_win": odds["home"], "draw": odds["draw"], "away_win": odds["away"]}
+            odds={"home_win": odds["home"], "draw": odds["draw"], "away_win": odds["away"]},
+            league=s.get("league", "")
         )
         mod_p = {
             "home": pred["home_win"],

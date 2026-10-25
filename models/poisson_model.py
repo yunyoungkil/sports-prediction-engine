@@ -46,6 +46,27 @@ TEAM_NAME_MAP = {
 }
 
 
+def normalize_league_name(name: str) -> str:
+    """
+    다양한 형식의 리그 명칭을 5대 주요 리그 표준 키로 정규화합니다.
+    (EPL, LaLiga, Bundesliga, SerieA, Ligue1)
+    """
+    if not name:
+        return ""
+    name_lower = str(name).lower()
+    if any(k in name_lower for k in ["epl", "프리미어", "e0", "premier"]):
+        return "EPL"
+    if any(k in name_lower for k in ["laliga", "라리가", "sp1"]):
+        return "LaLiga"
+    if any(k in name_lower for k in ["bundesliga", "분데스", "d1"]):
+        return "Bundesliga"
+    if any(k in name_lower for k in ["seriea", "세리에", "i1"]):
+        return "SerieA"
+    if any(k in name_lower for k in ["ligue1", "리그1", "f1"]):
+        return "Ligue1"
+    return ""
+
+
 class MatchPredictor:
     def __init__(
         self,
@@ -74,15 +95,43 @@ class MatchPredictor:
                     print(f"⚠️ Dixon-Coles 시간 가중치 계산 건너뜀 ({we})")
                     weights = None
 
-            model = pb.models.DixonColesGoalModel(
+            # 1. 전역(Global) 모델 학습 (리그 간 대결 및 폴백용)
+            global_model = pb.models.DixonColesGoalModel(
                 goals_home=self.df["FTHG"].astype(int),
                 goals_away=self.df["FTAG"].astype(int),
                 teams_home=self.df["HomeTeam"],
                 teams_away=self.df["AwayTeam"],
                 weights=weights
             )
-            model.fit()
-            self.models["global"] = model
+            global_model.fit()
+            self.models["global"] = global_model
+
+            # 2. 리그별 모델 분리 학습 (EPL, LaLiga, Bundesliga, SerieA, Ligue1)
+            if "League" in self.df.columns:
+                self.df["_League_norm"] = self.df["League"].apply(normalize_league_name)
+                for l_key in ["EPL", "LaLiga", "Bundesliga", "SerieA", "Ligue1"]:
+                    sub_df = self.df[self.df["_League_norm"] == l_key]
+                    if len(sub_df) < 50:
+                        continue
+                    l_weights = None
+                    if self.xi is not None and "Date" in sub_df.columns:
+                        try:
+                            s_dates = pd.to_datetime(sub_df["Date"], dayfirst=True)
+                            l_weights = pb.models.dixon_coles_weights(s_dates, xi=self.xi)
+                        except Exception:
+                            l_weights = None
+                    try:
+                        l_model = pb.models.DixonColesGoalModel(
+                            goals_home=sub_df["FTHG"].astype(int),
+                            goals_away=sub_df["FTAG"].astype(int),
+                            teams_home=sub_df["HomeTeam"],
+                            teams_away=sub_df["AwayTeam"],
+                            weights=l_weights
+                        )
+                        l_model.fit()
+                        self.models[l_key] = l_model
+                    except Exception as le:
+                        print(f"⚠️ 리그 {l_key} 모델 분리 학습 실패: {le}")
         except Exception as e:
             print(f"❌ Dixon-Coles 모델 학습 실패: {e}")
             try:
@@ -122,13 +171,15 @@ class MatchPredictor:
         line: float = 0.0,
         sport: str = "SC",
         odds: dict = None,
-        form_diff: float = 0.0
+        form_diff: float = 0.0,
+        league: str = ""
     ) -> dict:
         """
         게임 카테고리(일반 승무패, 핸디캡, 언더오버, 전반전 등)에 맞춰 
         정확한 확률을 계산합니다. 축구는 Dixon-Coles 스코어 매트릭스를, 
         비축구(농구, 야구)는 마진 제거 시장 함축 확률을 적용하며,
         최근 경기 폼 모멘텀(form_diff)을 베이지안 우도 갱신으로 반영합니다.
+        리그별로 분리 학습된 모델을 우선 적용하며 미매칭 시 글로벌 모델로 폴백합니다.
         """
         # 최근 폼 모멘텀 차이(-0.08 ~ +0.08)
         form_adj = max(-0.08, min(0.08, form_diff * 0.0015)) if form_diff != 0.0 else 0.0
@@ -205,7 +256,12 @@ class MatchPredictor:
 
         home_en = self.normalize_team_name(home_team)
         away_en = self.normalize_team_name(away_team)
-        model = self.models.get("global")
+
+        # 리그별 분리 모델 우선 조회, 미매칭 시 global 모델 폴백
+        league_key = normalize_league_name(league)
+        model = self.models.get(league_key) if league_key else None
+        if not (model and home_en in model.teams and away_en in model.teams):
+            model = self.models.get("global")
 
         grid = None
         if model and home_en in model.teams and away_en in model.teams:
