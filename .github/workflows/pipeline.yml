@@ -12,6 +12,9 @@ on:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
+    # 갱신된 data/ 결과를 저장소에 커밋·푸시하기 위한 쓰기 권한 (기본 GITHUB_TOKEN은 읽기 전용)
+    permissions:
+      contents: write
 
     steps:
       - name: 1. 코스 코드 체크아웃
@@ -48,4 +51,4 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
           git add data/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 [자동 갱신] 최신 베트맨 경기 및 AI 승부예측 결과 업데이트" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 [자동 갱신] 최신 베트맨 경기 및 AI 승부예측 결과 업데이트" && git pull --rebase origin master && git push)
