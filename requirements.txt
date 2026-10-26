@@ -10,7 +10,7 @@ beautifulsoup4>=4.12.0
 lxml>=4.9.0
 
 # Visualization dashboard
-streamlit>=1.50.0
+streamlit>=1.65.0   # st.tabs(key=, on_change=) — 코드에서 열린 탭 바꾸기
 plotly>=5.18.0
 pyarrow<18
 

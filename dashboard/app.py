@@ -502,11 +502,10 @@ st.title("⚽ 스포츠 승부 예측 & 맞춤조건구매 대시보드")
 st.caption("베트맨 프로토 승부식 공식 계산 규칙 준수 · 복수 선택 조합 시뮬레이터 · 베트맨 과거 데이터로 학습한 AI 보정 확률")
 
 # 5. 메인 3대 탭 구성 (중복 요소 제거 및 직관적 분류)
-tab1, tab2, tab3 = st.tabs([
-    "🛒 ① 맞춤조건구매 (시뮬레이터)",
-    "🔍 ② AI 경기 분석 (조회 전용)",
-    "📊 ③ 성과 검증 (실제 경기 대조 & 통계)"
-])
+# key + on_change: 열린 탭을 코드에서 바꿀 수 있게 (사이드바 '조합 결과 보기' → ① 탭으로 이동).
+# 탭을 바꾸면 앱이 한 번 다시 실행되지만, 세 탭 내용은 그대로 모두 그려 필터·선택 상태를 유지한다
+MAIN_TABS = ["🛒 ① 맞춤조건구매 (시뮬레이터)", "🔍 ② AI 경기 분석 (조회 전용)", "📊 ③ 성과 검증 (실제 경기 대조 & 통계)"]
+tab1, tab2, tab3 = st.tabs(MAIN_TABS, key="main_tab", on_change="rerun")
 
 # ==============================================================================
 # TAB 1: 🛒 ① 맞춤조건구매 (시뮬레이터 전용)
@@ -524,9 +523,11 @@ with tab1:
     STEP_LABELS = ["① 경기 고르기", "② 조합 결과 보기"]
 
     def _go_step(n: int):
-        """버튼 콜백: 단계 값과 단계 버튼 상태를 함께 바꾼다 (버튼 상태가 남아 단계가 되돌아가는 문제 방지)"""
+        """버튼 콜백: 단계 값과 단계 버튼 상태를 함께 바꾸고 ① 탭을 연다
+        (다른 탭·사이드바에서 눌러도 바로 그 단계 화면으로 이동)"""
         st.session_state["custom_step"] = n
         st.session_state["step_nav"] = STEP_LABELS[n - 1]
+        st.session_state["main_tab"] = MAIN_TABS[0]
 
     # 선택된 단계를 다시 누르면 선택이 풀리므로(None), 그리기 전에 지금 단계로 되돌려 둔다
     if st.session_state.get("step_nav") not in STEP_LABELS:
@@ -1987,5 +1988,5 @@ with st.sidebar:
         st.markdown(f"<div style='padding-bottom:12px'><div style='font-size:13px;line-height:1.5;padding:8px 10px;"
                     f"border-radius:8px;background:{bg};color:{fg}'>{cart['msg']}</div></div>", unsafe_allow_html=True)
         st.button("➡️ 조합 결과 보기 (STEP 02)", type="primary", disabled=not cart["valid"], width="stretch",
-                  on_click=_go_step, args=(2,), key="cart_go_step2", help="① 맞춤조건구매 탭에서 열려요")
+                  on_click=_go_step, args=(2,), key="cart_go_step2", help="어느 탭에서 눌러도 ① 맞춤조건구매의 조합 결과로 이동해요")
         st.button("🗑️ 모두 빼기", width="stretch", on_click=_cart_clear, key="cart_clear")
