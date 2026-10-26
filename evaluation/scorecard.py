@@ -7,6 +7,7 @@ evaluation/scorecard.py
 - Log loss: AI(실전 확률) vs 베트맨 시장(마진 제거), 경기별 차이의 부트스트랩 95% CI
 - ROI: AI 확률 기준 EV > 2%인 결과에 베트맨 배당으로 1단위씩 걸었을 때
 - 실행할 때마다 data/model_scorecard.json 의 history 에 날짜별로 한 줄 누적
+- [5.11] 축구 승무패 외 유형(핸디캡·언더오버·농구·야구 등)은 베트맨 정답 코드(game_result)로 채점, 유형별 내역 포함
 
 실행:
     python -m evaluation.scorecard
@@ -28,7 +29,6 @@ if sys.platform.startswith('win'):
         pass
 
 from evaluation.metrics import bootstrap_roi_confidence_interval
-from evaluation.sharp_vs_betman import load_results
 from tracker.prediction_log import LOG_DIR
 
 SCORECARD_PATH = Path("data/model_scorecard.json")
@@ -42,8 +42,32 @@ def _vec(probs: Dict[str, float]) -> np.ndarray:
     return v / v.sum() if v.sum() > 0 else v
 
 
+def load_graded_results(path: Path = Path("data/history/betman_recent_results.json")) -> Dict[tuple, int]:
+    """(회차, 경기번호) → 정답 0/1/2. 베트맨 정답 코드(game_result) 우선, 없으면 축구 승무패만 스코어로 계산"""
+    res: Dict[tuple, int] = {}
+    for it in json.loads(path.read_text(encoding="utf-8")):
+        key = (int(it["gm_ts"]), str(it["match_seq"]))
+        code = str(it.get("game_result") or "")
+        if code in ("0", "1", "2"):
+            res[key] = int(code)
+        elif it.get("game_type") == "축구 승무패" and it.get("home_score") is not None and it.get("away_score") is not None:
+            hs, as_ = it["home_score"], it["away_score"]
+            res[key] = 0 if hs > as_ else (1 if hs == as_ else 2)
+    return res
+
+
+def _ll_block(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    y = np.array([r["y"] for r in rows])
+    idx = np.arange(len(y))
+    d = (-np.log(np.clip(np.array([r["model"] for r in rows])[idx, y], 1e-15, None))
+         + np.log(np.clip(np.array([r["market"] for r in rows])[idx, y], 1e-15, None)))
+    boot = d[np.random.default_rng(42).integers(0, len(d), size=(2000, len(d)))].mean(axis=1)
+    return {"n": len(rows), "ll_diff": round(float(d.mean()), 4),
+            "ll_diff_ci": [round(float(np.percentile(boot, 2.5)), 4), round(float(np.percentile(boot, 97.5)), 4)]}
+
+
 def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> Dict[str, Any]:
-    results = load_results(results_path)
+    results = load_graded_results(results_path)
     rows: List[Dict[str, Any]] = []
     for f in sorted(log_dir.glob("*.json")):
         data = json.loads(f.read_text(encoding="utf-8"))
@@ -54,7 +78,7 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
                 continue
             rows.append({"gm_ts": gm_ts, "y": y, "model": _vec(e["model_probs"]), "market": _vec(e["market_probs"]),
                          "odds": np.array([float(e["betman_odds"][k]) for k in KEYS]),
-                         "source": e.get("prob_source")})
+                         "source": e.get("prob_source"), "game_type": e.get("game_type") or "축구 승무패"})
 
     card: Dict[str, Any] = {"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                             "graded_matches": len(rows), "rounds": sorted({r["gm_ts"] for r in rows})}
@@ -93,6 +117,9 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
         "gem_bets": int(gem.sum()), "gem_hits": int(sum(1 for r in gem_rets if r > 0)),
         "gem_roi_pct": g_roi, "gem_roi_ci_low": g_lo, "gem_roi_ci_high": g_hi,
         "prob_sources": {s: sum(1 for r in rows if r["source"] == s) for s in {r["source"] for r in rows}},
+        # 유형별 LL 차이 (어느 유형에서 AI가 이기고 지는지)
+        "by_game_type": {gt: _ll_block([r for r in rows if r["game_type"] == gt])
+                         for gt in sorted({r["game_type"] for r in rows})},
     })
     if len(rows) < MIN_SAMPLES_FOR_VERDICT:
         card["verdict"] = f"검증 중 (표본 {len(rows)}/{MIN_SAMPLES_FOR_VERDICT})"

@@ -18,7 +18,8 @@ def test_prediction_log_freezes_started_matches(tmp_path):
     now = datetime(2026, 10, 24, 0, 0, tzinfo=timezone.utc)
     future = _pred("1", "26.10.25 (일) 20:00", {"home_win": 0.5, "draw": 0.25, "away_win": 0.25})
     past = _pred("2", "26.10.23 (금) 20:00", {"home_win": 0.5, "draw": 0.25, "away_win": 0.25})
-    sum_game = {**future, "match_seq": "3", "game_type": "축구 SUM", "betman_odds": {"home_win": 1.8, "draw": 0.0, "away_win": 1.8}}
+    sum_game = {**future, "match_seq": "3", "game_type": "축구 SUM", "betman_odds": {"home_win": 1.8, "draw": 0.0, "away_win": 1.8},
+                "prob_source": "market"}   # AI 미적용 유형은 기록하지 않음
     stat = save_prediction_log(1, [future, past, sum_game], log_dir=tmp_path, now=now)
     assert stat == {"updated": 1, "frozen_or_started": 1}
 
@@ -28,6 +29,8 @@ def test_prediction_log_freezes_started_matches(tmp_path):
     data = json.loads((tmp_path / "1.json").read_text(encoding="utf-8"))
     assert list(data["matches"]) == ["1"]
     assert data["matches"]["1"]["model_probs"]["home_win"] == 0.6
+    # 처음 낸 예측은 그대로 남는다 (마감 배당 비교용)
+    assert data["matches"]["1"]["first_model_probs"]["home_win"] == 0.5
 
 
 def test_scorecard_grades_logged_predictions(tmp_path):

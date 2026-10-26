@@ -45,6 +45,9 @@ jobs:
             # [Phase 5.6] 베트맨 과거 결과 아카이브 증분 수집(올해·작년 회차) → 베트맨 학습 보정 모델 재학습
             python -m collector.betman_archive --years $(( $(date +%y) - 1 )) $(date +%y)
             python -m models.betman_corrector
+            # [Phase 5.11] 전 종목·전 유형 아카이브 증분 수집 → 유형별 보정 모델 재학습 (유형별 게이트)
+            python -m collector.betman_markets_archive --years $(( $(date +%y) - 1 )) $(date +%y)
+            python -m models.betman_markets
             # [Phase 5.9] 배당만 쓰는 전략(D·E)의 과거 회차 재현 갱신
             python -m models.paper_trading --backfill
           fi

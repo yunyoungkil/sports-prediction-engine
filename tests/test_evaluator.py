@@ -23,8 +23,8 @@ def test_evaluate_match_value_with_blended_probs():
     assert res["is_recommended"] is True
 
 
-def test_evaluate_match_value_excludes_non_soccer():
-    """비축구 종목(농구/야구 등)은 EV가 높아도 추천에서 제외되고 '참고용'으로 분류되는지 검증 (Step 3.5)"""
+def test_evaluate_match_value_excludes_types_without_ai():
+    """AI 미적용 유형은 EV가 높아도 추천에서 제외되고 '참고용'으로 분류, AI 적용 시 비축구도 추천 가능 (5.11)"""
     odds = {"home_win": 2.20, "draw": 0.0, "away_win": 1.65}
     model_probs = {"home_win": 0.60, "draw": 0.0, "away_win": 0.40}
 
@@ -34,10 +34,12 @@ def test_evaluate_match_value_excludes_non_soccer():
         away_team="골든스테이트",
         betman_odds=odds,
         model_probs=model_probs,
-        sport="BK"
+        sport="BK",
+        ai_applied=False
     )
     assert res_bk["is_recommended"] is False
-    assert "비축구" in res_bk["grade"]
+    assert "AI 미적용" in res_bk["grade"]
+    assert evaluate_match_value("LA 레이커스", "골든스테이트", odds, model_probs, sport="BK")["is_recommended"] is True
 
     # 야구 경기 테스트
     res_bs = evaluate_match_value(
@@ -45,10 +47,11 @@ def test_evaluate_match_value_excludes_non_soccer():
         away_team="샌디에이고",
         betman_odds=odds,
         model_probs=model_probs,
-        sport="BS"
+        sport="BS",
+        ai_applied=False
     )
     assert res_bs["is_recommended"] is False
-    assert "비축구" in res_bs["grade"]
+    assert "AI 미적용" in res_bs["grade"]
 
     # 축구 경기 테스트: 정상 추천 유지
     res_sc = evaluate_match_value(

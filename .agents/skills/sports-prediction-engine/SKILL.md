@@ -58,8 +58,10 @@ This skill defines the architectural blueprint, realistic design constraints, ev
   - `evaluator.py`: EV calculation and S/A/B/PASS grading.
   - `form_analyzer.py`: recent form (W-D-L) and H2H.
   - `combo_builder.py`: Betman 맞춤조건구매 rules (odds product truncated to 2 decimals then ceil to 1 decimal).
+  - `betman_markets.py`: Phase 5.11 per-type (segment = Betman game type × 2/3 outcomes) correction `log p = (1+β)·log p_market + c`, trained on `data/history/betman_markets/{yy}.csv.gz` (all sports/types, collected by `collector/betman_markets_archive.py`; labels = Betman's own GAME_RESULT code). Per-segment gate; `MarketsLivePredictor` applies only passing segments (as of 2026-10-26: 축구 핸디캡|3, 농구 승패|2) with `prob_source="betman_markets"`. Run `python -m models.betman_markets`.
   - `market_corrector.py`: Phase 5.1 market-offset multinomial logit. Feature sets `live` (used in production when gate passes), `live_sharp` (waiting for Betman validation), `full` (research). Run `python -m models.market_corrector`.
-- **`evaluation/`**: `scorecard.py` (official pre-kickoff scorecard), `sharp_vs_betman.py` (Phase 5.4 live validation, verdict at ≥ 300 matched results).
+- **`evaluation/`**: `scorecard.py` (official pre-kickoff scorecard; grades every AI-applied type via Betman `game_result`, with `by_game_type`), `clv.py` (Phase 5.12 closing-line comparison → `data/clv_report.json`; evaluation only, never a feature), `sharp_vs_betman.py` (Phase 5.4 live validation, verdict at ≥ 300 matched results).
+- **`tracker/`**: `prediction_log.py` (pre-kickoff AI probabilities for all AI-applied types; `first_*` fields are never overwritten), `odds_history.py` (per-round odds: first seen + changes only, written hourly by `results.yml` and by the main pipeline), `quick_results.py` (hourly job).
 - **`notifier/telegram_bot.py`**: alerts via `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` env vars.
 - **`dashboard/app.py`**: Streamlit UI (predictions, parlay basket, past-match verification tab).
 - **`run_pipeline.py`**: single entry point (collect → score past rounds → predict → EV → JSON → notify).

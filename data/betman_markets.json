@@ -1,0 +1,742 @@
+{
+  "trained_at": "2026-10-26T07:55:25+00:00",
+  "segments": {
+    "축구 핸디캡|3": {
+      "sizes": {
+        "train": 15795,
+        "tune": 4317,
+        "test": 5672,
+        "holdout": 829
+      },
+      "chosen_lambda": 0.0001,
+      "eval_params": {
+        "k": 3,
+        "lam": 0.0001,
+        "beta": 0.18694,
+        "c": [
+          0.0,
+          0.12268,
+          0.027516
+        ]
+      },
+      "test": {
+        "n": 5672,
+        "model_ll": 0.9587,
+        "market_ll": 0.96047,
+        "ll_diff": -0.00177,
+        "ll_diff_ci": [
+          -0.00348,
+          -3e-05
+        ]
+      },
+      "holdout": {
+        "n": 829,
+        "model_ll": 0.97397,
+        "market_ll": 0.97536,
+        "ll_diff": -0.00139,
+        "ll_diff_ci": [
+          -0.00568,
+          0.00327
+        ]
+      },
+      "passes_gate": true,
+      "params": {
+        "k": 3,
+        "lam": 0.0001,
+        "beta": 0.178127,
+        "c": [
+          0.0,
+          0.095587,
+          0.033865
+        ]
+      },
+      "production_rows": 26613
+    },
+    "축구 언더오버|2": {
+      "sizes": {
+        "train": 14730,
+        "tune": 3240,
+        "test": 4295,
+        "holdout": 631
+      },
+      "chosen_lambda": 0.001,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.001,
+        "beta": 0.137113,
+        "c": [
+          0.0,
+          -0.00608
+        ]
+      },
+      "test": {
+        "n": 4295,
+        "model_ll": 0.68396,
+        "market_ll": 0.68397,
+        "ll_diff": -2e-05,
+        "ll_diff_ci": [
+          -0.00053,
+          0.00056
+        ]
+      },
+      "holdout": {
+        "n": 631,
+        "model_ll": 0.68757,
+        "market_ll": 0.68721,
+        "ll_diff": 0.00037,
+        "ll_diff_ci": [
+          -0.00098,
+          0.00173
+        ]
+      },
+      "passes_gate": false
+    },
+    "야구 승패|2": {
+      "sizes": {
+        "train": 10077,
+        "tune": 1906,
+        "test": 3821,
+        "holdout": 73
+      },
+      "chosen_lambda": 0.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.0,
+        "beta": -0.029122,
+        "c": [
+          0.0,
+          -0.023213
+        ]
+      },
+      "test": {
+        "n": 3821,
+        "model_ll": 0.67498,
+        "market_ll": 0.67499,
+        "ll_diff": -1e-05,
+        "ll_diff_ci": [
+          -0.0004,
+          0.00034
+        ]
+      },
+      "holdout": {
+        "n": 73,
+        "model_ll": 0.65949,
+        "market_ll": 0.65701,
+        "ll_diff": 0.00248,
+        "ll_diff_ci": [
+          6e-05,
+          0.00475
+        ]
+      },
+      "passes_gate": false
+    },
+    "야구 언더오버|2": {
+      "sizes": {
+        "train": 10021,
+        "tune": 1864,
+        "test": 3810,
+        "holdout": 73
+      },
+      "chosen_lambda": 1.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 1.0,
+        "beta": 4.8e-05,
+        "c": [
+          0.0,
+          -0.004118
+        ]
+      },
+      "test": {
+        "n": 3810,
+        "model_ll": 0.69066,
+        "market_ll": 0.69068,
+        "ll_diff": -1e-05,
+        "ll_diff_ci": [
+          -8e-05,
+          5e-05
+        ]
+      },
+      "holdout": {
+        "n": 73,
+        "model_ll": 0.6858,
+        "market_ll": 0.68596,
+        "ll_diff": -0.00016,
+        "ll_diff_ci": [
+          -0.00062,
+          0.00031
+        ]
+      },
+      "passes_gate": false
+    },
+    "야구 핸디캡|2": {
+      "sizes": {
+        "train": 9741,
+        "tune": 1676,
+        "test": 3748,
+        "holdout": 73
+      },
+      "chosen_lambda": 0.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.0,
+        "beta": 0.093707,
+        "c": [
+          0.0,
+          -0.005566
+        ]
+      },
+      "test": {
+        "n": 3748,
+        "model_ll": 0.6153,
+        "market_ll": 0.61544,
+        "ll_diff": -0.00013,
+        "ll_diff_ci": [
+          -0.00116,
+          0.00092
+        ]
+      },
+      "holdout": {
+        "n": 73,
+        "model_ll": 0.6259,
+        "market_ll": 0.62514,
+        "ll_diff": 0.00076,
+        "ll_diff_ci": [
+          -0.00633,
+          0.00854
+        ]
+      },
+      "passes_gate": false
+    },
+    "축구 SUM|2": {
+      "sizes": {
+        "train": 3809,
+        "tune": 2371,
+        "test": 3880,
+        "holdout": 631
+      },
+      "chosen_lambda": 0.1,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.1,
+        "beta": -0.000104,
+        "c": [
+          0.0,
+          -0.00414
+        ]
+      },
+      "test": {
+        "n": 3880,
+        "model_ll": 0.69306,
+        "market_ll": 0.69306,
+        "ll_diff": 0.0,
+        "ll_diff_ci": [
+          -6e-05,
+          7e-05
+        ]
+      },
+      "holdout": {
+        "n": 631,
+        "model_ll": 0.6931,
+        "market_ll": 0.69306,
+        "ll_diff": 4e-05,
+        "ll_diff_ci": [
+          -0.00012,
+          0.0002
+        ]
+      },
+      "passes_gate": false
+    },
+    "야구 승1패|3": {
+      "sizes": {
+        "train": 4019,
+        "tune": 1925,
+        "test": 3811,
+        "holdout": 73
+      },
+      "chosen_lambda": 0.0,
+      "eval_params": {
+        "k": 3,
+        "lam": 0.0,
+        "beta": -0.023751,
+        "c": [
+          0.0,
+          0.100629,
+          -0.038058
+        ]
+      },
+      "test": {
+        "n": 3811,
+        "model_ll": 1.07669,
+        "market_ll": 1.07591,
+        "ll_diff": 0.00077,
+        "ll_diff_ci": [
+          -0.00117,
+          0.00278
+        ]
+      },
+      "holdout": {
+        "n": 73,
+        "model_ll": 1.04252,
+        "market_ll": 1.03436,
+        "ll_diff": 0.00816,
+        "ll_diff_ci": [
+          -0.00472,
+          0.0211
+        ]
+      },
+      "passes_gate": false
+    },
+    "농구 핸디캡|2": {
+      "sizes": {
+        "train": 4853,
+        "tune": 906,
+        "test": 1358,
+        "holdout": 91
+      },
+      "chosen_lambda": 0.01,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.01,
+        "beta": -1e-06,
+        "c": [
+          0.0,
+          0.026096
+        ]
+      },
+      "test": {
+        "n": 1358,
+        "model_ll": 0.69263,
+        "market_ll": 0.69242,
+        "ll_diff": 0.00021,
+        "ll_diff_ci": [
+          -0.00046,
+          0.0009
+        ]
+      },
+      "holdout": {
+        "n": 91,
+        "model_ll": 0.69028,
+        "market_ll": 0.69148,
+        "ll_diff": -0.0012,
+        "ll_diff_ci": [
+          -0.00402,
+          0.00164
+        ]
+      },
+      "passes_gate": false
+    },
+    "농구 언더오버|2": {
+      "sizes": {
+        "train": 4853,
+        "tune": 906,
+        "test": 1356,
+        "holdout": 92
+      },
+      "chosen_lambda": 0.01,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.01,
+        "beta": -0.006979,
+        "c": [
+          0.0,
+          -0.033973
+        ]
+      },
+      "test": {
+        "n": 1356,
+        "model_ll": 0.69339,
+        "market_ll": 0.69342,
+        "ll_diff": -3e-05,
+        "ll_diff_ci": [
+          -0.00096,
+          0.00091
+        ]
+      },
+      "holdout": {
+        "n": 92,
+        "model_ll": 0.69174,
+        "market_ll": 0.6928,
+        "ll_diff": -0.00106,
+        "ll_diff_ci": [
+          -0.00476,
+          0.00231
+        ]
+      },
+      "passes_gate": false
+    },
+    "야구 SUM|2": {
+      "sizes": {
+        "train": 1769,
+        "tune": 1429,
+        "test": 3716,
+        "holdout": 73
+      },
+      "chosen_lambda": 1.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 1.0,
+        "beta": 0.001115,
+        "c": [
+          0.0,
+          -0.002027
+        ]
+      },
+      "test": {
+        "n": 3716,
+        "model_ll": 0.68333,
+        "market_ll": 0.68335,
+        "ll_diff": -2e-05,
+        "ll_diff_ci": [
+          -6e-05,
+          2e-05
+        ]
+      },
+      "holdout": {
+        "n": 73,
+        "model_ll": 0.69316,
+        "market_ll": 0.6931,
+        "ll_diff": 6e-05,
+        "ll_diff_ci": [
+          -0.00019,
+          0.00032
+        ]
+      },
+      "passes_gate": false
+    },
+    "농구 승패|2": {
+      "sizes": {
+        "train": 4772,
+        "tune": 832,
+        "test": 1251,
+        "holdout": 90
+      },
+      "chosen_lambda": 1.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 1.0,
+        "beta": 0.003617,
+        "c": [
+          0.0,
+          0.003491
+        ]
+      },
+      "test": {
+        "n": 1251,
+        "model_ll": 0.56967,
+        "market_ll": 0.56977,
+        "ll_diff": -0.0001,
+        "ll_diff_ci": [
+          -0.00019,
+          -1e-05
+        ]
+      },
+      "holdout": {
+        "n": 90,
+        "model_ll": 0.63822,
+        "market_ll": 0.63816,
+        "ll_diff": 6e-05,
+        "ll_diff_ci": [
+          -0.00031,
+          0.00045
+        ]
+      },
+      "passes_gate": true,
+      "params": {
+        "k": 2,
+        "lam": 1.0,
+        "beta": 0.00486,
+        "c": [
+          0.0,
+          0.003265
+        ]
+      },
+      "production_rows": 6945
+    },
+    "농구 SUM|2": {
+      "sizes": {
+        "train": 1624,
+        "tune": 867,
+        "test": 1204,
+        "holdout": 90
+      },
+      "chosen_lambda": 0.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.0,
+        "beta": 0.0,
+        "c": [
+          0.0,
+          -0.032921
+        ]
+      },
+      "test": {
+        "n": 1204,
+        "model_ll": 0.69293,
+        "market_ll": 0.69315,
+        "ll_diff": -0.00022,
+        "ll_diff_ci": [
+          -0.00112,
+          0.00068
+        ]
+      },
+      "holdout": {
+        "n": 90,
+        "model_ll": 0.69219,
+        "market_ll": 0.69315,
+        "ll_diff": -0.00096,
+        "ll_diff_ci": [
+          -0.00425,
+          0.00234
+        ]
+      },
+      "passes_gate": false
+    },
+    "축구 소수핸디캡|2": {
+      "sizes": {
+        "train": 2373,
+        "tune": 287,
+        "test": 402,
+        "holdout": 60
+      },
+      "chosen_lambda": 0.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.0,
+        "beta": 0.287792,
+        "c": [
+          0.0,
+          -0.058665
+        ]
+      },
+      "test": {
+        "n": 402,
+        "model_ll": 0.45371,
+        "market_ll": 0.45623,
+        "ll_diff": -0.00252,
+        "ll_diff_ci": [
+          -0.01538,
+          0.01072
+        ]
+      },
+      "holdout": {
+        "n": 60,
+        "model_ll": 0.21418,
+        "market_ll": 0.26566,
+        "ll_diff": -0.05148,
+        "ll_diff_ci": [
+          -0.06197,
+          -0.03376
+        ]
+      },
+      "passes_gate": false
+    },
+    "배구 세트핸디캡|2": {
+      "sizes": {
+        "train": 1476,
+        "tune": 361,
+        "test": 464,
+        "holdout": 24
+      },
+      "chosen_lambda": 1.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 1.0,
+        "beta": 0.003978,
+        "c": [
+          0.0,
+          -0.000499
+        ]
+      },
+      "test": {
+        "n": 464,
+        "model_ll": 0.6547,
+        "market_ll": 0.65475,
+        "ll_diff": -5e-05,
+        "ll_diff_ci": [
+          -0.00012,
+          2e-05
+        ]
+      },
+      "holdout": {
+        "n": 24,
+        "model_ll": 0.67918,
+        "market_ll": 0.6792,
+        "ll_diff": -2e-05,
+        "ll_diff_ci": [
+          -0.00024,
+          0.00023
+        ]
+      },
+      "passes_gate": false
+    },
+    "배구 언더오버|2": {
+      "sizes": {
+        "train": 1450,
+        "tune": 361,
+        "test": 465,
+        "holdout": 24
+      },
+      "chosen_lambda": 1.0,
+      "eval_params": {
+        "k": 2,
+        "lam": 1.0,
+        "beta": -0.000466,
+        "c": [
+          0.0,
+          -0.003105
+        ]
+      },
+      "test": {
+        "n": 465,
+        "model_ll": 0.69365,
+        "market_ll": 0.69368,
+        "ll_diff": -2e-05,
+        "ll_diff_ci": [
+          -0.00016,
+          0.00012
+        ]
+      },
+      "holdout": {
+        "n": 24,
+        "model_ll": 0.7003,
+        "market_ll": 0.70051,
+        "ll_diff": -0.00021,
+        "ll_diff_ci": [
+          -0.00085,
+          0.00045
+        ]
+      },
+      "passes_gate": false
+    },
+    "배구 승패|2": {
+      "sizes": {
+        "train": 1349,
+        "tune": 300,
+        "test": 419,
+        "holdout": 24
+      },
+      "chosen_lambda": 0.1,
+      "eval_params": {
+        "k": 2,
+        "lam": 0.1,
+        "beta": 0.078266,
+        "c": [
+          0.0,
+          -0.010502
+        ]
+      },
+      "test": {
+        "n": 419,
+        "model_ll": 0.5746,
+        "market_ll": 0.57569,
+        "ll_diff": -0.0011,
+        "ll_diff_ci": [
+          -0.00409,
+          0.00176
+        ]
+      },
+      "holdout": {
+        "n": 24,
+        "model_ll": 0.50673,
+        "market_ll": 0.51455,
+        "ll_diff": -0.00782,
+        "ll_diff_ci": [
+          -0.01484,
+          -0.0007
+        ]
+      },
+      "passes_gate": false
+    },
+    "야구 전반 승무패|3": {
+      "sizes": {
+        "train": 378,
+        "tune": 357,
+        "test": 840,
+        "holdout": 46
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    },
+    "농구 승5패|3": {
+      "sizes": {
+        "train": 799,
+        "tune": 171,
+        "test": 217,
+        "holdout": 34
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    },
+    "배구 SUM|2": {
+      "sizes": {
+        "train": 352,
+        "tune": 295,
+        "test": 461,
+        "holdout": 24
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    },
+    "야구 전반 언더오버|2": {
+      "sizes": {
+        "train": 0,
+        "tune": 101,
+        "test": 798,
+        "holdout": 47
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    },
+    "야구 전반 핸디캡|2": {
+      "sizes": {
+        "train": 0,
+        "tune": 101,
+        "test": 799,
+        "holdout": 46
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    },
+    "축구 전반 핸디캡|3": {
+      "sizes": {
+        "train": 0,
+        "tune": 0,
+        "test": 300,
+        "holdout": 54
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    },
+    "축구 전반 승무패|3": {
+      "sizes": {
+        "train": 0,
+        "tune": 0,
+        "test": 299,
+        "holdout": 54
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    },
+    "축구 전반 언더오버|2": {
+      "sizes": {
+        "train": 0,
+        "tune": 0,
+        "test": 299,
+        "holdout": 54
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    },
+    "축구 승부식 기타|3": {
+      "sizes": {
+        "train": 0,
+        "tune": 0,
+        "test": 10,
+        "holdout": 0
+      },
+      "passes_gate": false,
+      "reason": "표본 부족"
+    }
+  }
+}

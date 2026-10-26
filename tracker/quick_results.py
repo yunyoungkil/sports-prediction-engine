@@ -5,7 +5,8 @@ tracker/quick_results.py
 새 회차 수집·AI 예측·해외 배당 조회는 하지 않고, 끝난 경기 결과만 받아 채점을 갱신합니다.
 
 - 베트맨 결과: 현재 회차 + 직전 회차 (upsert)
-- 갱신: 해외 배당 실전 검증, 가상 베팅 리그 정산, 공식 AI 성적표
+- [5.12] 현재 회차 배당 변화 기록 (1시간 단위로 처음 배당·변경을 잡음)
+- 갱신: 해외 배당 실전 검증, 가상 베팅 리그 정산, 공식 AI 성적표, 마감 배당 비교
 필요 패키지: numpy (AI·모델 패키지 불필요)
 
 실행:
@@ -26,24 +27,43 @@ RESULTS_PATH = "data/history/betman_recent_results.json"
 
 
 def current_round() -> int:
-    """가장 최근에 예측한 회차 (predictions.json → 없으면 배당 스냅샷 파일명)"""
+    """가장 최근에 예측한 회차 (predictions.json → 없으면 배당 기록 파일명)"""
     try:
         for m in json.loads(Path("data/predictions.json").read_text(encoding="utf-8")):
             if m.get("gm_ts"):
                 return int(m["gm_ts"])
     except Exception:
         pass
-    snaps = sorted(p.stem for p in Path("data/history/odds_snapshots").glob("*.json") if p.stem.isdigit())
-    return int(snaps[-1]) if snaps else 0
+    from tracker.odds_history import latest_round
+    return latest_round()
+
+
+def record_odds(fallback_ts: int) -> int:
+    """현재 판매 회차의 배당을 받아 변화만 기록. 새 회차가 열렸으면 그 회차 번호를 돌려줌"""
+    from collector.betman_scraper import BetmanScraper
+    from tracker.odds_history import update_odds_history
+    try:
+        scraper = BetmanScraper()
+        found = scraper.find_current_round()
+        ts = int(found) if str(found).isdigit() else fallback_ts
+        matches = scraper.fetch_current_round_matches(gm_ts=str(ts))
+        if matches:
+            oh = update_odds_history(ts, matches)
+            print(f"📸 {ts}회차 배당 기록: 새 경기 {oh['new']} · 배당 변경 {oh['changed']}")
+        return ts
+    except Exception as e:
+        print(f"⚠️ 배당 기록 실패: {e}")
+        return fallback_ts
 
 
 def main() -> None:
     from collector.betman_results_scraper import BetmanResultsScraper
+    from evaluation.clv import update_report as update_clv
     from evaluation.scorecard import update_scorecard
     from evaluation.sharp_vs_betman import evaluate as evaluate_sharp
     from models.paper_trading import settle_and_summarize
 
-    ts = current_round()
+    ts = record_odds(current_round())
     if not ts:
         print("⚠️ 현재 회차를 알 수 없어 종료합니다.")
         return
@@ -54,9 +74,10 @@ def main() -> None:
     Path("data/sharp_validation.json").write_text(json.dumps(sharp, ensure_ascii=False, indent=2), encoding="utf-8")
     pt = settle_and_summarize()
     card = update_scorecard()
+    clv = update_clv()
     settled = sum(v["bets"] for v in pt["strategies"].values())
     pending = sum(v["pending"] for v in pt["strategies"].values())
-    print(f"✅ 결과 갱신: 회차 {ts} · 성적표 {card['graded_matches']}경기 · 가상 베팅 정산 {settled}건 / 대기 {pending}건")
+    print(f"✅ 결과 갱신: 회차 {ts} · 성적표 {card['graded_matches']}경기 · 가상 베팅 정산 {settled}건 / 대기 {pending}건 · 마감 배당 비교 {clv['verdict']}")
 
 
 if __name__ == "__main__":

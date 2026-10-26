@@ -17,12 +17,14 @@ def evaluate_match_value(
     is_single: bool = False,
     category: str = "일반 승무패",
     blended_probs: Optional[Dict[str, float]] = None,
-    sport: str = "축구"
+    sport: str = "축구",
+    ai_applied: bool = True
 ) -> Dict[str, Any]:
     """
     기대가치(EV) 분석 및 추천 픽 평가를 수행합니다.
     [Step 3.4] 모델 단독 확률 대신 시장+모델 블렌딩 확률(blended_probs)을 우선 기준으로 계산합니다.
-    [Step 3.5] 비축구 종목(농구, 야구 등)은 모델 미지원으로 추천에서 제외하고 '참고용'으로 분류합니다.
+    [Step 3.5 → 5.11] AI 보정이 적용되지 않은 유형(ai_applied=False)은 추천에서 제외하고 '참고용'으로 분류합니다.
+                      (예전에는 비축구 종목 전체를 제외했으나, 전 종목 보정 모델이 생겨 AI 적용 여부로 판단)
     공식: EV = (확률 * 배당률) - 1.0
     """
     home_odds = betman_odds.get("home_win", 0.0)
@@ -82,11 +84,10 @@ def evaluate_match_value(
         grade = "PASS (기대가치 기준 미달 - 패스 권장)" if best_ev > 0 else "PASS (기대가치 마이너스 - 패스 권장)"
         is_recommended = False
 
-    # [Step 3.5] 비축구 종목 추천 제외: 축구 이외의 종목은 AI 통계 모델 미지원이므로 추천에서 제외
-    is_soccer = (str(sport).upper() in ("SC", "축구", "SOCCER", "FOOTBALL"))
-    if not is_soccer and is_recommended:
+    # AI 미적용 유형은 추천 제외 (배당 확률만으로는 기대가치가 늘 마이너스라 원래 나오지 않지만 안전장치)
+    if not ai_applied and is_recommended:
         is_recommended = False
-        grade = "참고용 (비축구 종목 - AI 모델 미지원)"
+        grade = "참고용 (AI 미적용 유형)"
         
     return {
         "expected_values": evs,

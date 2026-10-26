@@ -7,6 +7,9 @@ predictions.json은 실행할 때마다 덮어써지므로, 실제로 "그때 �
 킥오프 전 예측을 따로 남겨야 합니다. 같은 경기는 킥오프 전 마지막 예측으로 갱신하고,
 킥오프가 지난 경기는 더 이상 바꾸지 않습니다 (사후 수정 방지).
 
+[5.11] AI가 적용된 모든 유형을 기록합니다 (축구 승무패 + 전 종목 보정 모델).
+[5.12] 처음 기록한 배당·예측(first_*)은 바꾸지 않고 남깁니다 → 마감 배당 비교(evaluation/clv.py)용.
+
 파일: data/history/prediction_log/{gm_ts}.json
 """
 
@@ -18,12 +21,7 @@ from typing import Any, Dict, List, Optional
 from collector.betman_sharp import parse_betman_kickoff
 
 LOG_DIR = Path("data/history/prediction_log")
-
-
-def is_soccer_1x2(p: Dict[str, Any]) -> bool:
-    odds = p.get("betman_odds") or {}
-    return (p.get("game_type") == "축구 승무패" and p.get("category") == "일반 승무패"
-            and float(odds.get("draw") or 0.0) > 1.0)
+AI_SOURCES = ("betman_corrector", "market_corrector", "betman_markets")
 
 
 def save_prediction_log(
@@ -45,16 +43,21 @@ def save_prediction_log(
 
     updated = frozen = 0
     for p in predictions:
-        if not is_soccer_1x2(p):
+        if p.get("prob_source") not in AI_SOURCES:
             continue
         ko = parse_betman_kickoff(p.get("match_time"))
         if ko is None or ko <= now:
             frozen += 1
             continue
         probs = p.get("blended_probabilities") or p.get("market_implied_probs")
-        data["matches"][str(p["match_seq"])] = {
+        seq = str(p["match_seq"])
+        prev = data["matches"].get(seq) or {}
+        stamp = now.isoformat(timespec="seconds")
+        data["matches"][seq] = {
             "match_time": p.get("match_time"),
             "league": p.get("league"),
+            "game_type": p.get("game_type"),
+            "line": p.get("line"),
             "home_team": p.get("home_team"),
             "away_team": p.get("away_team"),
             "betman_odds": p.get("betman_odds"),
@@ -62,7 +65,12 @@ def save_prediction_log(
             "model_probs": probs,
             "prob_source": p.get("prob_source"),
             "model_version": model_version,
-            "logged_at": now.isoformat(timespec="seconds"),
+            "logged_at": stamp,
+            # 처음 기록한 값은 유지 (이전 형식 기록은 그때의 마지막 값으로 시작)
+            "first_odds": prev.get("first_odds") or prev.get("betman_odds") or p.get("betman_odds"),
+            "first_market_probs": prev.get("first_market_probs") or prev.get("market_probs") or p.get("market_implied_probs"),
+            "first_model_probs": prev.get("first_model_probs") or prev.get("model_probs") or probs,
+            "first_logged_at": prev.get("first_logged_at") or prev.get("logged_at") or stamp,
         }
         updated += 1
 

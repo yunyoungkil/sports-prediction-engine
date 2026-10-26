@@ -2,7 +2,7 @@
 run_pipeline.py
 ===============
 스포츠 승부 예측 & 가치 픽 분석 전체 파이프라인을 1회 실행하는 메인 스크립트.
-[1. 베트맨 데이터 수집] -> [2. Dixon-Coles AI 승률 계산] -> [3. 기대가치(EV) 분석] -> [4. JSON 저장]
+[1. 베트맨 데이터 수집] -> [2. AI 보정 확률 계산] -> [3. 기대가치(EV) 분석] -> [4. JSON 저장]
 """
 
 import sys
@@ -68,14 +68,14 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             pass
         return []
     
-    # 1-1. 예측 시점 배당 스냅샷 회차별 누적 보존 (CLV 마감 배당 대비 성과 추적용)
+    # 1-1. [Phase 5.12] 배당 변화 기록 (처음 배당 + 바뀔 때만, 마감 배당 비교용)
     if matches and gm_ts:
         try:
-            from tracker.odds_snapshot import save_odds_snapshot
-            snap_path = save_odds_snapshot(gm_ts, matches)
-            print(f"📸 [{gm_ts}회차] 예측 시점 배당 스냅샷 저장 완료: {snap_path}")
+            from tracker.odds_history import update_odds_history
+            oh = update_odds_history(gm_ts, matches)
+            print(f"📸 [{gm_ts}회차] 배당 기록: 새 경기 {oh['new']} · 배당 변경 {oh['changed']}")
         except Exception as e:
-            print(f"⚠️ 배당 스냅샷 저장 중 오류 발생: {e}")
+            print(f"⚠️ 배당 기록 저장 중 오류 발생: {e}")
 
     # 1-1b. [Phase 5.4] 해외 배당(The Odds API) 짝짓기 및 회차별 스냅샷 저장 (ODDS_API_KEY 필요)
     sharp_by_seq = {}
@@ -124,6 +124,14 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     except Exception as e:
         print(f"⚠️ AI 성적표 갱신 실패: {e}")
 
+    # 1-6. [Phase 5.12] 마감 배당 비교 (AI ▲ 쪽으로 배당이 움직였는지)
+    try:
+        from evaluation.clv import update_report as update_clv
+        clv = update_clv()
+        print(f"📈 [5.12] 마감 배당 비교: 배당 바뀐 {clv['moved']}경기 중 AI 쪽 {clv['toward_ai']} → {clv['verdict']}")
+    except Exception as e:
+        print(f"⚠️ 마감 배당 비교 실패: {e}")
+
     # 2. 폼/상대전적 분석기 준비 (유형별 라벨·배당 확률은 models/market_view.py)
     form_analyzer = FormAnalyzer()
     # [Phase 5.2] 시장 보정 모델: 검증 게이트(TEST·베트맨 실전 모두 시장보다 LL 낮음)를 통과한 경우에만 사용
@@ -135,6 +143,10 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     prob_label = ("베트맨 학습 보정 모델(5.6)" if betman_model
                   else "유럽 학습 보정 모델(5.1)" if corrector else "시장 단독")
     print(f"ℹ 확률 기준: {prob_label} (축구 일반 승무패, 검증 중)")
+    # [Phase 5.11] 전 종목·전 유형 보정 모델 (유형별 게이트를 통과한 세그먼트만)
+    from models.betman_markets import MarketsLivePredictor
+    markets_model = MarketsLivePredictor.load()
+    print(f"ℹ 전 종목 보정 모델: {', '.join(sorted(markets_model.models)) if markets_model else '적용 유형 없음'}")
     
     # 3. 각 경기별 예측 및 기대가치 평가
     print("\n🧠 [2/3] 전 경기 AI 승률 계산 및 기대가치(EV) 분석 중...")
@@ -196,6 +208,11 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         elif corrector is not None and is_soccer_1x2:
             blended_probs = corrector.predict_proba(market_stats["true_probs"], form_diff=form_diff, sot_diff=sot_diff)
             prob_source = "market_corrector"
+        elif markets_model is not None and not is_soccer_1x2:
+            mk_probs = markets_model.predict_proba(m.get("game_type", ""), odds)
+            if mk_probs:
+                blended_probs = mk_probs
+                prob_source = "betman_markets"
         
         # [Step 3.4 & 3.5] 기대가치(EV) 평가 (블렌딩 확률 기준 산출 및 비축구 종목 추천 제외)
         eval_result = evaluate_match_value(
@@ -204,7 +221,8 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             is_single=is_single,
             category=category,
             blended_probs=blended_probs,
-            sport=m.get("sport", "SC")
+            sport=m.get("sport", "SC"),
+            ai_applied=(prob_source != "market")
         )
         
         results.append({

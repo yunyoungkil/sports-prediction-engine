@@ -191,6 +191,28 @@ def load_paper_trading():
 
 
 @st.cache_data(ttl=60)
+def load_markets_model():
+    """[5.11] 전 종목·전 유형 보정 모델의 유형(세그먼트)별 검증 결과"""
+    path = project_root / "data" / "betman_markets.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@st.cache_data(ttl=60)
+def load_clv():
+    path = project_root / "data" / "clv_report.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def markets_applied_types() -> list:
+    mm = load_markets_model() or {}
+    return sorted(k.split("|")[0] for k, v in mm.get("segments", {}).items() if v.get("passes_gate"))
+
+
+@st.cache_data(ttl=60)
 def load_scorecard():
     path = project_root / "data" / "model_scorecard.json"
     if not path.exists():
@@ -220,7 +242,7 @@ def get_grade_badge_html(grade_raw: str) -> str:
 PICK_KEYS = ("home_win", "draw", "away_win")
 SEL_KEY = {"home_win": "home", "draw": "draw", "away_win": "away"}
 RESULT_CODE_TO_KEY = {"0": "home_win", "1": "draw", "2": "away_win"}   # 2-way(언더/오버, 홀/짝)도 0=앞, 2=뒤
-AI_SOURCES = ("betman_corrector", "market_corrector")
+AI_SOURCES = ("betman_corrector", "market_corrector", "betman_markets")
 
 
 @st.cache_data(ttl=60)
@@ -291,8 +313,8 @@ def detect_current_gm_ts(preds) -> str:
     for m in preds:
         if m.get("gm_ts"):
             return str(m["gm_ts"])
-    snap_dir = project_root / "data" / "history" / "odds_snapshots"
-    names = sorted(p.stem for p in snap_dir.glob("*.json")) if snap_dir.exists() else []
+    snap_dir = project_root / "data" / "history" / "odds_history"
+    names = sorted(p.stem for p in snap_dir.glob("*.json") if p.stem.isdigit()) if snap_dir.exists() else []
     return names[-1] if names else ""
 
 
@@ -596,7 +618,7 @@ with tab1:
                     f"AI 예상·💎는 경기 전 AI 기록이 있는 회차({', '.join(logged) or '없음'})에서만 나옵니다.")
 
         def _ai_probs(m, res, log):
-            """AI 예상 확률: 축구 승무패만. 끝난 경기는 경기 전 고정 기록으로만 (경기 후 재계산 값은 결과가 섞일 수 있음)"""
+            """AI 예상 확률: AI가 적용된 유형만. 끝난 경기는 경기 전 고정 기록으로만 (경기 후 재계산 값은 결과가 섞일 수 있음)"""
             if res is not None:
                 return log.get("model_probs") if log else None
             return m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
@@ -1282,8 +1304,12 @@ with tab2:
                 lines.append(f"- **{label}** ({s['samples']:,}경기): AI `{s['model_ll']:.4f}` vs 시장 `{s['market_ll']:.4f}` "
                              f"(차이 `{s['ll_diff']:+.4f}`, 95% CI `[{ci[0]:+.4f}, {ci[1]:+.4f}]`)")
             st.info(
-                f"🧠 **현재 확률 기준: {status['name']}** (축구 일반 승무패에 적용, 나머지 유형은 배당 기준)\n\n"
+                f"🧠 **현재 확률 기준: {status['name']}** (축구 일반 승무패)\n\n"
                 + "\n".join(lines) + "\n\n"
+                + (f"🧩 **전 종목 보정 AI 적용 유형:** {', '.join(markets_applied_types())} "
+                   "(유형별 과거 시험에서 시장보다 나은 유형만, ③ 탭에서 유형별 성적 확인)\n\n"
+                   if markets_applied_types() else "")
+                + "그 밖의 유형은 배당 기준입니다. "
                 "과거 시험에서는 시장(배당)보다 조금 더 정확했지만 차이가 작아 **검증 중**입니다. "
                 "Log loss는 낮을수록 정확하고, 차이가 음수면 AI 우세입니다. 실전 성적은 ③ 성과 검증 탭의 공식 성적표에서 확인하세요. "
                 "모든 등급(S/A/B)은 **참고용**입니다."
@@ -1441,7 +1467,8 @@ with tab2:
 
                     # 확률 비교: 배당(마진 제거) 확률 vs AI 확률, EV는 실전 확률 기준
                     is_ai_src = target_m.get("prob_source") in AI_SOURCES
-                    src_name = {"betman_corrector": "베트맨 학습 보정 AI", "market_corrector": "유럽 학습 보정 AI"}.get(
+                    src_name = {"betman_corrector": "베트맨 학습 보정 AI", "market_corrector": "유럽 학습 보정 AI",
+                                "betman_markets": "전 종목 보정 AI"}.get(
                         target_m.get("prob_source"), "배당 기준 (AI 미적용 유형)")
                     st.markdown(f"##### 📊 배당 확률 vs AI 확률 & 기대가치(EV) — 확률 기준: {src_name}")
                     icons = {"home_win": "🏠", "draw": "🤝", "away_win": "✈️"}
@@ -1516,6 +1543,13 @@ with tab3:
                 st.metric(label, val)
                 st.caption(sub)
         st.markdown(f"**판정:** {card.get('verdict', '-')}")
+        if len(card.get("by_game_type", {})) > 1:
+            with st.expander("유형별 성적 (어느 유형에서 AI가 앞서는지)", expanded=False):
+                st.dataframe(pd.DataFrame([
+                    {"유형": gt, "채점 경기": v["n"], "차이 (음수 = AI 우세)": f"{v['ll_diff']:+.4f}",
+                     "95% CI": f"[{v['ll_diff_ci'][0]:+.4f}, {v['ll_diff_ci'][1]:+.4f}]"}
+                    for gt, v in sorted(card["by_game_type"].items(), key=lambda x: -x[1]["n"])]),
+                    hide_index=True, width="stretch")
         if card.get("gem_bets") is not None:
             gb = card["gem_bets"]
             st.markdown(
@@ -1544,6 +1578,59 @@ with tab3:
                                 "EV>2% 베팅": s.get("bets", 0)})
             st.dataframe(pd.DataFrame(rows_bt), width="stretch", hide_index=True)
 
+    mm = load_markets_model()
+    if mm and mm.get("segments"):
+        with st.expander("📚 전 종목 보정 AI — 유형별 과거 시험 (핸디캡·언더오버·홀짝·농구·야구·배구 …)", expanded=False):
+            st.caption("유형마다 '베트맨이 일관되게 잘못 매기는 쪽'(강한 쪽 저평가 β, 특정 선택지 편향 c)을 2023~2025년 상반기로 학습하고 "
+                       "2026년(TEST)·최근(HOLDOUT)에서 시험했습니다. 둘 다 시장보다 나은 유형만 실전에 씁니다. "
+                       f"학습: {mm.get('trained_at', '-')[:10]}")
+            seg_rows = []
+            for key, v in mm["segments"].items():
+                gt, k = key.split("|")
+                t, h = v.get("test"), v.get("holdout")
+                seg_rows.append({
+                    "유형": gt + (" (무 있음)" if k == "3" and "승무패" not in gt else ""),
+                    "실전 적용": "✅" if v.get("passes_gate") else ("표본 부족" if v.get("reason") else "❌"),
+                    "TEST 경기": t["n"] if t else v["sizes"]["test"],
+                    "TEST 차이": f"{t['ll_diff']:+.4f}" if t else "-",
+                    "TEST 95% CI": f"[{t['ll_diff_ci'][0]:+.4f}, {t['ll_diff_ci'][1]:+.4f}]" if t else "-",
+                    "HOLDOUT 경기": h["n"] if h else 0,
+                    "HOLDOUT 차이": f"{h['ll_diff']:+.4f}" if h else "-",
+                    "β (강한 쪽 저평가)": round(v["eval_params"]["beta"], 3) if v.get("eval_params") else None,
+                })
+            st.dataframe(pd.DataFrame(seg_rows), hide_index=True, width="stretch")
+            st.caption("차이가 음수면 AI가 시장보다 정확. β > 0 이면 베트맨이 배당 1순위(강한 쪽)를 낮게 잡는다는 뜻입니다.")
+
+    # ------------------------------------------------------------------
+    # A-1. 마감 배당 비교 (CLV) — 시장이 나중에 AI 쪽으로 움직였는가
+    # ------------------------------------------------------------------
+    st.divider()
+    st.subheader("📈 마감 배당 비교 (CLV)")
+    st.caption("AI가 '배당보다 높다(▲)'고 본 선택지의 배당이 마감 때까지 어떻게 움직였는지 봅니다. 다른 배터들의 돈이 나중에 AI 쪽으로 "
+               "몰려 배당이 내려가면 AI가 시장보다 먼저 맞게 본 것입니다. 승패 결과보다 운이 덜 섞여 **성적표보다 적은 경기로 방향**을 볼 수 있습니다. "
+               "배당 변화는 1시간마다 기록합니다.")
+    clv = load_clv()
+    if clv and clv.get("matches"):
+        mv = clv.get("mean_move_pp") or {}
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            _metric_note("비교 경기", f"{clv['matches']:,}경기", f"배당이 바뀐 경기 {clv['moved']}")
+        with c2:
+            _metric_note("AI 쪽으로 움직임", f"{clv['toward_ai_pct']:.0f}%" if clv.get("toward_ai_pct") is not None else "-",
+                         f"{clv['toward_ai']}건 / 반대 {clv['away_from_ai']}건")
+        with c3:
+            _metric_note("기준선: 배당 1순위 쪽", f"{clv['fav_toward_pct']:.0f}%" if clv.get("fav_toward_pct") is not None else "-",
+                         "강한 쪽 배당이 원래 잘 내려가는지 비교용")
+        with c4:
+            _metric_note("AI ▲ 평균 확률 변화", f"{mv['mean']:+.2f}%p" if mv.get("mean") is not None else "-",
+                         f"95% CI [{mv['ci'][0]:+.2f}, {mv['ci'][1]:+.2f}]" if mv.get("ci") else None)
+        st.markdown(f"**판정:** {clv.get('verdict', '-')}")
+        g = clv.get("gem_clv_pct") or {}
+        if g.get("n"):
+            st.caption(f"💎 선택지 {g['n']}건: 처음 배당이 마감 배당보다 평균 {g['mean']:+.2f}% 높음 (플러스 = 마감보다 좋은 배당에 산 셈)")
+    else:
+        st.info("⏳ 아직 비교할 경기가 없습니다. AI 예측을 기록한 경기가 마감되면 자동으로 쌓입니다.")
+
     # ------------------------------------------------------------------
     # A-2. 가상 베팅 리그 — 전략별 자동 가상 베팅 (실제 구매 없음)
     # ------------------------------------------------------------------
@@ -1554,15 +1641,19 @@ with tab3:
     pt = load_paper_trading()
     bf = load_paper_backfill()
 
+    clv_by_strategy = (load_clv() or {}).get("paper_strategies", {})
+
     def _league_rows(strategies: dict, source: str) -> list:
         rows_ = []
-        for v in strategies.values():
+        for key, v in strategies.items():
+            cv = clv_by_strategy.get(key, {}) if source == "실시간" else {}
             rows_.append({
                 "구분": source, "전략": v["label"], "정산": v["bets"], "대기": v["pending"],
                 "적중률": f"{v['hits'] / v['bets'] * 100:.0f}%" if v["bets"] else "-",
                 "가상 수익률": f"{v['roi_pct']:+.1f}%" if v["bets"] else "-",
                 "95% CI": f"[{v['roi_ci_low']:+.1f}%, {v['roi_ci_high']:+.1f}%]" if v["bets"] else "-",
                 "누적 손익(원)": v["profit"], "판정": v["verdict"] if v["bets"] else "-",
+                "마감 대비 배당": f"{cv['mean']:+.2f}% ({cv['n']})" if cv.get("n") else "-",
             })
         return rows_
 
@@ -1574,7 +1665,8 @@ with tab3:
     else:
         st.dataframe(pd.DataFrame(league_rows), hide_index=True, width="stretch",
                      column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized")})
-        st.caption("실시간: 경기 시작 전에 고정 저장된 베팅 (2026-10-26, 260127회차부터). "
+        st.caption("마감 대비 배당: 산 배당 ÷ 마감 배당 − 1의 경기(다리) 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것입니다. "
+                   "실시간: 경기 시작 전에 고정 저장된 베팅 (2026-10-26, 260127회차부터). "
                    "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당·실제 결과로 재현 — "
                    "AI 전략(A·B·C)은 현재 AI가 그 결과까지 학습했으므로 재현하지 않습니다.")
         curves = {}
