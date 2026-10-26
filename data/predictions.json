@@ -42,29 +42,29 @@
       "away": 0.4914
     },
     "model_probabilities": {
-      "home_win": 0.4286,
+      "home_win": 0.5086,
       "draw": 0.0,
-      "away_win": 0.5714
+      "away_win": 0.4914
     },
     "blended_probabilities": {
-      "home_win": 0.3815,
-      "draw": 0.2498,
-      "away_win": 0.3686
+      "home_win": 0.5086,
+      "draw": 0.0,
+      "away_win": 0.4914
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1303,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1302
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 필라델피아 76s 승",
-      "raw_selection_name": "필라델피아 76s 승",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 디트로이트 피스톤스 승",
+      "raw_selection_name": "디트로이트 피스톤스 승",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -221,29 +221,29 @@
       "away": 0.5057
     },
     "model_probabilities": {
-      "home_win": 0.4143,
+      "home_win": 0.4943,
       "draw": 0.0,
-      "away_win": 0.5857
+      "away_win": 0.5057
     },
     "blended_probabilities": {
-      "home_win": 0.3708,
-      "draw": 0.2498,
-      "away_win": 0.3794
+      "home_win": 0.4943,
+      "draw": 0.0,
+      "away_win": 0.5057
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.1302
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 필라델피아 76s (-1.5) 승",
       "raw_selection_name": "필라델피아 76s (-1.5) 승",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -405,24 +405,24 @@
       "away_win": 0.5215
     },
     "blended_probabilities": {
-      "home_win": 0.359,
-      "draw": 0.2498,
-      "away_win": 0.3912
+      "home_win": 0.4785,
+      "draw": 0.0,
+      "away_win": 0.5215
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3466,
+        "home_win": -0.1291,
         "draw": -1.0,
-        "away_win": -0.3467
+        "away_win": -0.1291
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 229.5)",
       "raw_selection_name": "언더 (< 229.5)",
-      "best_ev": -0.3466,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1291,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -584,24 +584,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -758,9 +758,9 @@
       "away": 0.1892
     },
     "model_probabilities": {
-      "home_win": 0.7822,
-      "draw": 0.1635,
-      "away_win": 0.0543
+      "home_win": 0.596,
+      "draw": 0.2149,
+      "away_win": 0.1892
     },
     "blended_probabilities": {
       "home_win": 0.616,
@@ -769,20 +769,7 @@
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-0",
-        "prob": 14.9
-      },
-      {
-        "score": "1-0",
-        "prob": 13.1
-      },
-      {
-        "score": "3-0",
-        "prob": 11.3
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1006,
@@ -958,31 +945,18 @@
       "away": 0.3701
     },
     "model_probabilities": {
-      "home_win": 0.2319,
-      "draw": 0.2129,
-      "away_win": 0.5552
+      "home_win": 0.3849,
+      "draw": 0.245,
+      "away_win": 0.3701
     },
     "blended_probabilities": {
       "home_win": 0.3849,
       "draw": 0.245,
       "away_win": 0.3701
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.7
-      },
-      {
-        "score": "2-1",
-        "prob": 8.9
-      },
-      {
-        "score": "1-0",
-        "prob": 8.8
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1301,
@@ -1158,31 +1132,18 @@
       "away": 0.5766
     },
     "model_probabilities": {
-      "home_win": 0.0493,
-      "draw": 0.0336,
-      "away_win": 0.9171
+      "home_win": 0.2232,
+      "draw": 0.2002,
+      "away_win": 0.5766
     },
     "blended_probabilities": {
       "home_win": 0.2232,
       "draw": 0.2002,
       "away_win": 0.5766
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "0-2",
-        "prob": 11.7
-      },
-      {
-        "score": "0-1",
-        "prob": 11.7
-      },
-      {
-        "score": "1-2",
-        "prob": 9.8
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1295,
@@ -1358,42 +1319,29 @@
       "away": 0.4856
     },
     "model_probabilities": {
-      "home_win": 0.681,
+      "home_win": 0.5144,
       "draw": 0.0,
-      "away_win": 0.319
+      "away_win": 0.4856
     },
     "blended_probabilities": {
-      "home_win": 0.3859,
-      "draw": 0.2498,
-      "away_win": 0.3643
+      "home_win": 0.5144,
+      "draw": 0.0,
+      "away_win": 0.4856
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.7
-      },
-      {
-        "score": "2-1",
-        "prob": 9.0
-      },
-      {
-        "score": "1-0",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3478,
+        "home_win": -0.1307,
         "draw": -1.0,
-        "away_win": -0.3479
+        "away_win": -0.1308
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 3.5)",
       "raw_selection_name": "언더 (< 3.5)",
-      "best_ev": -0.3478,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1307,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -1563,24 +1511,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -1745,29 +1693,29 @@
       "away": 0.6082
     },
     "model_probabilities": {
-      "home_win": 0.3118,
+      "home_win": 0.3918,
       "draw": 0.0,
-      "away_win": 0.6882
+      "away_win": 0.6082
     },
     "blended_probabilities": {
-      "home_win": 0.2939,
-      "draw": 0.2498,
-      "away_win": 0.4563
+      "home_win": 0.3918,
+      "draw": 0.0,
+      "away_win": 0.6082
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3475
+        "away_win": -0.1303
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 새크라멘토 킹스 승",
       "raw_selection_name": "새크라멘토 킹스 승",
-      "best_ev": -0.3475,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -1916,29 +1864,29 @@
       "away": 0.4943
     },
     "model_probabilities": {
-      "home_win": 0.4257,
+      "home_win": 0.5057,
       "draw": 0.0,
-      "away_win": 0.5743
+      "away_win": 0.4943
     },
     "blended_probabilities": {
-      "home_win": 0.3794,
-      "draw": 0.2498,
-      "away_win": 0.3708
+      "home_win": 0.5057,
+      "draw": 0.0,
+      "away_win": 0.4943
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.13
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 새크라멘토 킹스 (+4.5) 승",
-      "raw_selection_name": "새크라멘토 킹스 (+4.5) 승",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 멤피스 그리즐리스 반대승",
+      "raw_selection_name": "멤피스 그리즐리스 반대승",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -2092,24 +2040,24 @@
       "away_win": 0.5057
     },
     "blended_probabilities": {
-      "home_win": 0.3708,
-      "draw": 0.2498,
-      "away_win": 0.3794
+      "home_win": 0.4943,
+      "draw": 0.0,
+      "away_win": 0.5057
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.1302
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 236.5)",
       "raw_selection_name": "언더 (< 236.5)",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -2263,24 +2211,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -2429,29 +2377,29 @@
       "away": 0.5511
     },
     "model_probabilities": {
-      "home_win": 0.3689,
+      "home_win": 0.4489,
       "draw": 0.0,
-      "away_win": 0.6311
+      "away_win": 0.5511
     },
     "blended_probabilities": {
-      "home_win": 0.3368,
-      "draw": 0.2498,
-      "away_win": 0.4134
+      "home_win": 0.4489,
+      "draw": 0.0,
+      "away_win": 0.5511
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3466,
+        "home_win": -0.1291,
         "draw": -1.0,
-        "away_win": -0.3468
+        "away_win": -0.1293
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 삼성 라이온즈 승",
       "raw_selection_name": "삼성 라이온즈 승",
-      "best_ev": -0.3466,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1291,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -2632,16 +2580,16 @@
       "away": 0.431
     },
     "model_probabilities": {
-      "home_win": 0.2366,
+      "home_win": 0.3166,
       "draw": 0.2524,
-      "away_win": 0.511
+      "away_win": 0.431
     },
     "blended_probabilities": {
       "home_win": 0.3166,
       "draw": 0.2524,
       "away_win": 0.431
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
@@ -2835,29 +2783,29 @@
       "away": 0.3455
     },
     "model_probabilities": {
-      "home_win": 0.5745,
+      "home_win": 0.6545,
       "draw": 0.0,
-      "away_win": 0.4255
+      "away_win": 0.3455
     },
     "blended_probabilities": {
-      "home_win": 0.491,
-      "draw": 0.2498,
-      "away_win": 0.2592
+      "home_win": 0.6545,
+      "draw": 0.0,
+      "away_win": 0.3455
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.347,
+        "home_win": -0.1295,
         "draw": -1.0,
-        "away_win": -0.3468
+        "away_win": -0.1293
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] KIA 타이거즈 반대승",
       "raw_selection_name": "KIA 타이거즈 반대승",
-      "best_ev": -0.3468,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1293,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -3043,24 +2991,24 @@
       "away_win": 0.4728
     },
     "blended_probabilities": {
-      "home_win": 0.3955,
-      "draw": 0.2498,
-      "away_win": 0.3547
+      "home_win": 0.5272,
+      "draw": 0.0,
+      "away_win": 0.4728
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.1301,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.13
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 언더 (< 9.5)",
-      "raw_selection_name": "언더 (< 9.5)",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 오버 (> 9.5)",
+      "raw_selection_name": "오버 (> 9.5)",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -3246,24 +3194,24 @@
       "away_win": 0.4411
     },
     "blended_probabilities": {
-      "home_win": 0.4193,
-      "draw": 0.2498,
-      "away_win": 0.3309
+      "home_win": 0.5589,
+      "draw": 0.0,
+      "away_win": 0.4411
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3249,
+        "home_win": -0.1002,
         "draw": -1.0,
-        "away_win": -0.325
+        "away_win": -0.1002
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3249,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1002,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -3409,64 +3357,64 @@
     "league": "KBO",
     "game_type": "야구 전반 승무패",
     "category": "전반 승무패",
-    "category_label": "전반 승무패",
+    "category_label": "전반전 승무패",
     "selection_labels": {
-      "home_win": "삼성 라이온즈 승",
-      "draw": "무승부",
-      "away_win": "KIA 타이거즈 승"
+      "home_win": "전반 삼성 라이온즈 승",
+      "draw": "전반 무승부",
+      "away_win": "전반 KIA 타이거즈 승"
     },
     "is_single": true,
     "line": 0.0,
     "match_time": "26.10.26 (월) 18:30",
     "close_time": 1793007000000,
     "kickoff_ts": 1793007000000,
-    "buy_reject": "2",
+    "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
     "home_team": "삼성 라이온즈",
     "away_team": "KIA 타이거즈",
     "betman_odds": {
-      "home_win": 2.15,
-      "draw": 5.8,
-      "away_win": 1.95
+      "home_win": 2.2,
+      "draw": 5.2,
+      "away_win": 1.99
     },
     "prediction_odds": {
-      "home_win": 2.15,
-      "draw": 5.8,
-      "away_win": 1.95
+      "home_win": 2.2,
+      "draw": 5.2,
+      "away_win": 1.99
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4043,
-      "draw": 0.1499,
-      "away": 0.4458
+      "home": 0.3955,
+      "draw": 0.1673,
+      "away": 0.4372
     },
     "model_probabilities": {
-      "home_win": 0.3243,
-      "draw": 0.1499,
-      "away_win": 0.5258
+      "home_win": 0.3955,
+      "draw": 0.1673,
+      "away_win": 0.4372
     },
     "blended_probabilities": {
-      "home_win": 0.4043,
-      "draw": 0.1499,
-      "away_win": 0.4458
+      "home_win": 0.3955,
+      "draw": 0.1673,
+      "away_win": 0.4372
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1308,
-        "draw": -0.1306,
-        "away_win": -0.1307
+        "home_win": -0.1299,
+        "draw": -0.13,
+        "away_win": -0.13
       },
-      "best_selection": "draw",
-      "best_selection_name": "[단통 ⚡] 무승부",
-      "raw_selection_name": "무승부",
-      "best_ev": -0.1306,
-      "best_ev_pct": "-13.1%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 전반 삼성 라이온즈 승",
+      "raw_selection_name": "전반 삼성 라이온즈 승",
+      "best_ev": -0.1299,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -3612,7 +3560,7 @@
     "league": "KBO",
     "game_type": "야구 전반 핸디캡",
     "category": "전반 핸디캡",
-    "category_label": "핸디캡 (+1.5)",
+    "category_label": "전반 핸디캡 (+1.5)",
     "selection_labels": {
       "home_win": "삼성 라이온즈 (+1.5) 승",
       "draw": "-",
@@ -3647,29 +3595,29 @@
       "away": 0.3508
     },
     "model_probabilities": {
-      "home_win": 0.5692,
+      "home_win": 0.6492,
       "draw": 0.0,
-      "away_win": 0.4308
+      "away_win": 0.3508
     },
     "blended_probabilities": {
-      "home_win": 0.487,
-      "draw": 0.2498,
-      "away_win": 0.2632
+      "home_win": 0.6492,
+      "draw": 0.0,
+      "away_win": 0.3508
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.1301,
         "draw": -1.0,
-        "away_win": -0.3473
+        "away_win": -0.13
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] KIA 타이거즈 반대승",
       "raw_selection_name": "KIA 타이거즈 반대승",
-      "best_ev": -0.3473,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -3815,7 +3763,7 @@
     "league": "KBO",
     "game_type": "야구 전반 언더오버",
     "category": "전반 언더오버",
-    "category_label": "언더/오버 (기준 5.5)",
+    "category_label": "전반 언더/오버 (기준 5.5)",
     "selection_labels": {
       "home_win": "언더 (< 5.5)",
       "draw": "-",
@@ -3855,24 +3803,24 @@
       "away_win": 0.446
     },
     "blended_probabilities": {
-      "home_win": 0.4156,
-      "draw": 0.2498,
-      "away_win": 0.3346
+      "home_win": 0.554,
+      "draw": 0.0,
+      "away_win": 0.446
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3475
+        "away_win": -0.1303
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 5.5)",
       "raw_selection_name": "언더 (< 5.5)",
-      "best_ev": -0.3475,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -4053,29 +4001,29 @@
       "away": 0.3956
     },
     "model_probabilities": {
-      "home_win": 0.6844,
+      "home_win": 0.6044,
       "draw": 0.0,
-      "away_win": 0.3156
+      "away_win": 0.3956
     },
     "blended_probabilities": {
-      "home_win": 0.4534,
-      "draw": 0.2498,
-      "away_win": 0.2968
+      "home_win": 0.6044,
+      "draw": 0.0,
+      "away_win": 0.3956
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3471,
+        "home_win": -0.1297,
         "draw": -1.0,
-        "away_win": -0.347
+        "away_win": -0.1297
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 창원LG 세이커스 승",
-      "raw_selection_name": "창원LG 세이커스 승",
-      "best_ev": -0.347,
-      "best_ev_pct": "-34.7%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 고양소노 스카이거너스 승",
+      "raw_selection_name": "고양소노 스카이거너스 승",
+      "best_ev": -0.1297,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -4243,16 +4191,16 @@
       "away": 0.245
     },
     "model_probabilities": {
-      "home_win": 0.5128,
+      "home_win": 0.4328,
       "draw": 0.3222,
-      "away_win": 0.165
+      "away_win": 0.245
     },
     "blended_probabilities": {
       "home_win": 0.4328,
       "draw": 0.3222,
       "away_win": 0.245
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
@@ -4433,29 +4381,29 @@
       "away": 0.4971
     },
     "model_probabilities": {
-      "home_win": 0.5829,
+      "home_win": 0.5029,
       "draw": 0.0,
-      "away_win": 0.4171
+      "away_win": 0.4971
     },
     "blended_probabilities": {
-      "home_win": 0.3773,
-      "draw": 0.2498,
-      "away_win": 0.3729
+      "home_win": 0.5029,
+      "draw": 0.0,
+      "away_win": 0.4971
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3473,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.1301
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 고양소노 스카이거너스 (-3.5) 승",
       "raw_selection_name": "고양소노 스카이거너스 (-3.5) 승",
-      "best_ev": -0.3473,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -4628,24 +4576,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3473,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3473
+        "away_win": -0.13
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 169.5)",
       "raw_selection_name": "언더 (< 169.5)",
-      "best_ev": -0.3473,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -4818,24 +4766,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -5003,9 +4951,9 @@
       "away": 0.561
     },
     "model_probabilities": {
-      "home_win": 0.1154,
-      "draw": 0.2006,
-      "away_win": 0.684
+      "home_win": 0.2071,
+      "draw": 0.2319,
+      "away_win": 0.561
     },
     "blended_probabilities": {
       "home_win": 0.1726,
@@ -5014,20 +4962,7 @@
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "0-2",
-        "prob": 12.1
-      },
-      {
-        "score": "0-1",
-        "prob": 11.8
-      },
-      {
-        "score": "1-2",
-        "prob": 9.7
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.2751,
@@ -5142,31 +5077,18 @@
       "away": 0.3166
     },
     "model_probabilities": {
-      "home_win": 0.7289,
-      "draw": 0.1526,
-      "away_win": 0.1185
+      "home_win": 0.431,
+      "draw": 0.2524,
+      "away_win": 0.3166
     },
     "blended_probabilities": {
       "home_win": 0.431,
       "draw": 0.2524,
       "away_win": 0.3166
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.2
-      },
-      {
-        "score": "1-0",
-        "prob": 10.0
-      },
-      {
-        "score": "2-1",
-        "prob": 9.7
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1294,
@@ -5281,42 +5203,29 @@
       "away": 0.4123
     },
     "model_probabilities": {
-      "home_win": 0.6811,
+      "home_win": 0.5877,
       "draw": 0.0,
-      "away_win": 0.3189
+      "away_win": 0.4123
     },
     "blended_probabilities": {
-      "home_win": 0.4409,
-      "draw": 0.2498,
-      "away_win": 0.3093
+      "home_win": 0.5877,
+      "draw": 0.0,
+      "away_win": 0.4123
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.1
-      },
-      {
-        "score": "1-0",
-        "prob": 10.2
-      },
-      {
-        "score": "2-1",
-        "prob": 9.8
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.13
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 3.5)",
       "raw_selection_name": "오버 (> 3.5)",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -5425,24 +5334,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -5546,9 +5455,9 @@
       "away": 0.1115
     },
     "model_probabilities": {
-      "home_win": 0.8454,
-      "draw": 0.1086,
-      "away_win": 0.046
+      "home_win": 0.7128,
+      "draw": 0.1757,
+      "away_win": 0.1115
     },
     "blended_probabilities": {
       "home_win": 0.7505,
@@ -5557,20 +5466,7 @@
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-0",
-        "prob": 16.9
-      },
-      {
-        "score": "3-0",
-        "prob": 14.6
-      },
-      {
-        "score": "1-0",
-        "prob": 13.1
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.0844,
@@ -5685,31 +5581,18 @@
       "away": 0.2762
     },
     "model_probabilities": {
-      "home_win": 0.4363,
-      "draw": 0.2444,
-      "away_win": 0.3193
+      "home_win": 0.4887,
+      "draw": 0.2351,
+      "away_win": 0.2762
     },
     "blended_probabilities": {
       "home_win": 0.4887,
       "draw": 0.2351,
       "away_win": 0.2762
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-0",
-        "prob": 11.1
-      },
-      {
-        "score": "2-0",
-        "prob": 10.6
-      },
-      {
-        "score": "1-1",
-        "prob": 10.4
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1301,
@@ -5824,42 +5707,29 @@
       "away": 0.6044
     },
     "model_probabilities": {
-      "home_win": 0.4578,
+      "home_win": 0.3956,
       "draw": 0.0,
-      "away_win": 0.5422
+      "away_win": 0.6044
     },
     "blended_probabilities": {
-      "home_win": 0.2968,
-      "draw": 0.2498,
-      "away_win": 0.4534
+      "home_win": 0.3956,
+      "draw": 0.0,
+      "away_win": 0.6044
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.4
-      },
-      {
-        "score": "0-1",
-        "prob": 9.6
-      },
-      {
-        "score": "1-2",
-        "prob": 9.5
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.347,
+        "home_win": -0.1297,
         "draw": -1.0,
-        "away_win": -0.3471
+        "away_win": -0.1297
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
       "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.347,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1297,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -5968,24 +5838,24 @@
       "away_win": 0.5028
     },
     "blended_probabilities": {
-      "home_win": 0.373,
-      "draw": 0.2498,
-      "away_win": 0.3772
+      "home_win": 0.4972,
+      "draw": 0.0,
+      "away_win": 0.5028
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3249,
+        "home_win": -0.1001,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 짝 (총득점 짝수)",
       "raw_selection_name": "짝 (총득점 짝수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -6072,59 +5942,46 @@
     "home_team": "알아흘리 사우디",
     "away_team": "알가라파SC",
     "betman_odds": {
-      "home_win": 1.27,
-      "draw": 4.55,
-      "away_win": 7.0
+      "home_win": 1.2,
+      "draw": 5.5,
+      "away_win": 7.5
     },
     "prediction_odds": {
-      "home_win": 1.27,
-      "draw": 4.55,
-      "away_win": 7.0
+      "home_win": 1.2,
+      "draw": 5.5,
+      "away_win": 7.5
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.6847,
-      "draw": 0.1911,
-      "away": 0.1242
+      "home": 0.7256,
+      "draw": 0.1583,
+      "away": 0.1161
     },
     "model_probabilities": {
-      "home_win": 0.8408,
-      "draw": 0.1131,
-      "away_win": 0.0461
+      "home_win": 0.7256,
+      "draw": 0.1583,
+      "away_win": 0.1161
     },
     "blended_probabilities": {
-      "home_win": 0.7218,
-      "draw": 0.187,
-      "away_win": 0.0911
+      "home_win": 0.7687,
+      "draw": 0.1479,
+      "away_win": 0.0834
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-0",
-        "prob": 17.1
-      },
-      {
-        "score": "3-0",
-        "prob": 14.4
-      },
-      {
-        "score": "1-0",
-        "prob": 13.5
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0833,
-        "draw": -0.1492,
-        "away_win": -0.3623
+        "home_win": -0.0776,
+        "draw": -0.1865,
+        "away_win": -0.3745
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 알아흘리 사우디 승",
       "raw_selection_name": "알아흘리 사우디 승",
-      "best_ev": -0.0833,
-      "best_ev_pct": "-8.3%",
+      "best_ev": -0.0776,
+      "best_ev_pct": "-7.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -6211,59 +6068,46 @@
     "home_team": "알아흘리 사우디",
     "away_team": "알가라파SC",
     "betman_odds": {
-      "home_win": 1.84,
-      "draw": 3.65,
-      "away_win": 3.0
+      "home_win": 1.65,
+      "draw": 4.1,
+      "away_win": 3.35
     },
     "prediction_odds": {
-      "home_win": 1.84,
-      "draw": 3.65,
-      "away_win": 3.0
+      "home_win": 1.65,
+      "draw": 4.1,
+      "away_win": 3.35
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4723,
-      "draw": 0.2381,
-      "away": 0.2897
+      "home": 0.5277,
+      "draw": 0.2124,
+      "away": 0.2599
     },
     "model_probabilities": {
-      "home_win": 0.4121,
-      "draw": 0.242,
-      "away_win": 0.3458
+      "home_win": 0.5277,
+      "draw": 0.2124,
+      "away_win": 0.2599
     },
     "blended_probabilities": {
-      "home_win": 0.4723,
-      "draw": 0.2381,
-      "away_win": 0.2897
+      "home_win": 0.5277,
+      "draw": 0.2124,
+      "away_win": 0.2599
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-0",
-        "prob": 10.7
-      },
-      {
-        "score": "1-1",
-        "prob": 10.7
-      },
-      {
-        "score": "2-0",
-        "prob": 9.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.131,
-        "draw": -0.1309,
-        "away_win": -0.1309
+        "home_win": -0.1293,
+        "draw": -0.1292,
+        "away_win": -0.1293
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 핸디캡 무승부",
       "raw_selection_name": "핸디캡 무승부",
-      "best_ev": -0.1309,
-      "best_ev_pct": "-13.1%",
+      "best_ev": -0.1292,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -6350,59 +6194,46 @@
     "home_team": "알아흘리 사우디",
     "away_team": "알가라파SC",
     "betman_odds": {
-      "home_win": 1.67,
+      "home_win": 1.77,
       "draw": 0.0,
-      "away_win": 1.82
+      "away_win": 1.71
     },
     "prediction_odds": {
-      "home_win": 1.67,
+      "home_win": 1.77,
       "draw": 0.0,
-      "away_win": 1.82
+      "away_win": 1.71
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5215,
+      "home": 0.4914,
       "draw": 0.0,
-      "away": 0.4785
+      "away": 0.5086
     },
     "model_probabilities": {
-      "home_win": 0.681,
+      "home_win": 0.4914,
       "draw": 0.0,
-      "away_win": 0.319
+      "away_win": 0.5086
     },
     "blended_probabilities": {
-      "home_win": 0.3912,
-      "draw": 0.2498,
-      "away_win": 0.359
+      "home_win": 0.4914,
+      "draw": 0.0,
+      "away_win": 0.5086
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.6
-      },
-      {
-        "score": "2-1",
-        "prob": 9.1
-      },
-      {
-        "score": "1-0",
-        "prob": 9.0
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3467,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3466
+        "away_win": -0.1303
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 오버 (> 3.5)",
-      "raw_selection_name": "오버 (> 3.5)",
-      "best_ev": -0.3466,
-      "best_ev_pct": "-34.7%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 언더 (< 3.5)",
+      "raw_selection_name": "언더 (< 3.5)",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -6511,24 +6342,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -6632,9 +6463,9 @@
       "away": 0.2152
     },
     "model_probabilities": {
-      "home_win": 0.7614,
-      "draw": 0.1807,
-      "away_win": 0.0579
+      "home_win": 0.5696,
+      "draw": 0.2152,
+      "away_win": 0.2152
     },
     "blended_probabilities": {
       "home_win": 0.5947,
@@ -6643,20 +6474,7 @@
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-0",
-        "prob": 13.6
-      },
-      {
-        "score": "1-0",
-        "prob": 12.6
-      },
-      {
-        "score": "3-0",
-        "prob": 9.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.0901,
@@ -6771,31 +6589,18 @@
       "away": 0.3991
     },
     "model_probabilities": {
-      "home_win": 0.2195,
-      "draw": 0.1995,
-      "away_win": 0.581
+      "home_win": 0.3625,
+      "draw": 0.2384,
+      "away_win": 0.3991
     },
     "blended_probabilities": {
       "home_win": 0.3625,
       "draw": 0.2384,
       "away_win": 0.3991
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.7
-      },
-      {
-        "score": "1-2",
-        "prob": 8.4
-      },
-      {
-        "score": "2-1",
-        "prob": 8.4
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.13,
@@ -6910,42 +6715,29 @@
       "away": 0.5511
     },
     "model_probabilities": {
-      "home_win": 0.4577,
+      "home_win": 0.4489,
       "draw": 0.0,
-      "away_win": 0.5423
+      "away_win": 0.5511
     },
     "blended_probabilities": {
-      "home_win": 0.3368,
-      "draw": 0.2498,
-      "away_win": 0.4134
+      "home_win": 0.4489,
+      "draw": 0.0,
+      "away_win": 0.5511
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.7
-      },
-      {
-        "score": "1-2",
-        "prob": 8.8
-      },
-      {
-        "score": "0-1",
-        "prob": 8.7
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3466,
+        "home_win": -0.1291,
         "draw": -1.0,
-        "away_win": -0.3468
+        "away_win": -0.1293
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
       "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.3466,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1291,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -7054,24 +6846,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -7175,9 +6967,9 @@
       "away": 0.4536
     },
     "model_probabilities": {
-      "home_win": 0.1629,
-      "draw": 0.234,
-      "away_win": 0.6031
+      "home_win": 0.2561,
+      "draw": 0.2903,
+      "away_win": 0.4536
     },
     "blended_probabilities": {
       "home_win": 0.2426,
@@ -7186,20 +6978,7 @@
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.1
-      },
-      {
-        "score": "0-1",
-        "prob": 10.2
-      },
-      {
-        "score": "1-2",
-        "prob": 9.8
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1752,
@@ -7314,31 +7093,18 @@
       "away": 0.2288
     },
     "model_probabilities": {
-      "home_win": 0.7966,
-      "draw": 0.0961,
-      "away_win": 0.1073
+      "home_win": 0.4996,
+      "draw": 0.2717,
+      "away_win": 0.2288
     },
     "blended_probabilities": {
       "home_win": 0.4996,
       "draw": 0.2717,
       "away_win": 0.2288
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-0",
-        "prob": 12.2
-      },
-      {
-        "score": "1-0",
-        "prob": 11.9
-      },
-      {
-        "score": "2-1",
-        "prob": 9.7
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1307,
@@ -7453,42 +7219,29 @@
       "away": 0.4391
     },
     "model_probabilities": {
-      "home_win": 0.4578,
+      "home_win": 0.5609,
       "draw": 0.0,
-      "away_win": 0.5422
+      "away_win": 0.4391
     },
     "blended_probabilities": {
-      "home_win": 0.4208,
-      "draw": 0.2498,
-      "away_win": 0.3294
+      "home_win": 0.5609,
+      "draw": 0.0,
+      "away_win": 0.4391
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.4
-      },
-      {
-        "score": "1-0",
-        "prob": 9.7
-      },
-      {
-        "score": "2-1",
-        "prob": 9.5
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3478,
+        "home_win": -0.1306,
         "draw": -1.0,
-        "away_win": -0.3478
+        "away_win": -0.1306
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
       "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.3478,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1306,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -7597,24 +7350,24 @@
       "away_win": 0.5028
     },
     "blended_probabilities": {
-      "home_win": 0.373,
-      "draw": 0.2498,
-      "away_win": 0.3772
+      "home_win": 0.4972,
+      "draw": 0.0,
+      "away_win": 0.5028
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3249,
+        "home_win": -0.1001,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 짝 (총득점 짝수)",
       "raw_selection_name": "짝 (총득점 짝수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -7718,9 +7471,9 @@
       "away": 0.136
     },
     "model_probabilities": {
-      "home_win": 0.7166,
-      "draw": 0.1977,
-      "away_win": 0.0857
+      "home_win": 0.6748,
+      "draw": 0.1892,
+      "away_win": 0.136
     },
     "blended_probabilities": {
       "home_win": 0.7038,
@@ -7767,20 +7520,7 @@
         "away_win": -0.1667
       }
     },
-    "top_scores": [
-      {
-        "score": "2-1",
-        "prob": 9.8
-      },
-      {
-        "score": "2-0",
-        "prob": 9.0
-      },
-      {
-        "score": "1-1",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.0921,
@@ -8000,31 +7740,18 @@
       "away": 0.2951
     },
     "model_probabilities": {
-      "home_win": 0.4942,
-      "draw": 0.2224,
-      "away_win": 0.2834
+      "home_win": 0.4631,
+      "draw": 0.2418,
+      "away_win": 0.2951
     },
     "blended_probabilities": {
       "home_win": 0.4631,
       "draw": 0.2418,
       "away_win": 0.2951
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-1",
-        "prob": 9.8
-      },
-      {
-        "score": "2-0",
-        "prob": 9.0
-      },
-      {
-        "score": "1-1",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1294,
@@ -8244,31 +7971,18 @@
       "away": 0.4892
     },
     "model_probabilities": {
-      "home_win": 0.3036,
-      "draw": 0.1905,
-      "away_win": 0.5058
+      "home_win": 0.2903,
+      "draw": 0.2205,
+      "away_win": 0.4892
     },
     "blended_probabilities": {
       "home_win": 0.2903,
       "draw": 0.2205,
       "away_win": 0.4892
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-1",
-        "prob": 9.8
-      },
-      {
-        "score": "2-0",
-        "prob": 9.0
-      },
-      {
-        "score": "1-1",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1291,
@@ -8456,7 +8170,7 @@
     "category_label": "핸디캡 (-3.5)",
     "selection_labels": {
       "home_win": "파리 생제르맹 (-3.5) 승",
-      "draw": "핸디캡 무승부",
+      "draw": "-",
       "away_win": "올랭피크 리옹 반대승"
     },
     "is_single": true,
@@ -8488,42 +8202,29 @@
       "away": 0.8287
     },
     "model_probabilities": {
-      "home_win": 0.1817,
+      "home_win": 0.1713,
       "draw": 0.0,
-      "away_win": 0.8183
+      "away_win": 0.8287
     },
     "blended_probabilities": {
-      "home_win": 0.1285,
-      "draw": 0.2498,
-      "away_win": 0.6217
+      "home_win": 0.1713,
+      "draw": 0.0,
+      "away_win": 0.8287
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-1",
-        "prob": 9.8
-      },
-      {
-        "score": "2-0",
-        "prob": 9.0
-      },
-      {
-        "score": "1-1",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3472,
+        "home_win": -0.1298,
         "draw": -1.0,
-        "away_win": -0.3472
+        "away_win": -0.1299
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 파리 생제르맹 (-3.5) 승",
       "raw_selection_name": "파리 생제르맹 (-3.5) 승",
-      "best_ev": -0.3472,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1298,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -8732,42 +8433,29 @@
       "away": 0.4828
     },
     "model_probabilities": {
-      "home_win": 0.5666,
+      "home_win": 0.5172,
       "draw": 0.0,
-      "away_win": 0.4334
+      "away_win": 0.4828
     },
     "blended_probabilities": {
-      "home_win": 0.388,
-      "draw": 0.2498,
-      "away_win": 0.3622
+      "home_win": 0.5172,
+      "draw": 0.0,
+      "away_win": 0.4828
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-1",
-        "prob": 9.8
-      },
-      {
-        "score": "2-0",
-        "prob": 9.0
-      },
-      {
-        "score": "1-1",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3482,
+        "home_win": -0.1311,
         "draw": -1.0,
-        "away_win": -0.348
+        "away_win": -0.131
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 3.5)",
       "raw_selection_name": "오버 (> 3.5)",
-      "best_ev": -0.348,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.131,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -8981,24 +8669,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -9207,9 +8895,9 @@
       "away": 0.2175
     },
     "model_probabilities": {
-      "home_win": 0.4107,
-      "draw": 0.2612,
-      "away_win": 0.3282
+      "home_win": 0.4972,
+      "draw": 0.2853,
+      "away_win": 0.2175
     },
     "blended_probabilities": {
       "home_win": 0.5007,
@@ -9256,20 +8944,7 @@
         "away_win": -0.1344
       }
     },
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 12.4
-      },
-      {
-        "score": "1-0",
-        "prob": 10.8
-      },
-      {
-        "score": "2-1",
-        "prob": 9.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1238,
@@ -9489,31 +9164,18 @@
       "away": 0.4681
     },
     "model_probabilities": {
-      "home_win": 0.1811,
-      "draw": 0.2296,
-      "away_win": 0.5893
+      "home_win": 0.2599,
+      "draw": 0.2721,
+      "away_win": 0.4681
     },
     "blended_probabilities": {
       "home_win": 0.2599,
       "draw": 0.2721,
       "away_win": 0.4681
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 12.4
-      },
-      {
-        "score": "1-0",
-        "prob": 10.8
-      },
-      {
-        "score": "2-1",
-        "prob": 9.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1293,
@@ -9733,31 +9395,18 @@
       "away": 0.713
     },
     "model_probabilities": {
-      "home_win": 0.0496,
-      "draw": 0.1384,
-      "away_win": 0.812
+      "home_win": 0.113,
+      "draw": 0.174,
+      "away_win": 0.713
     },
     "blended_probabilities": {
       "home_win": 0.113,
       "draw": 0.174,
       "away_win": 0.713
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 12.4
-      },
-      {
-        "score": "1-0",
-        "prob": 10.8
-      },
-      {
-        "score": "2-1",
-        "prob": 9.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1299,
@@ -9977,42 +9626,29 @@
       "away": 0.435
     },
     "model_probabilities": {
-      "home_win": 0.5153,
+      "home_win": 0.565,
       "draw": 0.0,
-      "away_win": 0.4847
+      "away_win": 0.435
     },
     "blended_probabilities": {
-      "home_win": 0.4239,
-      "draw": 0.2498,
-      "away_win": 0.3263
+      "home_win": 0.565,
+      "draw": 0.0,
+      "away_win": 0.435
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 12.4
-      },
-      {
-        "score": "1-0",
-        "prob": 10.8
-      },
-      {
-        "score": "2-1",
-        "prob": 9.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3472,
+        "home_win": -0.1299,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.13
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
       "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.3472,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1299,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -10226,24 +9862,24 @@
       "away_win": 0.5028
     },
     "blended_probabilities": {
-      "home_win": 0.373,
-      "draw": 0.2498,
-      "away_win": 0.3772
+      "home_win": 0.4972,
+      "draw": 0.0,
+      "away_win": 0.5028
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3249,
+        "home_win": -0.1001,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 짝 (총득점 짝수)",
       "raw_selection_name": "짝 (총득점 짝수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -10452,29 +10088,29 @@
       "away": 0.4828
     },
     "model_probabilities": {
-      "home_win": 0.4372,
+      "home_win": 0.5172,
       "draw": 0.0,
-      "away_win": 0.5628
+      "away_win": 0.4828
     },
     "blended_probabilities": {
-      "home_win": 0.388,
-      "draw": 0.2498,
-      "away_win": 0.3622
+      "home_win": 0.5172,
+      "draw": 0.0,
+      "away_win": 0.4828
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3482,
+        "home_win": -0.1311,
         "draw": -1.0,
-        "away_win": -0.348
+        "away_win": -0.131
       },
       "best_selection": "away_win",
       "best_selection_name": "워싱턴 위저즈 승",
       "raw_selection_name": "워싱턴 위저즈 승",
-      "best_ev": -0.348,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.131,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -10610,29 +10246,29 @@
       "away": 0.5115
     },
     "model_probabilities": {
-      "home_win": 0.4085,
+      "home_win": 0.4885,
       "draw": 0.0,
-      "away_win": 0.5915
+      "away_win": 0.5115
     },
     "blended_probabilities": {
-      "home_win": 0.3665,
-      "draw": 0.2498,
-      "away_win": 0.3837
+      "home_win": 0.4885,
+      "draw": 0.0,
+      "away_win": 0.5115
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1305,
         "draw": -1.0,
-        "away_win": -0.3477
+        "away_win": -0.1305
       },
       "best_selection": "home_win",
       "best_selection_name": "샬럿 호네츠 (-1.5) 승",
       "raw_selection_name": "샬럿 호네츠 (-1.5) 승",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1305,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -10773,24 +10409,24 @@
       "away_win": 0.4914
     },
     "blended_probabilities": {
-      "home_win": 0.3815,
-      "draw": 0.2498,
-      "away_win": 0.3686
+      "home_win": 0.5086,
+      "draw": 0.0,
+      "away_win": 0.4914
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1303,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1302
       },
-      "best_selection": "home_win",
-      "best_selection_name": "언더 (< 229.5)",
-      "raw_selection_name": "언더 (< 229.5)",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_selection": "away_win",
+      "best_selection_name": "오버 (> 229.5)",
+      "raw_selection_name": "오버 (> 229.5)",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -10931,24 +10567,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -11084,29 +10720,29 @@
       "away": 0.4083
     },
     "model_probabilities": {
-      "home_win": 0.5117,
+      "home_win": 0.5917,
       "draw": 0.0,
-      "away_win": 0.4883
+      "away_win": 0.4083
     },
     "blended_probabilities": {
-      "home_win": 0.4439,
-      "draw": 0.2498,
-      "away_win": 0.3063
+      "home_win": 0.5917,
+      "draw": 0.0,
+      "away_win": 0.4083
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1303
       },
       "best_selection": "home_win",
       "best_selection_name": "클리블랜드 캐벌리어스 승",
       "raw_selection_name": "클리블랜드 캐벌리어스 승",
-      "best_ev": -0.3475,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -11250,29 +10886,29 @@
       "away": 0.5057
     },
     "model_probabilities": {
-      "home_win": 0.4143,
+      "home_win": 0.4943,
       "draw": 0.0,
-      "away_win": 0.5857
+      "away_win": 0.5057
     },
     "blended_probabilities": {
-      "home_win": 0.3708,
-      "draw": 0.2498,
-      "away_win": 0.3794
+      "home_win": 0.4943,
+      "draw": 0.0,
+      "away_win": 0.5057
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.1302
       },
       "best_selection": "home_win",
       "best_selection_name": "클리블랜드 캐벌리어스 (-3.5) 승",
       "raw_selection_name": "클리블랜드 캐벌리어스 (-3.5) 승",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -11421,24 +11057,24 @@
       "away_win": 0.5086
     },
     "blended_probabilities": {
-      "home_win": 0.3686,
-      "draw": 0.2498,
-      "away_win": 0.3815
+      "home_win": 0.4914,
+      "draw": 0.0,
+      "away_win": 0.5086
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1303
       },
       "best_selection": "home_win",
       "best_selection_name": "언더 (< 233.5)",
       "raw_selection_name": "언더 (< 233.5)",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -11587,24 +11223,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -11748,29 +11384,29 @@
       "away": 0.1385
     },
     "model_probabilities": {
-      "home_win": 0.9415,
+      "home_win": 0.8615,
       "draw": 0.0,
-      "away_win": 0.0585
+      "away_win": 0.1385
     },
     "blended_probabilities": {
-      "home_win": 0.6463,
-      "draw": 0.2498,
-      "away_win": 0.1039
+      "home_win": 0.8615,
+      "draw": 0.0,
+      "away_win": 0.1385
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3472,
+        "home_win": -0.1299,
         "draw": -1.0,
-        "away_win": -0.3475
+        "away_win": -0.1302
       },
       "best_selection": "home_win",
       "best_selection_name": "보스턴 셀틱스 승",
       "raw_selection_name": "보스턴 셀틱스 승",
-      "best_ev": -0.3472,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1299,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -11898,29 +11534,29 @@
       "away": 0.5115
     },
     "model_probabilities": {
-      "home_win": 0.5685,
+      "home_win": 0.4885,
       "draw": 0.0,
-      "away_win": 0.4315
+      "away_win": 0.5115
     },
     "blended_probabilities": {
-      "home_win": 0.3665,
-      "draw": 0.2498,
-      "away_win": 0.3837
+      "home_win": 0.4885,
+      "draw": 0.0,
+      "away_win": 0.5115
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1305,
         "draw": -1.0,
-        "away_win": -0.3477
+        "away_win": -0.1305
       },
       "best_selection": "home_win",
       "best_selection_name": "보스턴 셀틱스 (-13.5) 승",
       "raw_selection_name": "보스턴 셀틱스 (-13.5) 승",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1305,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -12053,24 +11689,24 @@
       "away_win": 0.5057
     },
     "blended_probabilities": {
-      "home_win": 0.3708,
-      "draw": 0.2498,
-      "away_win": 0.3794
+      "home_win": 0.4943,
+      "draw": 0.0,
+      "away_win": 0.5057
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.1302
       },
       "best_selection": "home_win",
       "best_selection_name": "언더 (< 233.5)",
       "raw_selection_name": "언더 (< 233.5)",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -12203,24 +11839,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -12348,29 +11984,29 @@
       "away": 0.237
     },
     "model_probabilities": {
-      "home_win": 0.683,
+      "home_win": 0.763,
       "draw": 0.0,
-      "away_win": 0.317
+      "away_win": 0.237
     },
     "blended_probabilities": {
-      "home_win": 0.5724,
-      "draw": 0.2498,
-      "away_win": 0.1778
+      "home_win": 0.763,
+      "draw": 0.0,
+      "away_win": 0.237
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3475
+        "away_win": -0.1302
       },
       "best_selection": "home_win",
       "best_selection_name": "마이애미 히트 승",
       "raw_selection_name": "마이애미 히트 승",
-      "best_ev": -0.3475,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -12506,29 +12142,29 @@
       "away": 0.4971
     },
     "model_probabilities": {
-      "home_win": 0.4229,
+      "home_win": 0.5029,
       "draw": 0.0,
-      "away_win": 0.5771
+      "away_win": 0.4971
     },
     "blended_probabilities": {
-      "home_win": 0.3773,
-      "draw": 0.2498,
-      "away_win": 0.3729
+      "home_win": 0.5029,
+      "draw": 0.0,
+      "away_win": 0.4971
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3473,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.1301
       },
       "best_selection": "home_win",
       "best_selection_name": "마이애미 히트 (-8.5) 승",
       "raw_selection_name": "마이애미 히트 (-8.5) 승",
-      "best_ev": -0.3473,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -12669,24 +12305,24 @@
       "away_win": 0.5029
     },
     "blended_probabilities": {
-      "home_win": 0.3729,
-      "draw": 0.2498,
-      "away_win": 0.3773
+      "home_win": 0.4971,
+      "draw": 0.0,
+      "away_win": 0.5029
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.1301,
         "draw": -1.0,
-        "away_win": -0.3473
+        "away_win": -0.13
       },
       "best_selection": "away_win",
       "best_selection_name": "오버 (> 236.5)",
       "raw_selection_name": "오버 (> 236.5)",
-      "best_ev": -0.3473,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -12827,24 +12463,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -12980,29 +12616,29 @@
       "away": 0.4943
     },
     "model_probabilities": {
-      "home_win": 0.4802,
+      "home_win": 0.5057,
       "draw": 0.0,
-      "away_win": 0.5198
+      "away_win": 0.4943
     },
     "blended_probabilities": {
-      "home_win": 0.3794,
-      "draw": 0.2498,
-      "away_win": 0.3708
+      "home_win": 0.5057,
+      "draw": 0.0,
+      "away_win": 0.4943
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.13
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 탬파베이 레이스 승",
-      "raw_selection_name": "탬파베이 레이스 승",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 밀워키 브루어스 승",
+      "raw_selection_name": "밀워키 브루어스 승",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -13183,16 +12819,16 @@
       "away": 0.383
     },
     "model_probabilities": {
-      "home_win": 0.3155,
+      "home_win": 0.341,
       "draw": 0.276,
-      "away_win": 0.4085
+      "away_win": 0.383
     },
     "blended_probabilities": {
       "home_win": 0.341,
       "draw": 0.276,
       "away_win": 0.383
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
@@ -13386,29 +13022,29 @@
       "away": 0.7564
     },
     "model_probabilities": {
-      "home_win": 0.2181,
+      "home_win": 0.2436,
       "draw": 0.0,
-      "away_win": 0.7819
+      "away_win": 0.7564
     },
     "blended_probabilities": {
-      "home_win": 0.1827,
-      "draw": 0.2498,
-      "away_win": 0.5674
+      "home_win": 0.2436,
+      "draw": 0.0,
+      "away_win": 0.7564
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3478,
+        "home_win": -0.1303,
         "draw": -1.0,
-        "away_win": -0.3475
+        "away_win": -0.1301
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 밀워키 브루어스 반대승",
       "raw_selection_name": "밀워키 브루어스 반대승",
-      "best_ev": -0.3475,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1301,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -13594,24 +13230,24 @@
       "away_win": 0.4657
     },
     "blended_probabilities": {
-      "home_win": 0.4008,
-      "draw": 0.2498,
-      "away_win": 0.3494
+      "home_win": 0.5343,
+      "draw": 0.0,
+      "away_win": 0.4657
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3467,
+        "home_win": -0.1291,
         "draw": -1.0,
-        "away_win": -0.3466
+        "away_win": -0.1291
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 오버 (> 7.5)",
-      "raw_selection_name": "오버 (> 7.5)",
-      "best_ev": -0.3466,
-      "best_ev_pct": "-34.7%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 언더 (< 7.5)",
+      "raw_selection_name": "언더 (< 7.5)",
+      "best_ev": -0.1291,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -13797,24 +13433,24 @@
       "away_win": 0.4305
     },
     "blended_probabilities": {
-      "home_win": 0.4272,
-      "draw": 0.2498,
-      "away_win": 0.323
+      "home_win": 0.5695,
+      "draw": 0.0,
+      "away_win": 0.4305
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.325,
+        "home_win": -0.1002,
         "draw": -1.0,
-        "away_win": -0.3249
+        "away_win": -0.1003
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 짝 (총득점 짝수)",
-      "raw_selection_name": "짝 (총득점 짝수)",
-      "best_ev": -0.3249,
-      "best_ev_pct": "-32.5%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
+      "raw_selection_name": "홀 (총득점 홀수)",
+      "best_ev": -0.1002,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -13960,11 +13596,11 @@
     "league": "MLB",
     "game_type": "야구 전반 승무패",
     "category": "전반 승무패",
-    "category_label": "전반 승무패",
+    "category_label": "전반전 승무패",
     "selection_labels": {
-      "home_win": "탬파베이 레이스 승",
-      "draw": "무승부",
-      "away_win": "밀워키 브루어스 승"
+      "home_win": "전반 탬파베이 레이스 승",
+      "draw": "전반 무승부",
+      "away_win": "전반 밀워키 브루어스 승"
     },
     "is_single": true,
     "line": 0.0,
@@ -13995,16 +13631,16 @@
       "away": 0.4046
     },
     "model_probabilities": {
-      "home_win": 0.4117,
+      "home_win": 0.4372,
       "draw": 0.1582,
-      "away_win": 0.4301
+      "away_win": 0.4046
     },
     "blended_probabilities": {
       "home_win": 0.4372,
       "draw": 0.1582,
       "away_win": 0.4046
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
@@ -14014,8 +13650,8 @@
         "away_win": -0.1301
       },
       "best_selection": "draw",
-      "best_selection_name": "[단통 ⚡] 무승부",
-      "raw_selection_name": "무승부",
+      "best_selection_name": "[단통 ⚡] 전반 무승부",
+      "raw_selection_name": "전반 무승부",
       "best_ev": -0.1299,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
@@ -14163,7 +13799,7 @@
     "league": "MLB",
     "game_type": "야구 전반 핸디캡",
     "category": "전반 핸디캡",
-    "category_label": "핸디캡 (-1.5)",
+    "category_label": "전반 핸디캡 (-1.5)",
     "selection_labels": {
       "home_win": "탬파베이 레이스 (-1.5) 승",
       "draw": "-",
@@ -14198,29 +13834,29 @@
       "away": 0.6849
     },
     "model_probabilities": {
-      "home_win": 0.2896,
+      "home_win": 0.3151,
       "draw": 0.0,
-      "away_win": 0.7104
+      "away_win": 0.6849
     },
     "blended_probabilities": {
-      "home_win": 0.2364,
-      "draw": 0.2498,
-      "away_win": 0.5138
+      "home_win": 0.3151,
+      "draw": 0.0,
+      "away_win": 0.6849
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1303,
         "draw": -1.0,
-        "away_win": -0.3475
+        "away_win": -0.1302
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 탬파베이 레이스 (-1.5) 승",
-      "raw_selection_name": "탬파베이 레이스 (-1.5) 승",
-      "best_ev": -0.3475,
-      "best_ev_pct": "-34.8%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 밀워키 브루어스 반대승",
+      "raw_selection_name": "밀워키 브루어스 반대승",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -14366,7 +14002,7 @@
     "league": "MLB",
     "game_type": "야구 전반 언더오버",
     "category": "전반 언더오버",
-    "category_label": "언더/오버 (기준 4.5)",
+    "category_label": "전반 언더/오버 (기준 4.5)",
     "selection_labels": {
       "home_win": "언더 (< 4.5)",
       "draw": "-",
@@ -14406,24 +14042,24 @@
       "away_win": 0.4558
     },
     "blended_probabilities": {
-      "home_win": 0.4083,
-      "draw": 0.2498,
-      "away_win": 0.3419
+      "home_win": 0.5442,
+      "draw": 0.0,
+      "away_win": 0.4558
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3467,
+        "home_win": -0.1293,
         "draw": -1.0,
-        "away_win": -0.347
+        "away_win": -0.1294
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 4.5)",
       "raw_selection_name": "언더 (< 4.5)",
-      "best_ev": -0.3467,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1293,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -14604,29 +14240,29 @@
       "away": 0.63
     },
     "model_probabilities": {
-      "home_win": 0.29,
+      "home_win": 0.37,
       "draw": 0.0,
-      "away_win": 0.71
+      "away_win": 0.63
     },
     "blended_probabilities": {
-      "home_win": 0.2776,
-      "draw": 0.2498,
-      "away_win": 0.4726
+      "home_win": 0.37,
+      "draw": 0.0,
+      "away_win": 0.63
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1305,
         "draw": -1.0,
-        "away_win": -0.3478
+        "away_win": -0.1306
       },
       "best_selection": "home_win",
       "best_selection_name": "밀워키 벅스 승",
       "raw_selection_name": "밀워키 벅스 승",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1305,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -14762,29 +14398,29 @@
       "away": 0.5
     },
     "model_probabilities": {
-      "home_win": 0.42,
+      "home_win": 0.5,
       "draw": 0.0,
-      "away_win": 0.58
+      "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3473,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3473
+        "away_win": -0.13
       },
       "best_selection": "home_win",
       "best_selection_name": "밀워키 벅스 (+4.5) 승",
       "raw_selection_name": "밀워키 벅스 (+4.5) 승",
-      "best_ev": -0.3473,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -14925,24 +14561,24 @@
       "away_win": 0.5057
     },
     "blended_probabilities": {
-      "home_win": 0.3708,
-      "draw": 0.2498,
-      "away_win": 0.3794
+      "home_win": 0.4943,
+      "draw": 0.0,
+      "away_win": 0.5057
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.1302
       },
       "best_selection": "home_win",
       "best_selection_name": "언더 (< 239.5)",
       "raw_selection_name": "언더 (< 239.5)",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -15083,24 +14719,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -15236,29 +14872,29 @@
       "away": 0.2164
     },
     "model_probabilities": {
-      "home_win": 0.8636,
+      "home_win": 0.7836,
       "draw": 0.0,
-      "away_win": 0.1364
+      "away_win": 0.2164
     },
     "blended_probabilities": {
-      "home_win": 0.5878,
-      "draw": 0.2498,
-      "away_win": 0.1623
+      "home_win": 0.7836,
+      "draw": 0.0,
+      "away_win": 0.2164
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1301
       },
-      "best_selection": "home_win",
-      "best_selection_name": "오클라호마시티 썬더 승",
-      "raw_selection_name": "오클라호마시티 썬더 승",
-      "best_ev": -0.3475,
-      "best_ev_pct": "-34.8%",
+      "best_selection": "away_win",
+      "best_selection_name": "피닉스 선즈 승",
+      "raw_selection_name": "피닉스 선즈 승",
+      "best_ev": -0.1301,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -15386,29 +15022,29 @@
       "away": 0.5086
     },
     "model_probabilities": {
-      "home_win": 0.5714,
+      "home_win": 0.4914,
       "draw": 0.0,
-      "away_win": 0.4286
+      "away_win": 0.5086
     },
     "blended_probabilities": {
-      "home_win": 0.3686,
-      "draw": 0.2498,
-      "away_win": 0.3815
+      "home_win": 0.4914,
+      "draw": 0.0,
+      "away_win": 0.5086
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1303
       },
       "best_selection": "home_win",
       "best_selection_name": "오클라호마시티 썬더 (-9.5) 승",
       "raw_selection_name": "오클라호마시티 썬더 (-9.5) 승",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -15541,24 +15177,24 @@
       "away_win": 0.4943
     },
     "blended_probabilities": {
-      "home_win": 0.3794,
-      "draw": 0.2498,
-      "away_win": 0.3708
+      "home_win": 0.5057,
+      "draw": 0.0,
+      "away_win": 0.4943
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.13
       },
-      "best_selection": "home_win",
-      "best_selection_name": "언더 (< 218.5)",
-      "raw_selection_name": "언더 (< 218.5)",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_selection": "away_win",
+      "best_selection_name": "오버 (> 218.5)",
+      "raw_selection_name": "오버 (> 218.5)",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -15691,24 +15327,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -15836,29 +15472,29 @@
       "away": 0.3553
     },
     "model_probabilities": {
-      "home_win": 0.5647,
+      "home_win": 0.6447,
       "draw": 0.0,
-      "away_win": 0.4353
+      "away_win": 0.3553
     },
     "blended_probabilities": {
-      "home_win": 0.4836,
-      "draw": 0.2498,
-      "away_win": 0.2665
+      "home_win": 0.6447,
+      "draw": 0.0,
+      "away_win": 0.3553
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3471,
+        "home_win": -0.1297,
         "draw": -1.0,
-        "away_win": -0.3471
+        "away_win": -0.1295
       },
-      "best_selection": "home_win",
-      "best_selection_name": "휴스턴 로케츠 승",
-      "raw_selection_name": "휴스턴 로케츠 승",
-      "best_ev": -0.3471,
-      "best_ev_pct": "-34.7%",
+      "best_selection": "away_win",
+      "best_selection_name": "애틀랜타 호크스 승",
+      "raw_selection_name": "애틀랜타 호크스 승",
+      "best_ev": -0.1295,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -16007,29 +15643,29 @@
       "away": 0.4856
     },
     "model_probabilities": {
-      "home_win": 0.4344,
+      "home_win": 0.5144,
       "draw": 0.0,
-      "away_win": 0.5656
+      "away_win": 0.4856
     },
     "blended_probabilities": {
-      "home_win": 0.3859,
-      "draw": 0.2498,
-      "away_win": 0.3643
+      "home_win": 0.5144,
+      "draw": 0.0,
+      "away_win": 0.4856
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3478,
+        "home_win": -0.1307,
         "draw": -1.0,
-        "away_win": -0.3479
+        "away_win": -0.1308
       },
       "best_selection": "home_win",
       "best_selection_name": "휴스턴 로케츠 (-4.5) 승",
       "raw_selection_name": "휴스턴 로케츠 (-4.5) 승",
-      "best_ev": -0.3478,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1307,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -16183,24 +15819,24 @@
       "away_win": 0.4971
     },
     "blended_probabilities": {
-      "home_win": 0.3773,
-      "draw": 0.2498,
-      "away_win": 0.3729
+      "home_win": 0.5029,
+      "draw": 0.0,
+      "away_win": 0.4971
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3473,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.1301
       },
       "best_selection": "home_win",
       "best_selection_name": "언더 (< 229.5)",
       "raw_selection_name": "언더 (< 229.5)",
-      "best_ev": -0.3473,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -16354,24 +15990,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -16520,29 +16156,29 @@
       "away": 0.4856
     },
     "model_probabilities": {
-      "home_win": 0.4344,
+      "home_win": 0.5144,
       "draw": 0.0,
-      "away_win": 0.5656
+      "away_win": 0.4856
     },
     "blended_probabilities": {
-      "home_win": 0.3859,
-      "draw": 0.2498,
-      "away_win": 0.3643
+      "home_win": 0.5144,
+      "draw": 0.0,
+      "away_win": 0.4856
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3478,
+        "home_win": -0.1307,
         "draw": -1.0,
-        "away_win": -0.3479
+        "away_win": -0.1308
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 유타 재즈 승",
       "raw_selection_name": "유타 재즈 승",
-      "best_ev": -0.3478,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1307,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -16691,29 +16327,29 @@
       "away": 0.5144
     },
     "model_probabilities": {
-      "home_win": 0.4056,
+      "home_win": 0.4856,
       "draw": 0.0,
-      "away_win": 0.5944
+      "away_win": 0.5144
     },
     "blended_probabilities": {
-      "home_win": 0.3643,
-      "draw": 0.2498,
-      "away_win": 0.3859
+      "home_win": 0.4856,
+      "draw": 0.0,
+      "away_win": 0.5144
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3479,
+        "home_win": -0.1308,
         "draw": -1.0,
-        "away_win": -0.3478
+        "away_win": -0.1307
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 멤피스 그리즐리스 반대승",
       "raw_selection_name": "멤피스 그리즐리스 반대승",
-      "best_ev": -0.3478,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1307,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -16867,24 +16503,24 @@
       "away_win": 0.4914
     },
     "blended_probabilities": {
-      "home_win": 0.3815,
-      "draw": 0.2498,
-      "away_win": 0.3686
+      "home_win": 0.5086,
+      "draw": 0.0,
+      "away_win": 0.4914
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1303,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1302
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 언더 (< 239.5)",
-      "raw_selection_name": "언더 (< 239.5)",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 오버 (> 239.5)",
+      "raw_selection_name": "오버 (> 239.5)",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -17038,24 +16674,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -17204,29 +16840,29 @@
       "away": 0.2628
     },
     "model_probabilities": {
-      "home_win": 0.8172,
+      "home_win": 0.7372,
       "draw": 0.0,
-      "away_win": 0.1828
+      "away_win": 0.2628
     },
     "blended_probabilities": {
-      "home_win": 0.553,
-      "draw": 0.2498,
-      "away_win": 0.1971
+      "home_win": 0.7372,
+      "draw": 0.0,
+      "away_win": 0.2628
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1301,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1301
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 덴버 너게츠 승",
       "raw_selection_name": "덴버 너게츠 승",
-      "best_ev": -0.3475,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1301,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -17354,29 +16990,29 @@
       "away": 0.4914
     },
     "model_probabilities": {
-      "home_win": 0.5886,
+      "home_win": 0.5086,
       "draw": 0.0,
-      "away_win": 0.4114
+      "away_win": 0.4914
     },
     "blended_probabilities": {
-      "home_win": 0.3815,
-      "draw": 0.2498,
-      "away_win": 0.3686
+      "home_win": 0.5086,
+      "draw": 0.0,
+      "away_win": 0.4914
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3476,
+        "home_win": -0.1303,
         "draw": -1.0,
-        "away_win": -0.3476
+        "away_win": -0.1302
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 덴버 너게츠 (-7.5) 승",
-      "raw_selection_name": "덴버 너게츠 (-7.5) 승",
-      "best_ev": -0.3476,
-      "best_ev_pct": "-34.8%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 골든스테이트 워리어스 반대승",
+      "raw_selection_name": "골든스테이트 워리어스 반대승",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -17509,24 +17145,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3473,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3473
+        "away_win": -0.13
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 234.5)",
       "raw_selection_name": "언더 (< 234.5)",
-      "best_ev": -0.3473,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -17659,24 +17295,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -17804,9 +17440,9 @@
       "away": 0.42
     },
     "model_probabilities": {
-      "home_win": 0.2929,
-      "draw": 0.2468,
-      "away_win": 0.4603
+      "home_win": 0.3281,
+      "draw": 0.252,
+      "away_win": 0.42
     },
     "blended_probabilities": {
       "home_win": 0.31,
@@ -17815,20 +17451,7 @@
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.3
-      },
-      {
-        "score": "1-2",
-        "prob": 9.1
-      },
-      {
-        "score": "2-1",
-        "prob": 7.6
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1785,
@@ -18027,34 +17650,21 @@
       "away": 0.2262
     },
     "model_probabilities": {
-      "home_win": 0.5397,
-      "draw": 0.2061,
-      "away_win": 0.2542
-    },
-    "blended_probabilities": {
-      "home_win": 0.5476,
+      "home_win": 0.5477,
       "draw": 0.2262,
       "away_win": 0.2262
     },
-    "prob_source": "blender",
+    "blended_probabilities": {
+      "home_win": 0.5477,
+      "draw": 0.2262,
+      "away_win": 0.2262
+    },
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.3
-      },
-      {
-        "score": "1-2",
-        "prob": 9.1
-      },
-      {
-        "score": "2-1",
-        "prob": 7.6
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1293,
+        "home_win": -0.1292,
         "draw": -0.1291,
         "away_win": -0.1291
       },
@@ -18250,42 +17860,29 @@
       "away": 0.4123
     },
     "model_probabilities": {
-      "home_win": 0.6293,
+      "home_win": 0.5877,
       "draw": 0.0,
-      "away_win": 0.3707
+      "away_win": 0.4123
     },
     "blended_probabilities": {
-      "home_win": 0.4409,
-      "draw": 0.2498,
-      "away_win": 0.3093
+      "home_win": 0.5877,
+      "draw": 0.0,
+      "away_win": 0.4123
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 11.3
-      },
-      {
-        "score": "1-2",
-        "prob": 9.1
-      },
-      {
-        "score": "2-1",
-        "prob": 7.6
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3474
+        "away_win": -0.13
       },
       "best_selection": "away_win",
       "best_selection_name": "오버 (> 3.5)",
       "raw_selection_name": "오버 (> 3.5)",
-      "best_ev": -0.3474,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -18478,24 +18075,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -18683,9 +18280,9 @@
       "away": 0.4309
     },
     "model_probabilities": {
-      "home_win": 0.2174,
-      "draw": 0.2562,
-      "away_win": 0.5264
+      "home_win": 0.3054,
+      "draw": 0.2637,
+      "away_win": 0.4309
     },
     "blended_probabilities": {
       "home_win": 0.2963,
@@ -18732,20 +18329,7 @@
         "away_win": -0.0963
       }
     },
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 12.2
-      },
-      {
-        "score": "0-1",
-        "prob": 10.4
-      },
-      {
-        "score": "1-2",
-        "prob": 9.5
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1555,
@@ -18965,31 +18549,18 @@
       "away": 0.2287
     },
     "model_probabilities": {
-      "home_win": 0.4736,
-      "draw": 0.231,
-      "away_win": 0.2954
+      "home_win": 0.5364,
+      "draw": 0.2349,
+      "away_win": 0.2287
     },
     "blended_probabilities": {
       "home_win": 0.5364,
       "draw": 0.2349,
       "away_win": 0.2287
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 12.2
-      },
-      {
-        "score": "0-1",
-        "prob": 10.4
-      },
-      {
-        "score": "1-2",
-        "prob": 9.5
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.131,
@@ -19209,31 +18780,18 @@
       "away": 0.1024
     },
     "model_probabilities": {
-      "home_win": 0.7046,
-      "draw": 0.1491,
-      "away_win": 0.1463
+      "home_win": 0.7501,
+      "draw": 0.1475,
+      "away_win": 0.1024
     },
     "blended_probabilities": {
       "home_win": 0.7501,
       "draw": 0.1475,
       "away_win": 0.1024
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 12.2
-      },
-      {
-        "score": "0-1",
-        "prob": 10.4
-      },
-      {
-        "score": "1-2",
-        "prob": 9.5
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1299,
@@ -19453,42 +19011,29 @@
       "away": 0.5609
     },
     "model_probabilities": {
-      "home_win": 0.4945,
+      "home_win": 0.4391,
       "draw": 0.0,
-      "away_win": 0.5055
+      "away_win": 0.5609
     },
     "blended_probabilities": {
-      "home_win": 0.3294,
-      "draw": 0.2498,
-      "away_win": 0.4208
+      "home_win": 0.4391,
+      "draw": 0.0,
+      "away_win": 0.5609
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 12.2
-      },
-      {
-        "score": "0-1",
-        "prob": 10.4
-      },
-      {
-        "score": "1-2",
-        "prob": 9.5
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3478,
+        "home_win": -0.1306,
         "draw": -1.0,
-        "away_win": -0.3478
+        "away_win": -0.1306
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
       "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.3478,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1306,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -19702,24 +19247,24 @@
       "away_win": 0.5028
     },
     "blended_probabilities": {
-      "home_win": 0.373,
-      "draw": 0.2498,
-      "away_win": 0.3772
+      "home_win": 0.4972,
+      "draw": 0.0,
+      "away_win": 0.5028
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3249,
+        "home_win": -0.1001,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 짝 (총득점 짝수)",
       "raw_selection_name": "짝 (총득점 짝수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -19928,9 +19473,9 @@
       "away": 0.2354
     },
     "model_probabilities": {
-      "home_win": 0.3951,
-      "draw": 0.274,
-      "away_win": 0.3309
+      "home_win": 0.5122,
+      "draw": 0.2524,
+      "away_win": 0.2354
     },
     "blended_probabilities": {
       "home_win": 0.5395,
@@ -19939,20 +19484,7 @@
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 13.1
-      },
-      {
-        "score": "1-0",
-        "prob": 10.3
-      },
-      {
-        "score": "2-1",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.0829,
@@ -20172,31 +19704,18 @@
       "away": 0.453
     },
     "model_probabilities": {
-      "home_win": 0.176,
-      "draw": 0.2191,
-      "away_win": 0.6049
+      "home_win": 0.2949,
+      "draw": 0.2521,
+      "away_win": 0.453
     },
     "blended_probabilities": {
       "home_win": 0.2949,
       "draw": 0.2521,
       "away_win": 0.453
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 13.1
-      },
-      {
-        "score": "1-0",
-        "prob": 10.3
-      },
-      {
-        "score": "2-1",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.13,
@@ -20416,42 +19935,29 @@
       "away": 0.565
     },
     "model_probabilities": {
-      "home_win": 0.5253,
+      "home_win": 0.435,
       "draw": 0.0,
-      "away_win": 0.4747
+      "away_win": 0.565
     },
     "blended_probabilities": {
-      "home_win": 0.3263,
-      "draw": 0.2498,
-      "away_win": 0.4239
+      "home_win": 0.435,
+      "draw": 0.0,
+      "away_win": 0.565
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-1",
-        "prob": 13.1
-      },
-      {
-        "score": "1-0",
-        "prob": 10.3
-      },
-      {
-        "score": "2-1",
-        "prob": 8.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3472
+        "away_win": -0.1299
       },
       "best_selection": "away_win",
       "best_selection_name": "오버 (> 2.5)",
       "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.3472,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1299,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -20665,24 +20171,24 @@
       "away_win": 0.5028
     },
     "blended_probabilities": {
-      "home_win": 0.373,
-      "draw": 0.2498,
-      "away_win": 0.3772
+      "home_win": 0.4972,
+      "draw": 0.0,
+      "away_win": 0.5028
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3249,
+        "home_win": -0.1001,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "away_win",
       "best_selection_name": "짝 (총득점 짝수)",
       "raw_selection_name": "짝 (총득점 짝수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -20891,9 +20397,9 @@
       "away": 0.1381
     },
     "model_probabilities": {
-      "home_win": 0.729,
-      "draw": 0.1775,
-      "away_win": 0.0936
+      "home_win": 0.6642,
+      "draw": 0.1977,
+      "away_win": 0.1381
     },
     "blended_probabilities": {
       "home_win": 0.7079,
@@ -20902,20 +20408,7 @@
     },
     "prob_source": "betman_corrector",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-0",
-        "prob": 10.1
-      },
-      {
-        "score": "2-1",
-        "prob": 9.5
-      },
-      {
-        "score": "3-0",
-        "prob": 8.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.0727,
@@ -21135,31 +20628,18 @@
       "away": 0.3053
     },
     "model_probabilities": {
-      "home_win": 0.5098,
-      "draw": 0.2191,
-      "away_win": 0.271
+      "home_win": 0.4462,
+      "draw": 0.2486,
+      "away_win": 0.3053
     },
     "blended_probabilities": {
       "home_win": 0.4462,
       "draw": 0.2486,
       "away_win": 0.3053
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-0",
-        "prob": 10.1
-      },
-      {
-        "score": "2-1",
-        "prob": 9.5
-      },
-      {
-        "score": "3-0",
-        "prob": 8.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1299,
@@ -21379,42 +20859,29 @@
       "away": 0.4419
     },
     "model_probabilities": {
-      "home_win": 0.5623,
+      "home_win": 0.5581,
       "draw": 0.0,
-      "away_win": 0.4377
+      "away_win": 0.4419
     },
     "blended_probabilities": {
-      "home_win": 0.4187,
-      "draw": 0.2498,
-      "away_win": 0.3315
+      "home_win": 0.5581,
+      "draw": 0.0,
+      "away_win": 0.4419
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "2-0",
-        "prob": 10.1
-      },
-      {
-        "score": "2-1",
-        "prob": 9.5
-      },
-      {
-        "score": "3-0",
-        "prob": 8.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3468,
+        "home_win": -0.1294,
         "draw": -1.0,
-        "away_win": -0.3469
+        "away_win": -0.1295
       },
       "best_selection": "home_win",
       "best_selection_name": "언더 (< 3.5)",
       "raw_selection_name": "언더 (< 3.5)",
-      "best_ev": -0.3468,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1294,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -21628,24 +21095,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": false,
@@ -21854,9 +21321,9 @@
       "away": 0.1129
     },
     "model_probabilities": {
-      "home_win": 0.7339,
-      "draw": 0.2162,
-      "away_win": 0.0499
+      "home_win": 0.6848,
+      "draw": 0.2023,
+      "away_win": 0.1129
     },
     "blended_probabilities": {
       "home_win": 0.7282,
@@ -21903,20 +21370,7 @@
         "away_win": -0.2793
       }
     },
-    "top_scores": [
-      {
-        "score": "1-0",
-        "prob": 13.6
-      },
-      {
-        "score": "2-0",
-        "prob": 13.3
-      },
-      {
-        "score": "1-1",
-        "prob": 10.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.0752,
@@ -22136,31 +21590,18 @@
       "away": 0.2853
     },
     "model_probabilities": {
-      "home_win": 0.481,
-      "draw": 0.2542,
-      "away_win": 0.2649
+      "home_win": 0.4509,
+      "draw": 0.2637,
+      "away_win": 0.2853
     },
     "blended_probabilities": {
       "home_win": 0.4509,
       "draw": 0.2637,
       "away_win": 0.2853
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-0",
-        "prob": 13.6
-      },
-      {
-        "score": "2-0",
-        "prob": 13.3
-      },
-      {
-        "score": "1-1",
-        "prob": 10.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1298,
@@ -22380,36 +21821,23 @@
       "away": 0.5002
     },
     "model_probabilities": {
-      "home_win": 0.2771,
-      "draw": 0.2038,
-      "away_win": 0.519
+      "home_win": 0.2678,
+      "draw": 0.2321,
+      "away_win": 0.5002
     },
     "blended_probabilities": {
       "home_win": 0.2678,
       "draw": 0.2321,
-      "away_win": 0.5001
+      "away_win": 0.5002
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-0",
-        "prob": 13.6
-      },
-      {
-        "score": "2-0",
-        "prob": 13.3
-      },
-      {
-        "score": "1-1",
-        "prob": 10.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1297,
         "draw": -0.1296,
-        "away_win": -0.1298
+        "away_win": -0.1297
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 핸디캡 무승부",
@@ -22592,7 +22020,7 @@
     "category_label": "핸디캡 (-3.5)",
     "selection_labels": {
       "home_win": "AS로마 (-3.5) 승",
-      "draw": "핸디캡 무승부",
+      "draw": "-",
       "away_win": "칼리아리 반대승"
     },
     "is_single": true,
@@ -22624,42 +22052,29 @@
       "away": 0.8615
     },
     "model_probabilities": {
-      "home_win": 0.1598,
+      "home_win": 0.1385,
       "draw": 0.0,
-      "away_win": 0.8402
+      "away_win": 0.8615
     },
     "blended_probabilities": {
-      "home_win": 0.1039,
-      "draw": 0.2498,
-      "away_win": 0.6463
+      "home_win": 0.1385,
+      "draw": 0.0,
+      "away_win": 0.8615
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-0",
-        "prob": 13.6
-      },
-      {
-        "score": "2-0",
-        "prob": 13.3
-      },
-      {
-        "score": "1-1",
-        "prob": 10.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3475,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.3472
+        "away_win": -0.1299
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 칼리아리 반대승",
       "raw_selection_name": "칼리아리 반대승",
-      "best_ev": -0.3472,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1299,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -22868,42 +22283,29 @@
       "away": 0.5758
     },
     "model_probabilities": {
-      "home_win": 0.5131,
+      "home_win": 0.4242,
       "draw": 0.0,
-      "away_win": 0.4869
+      "away_win": 0.5758
     },
     "blended_probabilities": {
-      "home_win": 0.3182,
-      "draw": 0.2498,
-      "away_win": 0.432
+      "home_win": 0.4242,
+      "draw": 0.0,
+      "away_win": 0.5758
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "1-0",
-        "prob": 13.6
-      },
-      {
-        "score": "2-0",
-        "prob": 13.3
-      },
-      {
-        "score": "1-1",
-        "prob": 10.2
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3477,
+        "home_win": -0.1304,
         "draw": -1.0,
-        "away_win": -0.3477
+        "away_win": -0.1305
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
       "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.3477,
-      "best_ev_pct": "-34.8%",
+      "best_ev": -0.1304,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -23117,24 +22519,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -23343,9 +22745,9 @@
       "away": 0.5338
     },
     "model_probabilities": {
-      "home_win": 0.3026,
-      "draw": 0.2669,
-      "away_win": 0.4306
+      "home_win": 0.2175,
+      "draw": 0.2486,
+      "away_win": 0.5338
     },
     "blended_probabilities": {
       "home_win": 0.1823,
@@ -23392,20 +22794,7 @@
         "away_win": -0.1169
       }
     },
-    "top_scores": [
-      {
-        "score": "0-1",
-        "prob": 12.7
-      },
-      {
-        "score": "1-1",
-        "prob": 12.6
-      },
-      {
-        "score": "0-2",
-        "prob": 9.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.2708,
@@ -23618,31 +23007,18 @@
       "away": 0.3109
     },
     "model_probabilities": {
-      "home_win": 0.5694,
-      "draw": 0.2444,
-      "away_win": 0.1862
+      "home_win": 0.4331,
+      "draw": 0.256,
+      "away_win": 0.3109
     },
     "blended_probabilities": {
       "home_win": 0.4331,
       "draw": 0.256,
       "away_win": 0.3109
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "0-1",
-        "prob": 12.7
-      },
-      {
-        "score": "1-1",
-        "prob": 12.6
-      },
-      {
-        "score": "0-2",
-        "prob": 9.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1295,
@@ -23855,31 +23231,18 @@
       "away": 0.1581
     },
     "model_probabilities": {
-      "home_win": 0.7989,
-      "draw": 0.1521,
-      "away_win": 0.0491
+      "home_win": 0.6588,
+      "draw": 0.1831,
+      "away_win": 0.1581
     },
     "blended_probabilities": {
       "home_win": 0.6588,
       "draw": 0.1831,
       "away_win": 0.1581
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "0-1",
-        "prob": 12.7
-      },
-      {
-        "score": "1-1",
-        "prob": 12.6
-      },
-      {
-        "score": "0-2",
-        "prob": 9.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
         "home_win": -0.1304,
@@ -24092,42 +23455,29 @@
       "away": 0.565
     },
     "model_probabilities": {
-      "home_win": 0.5575,
+      "home_win": 0.435,
       "draw": 0.0,
-      "away_win": 0.4425
+      "away_win": 0.565
     },
     "blended_probabilities": {
-      "home_win": 0.3263,
-      "draw": 0.2498,
-      "away_win": 0.4239
+      "home_win": 0.435,
+      "draw": 0.0,
+      "away_win": 0.565
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
-    "top_scores": [
-      {
-        "score": "0-1",
-        "prob": 12.7
-      },
-      {
-        "score": "1-1",
-        "prob": 12.6
-      },
-      {
-        "score": "0-2",
-        "prob": 9.9
-      }
-    ],
+    "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3474,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.3472
+        "away_win": -0.1299
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 2.5)",
       "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.3472,
-      "best_ev_pct": "-34.7%",
+      "best_ev": -0.1299,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
@@ -24334,24 +23684,24 @@
       "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.3751,
-      "draw": 0.2498,
-      "away_win": 0.3751
+      "home_win": 0.5,
+      "draw": 0.0,
+      "away_win": 0.5
     },
-    "prob_source": "blender",
+    "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.3248,
+        "home_win": -0.1,
         "draw": -1.0,
-        "away_win": -0.3248
+        "away_win": -0.1
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 홀 (총득점 홀수)",
       "raw_selection_name": "홀 (총득점 홀수)",
-      "best_ev": -0.3248,
-      "best_ev_pct": "-32.5%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "is_single": true,
