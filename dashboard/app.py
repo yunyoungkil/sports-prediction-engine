@@ -14,6 +14,7 @@ import json
 import re
 from datetime import datetime
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 
 # 프로젝트 루트 경로를 sys.path에 추가 (dashboard 하위 폴더에서 실행 시 models/tracker 패키지 인식)
@@ -676,12 +677,57 @@ with tab1:
         done_ms = sorted([m for m in filtered_matches if _res(m) is not None], key=_time_key, reverse=True)
         filtered_matches = open_ms + done_ms
 
-        PAGE_SIZE = 25
-        n_pages = max(1, (len(filtered_matches) + PAGE_SIZE - 1) // PAGE_SIZE)
+        LOAD_STEP = 25
+        # 필터가 바뀌면 처음 25경기부터 (회차·날짜·검색·필터·결과 수가 같을 때만 지금까지 불러온 만큼 유지)
+        list_sig = (sel_round, sel_day, search_kw, sel_league, sel_cat, sel_sport, only_open, only_single_opt,
+                    only_rec_opt, only_picked, len(filtered_matches))
+        if st.session_state.get("step1_list_sig") != list_sig:
+            st.session_state["step1_list_sig"] = list_sig
+            st.session_state["step1_shown"] = LOAD_STEP
+        shown = min(int(st.session_state.get("step1_shown", LOAD_STEP)), len(filtered_matches))
+        page_matches = filtered_matches[:shown]
         with lc3:
-            page = st.number_input(f"페이지 (총 {n_pages}쪽, {len(filtered_matches)}경기)", min_value=1, max_value=n_pages,
-                                   value=1, step=1, key=f"step1_page_{sel_day}_{n_pages}")
-        page_matches = filtered_matches[(page - 1) * PAGE_SIZE: page * PAGE_SIZE]
+            st.markdown(f"<div style='padding-top:30px;font-size:14px;color:#94a3b8'>총 <b>{len(filtered_matches):,}</b>경기 중 "
+                        f"<b>{shown:,}</b>경기 표시</div>", unsafe_allow_html=True)
+
+        def _load_more():
+            st.session_state["step1_shown"] = st.session_state.get("step1_shown", LOAD_STEP) + LOAD_STEP
+
+        def _load_more_footer():
+            """목록 끝의 '더 보기' 버튼 + 화면에 보이면 자동으로 누르는 스크립트 (무한 스크롤)"""
+            if shown >= len(filtered_matches):
+                if len(filtered_matches) > LOAD_STEP:
+                    st.caption(f"— 마지막 경기까지 모두 표시했습니다 ({len(filtered_matches):,}경기) —")
+                return
+            left = len(filtered_matches) - shown
+            st.button(f"▼ 더 보기 ({min(LOAD_STEP, left)}경기 더 · 남은 {left:,}경기)", key="step1_load_more",
+                      width="stretch", on_click=_load_more)
+            # 같은 출처 iframe에서 부모 문서의 '더 보기' 버튼을 감시 → 화면에 들어오면 클릭. 실패해도 버튼은 수동으로 동작
+            components.html("""
+<script>
+(function () {
+  const doc = window.parent.document;
+  if (doc.__spInfScroll) { doc.__spInfScroll.disconnect(); }
+  let busy = false;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting && !busy) {
+        busy = true;
+        setTimeout(() => { e.target.click(); }, 150);
+      }
+    });
+  }, { rootMargin: "300px" });
+  doc.__spInfScroll = observer;
+  const find = () => Array.from(doc.querySelectorAll("button")).find((b) => b.innerText.includes("더 보기 ("));
+  let tries = 0;
+  const timer = setInterval(() => {
+    const btn = find();
+    if (btn) { observer.observe(btn); clearInterval(timer); }
+    if (++tries > 40) clearInterval(timer);
+  }, 250);
+})();
+</script>
+""", height=0)
 
         # 회차 채점 요약 (현재 필터 기준). 배당 1순위는 모든 종료 경기, AI 1순위는 경기 전 기록이 있는 경기만
         mk_hits, ai_pairs = [], []
@@ -824,6 +870,8 @@ with tab1:
                     st.session_state["selections"][seq] = {SEL_KEY[k]: (k in picked) for k in PICK_KEYS}
                 elif seq in st.session_state["selections"]:
                     del st.session_state["selections"][seq]
+
+        _load_more_footer()
 
         # 조합 구성 검증 및 전개 수 계산
         active_selections = {}
