@@ -920,7 +920,10 @@ with tab1:
             return ("<div style='padding-bottom:14px'>"
                     "<div style='display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:6px;"
                     "border-bottom:1px solid rgba(148,163,184,.25)'>"
-                    f"<span style='font-size:12px;opacity:.75'>{SPORT_ICONS.get(m.get('sport'), '')} {rnd}{when} · {m.get('league', '')}</span>"
+                    f"<span style='font-size:12px;opacity:.75'>{SPORT_ICONS.get(m.get('sport'), '')} {rnd}{when}</span>"
+                    # 리그: 보라 칩 (핸디캡 파랑 · 언더오버 초록 · 한경기 주황과 겹치지 않는 대비색)
+                    "<span style='padding:1px 8px;border-radius:5px;font-size:12px;font-weight:700;"
+                    f"background:rgba(168,85,247,.16);color:#c084fc'>{m.get('league', '')}</span>"
                     f"<span style='font-size:16px'><b>{m.get('home_team', '')}</b> <span style='opacity:.6'>vs</span> "
                     f"<b>{m.get('away_team', '')}</b></span>"
                     f"<span style='margin-left:auto;font-size:12px;opacity:.85'>{status}</span></div></div>")
