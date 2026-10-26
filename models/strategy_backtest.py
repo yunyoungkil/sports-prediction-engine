@@ -124,6 +124,9 @@ def backtest(legs: List[Dict[str, Any]], archive: pd.DataFrame) -> Dict[str, Any
     if not rounds:
         return {"rounds": 0}
     st_ = np.array([r["stake"] for r in rounds]); rt = np.array([r["ret"] for r in rounds])
+    # 수익률 95% 범위: 회차를 다시 뽑아(부트스트랩) 운에 따라 수익률이 얼마나 흔들리는지
+    boot_idx = np.random.default_rng(7).integers(0, len(rounds), size=(2000, len(rounds)))
+    boot_roi = (rt[boot_idx].sum(axis=1) / st_[boot_idx].sum(axis=1) - 1) * 100
     hit = rt > 0
     streak = best_streak = 0
     for h in hit:
@@ -135,6 +138,7 @@ def backtest(legs: List[Dict[str, Any]], archive: pd.DataFrame) -> Dict[str, Any
         "hit_rounds": int(hit.sum()),
         "hit_rate_pct": round(float(hit.mean() * 100), 1),
         "roi_pct": round(float((rt.sum() / st_.sum() - 1) * 100), 1),
+        "roi_ci": [round(float(np.percentile(boot_roi, 2.5)), 1), round(float(np.percentile(boot_roi, 97.5)), 1)],
         "max_losing_streak": int(best_streak),
         "best_round_multiple": round(float((rt / st_).max()), 2),
         "max_drawdown_units": round(float((np.maximum.accumulate(np.concatenate([[0], cum])) - np.concatenate([[0], cum])).max()), 1),

@@ -63,6 +63,12 @@ from collector.betman_sharp import parse_betman_kickoff
 from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
+from tracker.my_slips import MAX_SAVED_COMBOS, add_slip, build_slip, delete_slip, grade_slip, load_json, load_slips, save_json
+
+# 내 선택 저장 위치 (개인 기록이라 저장소에 올리지 않음 · .gitignore). 테스트는 SPE_USER_DATA_DIR 로 다른 폴더를 씀
+MY_DATA_DIR = Path(os.environ.get("SPE_USER_DATA_DIR") or (project_root / "user_data"))
+MY_CURRENT_PATH = MY_DATA_DIR / "current_selections.json"
+MY_SLIPS_PATH = MY_DATA_DIR / "my_slips.json"
 
 # 1. 페이지 기본 설정
 st.set_page_config(
@@ -487,6 +493,17 @@ def selection_status() -> dict:
 # 4. 세션 상태 초기화 (단일 상태: selections)
 if "selections" not in st.session_state:
     st.session_state["selections"] = {}  # { match_seq: {"home": bool, "draw": bool, "away": bool} }
+    # 새로고침·대시보드 재시작 후에도 이번 회차에 고르던 선택을 그대로 복원 (자동 저장 파일, 회차가 바뀌면 버림)
+    _cur = load_json(MY_CURRENT_PATH, {})
+    if _cur.get("gm_ts") and str(_cur["gm_ts"]) == detect_current_gm_ts(predictions):
+        _seqs = {str(m["match_seq"]) for m in predictions}
+        st.session_state["selections"] = {s: v for s, v in _cur.get("selections", {}).items() if s in _seqs}
+        for _ck, _cs in _cur.get("combo_state", {}).items():
+            if _cs.get("stake") is not None:
+                st.session_state[f"stake_{_ck}"] = int(_cs["stake"])
+            st.session_state[f"combo_chk_{_ck}"] = bool(_cs.get("picked", True))
+        if _cur.get("batch_stake"):
+            st.session_state["batch_stake"] = _cur["batch_stake"]
 
 if "custom_step" not in st.session_state:
     st.session_state["custom_step"] = 1  # 1: STEP 01 맞춤조건설정, 2: STEP 02 조합결과보기
@@ -1336,7 +1353,8 @@ with tab1:
                 with bt_c1:
                     st.markdown("##### 🔁 이 방식을 과거에 반복했다면?")
                     if rule:
-                        st.caption(f"규칙: {describe_rule(rule)} — 과거 회차마다 배당이 가장 비슷한(±20%) 경기로 똑같이 걸고 **실제 결과**로 계산합니다.")
+                        st.caption(f"규칙: {describe_rule(rule)} — 팀과 상관없이, 과거 회차마다 배당이 가장 비슷한(±20%) 경기로 "
+                                   "똑같은 모양으로 걸고 **실제 결과**로 계산해요.")
                     else:
                         st.caption("축구 일반 승무패 경기로만 구성된 조합에서 사용할 수 있습니다 (과거 데이터가 축구 승무패만 있음).")
                 with bt_c2:
@@ -1348,20 +1366,27 @@ with tab1:
                     if not r.get("rounds"):
                         st.warning("조건에 맞는 과거 회차가 없습니다. 배당 범위가 너무 특이한 조합일 수 있습니다.")
                     else:
-                        r1, r2, r3, r4 = st.columns(4)
-                        with r1:
-                            st.metric("적용된 과거 회차", f"{r['rounds']}회차")
-                            st.caption(f"회차당 {r['combos_per_round']}조합")
-                        with r2:
-                            st.metric("적중한 회차", f"{r['hit_rate_pct']:.0f}%")
-                            st.caption(f"{r['hit_rounds']}회 적중")
-                        with r3:
-                            st.metric("실제 수익률", f"{r['roi_pct']:+.1f}%")
-                            if "bankers_only_roi_pct" in r:
-                                st.caption(f"축 경기만 걸었다면 {r['bankers_only_roi_pct']:+.1f}%")
-                        with r4:
-                            st.metric("최대 연속 미적중", f"{r['max_losing_streak']}회차")
-                            st.caption(f"최고 적중 {r['best_round_multiple']:.1f}배")
+                        ci_r = r.get("roi_ci")
+                        roi_color = "#f87171" if r["roi_pct"] < 0 else "#34d399"
+                        render_tiles([
+                            ("🗓️ 적용된 과거 회차", f"{r['rounds']}회차", f"회차당 {r['combos_per_round']}조합 · 조합마다 1단위"),
+                            ("🎯 적중한 회차", f"{r['hit_rate_pct']:.0f}%", f"{r['hit_rounds']}회 적중 · 최고 {r['best_round_multiple']:.1f}배"),
+                            ("📊 실제 수익률", f"<span style='color:{roi_color}'>{r['roi_pct']:+.1f}%</span>",
+                             (f"95% 범위 {ci_r[0]:+.1f}% ~ {ci_r[1]:+.1f}%" if ci_r else "")
+                             + (f" · 축 경기만 {r['bankers_only_roi_pct']:+.1f}%" if "bankers_only_roi_pct" in r else "")),
+                            ("📉 최대 연속 미적중", f"{r['max_losing_streak']}회차", "이만큼 연달아 못 맞힐 수 있어요"),
+                        ])
+                        if ci_r:
+                            if ci_r[1] < 0:
+                                verdict_bt = "📉 범위 전체가 마이너스 → 이 모양은 <b>오래 하면 확실히 손해</b>예요."
+                            elif ci_r[0] > 0:
+                                verdict_bt = ("📈 범위 전체가 플러스 → 과거에는 이익이었어요. 다만 같은 데이터를 보고 고른 규칙은 "
+                                              "우연히 좋아 보일 수 있어요.")
+                            else:
+                                verdict_bt = "⚖️ 범위에 0이 들어 있어 <b>아직 이익인지 손해인지 판단하기 어려워요</b>."
+                            st.markdown(f"<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>{verdict_bt}<br>"
+                                        "<span style='opacity:.75;font-size:13px'>배당 모양만 본 결과예요. AI나 팀 정보로 경기를 고른 효과는 "
+                                        "③ 성과 검증 탭의 가상 베팅 리그에서 확인하세요.</span></div></div>", unsafe_allow_html=True)
                         st.line_chart(pd.DataFrame({"누적 손익 (회차당 투자 1 기준)": r["cum_curve"]}), height=180)
                         notes = []
                         if "bankers_only_roi_pct" in r and r["bankers_only_roi_pct"] > r["roi_pct"]:
@@ -2119,11 +2144,46 @@ def _cart_clear():
     st.session_state["editor_version"] += 1
 
 
+def _save_slip(games_, combos_, gm_ts_):
+    """💾 지금 선택(경기 · 고른 선택지 · 조합별 금액·체크)을 기록으로 남김 — 결과가 나오면 자동 채점"""
+    add_slip(build_slip(gm_ts_, games_, combos_, st.session_state.get("slip_memo", "")), MY_SLIPS_PATH)
+    st.session_state["slip_memo"] = ""
+    st.session_state["slip_saved_toast"] = True
+
+
+def _load_slip(slip):
+    """저장한 선택을 다시 담기 (이번 회차 경기만) — 조합별 금액·체크도 함께"""
+    st.session_state["selections"] = {
+        g["seq"]: {SEL_KEY[p["key"]]: True for p in g["picks"]} for g in slip["games"] if g["seq"] in pred_map}
+    for c in slip.get("combos", []):
+        st.session_state[f"stake_{c['key']}"] = int(c["stake"])
+        st.session_state[f"combo_chk_{c['key']}"] = bool(c.get("picked", True))
+    st.session_state["editor_version"] += 1
+
+
+def _delete_slip(slip_id):
+    delete_slip(slip_id, MY_SLIPS_PATH)
+
+
+def _slip_result_of(slip, results_idx_):
+    """저장한 경기의 실제 결과: home_win/draw/away_win · 'void'(무효) · None(아직)"""
+    def f(g):
+        r = find_result({"match_seq": g["seq"], "line": g.get("line", 0.0)}, results_idx_, slip.get("gm_ts"))
+        if r is None:
+            return None
+        code = str(r.get("game_result"))
+        return "void" if code == "4" else RESULT_CODE_TO_KEY.get(code)
+    return f
+
+
 with st.sidebar:
     cart = selection_status()
+    combo_state = {}   # 조합 내용 키 → {금액, 체크} (자동 저장용)
     st.markdown(f"### 🛒 내 선택 <span style='font-size:15px;opacity:.7'>{cart['n']}경기</span>", unsafe_allow_html=True)
+    if st.session_state.pop("slip_saved_toast", False):
+        st.toast("💾 저장했어요. 아래 '저장한 선택'에서 볼 수 있어요.")
     if not cart["active"]:
-        st.caption("① 맞춤조건구매 탭에서 배당 버튼을 누르면 여기에 담겨요.")
+        st.caption("① 맞춤조건구매 탭에서 배당 버튼을 누르면 여기에 담겨요. 고른 경기는 자동 저장돼서 새로고침해도 남아요.")
     else:
         cart_now = datetime.now().timestamp() * 1000
         chip_css = "display:inline-block;background:#1e3a5f;border-radius:12px;padding:1px 9px;margin:2px 4px 0 0;font-size:13px"
@@ -2151,17 +2211,23 @@ with st.sidebar:
         # 조합별 금액·선택 체크는 STEP 02 표와 같은 값(조합 내용 키)을 읽어 본문 합계와 항상 같게 한다
         unit = 1000 if cart["n"] == 1 else 100
         stake = max(unit, (int(st.session_state.get("batch_stake", 1000)) // unit) * unit)
-        if cart["combos"] <= 5000:
+        slip_combos = []   # 저장용: 조합마다 [경기, 선택지, 배당] · 금액 · 체크
+        if cart["combos"] <= MAX_SAVED_COMBOS:
             picked = []   # (조합 배당, 금액) — 체크된 조합만
             for combo in itertools.product(*[[(seq, p) for p in v["picks"]] for seq, v in sorted(cart["active"].items())]):
                 ck = combo_key((seq, p["selection"]) for seq, p in combo)
-                if st.session_state.get(f"combo_chk_{ck}", True):
-                    picked.append((calculate_combined_odds([p["odds"] for _, p in combo]),
-                                   max(unit, (int(st.session_state.get(f"stake_{ck}", stake)) // unit) * unit)))
+                chk = bool(st.session_state.get(f"combo_chk_{ck}", True))
+                s_c = max(unit, (int(st.session_state.get(f"stake_{ck}", stake)) // unit) * unit)
+                o_c = calculate_combined_odds([p["odds"] for _, p in combo])
+                combo_state[ck] = {"stake": s_c, "picked": chk}
+                slip_combos.append({"key": ck, "legs": [[seq, p["selection"], float(p["odds"])] for seq, p in combo],
+                                    "stake": s_c, "picked": chk})
+                if chk:
+                    picked.append((o_c, s_c))
         else:   # 조합이 아주 많으면 모두 같은 금액·전부 선택으로 어림
             picked = [(cart["odds_lo"], stake), (cart["odds_hi"], stake)]
-        n_pick = len(picked) if cart["combos"] <= 5000 else cart["combos"]
-        total = sum(s for _, s in picked) if cart["combos"] <= 5000 else stake * cart["combos"]
+        n_pick = len(picked) if cart["combos"] <= MAX_SAVED_COMBOS else cart["combos"]
+        total = sum(s for _, s in picked) if cart["combos"] <= MAX_SAVED_COMBOS else stake * cart["combos"]
         pays = [calculate_payout(o, s) for o, s in picked]
         lo, hi = (min(o for o, _ in picked), max(o for o, _ in picked)) if picked else (0.0, 0.0)
         odds_txt = "-" if not picked else (f"{lo:,.2f}배" if lo == hi else f"{lo:,.2f} ~ {hi:,.2f}배")
@@ -2188,3 +2254,73 @@ with st.sidebar:
         st.button("➡️ 조합 결과 보기 (STEP 02)", type="primary", disabled=not cart["valid"], width="stretch",
                   on_click=_go_step, args=(2,), key="cart_go_step2")   # help 없음: 누르면 화면이 바뀌어 말풍선이 남음
         st.button("🗑️ 모두 빼기", width="stretch", on_click=_cart_clear, key="cart_clear")
+
+        # 💾 저장: 실제로 산 조합 등을 기록으로 남김 (결과가 나오면 아래 목록에서 자동 채점)
+        games_payload = [{
+            "seq": seq, "home": v["match"].get("home_team", ""), "away": v["match"].get("away_team", ""),
+            "game_type": v["match"].get("game_type", ""), "line": float(v["match"].get("line") or 0.0),
+            "league": v["match"].get("league", ""), "match_time": v["match"].get("match_time", ""),
+            "picks": [{"key": p["selection"], "label": p["selection_name"], "odds": float(p["odds"])} for p in v["picks"]],
+        } for seq, v in sorted(cart["active"].items())]
+        slip_round = next((v["match"].get("gm_ts") for v in cart["active"].values() if v["match"].get("gm_ts")),
+                          detect_current_gm_ts(predictions))
+        st.markdown("<div style='font-size:13px;font-weight:700;margin-top:10px'>💾 이 선택 저장</div>", unsafe_allow_html=True)
+        st.text_input("메모", key="slip_memo", placeholder="메모 (선택) 예: 실제 구매", label_visibility="collapsed")
+        st.button("💾 저장하기", width="stretch", key="slip_save", on_click=_save_slip,
+                  args=(games_payload, slip_combos, slip_round), disabled=not slip_combos)
+        if not slip_combos:
+            st.caption(f"조합이 {MAX_SAVED_COMBOS:,}개를 넘으면 저장할 수 없어요.")
+
+    # 📂 저장한 선택 — 결과가 나오면 적중·미적중·환급금 자동 표시, 이번 회차 것은 다시 불러오기 가능
+    my_slips = load_slips(MY_SLIPS_PATH)
+    if my_slips:
+        with st.expander(f"📂 저장한 선택 ({len(my_slips)})", expanded=False):
+            res_idx_s = load_results_index()
+            cur_round = str(detect_current_gm_ts(predictions))
+            STATE_STYLE = {"hit": ("rgba(34,197,94,.15)", "#4ade80"), "miss": ("rgba(239,68,68,.15)", "#f87171"),
+                           "pending": ("rgba(234,179,8,.15)", "#facc15")}
+            totals = {"stake": 0, "payout": 0, "done": 0}
+            for s in reversed(my_slips[-30:]):
+                gr = grade_slip(s, _slip_result_of(s, res_idx_s))
+                if gr["state"] == "hit":
+                    status = f"✅ 적중 · 환급 {gr['payout']:,}원"
+                elif gr["state"] == "miss":
+                    status = "❌ 미적중"
+                else:
+                    status = f"⏳ 결과 대기 ({gr['done']}/{gr['games']}경기 끝남)"
+                if gr["state"] != "pending":
+                    totals["stake"] += gr["stake"]
+                    totals["payout"] += gr["payout"]
+                    totals["done"] += 1
+                bg, fg = STATE_STYLE[gr["state"]]
+                n_comb = sum(1 for c in s.get("combos", []) if c.get("picked", True))
+                games_txt = " · ".join(f"{g['seq']} {g['home']} {'/'.join(p['label'] for p in g['picks'])}" for g in s.get("games", []))
+                with st.container(border=True):
+                    st.markdown(
+                        f"<div style='font-size:12px;opacity:.75'>{s.get('saved_at', '')} · {s.get('gm_ts', '')}회</div>"
+                        f"<div style='font-size:13px'><b>{len(s.get('games', []))}경기 {n_comb}조합 · {gr['stake']:,}원</b>"
+                        + (f" <span style='opacity:.8'>· {s['memo']}</span>" if s.get("memo") else "") + "</div>"
+                        f"<div style='font-size:12px;opacity:.75;word-break:keep-all'>{games_txt}</div>"
+                        f"<div style='padding-bottom:12px'><span style='display:inline-block;margin-top:4px;padding:1px 8px;"
+                        f"border-radius:6px;font-size:12px;font-weight:700;background:{bg};color:{fg}'>{status}</span></div>",
+                        unsafe_allow_html=True)
+                    l1, l2 = st.columns(2)
+                    l1.button("불러오기", key=f"slip_load_{s['id']}", width="stretch", on_click=_load_slip, args=(s,),
+                              disabled=str(s.get("gm_ts")) != cur_round)
+                    l2.button("삭제", key=f"slip_del_{s['id']}", width="stretch", on_click=_delete_slip, args=(s["id"],))
+            if totals["done"]:
+                pnl = totals["payout"] - totals["stake"]
+                st.caption(f"결과 나온 {totals['done']}건 합계: 투자 {totals['stake']:,}원 · 환급 {totals['payout']:,}원 · "
+                           f"손익 {pnl:+,}원")
+            st.caption("불러오기는 이번 회차 기록만 돼요. 최근 30건까지 보여요.")
+
+    # 지금 고르는 중인 선택 자동 저장 (바뀌었을 때만 파일에 씀) → 새로고침·재시작 후 같은 회차면 복원
+    cur_payload = {"gm_ts": str(detect_current_gm_ts(predictions)), "selections": st.session_state["selections"],
+                   "batch_stake": st.session_state.get("batch_stake"), "combo_state": combo_state}
+    cur_sig = json.dumps(cur_payload, sort_keys=True, ensure_ascii=False)
+    if st.session_state.get("_cur_saved_sig") != cur_sig:
+        try:
+            save_json(MY_CURRENT_PATH, cur_payload)
+            st.session_state["_cur_saved_sig"] = cur_sig
+        except Exception:
+            pass

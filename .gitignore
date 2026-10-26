@@ -39,6 +39,9 @@ wheels/
 # Streamlit
 .streamlit/secrets.toml
 
+# 내 선택 저장 (개인 기록 · 대시보드가 자동으로 씀)
+user_data/
+
 # OS
 .DS_Store
 Thumbs.db
