@@ -1,21 +1,21 @@
 {
-  "updated_at": "2026-10-26T16:17:27+00:00",
+  "updated_at": "2026-10-26T19:21:49+00:00",
   "rounds": [
     260126,
     260127
   ],
-  "matches": 33,
-  "moved": 10,
-  "toward_ai": 5,
+  "matches": 37,
+  "moved": 11,
+  "toward_ai": 6,
   "away_from_ai": 5,
-  "toward_ai_pct": 50.0,
-  "fav_toward_pct": 60.0,
+  "toward_ai_pct": 54.5,
+  "fav_toward_pct": 54.5,
   "mean_move_pp": {
-    "n": 33,
-    "mean": 0.10978,
+    "n": 37,
+    "mean": 0.11028,
     "ci": [
-      -0.16684,
-      0.34931
+      -0.13039,
+      0.33962
     ]
   },
   "by_game_type": {
@@ -36,34 +36,34 @@
       }
     },
     "축구 승무패": {
-      "matches": 29,
-      "moved": 9,
-      "toward_ai": 4,
+      "matches": 31,
+      "moved": 10,
+      "toward_ai": 5,
       "away_from_ai": 5,
-      "toward_ai_pct": 44.4,
-      "fav_toward_pct": 55.6,
+      "toward_ai_pct": 50.0,
+      "fav_toward_pct": 50.0,
       "mean_move_pp": {
-        "n": 29,
-        "mean": 0.05715,
+        "n": 31,
+        "mean": 0.06822,
         "ci": [
-          -0.23239,
-          0.30552
+          -0.19888,
+          0.30045
         ]
       }
     },
     "축구 핸디캡": {
-      "matches": 3,
+      "matches": 5,
       "moved": 1,
       "toward_ai": 1,
       "away_from_ai": 0,
       "toward_ai_pct": 100.0,
       "fav_toward_pct": 100.0,
       "mean_move_pp": {
-        "n": 3,
-        "mean": 0.65521,
+        "n": 5,
+        "mean": 0.39312,
         "ci": [
           0.0,
-          1.96562
+          1.17937
         ]
       }
     }
@@ -99,13 +99,13 @@
       ]
     },
     "E_market_fav": {
-      "n": 3,
-      "mean": 0.30845,
+      "n": 5,
+      "mean": -0.32254,
       "ci": [
-        -4.90798,
-        5.83333
+        -3.4524,
+        2.5184
       ]
     }
   },
-  "verdict": "검증 중 (배당이 바뀐 경기 10/50)"
+  "verdict": "검증 중 (배당이 바뀐 경기 11/50)"
 }
