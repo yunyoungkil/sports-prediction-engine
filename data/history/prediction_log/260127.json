@@ -4,30 +4,50 @@
     "809": {
       "match_time": "26.10.26 (월) 22:45",
       "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "네프치 페르가나",
       "away_team": "S알이티하드",
       "betman_odds": {
+        "home_win": 3.9,
+        "draw": 3.85,
+        "away_win": 1.58
+      },
+      "market_probs": {
+        "home": 0.2231,
+        "draw": 0.226,
+        "away": 0.5508
+      },
+      "model_probs": {
+        "home_win": 0.1896,
+        "draw": 0.2281,
+        "away_win": 0.5823
+      },
+      "prob_source": "betman_corrector",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
         "home_win": 4.2,
         "draw": 3.75,
         "away_win": 1.55
       },
-      "market_probs": {
+      "first_market_probs": {
         "home": 0.2071,
         "draw": 0.2319,
         "away": 0.561
       },
-      "model_probs": {
+      "first_model_probs": {
         "home_win": 0.1726,
         "draw": 0.2344,
         "away_win": 0.593
       },
-      "prob_source": "betman_corrector",
-      "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "821": {
       "match_time": "26.10.27 (화) 01:00",
       "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "알아인",
       "away_team": "트락토르",
       "betman_odds": {
@@ -47,11 +67,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.22,
+        "draw": 4.95,
+        "away_win": 7.8
+      },
+      "first_market_probs": {
+        "home": 0.7128,
+        "draw": 0.1757,
+        "away": 0.1115
+      },
+      "first_model_probs": {
+        "home_win": 0.7505,
+        "draw": 0.1677,
+        "away_win": 0.0818
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "825": {
       "match_time": "26.10.27 (화) 01:00",
       "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "알아흘리 사우디",
       "away_team": "알가라파SC",
       "betman_odds": {
@@ -71,11 +109,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.2,
+        "draw": 5.5,
+        "away_win": 7.5
+      },
+      "first_market_probs": {
+        "home": 0.7256,
+        "draw": 0.1583,
+        "away": 0.1161
+      },
+      "first_model_probs": {
+        "home_win": 0.7687,
+        "draw": 0.1479,
+        "away_win": 0.0834
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "829": {
       "match_time": "26.10.27 (화) 03:15",
       "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "알카디시야",
       "away_team": "알사드SC",
       "betman_odds": {
@@ -95,35 +151,71 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.53,
+        "draw": 4.05,
+        "away_win": 4.05
+      },
+      "first_market_probs": {
+        "home": 0.5696,
+        "draw": 0.2152,
+        "away": 0.2152
+      },
+      "first_model_probs": {
+        "home_win": 0.5947,
+        "draw": 0.2214,
+        "away_win": 0.1839
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "837": {
       "match_time": "26.10.27 (화) 03:15",
       "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "에어포스 알쿠와알자위야",
       "away_team": "파흐타코르",
       "betman_odds": {
+        "home_win": 3.3,
+        "draw": 2.95,
+        "away_win": 1.97
+      },
+      "market_probs": {
+        "home": 0.2636,
+        "draw": 0.2949,
+        "away": 0.4415
+      },
+      "model_probs": {
+        "home_win": 0.2513,
+        "draw": 0.3078,
+        "away_win": 0.4409
+      },
+      "prob_source": "betman_corrector",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
         "home_win": 3.4,
         "draw": 3.0,
         "away_win": 1.92
       },
-      "market_probs": {
+      "first_market_probs": {
         "home": 0.2561,
         "draw": 0.2903,
         "away": 0.4536
       },
-      "model_probs": {
+      "first_model_probs": {
         "home_win": 0.2426,
         "draw": 0.3019,
         "away_win": 0.4554
       },
-      "prob_source": "betman_corrector",
-      "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "2070": {
       "match_time": "26.10.27 (화) 04:30",
       "league": "프랑스 리그1",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "파리 생제르맹",
       "away_team": "올랭피크 리옹",
       "betman_odds": {
@@ -143,11 +235,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.29,
+        "draw": 4.6,
+        "away_win": 6.4
+      },
+      "first_market_probs": {
+        "home": 0.6748,
+        "draw": 0.1892,
+        "away": 0.136
+      },
+      "first_model_probs": {
+        "home_win": 0.7038,
+        "draw": 0.1871,
+        "away_win": 0.1091
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "841": {
       "match_time": "26.10.27 (화) 05:00",
       "league": "스페인 라리가",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "세비야",
       "away_team": "오사수나",
       "betman_odds": {
@@ -167,11 +277,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.75,
+        "draw": 3.05,
+        "away_win": 4.0
+      },
+      "first_market_probs": {
+        "home": 0.4972,
+        "draw": 0.2853,
+        "away": 0.2175
+      },
+      "first_model_probs": {
+        "home_win": 0.5007,
+        "draw": 0.3055,
+        "away_win": 0.1938
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "940": {
       "match_time": "26.10.28 (수) 02:00",
       "league": "독일 FA컵",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "함부르크",
       "away_team": "프랑크푸르트",
       "betman_odds": {
@@ -191,11 +319,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 2.65,
+        "draw": 3.45,
+        "away_win": 2.07
+      },
+      "first_market_probs": {
+        "home": 0.3281,
+        "draw": 0.252,
+        "away": 0.42
+      },
+      "first_model_probs": {
+        "home_win": 0.31,
+        "draw": 0.2695,
+        "away_win": 0.4205
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "944": {
       "match_time": "26.10.28 (수) 02:30",
       "league": "이탈리아 세리에A",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "US사수올로",
       "away_team": "SS라치오",
       "betman_odds": {
@@ -215,11 +361,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 2.85,
+        "draw": 3.3,
+        "away_win": 2.02
+      },
+      "first_market_probs": {
+        "home": 0.3054,
+        "draw": 0.2637,
+        "away": 0.4309
+      },
+      "first_model_probs": {
+        "home_win": 0.2963,
+        "draw": 0.2619,
+        "away_win": 0.4418
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "957": {
       "match_time": "26.10.28 (수) 04:45",
       "league": "독일 FA컵",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "쾰른",
       "away_team": "우니온 베를린",
       "betman_odds": {
@@ -239,11 +403,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.7,
+        "draw": 3.45,
+        "away_win": 3.7
+      },
+      "first_market_probs": {
+        "home": 0.5122,
+        "draw": 0.2524,
+        "away": 0.2354
+      },
+      "first_model_probs": {
+        "home_win": 0.5395,
+        "draw": 0.2598,
+        "away_win": 0.2007
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "961": {
       "match_time": "26.10.28 (수) 04:45",
       "league": "독일 FA컵",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "도르트문트",
       "away_team": "베르더 브레멘",
       "betman_odds": {
@@ -263,11 +445,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.31,
+        "draw": 4.4,
+        "away_win": 6.3
+      },
+      "first_market_probs": {
+        "home": 0.6642,
+        "draw": 0.1977,
+        "away": 0.1381
+      },
+      "first_model_probs": {
+        "home_win": 0.7079,
+        "draw": 0.1882,
+        "away_win": 0.1039
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "965": {
       "match_time": "26.10.28 (수) 04:45",
       "league": "이탈리아 세리에A",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "AS로마",
       "away_team": "칼리아리",
       "betman_odds": {
@@ -287,11 +487,29 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.27,
+        "draw": 4.3,
+        "away_win": 7.7
+      },
+      "first_market_probs": {
+        "home": 0.6848,
+        "draw": 0.2023,
+        "away": 0.1129
+      },
+      "first_model_probs": {
+        "home_win": 0.7282,
+        "draw": 0.1894,
+        "away_win": 0.0824
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
     },
     "971": {
       "match_time": "26.10.28 (수) 04:45",
       "league": "이탈리아 세리에A",
+      "game_type": "축구 승무패",
+      "line": 0.0,
       "home_team": "토리노",
       "away_team": "코모1907",
       "betman_odds": {
@@ -311,7 +529,1199 @@
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-25T11:43:22+00:00",
-      "logged_at": "2026-10-26T05:48:33+00:00"
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 4.0,
+        "draw": 3.5,
+        "away_win": 1.63
+      },
+      "first_market_probs": {
+        "home": 0.2175,
+        "draw": 0.2486,
+        "away": 0.5338
+      },
+      "first_model_probs": {
+        "home_win": 0.1823,
+        "draw": 0.251,
+        "away_win": 0.5667
+      },
+      "first_logged_at": "2026-10-26T05:48:33+00:00"
+    },
+    "804": {
+      "match_time": "26.10.26 (월) 19:00",
+      "league": "KBL",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "고양소노 스카이거너스",
+      "away_team": "창원LG 세이커스",
+      "betman_odds": {
+        "home_win": 1.44,
+        "draw": 0.0,
+        "away_win": 2.2
+      },
+      "market_probs": {
+        "home": 0.6044,
+        "draw": 0.0,
+        "away": 0.3956
+      },
+      "model_probs": {
+        "home_win": 0.6041,
+        "draw": 0.0,
+        "away_win": 0.3959
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.44,
+        "draw": 0.0,
+        "away_win": 2.2
+      },
+      "first_market_probs": {
+        "home": 0.6044,
+        "draw": 0.0,
+        "away": 0.3956
+      },
+      "first_model_probs": {
+        "home_win": 0.6041,
+        "draw": 0.0,
+        "away_win": 0.3959
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "810": {
+      "match_time": "26.10.26 (월) 22:45",
+      "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 핸디캡",
+      "line": 1.0,
+      "home_team": "네프치 페르가나",
+      "away_team": "S알이티하드",
+      "betman_odds": {
+        "home_win": 1.94,
+        "draw": 3.45,
+        "away_win": 2.9
+      },
+      "market_probs": {
+        "home": 0.4482,
+        "draw": 0.252,
+        "away": 0.2998
+      },
+      "model_probs": {
+        "home_win": 0.454,
+        "draw": 0.2535,
+        "away_win": 0.2925
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.94,
+        "draw": 3.45,
+        "away_win": 2.9
+      },
+      "first_market_probs": {
+        "home": 0.4482,
+        "draw": 0.252,
+        "away": 0.2998
+      },
+      "first_model_probs": {
+        "home_win": 0.454,
+        "draw": 0.2535,
+        "away_win": 0.2925
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "822": {
+      "match_time": "26.10.27 (화) 01:00",
+      "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 핸디캡",
+      "line": -1.0,
+      "home_team": "알아인",
+      "away_team": "트락토르",
+      "betman_odds": {
+        "home_win": 1.78,
+        "draw": 3.7,
+        "away_win": 3.15
+      },
+      "market_probs": {
+        "home": 0.4887,
+        "draw": 0.2351,
+        "away": 0.2762
+      },
+      "model_probs": {
+        "home_win": 0.5018,
+        "draw": 0.2332,
+        "away_win": 0.265
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.78,
+        "draw": 3.7,
+        "away_win": 3.15
+      },
+      "first_market_probs": {
+        "home": 0.4887,
+        "draw": 0.2351,
+        "away": 0.2762
+      },
+      "first_model_probs": {
+        "home_win": 0.5018,
+        "draw": 0.2332,
+        "away_win": 0.265
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "826": {
+      "match_time": "26.10.27 (화) 01:00",
+      "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 핸디캡",
+      "line": -1.0,
+      "home_team": "알아흘리 사우디",
+      "away_team": "알가라파SC",
+      "betman_odds": {
+        "home_win": 1.65,
+        "draw": 4.1,
+        "away_win": 3.35
+      },
+      "market_probs": {
+        "home": 0.5277,
+        "draw": 0.2124,
+        "away": 0.2599
+      },
+      "model_probs": {
+        "home_win": 0.5478,
+        "draw": 0.2062,
+        "away_win": 0.246
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.65,
+        "draw": 4.1,
+        "away_win": 3.35
+      },
+      "first_market_probs": {
+        "home": 0.5277,
+        "draw": 0.2124,
+        "away": 0.2599
+      },
+      "first_model_probs": {
+        "home_win": 0.5478,
+        "draw": 0.2062,
+        "away_win": 0.246
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "830": {
+      "match_time": "26.10.27 (화) 03:15",
+      "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 핸디캡",
+      "line": -1.0,
+      "home_team": "알카디시야",
+      "away_team": "알사드SC",
+      "betman_odds": {
+        "home_win": 2.4,
+        "draw": 3.65,
+        "away_win": 2.18
+      },
+      "market_probs": {
+        "home": 0.3625,
+        "draw": 0.2384,
+        "away": 0.3991
+      },
+      "model_probs": {
+        "home_win": 0.3534,
+        "draw": 0.2373,
+        "away_win": 0.4094
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 2.4,
+        "draw": 3.65,
+        "away_win": 2.18
+      },
+      "first_market_probs": {
+        "home": 0.3625,
+        "draw": 0.2384,
+        "away": 0.3991
+      },
+      "first_model_probs": {
+        "home_win": 0.3534,
+        "draw": 0.2373,
+        "away_win": 0.4094
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "838": {
+      "match_time": "26.10.27 (화) 03:15",
+      "league": "AFC 챔피언스리그 엘리트",
+      "game_type": "축구 핸디캡",
+      "line": 1.0,
+      "home_team": "에어포스 알쿠와알자위야",
+      "away_team": "파흐타코르",
+      "betman_odds": {
+        "home_win": 1.71,
+        "draw": 3.2,
+        "away_win": 3.95
+      },
+      "market_probs": {
+        "home": 0.5083,
+        "draw": 0.2716,
+        "away": 0.2201
+      },
+      "model_probs": {
+        "home_win": 0.5231,
+        "draw": 0.2751,
+        "away_win": 0.2018
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.71,
+        "draw": 3.2,
+        "away_win": 3.95
+      },
+      "first_market_probs": {
+        "home": 0.5083,
+        "draw": 0.2716,
+        "away": 0.2201
+      },
+      "first_model_probs": {
+        "home_win": 0.5231,
+        "draw": 0.2751,
+        "away_win": 0.2018
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "2071": {
+      "match_time": "26.10.27 (화) 04:30",
+      "league": "프랑스 리그1",
+      "game_type": "축구 핸디캡",
+      "line": -1.0,
+      "home_team": "파리 생제르맹",
+      "away_team": "올랭피크 리옹",
+      "betman_odds": {
+        "home_win": 1.88,
+        "draw": 3.6,
+        "away_win": 2.95
+      },
+      "market_probs": {
+        "home": 0.4631,
+        "draw": 0.2418,
+        "away": 0.2951
+      },
+      "model_probs": {
+        "home_win": 0.4717,
+        "draw": 0.2414,
+        "away_win": 0.287
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.88,
+        "draw": 3.6,
+        "away_win": 2.95
+      },
+      "first_market_probs": {
+        "home": 0.4631,
+        "draw": 0.2418,
+        "away": 0.2951
+      },
+      "first_model_probs": {
+        "home_win": 0.4717,
+        "draw": 0.2414,
+        "away_win": 0.287
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "2072": {
+      "match_time": "26.10.27 (화) 04:30",
+      "league": "프랑스 리그1",
+      "game_type": "축구 핸디캡",
+      "line": -2.0,
+      "home_team": "파리 생제르맹",
+      "away_team": "올랭피크 리옹",
+      "betman_odds": {
+        "home_win": 3.0,
+        "draw": 3.95,
+        "away_win": 1.78
+      },
+      "market_probs": {
+        "home": 0.2903,
+        "draw": 0.2205,
+        "away": 0.4892
+      },
+      "model_probs": {
+        "home_win": 0.2696,
+        "draw": 0.2145,
+        "away_win": 0.5159
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 3.0,
+        "draw": 3.95,
+        "away_win": 1.78
+      },
+      "first_market_probs": {
+        "home": 0.2903,
+        "draw": 0.2205,
+        "away": 0.4892
+      },
+      "first_model_probs": {
+        "home_win": 0.2696,
+        "draw": 0.2145,
+        "away_win": 0.5159
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "842": {
+      "match_time": "26.10.27 (화) 05:00",
+      "league": "스페인 라리가",
+      "game_type": "축구 핸디캡",
+      "line": -1.0,
+      "home_team": "세비야",
+      "away_team": "오사수나",
+      "betman_odds": {
+        "home_win": 3.5,
+        "draw": 3.05,
+        "away_win": 1.87
+      },
+      "market_probs": {
+        "home": 0.2488,
+        "draw": 0.2855,
+        "away": 0.4657
+      },
+      "model_probs": {
+        "home_win": 0.2243,
+        "draw": 0.2902,
+        "away_win": 0.4855
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 3.5,
+        "draw": 3.05,
+        "away_win": 1.87
+      },
+      "first_market_probs": {
+        "home": 0.2488,
+        "draw": 0.2855,
+        "away": 0.4657
+      },
+      "first_model_probs": {
+        "home_win": 0.2243,
+        "draw": 0.2902,
+        "away_win": 0.4855
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "843": {
+      "match_time": "26.10.27 (화) 05:00",
+      "league": "스페인 라리가",
+      "game_type": "축구 핸디캡",
+      "line": -2.0,
+      "home_team": "세비야",
+      "away_team": "오사수나",
+      "betman_odds": {
+        "home_win": 7.7,
+        "draw": 5.0,
+        "away_win": 1.22
+      },
+      "market_probs": {
+        "home": 0.113,
+        "draw": 0.174,
+        "away": 0.713
+      },
+      "model_probs": {
+        "home_win": 0.0841,
+        "draw": 0.1538,
+        "away_win": 0.7621
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 7.7,
+        "draw": 5.0,
+        "away_win": 1.22
+      },
+      "first_market_probs": {
+        "home": 0.113,
+        "draw": 0.174,
+        "away": 0.713
+      },
+      "first_model_probs": {
+        "home_win": 0.0841,
+        "draw": 0.1538,
+        "away_win": 0.7621
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "846": {
+      "match_time": "26.10.27 (화) 08:00",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "샬럿 호네츠",
+      "away_team": "워싱턴 위저즈",
+      "betman_odds": {
+        "home_win": 1.68,
+        "draw": 0.0,
+        "away_win": 1.8
+      },
+      "market_probs": {
+        "home": 0.5172,
+        "draw": 0.0,
+        "away": 0.4828
+      },
+      "model_probs": {
+        "home_win": 0.5165,
+        "draw": 0.0,
+        "away_win": 0.4835
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.68,
+        "draw": 0.0,
+        "away_win": 1.8
+      },
+      "first_market_probs": {
+        "home": 0.5172,
+        "draw": 0.0,
+        "away": 0.4828
+      },
+      "first_model_probs": {
+        "home_win": 0.5165,
+        "draw": 0.0,
+        "away_win": 0.4835
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "850": {
+      "match_time": "26.10.27 (화) 08:00",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "클리블랜드 캐벌리어스",
+      "away_team": "미네소타 팀버울브스",
+      "betman_odds": {
+        "home_win": 1.47,
+        "draw": 0.0,
+        "away_win": 2.13
+      },
+      "market_probs": {
+        "home": 0.5917,
+        "draw": 0.0,
+        "away": 0.4083
+      },
+      "model_probs": {
+        "home_win": 0.5913,
+        "draw": 0.0,
+        "away_win": 0.4087
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.47,
+        "draw": 0.0,
+        "away_win": 2.13
+      },
+      "first_market_probs": {
+        "home": 0.5917,
+        "draw": 0.0,
+        "away": 0.4083
+      },
+      "first_model_probs": {
+        "home_win": 0.5913,
+        "draw": 0.0,
+        "away_win": 0.4087
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "854": {
+      "match_time": "26.10.27 (화) 08:30",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "보스턴 셀틱스",
+      "away_team": "시카고 불스",
+      "betman_odds": {
+        "home_win": 1.01,
+        "draw": 0.0,
+        "away_win": 6.28
+      },
+      "market_probs": {
+        "home": 0.8615,
+        "draw": 0.0,
+        "away": 0.1385
+      },
+      "model_probs": {
+        "home_win": 0.8621,
+        "draw": 0.0,
+        "away_win": 0.1379
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.01,
+        "draw": 0.0,
+        "away_win": 6.28
+      },
+      "first_market_probs": {
+        "home": 0.8615,
+        "draw": 0.0,
+        "away": 0.1385
+      },
+      "first_model_probs": {
+        "home_win": 0.8621,
+        "draw": 0.0,
+        "away_win": 0.1379
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "858": {
+      "match_time": "26.10.27 (화) 08:30",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "마이애미 히트",
+      "away_team": "댈러스 매버릭스",
+      "betman_odds": {
+        "home_win": 1.14,
+        "draw": 0.0,
+        "away_win": 3.67
+      },
+      "market_probs": {
+        "home": 0.763,
+        "draw": 0.0,
+        "away": 0.237
+      },
+      "model_probs": {
+        "home_win": 0.7634,
+        "draw": 0.0,
+        "away_win": 0.2366
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.14,
+        "draw": 0.0,
+        "away_win": 3.67
+      },
+      "first_market_probs": {
+        "home": 0.763,
+        "draw": 0.0,
+        "away": 0.237
+      },
+      "first_model_probs": {
+        "home_win": 0.7634,
+        "draw": 0.0,
+        "away_win": 0.2366
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "862": {
+      "match_time": "26.10.27 (화) 09:00",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "밀워키 벅스",
+      "away_team": "인디애나 페이서스",
+      "betman_odds": {
+        "home_win": 2.35,
+        "draw": 0.0,
+        "away_win": 1.38
+      },
+      "market_probs": {
+        "home": 0.37,
+        "draw": 0.0,
+        "away": 0.63
+      },
+      "model_probs": {
+        "home_win": 0.3686,
+        "draw": 0.0,
+        "away_win": 0.6314
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 2.35,
+        "draw": 0.0,
+        "away_win": 1.38
+      },
+      "first_market_probs": {
+        "home": 0.37,
+        "draw": 0.0,
+        "away": 0.63
+      },
+      "first_model_probs": {
+        "home_win": 0.3686,
+        "draw": 0.0,
+        "away_win": 0.6314
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "866": {
+      "match_time": "26.10.27 (화) 09:00",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "오클라호마시티 썬더",
+      "away_team": "피닉스 선즈",
+      "betman_odds": {
+        "home_win": 1.11,
+        "draw": 0.0,
+        "away_win": 4.02
+      },
+      "market_probs": {
+        "home": 0.7836,
+        "draw": 0.0,
+        "away": 0.2164
+      },
+      "model_probs": {
+        "home_win": 0.7841,
+        "draw": 0.0,
+        "away_win": 0.2159
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.11,
+        "draw": 0.0,
+        "away_win": 4.02
+      },
+      "first_market_probs": {
+        "home": 0.7836,
+        "draw": 0.0,
+        "away": 0.2164
+      },
+      "first_model_probs": {
+        "home_win": 0.7841,
+        "draw": 0.0,
+        "away_win": 0.2159
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "870": {
+      "match_time": "26.10.27 (화) 09:30",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "휴스턴 로케츠",
+      "away_team": "애틀랜타 호크스",
+      "betman_odds": {
+        "home_win": 1.35,
+        "draw": 0.0,
+        "away_win": 2.45
+      },
+      "market_probs": {
+        "home": 0.6447,
+        "draw": 0.0,
+        "away": 0.3553
+      },
+      "model_probs": {
+        "home_win": 0.6447,
+        "draw": 0.0,
+        "away_win": 0.3553
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.35,
+        "draw": 0.0,
+        "away_win": 2.45
+      },
+      "first_market_probs": {
+        "home": 0.6447,
+        "draw": 0.0,
+        "away": 0.3553
+      },
+      "first_model_probs": {
+        "home_win": 0.6447,
+        "draw": 0.0,
+        "away_win": 0.3553
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "874": {
+      "match_time": "26.10.27 (화) 10:00",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "유타 재즈",
+      "away_team": "멤피스 그리즐리스",
+      "betman_odds": {
+        "home_win": 1.69,
+        "draw": 0.0,
+        "away_win": 1.79
+      },
+      "market_probs": {
+        "home": 0.5144,
+        "draw": 0.0,
+        "away": 0.4856
+      },
+      "model_probs": {
+        "home_win": 0.5136,
+        "draw": 0.0,
+        "away_win": 0.4864
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.69,
+        "draw": 0.0,
+        "away_win": 1.79
+      },
+      "first_market_probs": {
+        "home": 0.5144,
+        "draw": 0.0,
+        "away": 0.4856
+      },
+      "first_model_probs": {
+        "home_win": 0.5136,
+        "draw": 0.0,
+        "away_win": 0.4864
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "878": {
+      "match_time": "26.10.27 (화) 11:00",
+      "league": "NBA",
+      "game_type": "농구 승패",
+      "line": 0.0,
+      "home_team": "덴버 너게츠",
+      "away_team": "골든스테이트 워리어스",
+      "betman_odds": {
+        "home_win": 1.18,
+        "draw": 0.0,
+        "away_win": 3.31
+      },
+      "market_probs": {
+        "home": 0.7372,
+        "draw": 0.0,
+        "away": 0.2628
+      },
+      "model_probs": {
+        "home_win": 0.7375,
+        "draw": 0.0,
+        "away_win": 0.2625
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.18,
+        "draw": 0.0,
+        "away_win": 3.31
+      },
+      "first_market_probs": {
+        "home": 0.7372,
+        "draw": 0.0,
+        "away": 0.2628
+      },
+      "first_model_probs": {
+        "home_win": 0.7375,
+        "draw": 0.0,
+        "away_win": 0.2625
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "941": {
+      "match_time": "26.10.28 (수) 02:00",
+      "league": "독일 FA컵",
+      "game_type": "축구 핸디캡",
+      "line": 1.0,
+      "home_team": "함부르크",
+      "away_team": "프랑크푸르트",
+      "betman_odds": {
+        "home_win": 1.59,
+        "draw": 3.85,
+        "away_win": 3.85
+      },
+      "market_probs": {
+        "home": 0.5477,
+        "draw": 0.2262,
+        "away": 0.2262
+      },
+      "model_probs": {
+        "home_win": 0.5704,
+        "draw": 0.2214,
+        "away_win": 0.2082
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.59,
+        "draw": 3.85,
+        "away_win": 3.85
+      },
+      "first_market_probs": {
+        "home": 0.5477,
+        "draw": 0.2262,
+        "away": 0.2262
+      },
+      "first_model_probs": {
+        "home_win": 0.5704,
+        "draw": 0.2214,
+        "away_win": 0.2082
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "945": {
+      "match_time": "26.10.28 (수) 02:30",
+      "league": "이탈리아 세리에A",
+      "game_type": "축구 핸디캡",
+      "line": 1.0,
+      "home_team": "US사수올로",
+      "away_team": "SS라치오",
+      "betman_odds": {
+        "home_win": 1.62,
+        "draw": 3.7,
+        "away_win": 3.8
+      },
+      "market_probs": {
+        "home": 0.5364,
+        "draw": 0.2349,
+        "away": 0.2287
+      },
+      "model_probs": {
+        "home_win": 0.5572,
+        "draw": 0.2317,
+        "away_win": 0.2111
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.62,
+        "draw": 3.7,
+        "away_win": 3.8
+      },
+      "first_market_probs": {
+        "home": 0.5364,
+        "draw": 0.2349,
+        "away": 0.2287
+      },
+      "first_model_probs": {
+        "home_win": 0.5572,
+        "draw": 0.2317,
+        "away_win": 0.2111
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "946": {
+      "match_time": "26.10.28 (수) 02:30",
+      "league": "이탈리아 세리에A",
+      "game_type": "축구 핸디캡",
+      "line": 2.0,
+      "home_team": "US사수올로",
+      "away_team": "SS라치오",
+      "betman_odds": {
+        "home_win": 1.16,
+        "draw": 5.9,
+        "away_win": 8.5
+      },
+      "market_probs": {
+        "home": 0.7501,
+        "draw": 0.1475,
+        "away": 0.1024
+      },
+      "model_probs": {
+        "home_win": 0.7931,
+        "draw": 0.1284,
+        "away_win": 0.0785
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.16,
+        "draw": 5.9,
+        "away_win": 8.5
+      },
+      "first_market_probs": {
+        "home": 0.7501,
+        "draw": 0.1475,
+        "away": 0.1024
+      },
+      "first_model_probs": {
+        "home_win": 0.7931,
+        "draw": 0.1284,
+        "away_win": 0.0785
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "958": {
+      "match_time": "26.10.28 (수) 04:45",
+      "league": "독일 FA컵",
+      "game_type": "축구 핸디캡",
+      "line": -1.0,
+      "home_team": "쾰른",
+      "away_team": "우니온 베를린",
+      "betman_odds": {
+        "home_win": 2.95,
+        "draw": 3.45,
+        "away_win": 1.92
+      },
+      "market_probs": {
+        "home": 0.2949,
+        "draw": 0.2521,
+        "away": 0.453
+      },
+      "model_probs": {
+        "home_win": 0.2754,
+        "draw": 0.252,
+        "away_win": 0.4726
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 2.95,
+        "draw": 3.45,
+        "away_win": 1.92
+      },
+      "first_market_probs": {
+        "home": 0.2949,
+        "draw": 0.2521,
+        "away": 0.453
+      },
+      "first_model_probs": {
+        "home_win": 0.2754,
+        "draw": 0.252,
+        "away_win": 0.4726
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "962": {
+      "match_time": "26.10.28 (수) 04:45",
+      "league": "독일 FA컵",
+      "game_type": "축구 핸디캡",
+      "line": -1.0,
+      "home_team": "도르트문트",
+      "away_team": "베르더 브레멘",
+      "betman_odds": {
+        "home_win": 1.95,
+        "draw": 3.5,
+        "away_win": 2.85
+      },
+      "market_probs": {
+        "home": 0.4462,
+        "draw": 0.2486,
+        "away": 0.3053
+      },
+      "model_probs": {
+        "home_win": 0.4517,
+        "draw": 0.2495,
+        "away_win": 0.2988
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.95,
+        "draw": 3.5,
+        "away_win": 2.85
+      },
+      "first_market_probs": {
+        "home": 0.4462,
+        "draw": 0.2486,
+        "away": 0.3053
+      },
+      "first_model_probs": {
+        "home_win": 0.4517,
+        "draw": 0.2495,
+        "away_win": 0.2988
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "966": {
+      "match_time": "26.10.28 (수) 04:45",
+      "league": "이탈리아 세리에A",
+      "game_type": "축구 핸디캡",
+      "line": -1.0,
+      "home_team": "AS로마",
+      "away_team": "칼리아리",
+      "betman_odds": {
+        "home_win": 1.93,
+        "draw": 3.3,
+        "away_win": 3.05
+      },
+      "market_probs": {
+        "home": 0.4509,
+        "draw": 0.2637,
+        "away": 0.2853
+      },
+      "model_probs": {
+        "home_win": 0.457,
+        "draw": 0.2673,
+        "away_win": 0.2757
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.93,
+        "draw": 3.3,
+        "away_win": 3.05
+      },
+      "first_market_probs": {
+        "home": 0.4509,
+        "draw": 0.2637,
+        "away": 0.2853
+      },
+      "first_model_probs": {
+        "home_win": 0.457,
+        "draw": 0.2673,
+        "away_win": 0.2757
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "967": {
+      "match_time": "26.10.28 (수) 04:45",
+      "league": "이탈리아 세리에A",
+      "game_type": "축구 핸디캡",
+      "line": -2.0,
+      "home_team": "AS로마",
+      "away_team": "칼리아리",
+      "betman_odds": {
+        "home_win": 3.25,
+        "draw": 3.75,
+        "away_win": 1.74
+      },
+      "market_probs": {
+        "home": 0.2678,
+        "draw": 0.2321,
+        "away": 0.5002
+      },
+      "model_probs": {
+        "home_win": 0.2445,
+        "draw": 0.2273,
+        "away_win": 0.5281
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 3.25,
+        "draw": 3.75,
+        "away_win": 1.74
+      },
+      "first_market_probs": {
+        "home": 0.2678,
+        "draw": 0.2321,
+        "away": 0.5002
+      },
+      "first_model_probs": {
+        "home_win": 0.2445,
+        "draw": 0.2273,
+        "away_win": 0.5281
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "972": {
+      "match_time": "26.10.28 (수) 04:45",
+      "league": "이탈리아 세리에A",
+      "game_type": "축구 핸디캡",
+      "line": 1.0,
+      "home_team": "토리노",
+      "away_team": "코모1907",
+      "betman_odds": {
+        "home_win": 2.01,
+        "draw": 3.4,
+        "away_win": 2.8
+      },
+      "market_probs": {
+        "home": 0.4331,
+        "draw": 0.256,
+        "away": 0.3109
+      },
+      "model_probs": {
+        "home_win": 0.4362,
+        "draw": 0.2584,
+        "away_win": 0.3054
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 2.01,
+        "draw": 3.4,
+        "away_win": 2.8
+      },
+      "first_market_probs": {
+        "home": 0.4331,
+        "draw": 0.256,
+        "away": 0.3109
+      },
+      "first_model_probs": {
+        "home_win": 0.4362,
+        "draw": 0.2584,
+        "away_win": 0.3054
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
+    },
+    "973": {
+      "match_time": "26.10.28 (수) 04:45",
+      "league": "이탈리아 세리에A",
+      "game_type": "축구 핸디캡",
+      "line": 2.0,
+      "home_team": "토리노",
+      "away_team": "코모1907",
+      "betman_odds": {
+        "home_win": 1.32,
+        "draw": 4.75,
+        "away_win": 5.5
+      },
+      "market_probs": {
+        "home": 0.6588,
+        "draw": 0.1831,
+        "away": 0.1581
+      },
+      "model_probs": {
+        "home_win": 0.6964,
+        "draw": 0.1695,
+        "away_win": 0.1341
+      },
+      "prob_source": "betman_markets",
+      "model_version": "betman:2026-10-25T11:43:22+00:00",
+      "logged_at": "2026-10-26T07:59:05+00:00",
+      "first_odds": {
+        "home_win": 1.32,
+        "draw": 4.75,
+        "away_win": 5.5
+      },
+      "first_market_probs": {
+        "home": 0.6588,
+        "draw": 0.1831,
+        "away": 0.1581
+      },
+      "first_model_probs": {
+        "home_win": 0.6964,
+        "draw": 0.1695,
+        "away_win": 0.1341
+      },
+      "first_logged_at": "2026-10-26T07:59:05+00:00"
     }
   }
 }

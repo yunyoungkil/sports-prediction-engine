@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-26T05:48:32+00:00",
+  "updated_at": "2026-10-26T07:59:04+00:00",
   "graded_matches": 26,
   "rounds": [
     260126
@@ -23,6 +23,16 @@
   "gem_roi_ci_high": 0.0,
   "prob_sources": {
     "betman_corrector": 26
+  },
+  "by_game_type": {
+    "축구 승무패": {
+      "n": 26,
+      "ll_diff": -0.021,
+      "ll_diff_ci": [
+        -0.0372,
+        -0.0036
+      ]
+    }
   },
   "verdict": "검증 중 (표본 26/300)",
   "model": {
