@@ -2186,5 +2186,5 @@ with st.sidebar:
         st.markdown(f"<div style='padding-bottom:12px'><div style='font-size:13px;line-height:1.5;padding:8px 10px;"
                     f"border-radius:8px;background:{bg};color:{fg}'>{cart['msg']}</div></div>", unsafe_allow_html=True)
         st.button("➡️ 조합 결과 보기 (STEP 02)", type="primary", disabled=not cart["valid"], width="stretch",
-                  on_click=_go_step, args=(2,), key="cart_go_step2", help="어느 탭에서 눌러도 ① 맞춤조건구매의 조합 결과로 이동해요")
+                  on_click=_go_step, args=(2,), key="cart_go_step2")   # help 없음: 누르면 화면이 바뀌어 말풍선이 남음
         st.button("🗑️ 모두 빼기", width="stretch", on_click=_cart_clear, key="cart_clear")
