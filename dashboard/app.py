@@ -202,13 +202,6 @@ def load_scorecard():
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _metric_note(label, value, note=None):
-    """지표 + 화살표 없는 보조 설명 (st.metric의 delta는 ↑/↓ 화살표가 붙어 증감처럼 보이므로 설명에는 쓰지 않음)"""
-    st.metric(label, value)
-    if note:
-        st.caption(note)
-
-
 # 3-1. 경기 결과 · 경기 전 AI 예측 기록 (맞춤조건구매 목록의 적중 여부 표시용)
 PICK_KEYS = ("home_win", "draw", "away_win")
 SEL_KEY = {"home_win": "home", "draw": "draw", "away_win": "away"}
@@ -1799,161 +1792,265 @@ with tab2:
 # TAB 3: 📊 ③ 성과 검증 (실제 경기 대조 & 통계)
 # ==============================================================================
 with tab3:
+    card = load_scorecard()
+    clv = load_clv() or {}
+    pt = load_paper_trading()
+    bf = load_paper_backfill()
+    SCORE_MIN, CLV_MIN, PAPER_MIN = 300, 50, 300   # 판정에 필요한 표본 (scorecard · clv · paper_trading 과 같은 기준)
+
+    # ------------------------------------------------------------------
+    # 0. 한눈에 보기 — 세 가지 질문에 쉬운 말로 답하고, 판정까지 얼마나 남았는지 막대로
+    # ------------------------------------------------------------------
+    CHIP = {"wait": ("rgba(234,179,8,.18)", "#facc15"), "good": ("rgba(34,197,94,.18)", "#4ade80"),
+            "bad": ("rgba(239,68,68,.18)", "#f87171"), "neutral": ("rgba(148,163,184,.2)", "#cbd5e1")}
+
+    def _summary_card(question, kind, chip_txt, sentence, n, target, unit):
+        bg, fg = CHIP[kind]
+        pct = max(0.0, min(1.0, n / target)) if target else 1.0
+        return (
+            "<div style='flex:1 1 280px;border:1px solid rgba(148,163,184,.3);border-radius:10px;padding:12px 14px'>"
+            f"<div style='display:flex;justify-content:space-between;align-items:center;gap:8px'>"
+            f"<b style='font-size:15px'>{question}</b>"
+            f"<span style='white-space:nowrap;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:700;"
+            f"background:{bg};color:{fg}'>{chip_txt}</span></div>"
+            f"<div style='font-size:14px;line-height:1.6;margin:8px 0'>{sentence}</div>"
+            f"<div style='height:6px;border-radius:3px;background:rgba(148,163,184,.2)'>"
+            f"<div style='width:{pct * 100:.0f}%;height:100%;border-radius:3px;background:{fg}'></div></div>"
+            f"<div style='font-size:12px;opacity:.7;margin-top:4px'>판정까지: {unit} {n:,} / {target:,}</div></div>")
+
+    summary = []
+    # (1) AI가 배당보다 정확한가? — 공식 성적표
+    n_g = card.get("graded_matches", 0) if card else 0
+    if card and card.get("model_ll") is not None:
+        diff, ci_s = card["ll_diff"], card.get("ll_diff_ci") or [0, 0]
+        if n_g < SCORE_MIN:
+            kind, chip_txt = "wait", "검증 중"
+        elif ci_s[1] < 0:
+            kind, chip_txt = "good", "AI가 더 정확"
+        elif ci_s[0] > 0:
+            kind, chip_txt = "bad", "배당이 더 정확"
+        else:
+            kind, chip_txt = "neutral", "차이 확실치 않음"
+        lean = "AI가 배당보다 조금 더 정확" if diff < 0 else ("배당이 AI보다 조금 더 정확" if diff > 0 else "AI와 배당이 같음")
+        sent = f"지금까지 {n_g:,}경기에서 <b>{lean}</b>해요." + (" 아직은 운일 수 있어요." if n_g < SCORE_MIN else "")
+    else:
+        kind, chip_txt, sent = "wait", "검증 중", "아직 채점한 경기가 없어요. 경기 전 AI 기록이 끝난 경기와 만나면 자동으로 채점돼요."
+    summary.append(_summary_card("🧠 AI가 배당보다 정확한가?", kind, chip_txt, sent, n_g, SCORE_MIN, "채점한 경기"))
+
+    # (2) 다른 배터들이 나중에 AI 쪽으로 움직였나? — 마감 배당 비교
+    moved = int(clv.get("moved") or 0)
+    if clv.get("matches"):
+        v_txt = str(clv.get("verdict", ""))
+        if moved < CLV_MIN:
+            kind, chip_txt = "wait", "검증 중"
+        elif "좋은" in v_txt:
+            kind, chip_txt = "good", "AI 쪽으로 움직임"
+        elif "나쁜" in v_txt:
+            kind, chip_txt = "bad", "AI 반대쪽으로"
+        else:
+            kind, chip_txt = "neutral", "뚜렷한 방향 없음"
+        sent = (f"배당이 바뀐 {moved}경기 중 <b>{clv.get('toward_ai', 0)}경기가 AI 쪽</b>으로 움직였어요"
+                + (f" ({clv['toward_ai_pct']:.0f}% · 비교 기준 {clv['fav_toward_pct']:.0f}%)."
+                   if clv.get("toward_ai_pct") is not None and clv.get("fav_toward_pct") is not None else "."))
+    else:
+        kind, chip_txt, sent = "wait", "검증 중", "아직 비교할 경기가 없어요. AI 기록이 있는 경기가 마감되면 쌓여요."
+    summary.append(_summary_card("📈 시장이 나중에 AI 쪽으로 움직였나?", kind, chip_txt, sent, moved, CLV_MIN, "배당이 바뀐 경기"))
+
+    # (3) 돈을 버는 전략이 있나? — 가상 베팅 리그
+    live = (pt or {}).get("strategies", {})
+    past = (bf or {}).get("strategies", {})
+    live_done = max((v["bets"] for v in live.values()), default=0)
+    live_wait = sum(v["pending"] for v in live.values())
+    proven = [v["label"] for v in list(live.values()) + list(past.values()) if v.get("verdict") == "수익 입증"]
+    if proven:
+        kind, chip_txt = "good", "수익 입증"
+    elif live_done < PAPER_MIN:
+        kind, chip_txt = "wait", "검증 중"
+    else:
+        kind, chip_txt = "bad", "수익 미입증"
+    past_txt = " · ".join(f"{v['label'].split(' (')[0]} <b>{v['roi_pct']:+.0f}%</b>" for v in past.values() if v["bets"])
+    sent = (f"실시간 가상 베팅: 끝난 {sum(v['bets'] for v in live.values()):,}건 · 결과 대기 {live_wait:,}건."
+            + (f"<br>과거 재현: {past_txt}" + (" → 배당만 보는 전략은 모두 손실이에요." if all(v["roi_pct"] < 0 for v in past.values() if v["bets"]) else "")
+               if past_txt else ""))
+    summary.append(_summary_card("🧪 돈을 버는 전략이 있나?", kind, chip_txt, sent, live_done, PAPER_MIN, "전략별 끝난 베팅(최다)"))
+
+    st.markdown("<div style='padding-bottom:12px'><div style='font-size:20px;font-weight:700;margin-bottom:8px'>📋 한눈에 보기</div>"
+                "<div style='display:flex;flex-wrap:wrap;gap:10px'>" + "".join(summary) + "</div></div>", unsafe_allow_html=True)
+    with st.expander("❓ 이 탭의 숫자 읽는 법"):
+        st.markdown(
+            "- **정확도 점수 (Log loss)**: 확률이 실제 결과와 얼마나 맞았는지를 나타내요. **낮을수록 좋아요.** "
+            "'AI − 배당'이 마이너스면 AI가 배당보다 정확했다는 뜻이에요.\n"
+            "- **95% 범위**: 운 때문에 생길 수 있는 범위예요. 범위 **전체가 0보다 작아야(또는 수익률은 0보다 커야)** '확실하다'고 말할 수 있어요. "
+            "경기 수가 적으면 범위가 넓어서 판단하기 어려워요.\n"
+            "- **왜 300경기?**: 축구는 운이 커서, 몇십 경기로는 실력과 운을 구분할 수 없어요. 그래서 판정 기준을 미리 정해 뒀어요.\n"
+            "- **마감 배당 비교**: AI가 '배당보다 높다'고 본 쪽 배당이 마감 때 내려갔다면, 다른 배터들의 돈이 나중에 그쪽으로 몰렸다는 뜻이에요. "
+            "승패보다 운이 덜 섞여서 더 적은 경기(50경기)로 방향을 볼 수 있어요.\n"
+            "- **적중률**은 참고용이에요. 배당 1순위만 골라도 꽤 맞아요. 돈을 벌 수 있는지는 **수익률**로 봐야 해요.")
+
     # ------------------------------------------------------------------
     # A. 공식 AI 성적표 — 경기 시작 전에 고정 저장한 예측만 실제 결과로 채점 (사후 정보 없음)
     # ------------------------------------------------------------------
-    st.subheader("🏅 공식 AI 성적표 (경기 전 예측만 채점)")
-    st.caption("파이프라인이 경기 시작 전에 고정 저장한 AI 확률(data/history/prediction_log)만 실제 결과로 채점합니다. "
-               "학습·튜닝에 쓰이지 않은 진짜 앞으로의 성적이며, AI 실력의 공식 지표입니다. Log loss는 낮을수록 정확합니다.")
-    card = load_scorecard()
+    st.divider()
+    st.subheader("🏅 공식 AI 성적표")
+    st.caption("경기 시작 전에 저장해 둔 AI 확률(data/history/prediction_log)만 실제 결과로 채점해요. "
+               "학습에 쓰지 않은 진짜 실전 성적이라 AI 실력의 공식 지표예요.")
     if card and card.get("model_ll") is not None:
-        k1, k2, k3, k4 = st.columns(4)
-        ci = card.get("ll_diff_ci", [0, 0])
-        for col, label, val, sub in [
-            (k1, "채점 경기", f"{card['graded_matches']:,}경기", f"회차 {len(card.get('rounds', []))}개"),
-            (k2, "Log loss (AI)", f"{card['model_ll']:.4f}", f"시장 {card['market_ll']:.4f}"),
-            (k3, "차이 (음수 = AI 우세)", f"{card['ll_diff']:+.4f}", f"95% CI [{ci[0]:+.4f}, {ci[1]:+.4f}]"),
-            (k4, "AI 1순위 적중률", f"{card.get('hit_rate_top_pick', 0):.1f}%",
-             f"EV>2% {card.get('value_bets', 0)}건 ROI {card.get('roi_pct', 0):+.1f}%"),
-        ]:
-            with col:
-                st.metric(label, val)
-                st.caption(sub)
-        st.markdown(f"**판정:** {card.get('verdict', '-')}")
-        if len(card.get("by_game_type", {})) > 1:
-            with st.expander("유형별 성적 (어느 유형에서 AI가 앞서는지)", expanded=False):
-                st.dataframe(pd.DataFrame([
-                    {"유형": gt, "채점 경기": v["n"], "차이 (음수 = AI 우세)": f"{v['ll_diff']:+.4f}",
-                     "95% CI": f"[{v['ll_diff_ci'][0]:+.4f}, {v['ll_diff_ci'][1]:+.4f}]"}
-                    for gt, v in sorted(card["by_game_type"].items(), key=lambda x: -x[1]["n"])]),
-                    hide_index=True, width="stretch")
-        if card.get("gem_bets") is not None:
-            gb = card["gem_bets"]
-            st.markdown(
-                f"**💎 경기 성적** (AI 기준 기대가치 플러스 선택지에 1단위씩 걸었다면): **{gb}건**, 적중 {card.get('gem_hits', 0)}건, "
-                f"수익률 **{card.get('gem_roi_pct', 0):+.1f}%** (95% CI [{card.get('gem_roi_ci_low', 0):+.1f}%, {card.get('gem_roi_ci_high', 0):+.1f}%])"
-                + (" — 표본이 적어 아직 판단 불가 (300건 이상 필요)" if gb < 300 else ""))
+        ci = card.get("ll_diff_ci") or [0, 0]
+        d_color = "#34d399" if card["ll_diff"] < 0 else ("#f87171" if card["ll_diff"] > 0 else "inherit")
+        render_tiles([
+            ("📋 채점한 경기", f"{n_g:,}경기",
+             (f"판정까지 {SCORE_MIN - n_g:,}경기 남음 · " if n_g < SCORE_MIN else "") + f"회차 {len(card.get('rounds', []))}개"),
+            ("🎯 정확도 점수 (낮을수록 좋음)", f"AI {card['model_ll']:.3f}", f"배당 {card['market_ll']:.3f}"),
+            ("⚖️ AI − 배당", f"<span style='color:{d_color}'>{card['ll_diff']:+.4f}</span>",
+             f"음수면 AI가 더 정확 · 95% 범위 [{ci[0]:+.3f}, {ci[1]:+.3f}]"),
+            ("✅ AI 1순위 적중률", f"{card.get('hit_rate_top_pick', 0):.1f}%", "참고용 (배당 1순위도 비슷하게 맞아요)"),
+        ])
+        if n_g < SCORE_MIN:
+            says = (f"💬 지금까지는 AI가 배당보다 {'조금 더' if card['ll_diff'] < 0 else '덜'} 정확해요. "
+                    f"하지만 {n_g:,}경기는 너무 적어서 운일 수 있어요. {SCORE_MIN}경기가 모이면 판정해요.")
+        else:
+            says = f"💬 판정: {card.get('verdict', '-')}"
+        gb = card.get("gem_bets")
+        if gb:
+            says += (f"<br>💎 AI 기준 기대가치 플러스 선택지에 1,000원씩 걸었다면: {gb:,}건 · 적중 {card.get('gem_hits', 0):,}건 · "
+                     f"수익률 <b>{card.get('gem_roi_pct', 0):+.1f}%</b> (95% 범위 [{card.get('gem_roi_ci_low', 0):+.1f}%, "
+                     f"{card.get('gem_roi_ci_high', 0):+.1f}%])" + (" — 아직 판단하기엔 적어요." if gb < SCORE_MIN else ""))
+        elif gb is not None:
+            says += "<br>💎 AI 추천(기대가치 플러스) 선택지는 아직 0건이에요. AI가 고치는 폭이 베트맨 마진보다 작아서 드물게 나와요."
+        st.markdown(f"<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>{says}</div></div>",
+                    unsafe_allow_html=True)
         hist = [h for h in card.get("history", []) if h.get("ll_diff") is not None]
         if len(hist) >= 2:
             h_df = pd.DataFrame(hist).set_index("date")[["model_ll", "market_ll"]].rename(
-                columns={"model_ll": "AI", "market_ll": "시장"})
-            st.line_chart(h_df, height=220)
+                columns={"model_ll": "AI", "market_ll": "배당"})
+            st.line_chart(h_df, height=200)
+            st.caption("날짜별 누적 정확도 점수 (낮을수록 좋음) — AI 선이 배당 선보다 아래에 있으면 AI가 더 정확해요.")
+        if len(card.get("by_game_type", {})) > 1:
+            with st.expander("유형별 성적 (어느 유형에서 AI가 앞서는지)"):
+                st.dataframe(pd.DataFrame([
+                    {"유형": gt, "채점한 경기": v["n"], "AI − 배당 (음수 = AI 우세)": f"{v['ll_diff']:+.4f}",
+                     "95% 범위": f"[{v['ll_diff_ci'][0]:+.4f}, {v['ll_diff_ci'][1]:+.4f}]"}
+                    for gt, v in sorted(card["by_game_type"].items(), key=lambda x: -x[1]["n"])]),
+                    hide_index=True, width="stretch")
     else:
-        n = card.get("graded_matches", 0) if card else 0
-        st.info(f"⏳ 아직 채점할 경기가 없습니다 (현재 {n}경기). 2026-10-25부터 경기 전 예측을 기록하기 시작했으며, "
-                "기록된 경기가 끝날 때마다 자동으로 채점됩니다. 300경기가 쌓이면 판정합니다.")
+        st.info(f"⏳ 아직 채점할 경기가 없어요 (현재 {n_g}경기). 2026-10-25부터 경기 전 예측을 기록하기 시작했고, "
+                f"기록된 경기가 끝날 때마다 자동으로 채점돼요. {SCORE_MIN}경기가 쌓이면 판정해요.")
 
     status = load_model_status()
-    if status:
-        with st.container(border=True):
-            st.markdown(f"**📚 과거 시험 성적 — {status['name']}** (학습에 쓰지 않은 기간, 실전 확률과 같은 모델)")
-            rows_bt = []
-            for label, s in status["evals"]:
-                ci = s.get("ll_diff_ci", [None, None])
-                rows_bt.append({"시험": label, "경기 수": s["samples"], "AI LL": s["model_ll"], "시장 LL": s["market_ll"],
-                                "차이": f"{s['ll_diff']:+.4f}", "95% CI": f"[{ci[0]:+.4f}, {ci[1]:+.4f}]",
-                                "EV>2% 베팅": s.get("bets", 0)})
-            st.dataframe(pd.DataFrame(rows_bt), width="stretch", hide_index=True)
-
     mm = load_markets_model()
-    if mm and mm.get("segments"):
-        with st.expander("📚 전 종목 보정 AI — 유형별 과거 시험 (핸디캡·언더오버·홀짝·농구·야구·배구 …)", expanded=False):
-            st.caption("유형마다 '베트맨이 일관되게 잘못 매기는 쪽'(강한 쪽 저평가 β, 특정 선택지 편향 c)을 2023~2025년 상반기로 학습하고 "
-                       "2026년(TEST)·최근(HOLDOUT)에서 시험했습니다. 둘 다 시장보다 나은 유형만 실전에 씁니다. "
-                       f"학습: {mm.get('trained_at', '-')[:10]}")
-            seg_rows = []
-            for key, v in mm["segments"].items():
-                gt, k = key.split("|")
-                t, h = v.get("test"), v.get("holdout")
-                seg_rows.append({
-                    "유형": gt + (" (무 있음)" if k == "3" and "승무패" not in gt else ""),
-                    "실전 적용": "✅" if v.get("passes_gate") else ("표본 부족" if v.get("reason") else "❌"),
-                    "TEST 경기": t["n"] if t else v["sizes"]["test"],
-                    "TEST 차이": f"{t['ll_diff']:+.4f}" if t else "-",
-                    "TEST 95% CI": f"[{t['ll_diff_ci'][0]:+.4f}, {t['ll_diff_ci'][1]:+.4f}]" if t else "-",
-                    "HOLDOUT 경기": h["n"] if h else 0,
-                    "HOLDOUT 차이": f"{h['ll_diff']:+.4f}" if h else "-",
-                    "β (강한 쪽 저평가)": round(v["eval_params"]["beta"], 3) if v.get("eval_params") else None,
-                })
-            st.dataframe(pd.DataFrame(seg_rows), hide_index=True, width="stretch")
-            st.caption("차이가 음수면 AI가 시장보다 정확. β > 0 이면 베트맨이 배당 1순위(강한 쪽)를 낮게 잡는다는 뜻입니다.")
+    if status or (mm and mm.get("segments")):
+        with st.expander("📚 과거 시험 성적 — 실전에 쓰기 전에, 학습에 안 쓴 기간으로 미리 본 시험"):
+            if status:
+                st.markdown(f"**{status['name']}** (축구 승무패 · 실전 확률과 같은 모델)")
+                rows_bt = []
+                for label, s in status["evals"]:
+                    ci_b = s.get("ll_diff_ci", [None, None])
+                    rows_bt.append({"시험": label, "경기 수": s["samples"], "AI 점수": s["model_ll"], "배당 점수": s["market_ll"],
+                                    "AI − 배당": f"{s['ll_diff']:+.4f}", "95% 범위": f"[{ci_b[0]:+.4f}, {ci_b[1]:+.4f}]"})
+                st.dataframe(pd.DataFrame(rows_bt), width="stretch", hide_index=True)
+            if mm and mm.get("segments"):
+                st.markdown("**전 종목 보정 AI** — 유형별 시험 (핸디캡·언더오버·홀짝·농구·야구·배구 …)")
+                st.caption("유형마다 '베트맨이 일관되게 잘못 매기는 쪽'을 2023~2025년 상반기로 학습하고, 2026년 시험·최근 실전에서 "
+                           f"둘 다 배당보다 나은 유형만 실전에 써요. 학습: {mm.get('trained_at', '-')[:10]}")
+                seg_rows = []
+                for key, v in mm["segments"].items():
+                    gt, k = key.split("|")
+                    t, h = v.get("test"), v.get("holdout")
+                    seg_rows.append({
+                        "유형": gt + (" (무 있음)" if k == "3" and "승무패" not in gt else ""),
+                        "실전 적용": "✅ 적용" if v.get("passes_gate") else ("⏳ 표본 부족" if v.get("reason") else "❌ 배당 기준"),
+                        "2026 시험 경기": t["n"] if t else v["sizes"]["test"],
+                        "2026 시험 AI − 배당": f"{t['ll_diff']:+.4f}" if t else "-",
+                        "95% 범위": f"[{t['ll_diff_ci'][0]:+.4f}, {t['ll_diff_ci'][1]:+.4f}]" if t else "-",
+                        "최근 실전 경기": h["n"] if h else 0,
+                        "최근 실전 AI − 배당": f"{h['ll_diff']:+.4f}" if h else "-",
+                        "강팀 저평가 정도 (β)": round(v["eval_params"]["beta"], 3) if v.get("eval_params") else None,
+                    })
+                seg_rows.sort(key=lambda r: (not r["실전 적용"].startswith("✅"), -r["2026 시험 경기"]))
+                st.dataframe(pd.DataFrame(seg_rows), hide_index=True, width="stretch")
+                st.caption("AI − 배당이 음수면 AI가 더 정확해요. β가 0보다 크면 베트맨이 강한 쪽(배당 1순위)을 낮게 잡는다는 뜻이에요.")
 
     # ------------------------------------------------------------------
-    # A-1. 마감 배당 비교 (CLV) — 시장이 나중에 AI 쪽으로 움직였는가
+    # B. 마감 배당 비교 (CLV) — 시장이 나중에 AI 쪽으로 움직였는가
     # ------------------------------------------------------------------
     st.divider()
-    st.subheader("📈 마감 배당 비교 (CLV)")
-    st.caption("AI가 '배당보다 높다(▲)'고 본 선택지의 배당이 마감 때까지 어떻게 움직였는지 봅니다. 다른 배터들의 돈이 나중에 AI 쪽으로 "
-               "몰려 배당이 내려가면 AI가 시장보다 먼저 맞게 본 것입니다. 승패 결과보다 운이 덜 섞여 **성적표보다 적은 경기로 방향**을 볼 수 있습니다. "
-               "배당 변화는 1시간마다 기록합니다.")
-    clv = load_clv()
-    if clv and clv.get("matches"):
+    st.subheader("📈 마감 배당 비교")
+    st.caption("AI가 '배당보다 높다(▲)'고 본 쪽으로, 마감 때까지 다른 배터들의 돈이 몰렸는지 봐요. 몰렸다면 AI가 시장보다 먼저 맞게 본 거예요. "
+               "배당 변화는 1시간마다 기록해요.")
+    if clv.get("matches"):
         mv = clv.get("mean_move_pp") or {}
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            _metric_note("비교 경기", f"{clv['matches']:,}경기", f"배당이 바뀐 경기 {clv['moved']}")
-        with c2:
-            _metric_note("AI 쪽으로 움직임", f"{clv['toward_ai_pct']:.0f}%" if clv.get("toward_ai_pct") is not None else "-",
-                         f"{clv['toward_ai']}건 / 반대 {clv['away_from_ai']}건")
-        with c3:
-            _metric_note("기준선: 배당 1순위 쪽", f"{clv['fav_toward_pct']:.0f}%" if clv.get("fav_toward_pct") is not None else "-",
-                         "강한 쪽 배당이 원래 잘 내려가는지 비교용")
-        with c4:
-            _metric_note("AI ▲ 평균 확률 변화", f"{mv['mean']:+.2f}%p" if mv.get("mean") is not None else "-",
-                         f"95% CI [{mv['ci'][0]:+.2f}, {mv['ci'][1]:+.2f}]" if mv.get("ci") else None)
-        st.markdown(f"**판정:** {clv.get('verdict', '-')}")
+        render_tiles([
+            ("📋 비교한 경기", f"{clv['matches']:,}경기", f"그중 배당이 바뀐 경기 {moved}"),
+            ("🧭 AI 쪽으로 움직인 비율", f"{clv['toward_ai_pct']:.0f}%" if clv.get("toward_ai_pct") is not None else "-",
+             f"AI 쪽 {clv.get('toward_ai', 0)}건 · 반대 {clv.get('away_from_ai', 0)}건"),
+            ("📏 비교 기준: 배당 1순위 쪽", f"{clv['fav_toward_pct']:.0f}%" if clv.get("fav_toward_pct") is not None else "-",
+             "강한 쪽 배당이 원래 잘 내려가는지 (AI가 이보다 높아야 의미)"),
+            ("📊 AI ▲ 쪽 평균 확률 변화", f"{mv['mean']:+.2f}%p" if mv.get("mean") is not None else "-",
+             f"95% 범위 [{mv['ci'][0]:+.2f}, {mv['ci'][1]:+.2f}]" if mv.get("ci") else ""),
+        ])
+        says = (f"💬 배당이 바뀐 {moved}경기 중 {clv.get('toward_ai', 0)}경기가 AI 쪽으로 움직였어요. "
+                + (f"{CLV_MIN}경기가 모이면 판정해요." if moved < CLV_MIN else f"판정: {clv.get('verdict', '-')}"))
         g = clv.get("gem_clv_pct") or {}
         if g.get("n"):
-            st.caption(f"💎 선택지 {g['n']}건: 처음 배당이 마감 배당보다 평균 {g['mean']:+.2f}% 높음 (플러스 = 마감보다 좋은 배당에 산 셈)")
+            says += f"<br>💎 선택지 {g['n']}건은 처음 배당이 마감 배당보다 평균 {g['mean']:+.2f}% 좋았어요 (플러스 = 마감보다 좋은 배당에 산 셈)."
+        st.markdown(f"<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>{says}</div></div>",
+                    unsafe_allow_html=True)
     else:
-        st.info("⏳ 아직 비교할 경기가 없습니다. AI 예측을 기록한 경기가 마감되면 자동으로 쌓입니다.")
+        st.info("⏳ 아직 비교할 경기가 없어요. AI 예측을 기록한 경기가 마감되면 자동으로 쌓여요.")
 
     # ------------------------------------------------------------------
-    # A-2. 가상 베팅 리그 — 전략별 자동 가상 베팅 (실제 구매 없음)
+    # C. 가상 베팅 리그 — 전략별 자동 가상 베팅 (실제 구매 없음)
     # ------------------------------------------------------------------
     st.divider()
-    st.subheader("🧪 가상 베팅 리그 (자동 · 실제 구매 없음)")
-    st.caption("새 회차마다 파이프라인이 전략별로 경기 시작 전에 가상 베팅(1,000원 단위)을 고정 저장하고, 결과가 나오면 자동 채점합니다. "
-               "AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있으며, 300건 이상 + 수익률 신뢰구간 하한 > 0 일 때만 '수익 입증'입니다.")
-    pt = load_paper_trading()
-    bf = load_paper_backfill()
+    st.subheader("🧪 가상 베팅 리그")
+    st.caption("전략마다 경기 시작 전에 1,000원씩 가상으로 걸어 두고, 결과가 나오면 자동으로 채점해요 (실제 구매 없음). "
+               f"AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있고, {PAPER_MIN}건 이상에서 수익률 95% 범위 아래 끝이 0보다 커야 '수익 입증'이에요.")
 
-    clv_by_strategy = (load_clv() or {}).get("paper_strategies", {})
+    clv_by_strategy = clv.get("paper_strategies", {})
+    VERDICT_MARK = {"수익 입증": "✅ 입증", "수익 미입증": "❌ 미입증", "판단 보류 (표본 부족)": "⏳ 표본 부족"}
 
     def _league_rows(strategies: dict, source: str) -> list:
         rows_ = []
         for key, v in strategies.items():
             cv = clv_by_strategy.get(key, {}) if source == "실시간" else {}
             rows_.append({
-                "구분": source, "전략": v["label"], "정산": v["bets"], "대기": v["pending"],
+                "구분": source, "전략": v["label"], "끝난 베팅": v["bets"], "결과 대기": v["pending"],
                 "적중률": f"{v['hits'] / v['bets'] * 100:.0f}%" if v["bets"] else "-",
-                "가상 수익률": f"{v['roi_pct']:+.1f}%" if v["bets"] else "-",
-                "95% CI": f"[{v['roi_ci_low']:+.1f}%, {v['roi_ci_high']:+.1f}%]" if v["bets"] else "-",
-                "누적 손익(원)": v["profit"], "판정": v["verdict"] if v["bets"] else "-",
+                "수익률": f"{v['roi_pct']:+.1f}%" if v["bets"] else "-",
+                "수익률 95% 범위": f"[{v['roi_ci_low']:+.1f}%, {v['roi_ci_high']:+.1f}%]" if v["bets"] else "-",
+                "누적 손익(원)": v["profit"], "판정": VERDICT_MARK.get(v["verdict"], v["verdict"]) if v["bets"] else "-",
                 "마감 대비 배당": f"{cv['mean']:+.2f}% ({cv['n']})" if cv.get("n") else "-",
             })
         return rows_
 
-    league_rows = (_league_rows(pt["strategies"], "실시간") if pt and pt.get("strategies") else [])
-    if bf and bf.get("strategies"):
-        league_rows += _league_rows(bf["strategies"], f"과거 재현 ({bf['rounds'][0]}~{bf['rounds'][1]})")
+    league_rows = _league_rows(live, "실시간") if live else []
+    if past:
+        league_rows += _league_rows(past, f"과거 재현 ({bf['rounds'][0]}~{bf['rounds'][1]})")
     if not league_rows:
-        st.info("⏳ 아직 가상 베팅 기록이 없습니다. 다음 파이프라인 실행부터 쌓입니다.")
+        st.info("⏳ 아직 가상 베팅 기록이 없어요. 다음 파이프라인 실행부터 쌓여요.")
     else:
+        if past_txt:
+            st.markdown(
+                "<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>"
+                f"💬 과거 회차로 재현해 보면 {past_txt}예요. 배당만 보고 고르는 방식은 베트맨 마진 때문에 오래 하면 손해예요. "
+                f"AI 전략(A·B·C)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
+                f"결과 대기 {live_wait:,}건).</div></div>", unsafe_allow_html=True)
         st.dataframe(pd.DataFrame(league_rows), hide_index=True, width="stretch",
-                     column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized")})
-        st.caption("마감 대비 배당: 산 배당 ÷ 마감 배당 − 1의 경기(다리) 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것입니다. "
-                   "실시간: 경기 시작 전에 고정 저장된 베팅 (2026-10-26, 260127회차부터). "
-                   "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당·실제 결과로 재현 — "
-                   "AI 전략(A·B·C)은 현재 AI가 그 결과까지 학습했으므로 재현하지 않습니다.")
+                     column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized"),
+                                    "판정": st.column_config.TextColumn(width="small", help="수익 입증 = 300건 이상 + 수익률 95% 범위 아래 끝 > 0"),
+                                    "마감 대비 배당": st.column_config.TextColumn(
+                                        help="산 배당 ÷ 마감 배당 − 1 의 경기 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것")})
+        st.caption("실시간: 경기 시작 전에 고정 저장한 베팅 (2026-10-26, 260127회차부터). "
+                   "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당과 실제 결과로 재현 — "
+                   "AI 전략(A·B·C)은 지금 AI가 그 결과까지 학습했기 때문에 재현하지 않아요.")
         curves = {}
-        for src, data_ in (("실시간", pt), ("과거 재현", bf)):
+        for data_ in (pt, bf):
             for v in (data_ or {}).get("strategies", {}).values():
                 if len(v["cum_profit"]) >= 2:
-                    curves[f"{v['label']}" if src == "실시간" else v["label"]] = pd.Series(v["cum_profit"])
+                    curves[v["label"]] = pd.Series(v["cum_profit"])
         if curves:
             st.line_chart(pd.DataFrame(curves), height=220)
-            st.caption("가로축: 정산된 베팅 순서 · 세로축: 누적 가상 손익(원)")
+            st.caption("가로: 끝난 베팅 순서 · 세로: 누적 가상 손익(원) — 오른쪽 아래로 내려가면 계속 잃고 있다는 뜻이에요.")
 
         # 개별 베팅 내역
         with st.expander("📜 가상 베팅 내역 (회차·전략·결과별)", expanded=False):
@@ -1962,7 +2059,7 @@ with tab3:
             det += [{**d, "구분": "과거 재현", "전략명": BACKFILL_LABEL_MAP.get(d["strategy"], d["strategy"])}
                     for d in (bf or {}).get("details", [])]
             if not det:
-                st.caption("아직 내역이 없습니다.")
+                st.caption("아직 내역이 없어요.")
             else:
                 ddf = pd.DataFrame(det)
                 h1, h2, h3, h4 = st.columns(4)
@@ -1980,7 +2077,7 @@ with tab3:
                     ddf = ddf[ddf["status"] == res_sel]
                 settled = ddf[ddf["status"] != "대기"]
                 if len(settled):
-                    st.caption(f"표시 {len(ddf):,}건 · 정산 {len(settled):,}건 · 적중 {int((settled['status'] == '적중').sum()):,}건 · "
+                    st.caption(f"표시 {len(ddf):,}건 · 끝난 베팅 {len(settled):,}건 · 적중 {int((settled['status'] == '적중').sum()):,}건 · "
                                f"손익 {int(settled['profit'].sum()):+,}원 (수익률 {settled['profit'].sum() / settled['stake'].sum() * 100:+.1f}%)")
                 mark = {"적중": "✅ 적중", "미적중": "❌ 미적중", "대기": "⏳ 대기"}
                 view = pd.DataFrame({
@@ -1992,7 +2089,7 @@ with tab3:
                                             "손익(원)": st.column_config.NumberColumn(format="localized"),
                                             "베팅 내용": st.column_config.TextColumn(width="large")})
                 if len(view) > 500:
-                    st.caption(f"최근 500건만 표시합니다 (전체 {len(view):,}건). 회차·전략으로 걸러 보세요.")
+                    st.caption(f"최근 500건만 보여요 (전체 {len(view):,}건). 회차·전략으로 걸러 보세요.")
 
 
 # ==============================================================================
