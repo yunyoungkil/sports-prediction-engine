@@ -1,21 +1,21 @@
 {
-  "updated_at": "2026-10-26T13:08:13+00:00",
+  "updated_at": "2026-10-26T16:17:27+00:00",
   "rounds": [
     260126,
     260127
   ],
-  "matches": 27,
-  "moved": 8,
-  "toward_ai": 4,
-  "away_from_ai": 4,
+  "matches": 33,
+  "moved": 10,
+  "toward_ai": 5,
+  "away_from_ai": 5,
   "toward_ai_pct": 50.0,
-  "fav_toward_pct": 62.5,
+  "fav_toward_pct": 60.0,
   "mean_move_pp": {
-    "n": 27,
-    "mean": 0.16424,
+    "n": 33,
+    "mean": 0.10978,
     "ci": [
-      -0.00231,
-      0.37745
+      -0.16684,
+      0.34931
     ]
   },
   "by_game_type": {
@@ -36,18 +36,34 @@
       }
     },
     "축구 승무패": {
-      "matches": 26,
-      "moved": 8,
+      "matches": 29,
+      "moved": 9,
       "toward_ai": 4,
-      "away_from_ai": 4,
-      "toward_ai_pct": 50.0,
-      "fav_toward_pct": 62.5,
+      "away_from_ai": 5,
+      "toward_ai_pct": 44.4,
+      "fav_toward_pct": 55.6,
       "mean_move_pp": {
-        "n": 26,
-        "mean": 0.17056,
+        "n": 29,
+        "mean": 0.05715,
         "ci": [
-          -0.01079,
-          0.37608
+          -0.23239,
+          0.30552
+        ]
+      }
+    },
+    "축구 핸디캡": {
+      "matches": 3,
+      "moved": 1,
+      "toward_ai": 1,
+      "away_from_ai": 0,
+      "toward_ai_pct": 100.0,
+      "fav_toward_pct": 100.0,
+      "mean_move_pp": {
+        "n": 3,
+        "mean": 0.65521,
+        "ci": [
+          0.0,
+          1.96562
         ]
       }
     }
@@ -57,6 +73,39 @@
     "mean": null,
     "ci": null
   },
-  "paper_strategies": {},
-  "verdict": "검증 중 (배당이 바뀐 경기 8/50)"
+  "paper_strategies": {
+    "B_fav_double": {
+      "n": 1,
+      "mean": 5.83333,
+      "ci": [
+        5.83333,
+        5.83333
+      ]
+    },
+    "C_finder_top": {
+      "n": 1,
+      "mean": 5.83333,
+      "ci": [
+        5.83333,
+        5.83333
+      ]
+    },
+    "D_banker_cover": {
+      "n": 6,
+      "mean": 2.91667,
+      "ci": [
+        0.97222,
+        4.86111
+      ]
+    },
+    "E_market_fav": {
+      "n": 3,
+      "mean": 0.30845,
+      "ci": [
+        -4.90798,
+        5.83333
+      ]
+    }
+  },
+  "verdict": "검증 중 (배당이 바뀐 경기 10/50)"
 }
