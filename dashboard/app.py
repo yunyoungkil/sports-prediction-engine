@@ -63,7 +63,8 @@ from collector.betman_sharp import parse_betman_kickoff
 from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
-from tracker.my_slips import MAX_SAVED_COMBOS, add_slip, build_slip, delete_slip, grade_slip, load_json, load_slips, save_json
+from tracker.my_slips import (KIND_LABEL, MAX_SAVED_COMBOS, add_slip, build_slip, combo_results, delete_slip, grade_slip,
+                              load_json, load_slips, save_json, slip_kind, update_slip)
 
 # 내 선택 저장 위치 (개인 기록이라 저장소에 올리지 않음 · .gitignore). 테스트는 SPE_USER_DATA_DIR 로 다른 폴더를 씀
 MY_DATA_DIR = Path(os.environ.get("SPE_USER_DATA_DIR") or (project_root / "user_data"))
@@ -523,8 +524,9 @@ st.caption("베트맨 프로토 승부식 공식 계산 규칙 준수 · 복수 
 # 5. 메인 3대 탭 구성 (중복 요소 제거 및 직관적 분류)
 # key + on_change: 열린 탭을 코드에서 바꿀 수 있게 (사이드바 '조합 결과 보기' → ① 탭으로 이동).
 # 탭을 바꾸면 앱이 한 번 다시 실행되지만, 세 탭 내용은 그대로 모두 그려 필터·선택 상태를 유지한다
-MAIN_TABS = ["🛒 ① 맞춤조건구매 (시뮬레이터)", "🔍 ② AI 경기 분석 (조회 전용)", "📊 ③ 성과 검증 (실제 경기 대조 & 통계)"]
-tab1, tab2, tab3 = st.tabs(MAIN_TABS, key="main_tab", on_change="rerun")
+MAIN_TABS = ["🛒 ① 맞춤조건구매 (시뮬레이터)", "🔍 ② AI 경기 분석 (조회 전용)", "📊 ③ 성과 검증 (실제 경기 대조 & 통계)",
+             "📒 ④ 내 베팅 기록"]
+tab1, tab2, tab3, tab4 = st.tabs(MAIN_TABS, key="main_tab", on_change="rerun")
 
 # ==============================================================================
 # TAB 1: 🛒 ① 맞춤조건구매 (시뮬레이터 전용)
@@ -2146,7 +2148,8 @@ def _cart_clear():
 
 def _save_slip(games_, combos_, gm_ts_):
     """💾 지금 선택(경기 · 고른 선택지 · 조합별 금액·체크)을 기록으로 남김 — 결과가 나오면 자동 채점"""
-    add_slip(build_slip(gm_ts_, games_, combos_, st.session_state.get("slip_memo", "")), MY_SLIPS_PATH)
+    kind = "paper" if st.session_state.get("slip_kind") == KIND_LABEL["paper"] else "real"
+    add_slip(build_slip(gm_ts_, games_, combos_, st.session_state.get("slip_memo", ""), kind=kind), MY_SLIPS_PATH)
     st.session_state["slip_memo"] = ""
     st.session_state["slip_saved_toast"] = True
 
@@ -2165,15 +2168,197 @@ def _delete_slip(slip_id):
     delete_slip(slip_id, MY_SLIPS_PATH)
 
 
+def _slip_result_row(slip, g, results_idx_):
+    """저장한 경기의 베트맨 결과 행 (없으면 None)"""
+    return find_result({"match_seq": g["seq"], "line": g.get("line", 0.0)}, results_idx_, slip.get("gm_ts"))
+
+
 def _slip_result_of(slip, results_idx_):
     """저장한 경기의 실제 결과: home_win/draw/away_win · 'void'(무효) · None(아직)"""
     def f(g):
-        r = find_result({"match_seq": g["seq"], "line": g.get("line", 0.0)}, results_idx_, slip.get("gm_ts"))
+        r = _slip_result_row(slip, g, results_idx_)
         if r is None:
             return None
         code = str(r.get("game_result"))
         return "void" if code == "4" else RESULT_CODE_TO_KEY.get(code)
     return f
+
+
+# ==============================================================================
+# TAB 4: 📒 ④ 내 베팅 기록 — 저장한 선택(실제 구매 · 가상 구매)의 경기별 결과 · 조합별 환급 · 손익
+# (저장·불러오기 함수를 쓰므로 그 정의 뒤, 사이드바 앞에서 그린다)
+# ==============================================================================
+SLIP_STATE = {"hit": ("✅ 적중", "rgba(34,197,94,.15)", "#4ade80"), "miss": ("❌ 미적중", "rgba(239,68,68,.15)", "#f87171"),
+              "pending": ("⏳ 결과 대기", "rgba(234,179,8,.15)", "#facc15")}
+KIND_STYLE = {"real": ("rgba(59,130,246,.18)", "#60a5fa"), "paper": ("rgba(148,163,184,.2)", "#cbd5e1")}
+
+
+def _chip(text, bg, fg):
+    return (f"<span style='display:inline-block;padding:1px 8px;border-radius:6px;font-size:12px;font-weight:700;"
+            f"background:{bg};color:{fg}'>{text}</span>")
+
+
+def _toggle_kind(slip_id, kind):
+    update_slip(slip_id, MY_SLIPS_PATH, kind="paper" if kind == "real" else "real")
+
+
+def _save_memo(slip_id):
+    update_slip(slip_id, MY_SLIPS_PATH, memo=str(st.session_state.get(f"memo_edit_{slip_id}", "")).strip())
+
+
+with tab4:
+    st.subheader("📒 내 베팅 기록")
+    st.caption("사이드바 '💾 저장하기'로 남긴 기록이에요. 경기 결과가 나오면 적중·환급금이 자동으로 채워져요 (결과는 1시간마다 갱신). "
+               "이 컴퓨터의 user_data 폴더에만 저장되고 GitHub에는 올라가지 않아요.")
+    my_all = load_slips(MY_SLIPS_PATH)
+    if not my_all:
+        st.info("아직 저장한 기록이 없어요. ① 탭에서 경기를 고른 뒤 사이드바의 '💾 저장하기'를 누르세요. "
+                "실제로 산 조합은 '실제 구매', 연습은 '가상 구매'로 나눠 저장할 수 있어요.")
+    else:
+        res_idx4 = load_results_index()
+        cur_round4 = str(detect_current_gm_ts(predictions))
+        recs = [{"slip": s, "kind": slip_kind(s), "grade": grade_slip(s, _slip_result_of(s, res_idx4))} for s in my_all]
+
+        # 필터: 구분 · 상태 · 회차 · 검색
+        f1, f2, f3, f4 = st.columns([1.3, 1.9, 1.0, 1.4], vertical_alignment="bottom")
+        with f1:
+            kinds_sel = st.pills("구분", list(KIND_LABEL), format_func=KIND_LABEL.get, selection_mode="multi", key="my_kind") or []
+        with f2:
+            states_sel = st.pills("상태", list(SLIP_STATE), format_func=lambda k: SLIP_STATE[k][0], selection_mode="multi",
+                                  key="my_state") or []
+        with f3:
+            round_opts = ["전체 회차"] + sorted({str(r["slip"].get("gm_ts")) for r in recs}, reverse=True)
+            keep_valid("my_round", round_opts)
+            round_sel = st.selectbox("회차", round_opts, key="my_round")
+        with f4:
+            q4 = st.text_input("🔎 메모·팀 검색", key="my_search", placeholder="예: 실제, 토트넘").strip().lower()
+
+        def _hay(s):
+            return (s.get("memo", "") + " " + " ".join(f"{g['home']} {g['away']}" for g in s.get("games", []))).lower()
+
+        view = [r for r in recs
+                if (not kinds_sel or r["kind"] in kinds_sel) and (not states_sel or r["grade"]["state"] in states_sel)
+                and (round_sel == "전체 회차" or str(r["slip"].get("gm_ts")) == round_sel) and (not q4 or q4 in _hay(r["slip"]))]
+
+        # 요약 (지금 필터 기준 · 손익은 결과 나온 기록만)
+        done = [r for r in view if r["grade"]["state"] != "pending"]
+        inv = sum(r["grade"]["stake"] for r in done)
+        ret = sum(r["grade"]["payout"] for r in done)
+        pnl = ret - inv
+        render_tiles([
+            ("📒 기록", f"{len(view):,}건", f"결과 나옴 {len(done)} · 결과 대기 {len(view) - len(done)}"),
+            ("💰 총 투자", f"{inv:,}원", "결과 나온 기록만"),
+            ("🎯 총 환급", f"{ret:,}원", f"적중 {sum(1 for r in done if r['grade']['state'] == 'hit')} / {len(done)}건"),
+            ("📊 손익", f"<span style='color:{'#f87171' if pnl < 0 else '#34d399'}'>{pnl:+,}원</span>",
+             f"수익률 {pnl / inv * 100:+.1f}%" if inv else "결과가 나오면 표시"),
+        ])
+        kind_lines = []
+        for k, lab in KIND_LABEL.items():
+            kd = [r for r in done if r["kind"] == k]
+            if kd:
+                ki, kr = sum(r["grade"]["stake"] for r in kd), sum(r["grade"]["payout"] for r in kd)
+                kind_lines.append(f"{lab} {len(kd)}건: 투자 {ki:,}원 · 손익 <b>{kr - ki:+,}원</b> ({(kr - ki) / ki * 100:+.1f}%)" if ki
+                                  else f"{lab} {len(kd)}건")
+        if len(kind_lines) > 1:
+            st.markdown("<div style='padding-bottom:10px'><div style='font-size:14px'>💬 " + " · ".join(kind_lines) + "</div></div>",
+                        unsafe_allow_html=True)
+
+        # 누적 손익 (결과 나온 기록 · 저장한 순서 · 구분별 선) — 점이 너무 적으면 그래프가 의미 없어 3건부터
+        if len(done) >= 3:
+            acc, pts = {k: 0 for k in KIND_LABEL}, []
+            kinds_in = [k for k in KIND_LABEL if any(x["kind"] == k for x in done)]
+            for i, r in enumerate(sorted(done, key=lambda r: r["slip"].get("saved_at", "")), start=1):
+                acc[r["kind"]] += r["grade"]["payout"] - r["grade"]["stake"]
+                pts.append({"결과 나온 순서": i, **{KIND_LABEL[k]: acc[k] for k in kinds_in}})
+            st.line_chart(pd.DataFrame(pts).set_index("결과 나온 순서"), height=200)
+            st.caption("가로: 결과 나온 기록 순서(저장한 순) · 세로: 누적 손익(원) — 위로 가면 벌고, 아래로 가면 잃고 있다는 뜻이에요.")
+
+        # 엑셀(CSV)로 받기 — 기록 한 건 = 한 줄
+        csv_rows = [{
+            "저장 시각": r["slip"].get("saved_at", ""), "회차": r["slip"].get("gm_ts", ""), "구분": KIND_LABEL[r["kind"]],
+            "메모": r["slip"].get("memo", ""),
+            "경기": " / ".join(f"{g['seq']} {g['home']} vs {g['away']} [{'·'.join(p['label'] for p in g['picks'])}]"
+                             for g in r["slip"].get("games", [])),
+            "조합 수": sum(1 for c in r["slip"].get("combos", []) if c.get("picked", True)),
+            "투자(원)": r["grade"]["stake"], "상태": SLIP_STATE[r["grade"]["state"]][0], "환급(원)": r["grade"]["payout"],
+            "손익(원)": (r["grade"]["payout"] - r["grade"]["stake"]) if r["grade"]["state"] != "pending" else "",
+        } for r in sorted(view, key=lambda r: r["slip"].get("saved_at", ""), reverse=True)]
+        st.download_button("⬇️ 엑셀(CSV)로 받기", data=pd.DataFrame(csv_rows).to_csv(index=False).encode("utf-8-sig"),
+                           file_name=f"my_bets_{datetime.now().strftime('%Y%m%d')}.csv", mime="text/csv", key="my_csv")
+
+        if not view:
+            st.info("조건에 맞는 기록이 없어요. 필터를 바꿔 보세요.")
+        shown_v = sorted(view, key=lambda r: r["slip"].get("saved_at", ""), reverse=True)[:50]
+        for r in shown_v:
+            s, gr, kind = r["slip"], r["grade"], r["kind"]
+            sid = s["id"]
+            st_txt, st_bg, st_fg = SLIP_STATE[gr["state"]]
+            if gr["state"] == "hit":
+                st_txt += f" · 환급 {gr['payout']:,}원 ({gr['payout'] - gr['stake']:+,}원)"
+            elif gr["state"] == "miss":
+                st_txt += f" ({-gr['stake']:+,}원)"
+            else:
+                st_txt += f" ({gr['done']}/{gr['games']}경기 끝남)"
+            with st.container(border=True):
+                n_comb = sum(1 for c in s.get("combos", []) if c.get("picked", True))
+                head = (f"<div style='display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap'>"
+                        f"<span style='font-size:14px'>{_chip(KIND_LABEL[kind], *KIND_STYLE[kind])} "
+                        f"<b>{s.get('saved_at', '')}</b> <span style='opacity:.7'>· {s.get('gm_ts', '')}회 · "
+                        f"{len(s.get('games', []))}경기 {n_comb}조합 · {gr['stake']:,}원</span>"
+                        + (f" · <b>{s['memo']}</b>" if s.get("memo") else "") + "</span>"
+                        f"{_chip(st_txt, st_bg, st_fg)}</div>")
+                # 경기별: 번호 · 경기 · 고른 것 · 실제 결과
+                g_rows = []
+                for g in s.get("games", []):
+                    row = _slip_result_row(s, g, res_idx4)
+                    labels_g = pick_labels({"game_type": g.get("game_type", ""), "category": ""})
+                    picks_txt = " / ".join(f"{p['label']} {p['odds']:.2f}" for p in g["picks"])
+                    if row is None:
+                        res_txt = "<span style='opacity:.6'>진행 전 · 결과 대기</span>"
+                    elif str(row.get("game_result")) == "4":
+                        res_txt = "↩️ 무효 (배당 1.00)"
+                    else:
+                        actual = RESULT_CODE_TO_KEY.get(str(row.get("game_result")))
+                        ok = actual in {p["key"] for p in g["picks"]}
+                        res_txt = (f"{'✅' if ok else '❌'} <b>{labels_g.get(actual, '?')}</b> "
+                                   f"<span style='opacity:.7'>{row.get('score', '')}</span>")
+                    g_rows.append(
+                        "<div style='display:grid;grid-template-columns:44px 1fr 150px 130px;gap:8px;align-items:center;"
+                        "padding:4px 0;font-size:13px;border-top:1px solid rgba(148,163,184,.12)'>"
+                        f"<b>{g['seq']}</b><span style='word-break:keep-all'>{g['home']} <span style='opacity:.6'>vs</span> {g['away']}"
+                        f" <span style='opacity:.6;font-size:12px'>{type_name({'game_type': g.get('game_type', '')})}</span></span>"
+                        f"<span>{picks_txt}</span><span>{res_txt}</span></div>")
+                st.markdown("<div style='padding-bottom:12px'>" + head
+                            + "<div style='display:grid;grid-template-columns:44px 1fr 150px 130px;gap:8px;font-size:11px;"
+                              "opacity:.6;margin-top:8px'><span>번호</span><span>경기</span><span>고른 것</span><span>결과</span></div>"
+                            + "".join(g_rows) + "</div>", unsafe_allow_html=True)
+
+                with st.expander(f"조합 {n_comb}개 보기 (조합별 배당 · 금액 · 결과 · 환급)"):
+                    lab_of = {(g["seq"], p["key"]): p["label"] for g in s.get("games", []) for p in g["picks"]}
+                    st.dataframe(pd.DataFrame([{
+                        "조합": " × ".join(f"{seq} {lab_of.get((seq, k), k)}" for seq, k, _ in c["legs"]),
+                        "배당": calculate_combined_odds([o for _, _, o in c["legs"]]),
+                        "금액(원)": c["stake"],
+                        "결과": {"hit": "✅ 적중", "miss": "❌", "pending": "⏳ 대기"}[c["state"]],
+                        "환급(원)": c["payout"] if c["state"] == "hit" else 0,
+                    } for c in combo_results(s, _slip_result_of(s, res_idx4))]), hide_index=True, width="stretch",
+                        column_config={"배당": st.column_config.NumberColumn(format="%.2f배"),
+                                       "금액(원)": st.column_config.NumberColumn(format="localized"),
+                                       "환급(원)": st.column_config.NumberColumn(format="localized")})
+
+                a1, a2, a3, a4, _ = st.columns([1, 1.3, 1, 1, 1.7])
+                a1.button("불러오기", key=f"my_load_{sid}", width="stretch", on_click=_load_slip, args=(s,),
+                          disabled=str(s.get("gm_ts")) != cur_round4)
+                a2.button(f"{KIND_LABEL['paper' if kind == 'real' else 'real']}로 바꾸기", key=f"my_kind_{sid}", width="stretch",
+                          on_click=_toggle_kind, args=(sid, kind))
+                with a3.popover("✏️ 메모", width="stretch"):
+                    st.text_input("메모", value=s.get("memo", ""), key=f"memo_edit_{sid}")
+                    st.button("저장", key=f"my_memo_save_{sid}", on_click=_save_memo, args=(sid,))
+                with a4.popover("🗑️ 삭제", width="stretch"):
+                    st.caption("이 기록을 지울까요? 되돌릴 수 없어요.")
+                    st.button("삭제", key=f"my_del_{sid}", type="primary", on_click=_delete_slip, args=(sid,))
+        if len(view) > len(shown_v):
+            st.caption(f"최근 {len(shown_v)}건만 보여요 (전체 {len(view):,}건). 필터로 걸러 보거나 CSV로 받아 보세요.")
 
 
 with st.sidebar:
@@ -2265,54 +2450,31 @@ with st.sidebar:
         slip_round = next((v["match"].get("gm_ts") for v in cart["active"].values() if v["match"].get("gm_ts")),
                           detect_current_gm_ts(predictions))
         st.markdown("<div style='font-size:13px;font-weight:700;margin-top:10px'>💾 이 선택 저장</div>", unsafe_allow_html=True)
-        st.text_input("메모", key="slip_memo", placeholder="메모 (선택) 예: 실제 구매", label_visibility="collapsed")
+        st.radio("구분", [KIND_LABEL["real"], KIND_LABEL["paper"]], key="slip_kind", horizontal=True, label_visibility="collapsed")
+        st.text_input("메모", key="slip_memo", placeholder="메모 (선택) 예: 소액 테스트", label_visibility="collapsed")
         st.button("💾 저장하기", width="stretch", key="slip_save", on_click=_save_slip,
                   args=(games_payload, slip_combos, slip_round), disabled=not slip_combos)
         if not slip_combos:
             st.caption(f"조합이 {MAX_SAVED_COMBOS:,}개를 넘으면 저장할 수 없어요.")
 
-    # 📂 저장한 선택 — 결과가 나오면 적중·미적중·환급금 자동 표시, 이번 회차 것은 다시 불러오기 가능
+    # 📂 저장한 기록: 사이드바는 최근 3건만 짧게 — 전체 · 경기별 결과 · 불러오기 · 삭제는 📒 ④ 탭
     my_slips = load_slips(MY_SLIPS_PATH)
     if my_slips:
-        with st.expander(f"📂 저장한 선택 ({len(my_slips)})", expanded=False):
-            res_idx_s = load_results_index()
-            cur_round = str(detect_current_gm_ts(predictions))
-            STATE_STYLE = {"hit": ("rgba(34,197,94,.15)", "#4ade80"), "miss": ("rgba(239,68,68,.15)", "#f87171"),
-                           "pending": ("rgba(234,179,8,.15)", "#facc15")}
-            totals = {"stake": 0, "payout": 0, "done": 0}
-            for s in reversed(my_slips[-30:]):
-                gr = grade_slip(s, _slip_result_of(s, res_idx_s))
-                if gr["state"] == "hit":
-                    status = f"✅ 적중 · 환급 {gr['payout']:,}원"
-                elif gr["state"] == "miss":
-                    status = "❌ 미적중"
-                else:
-                    status = f"⏳ 결과 대기 ({gr['done']}/{gr['games']}경기 끝남)"
-                if gr["state"] != "pending":
-                    totals["stake"] += gr["stake"]
-                    totals["payout"] += gr["payout"]
-                    totals["done"] += 1
-                bg, fg = STATE_STYLE[gr["state"]]
-                n_comb = sum(1 for c in s.get("combos", []) if c.get("picked", True))
-                games_txt = " · ".join(f"{g['seq']} {g['home']} {'/'.join(p['label'] for p in g['picks'])}" for g in s.get("games", []))
-                with st.container(border=True):
-                    st.markdown(
-                        f"<div style='font-size:12px;opacity:.75'>{s.get('saved_at', '')} · {s.get('gm_ts', '')}회</div>"
-                        f"<div style='font-size:13px'><b>{len(s.get('games', []))}경기 {n_comb}조합 · {gr['stake']:,}원</b>"
-                        + (f" <span style='opacity:.8'>· {s['memo']}</span>" if s.get("memo") else "") + "</div>"
-                        f"<div style='font-size:12px;opacity:.75;word-break:keep-all'>{games_txt}</div>"
-                        f"<div style='padding-bottom:12px'><span style='display:inline-block;margin-top:4px;padding:1px 8px;"
-                        f"border-radius:6px;font-size:12px;font-weight:700;background:{bg};color:{fg}'>{status}</span></div>",
-                        unsafe_allow_html=True)
-                    l1, l2 = st.columns(2)
-                    l1.button("불러오기", key=f"slip_load_{s['id']}", width="stretch", on_click=_load_slip, args=(s,),
-                              disabled=str(s.get("gm_ts")) != cur_round)
-                    l2.button("삭제", key=f"slip_del_{s['id']}", width="stretch", on_click=_delete_slip, args=(s["id"],))
-            if totals["done"]:
-                pnl = totals["payout"] - totals["stake"]
-                st.caption(f"결과 나온 {totals['done']}건 합계: 투자 {totals['stake']:,}원 · 환급 {totals['payout']:,}원 · "
-                           f"손익 {pnl:+,}원")
-            st.caption("불러오기는 이번 회차 기록만 돼요. 최근 30건까지 보여요.")
+        res_idx_s = load_results_index()
+        recent_html = []
+        for s in reversed(my_slips[-3:]):
+            gr = grade_slip(s, _slip_result_of(s, res_idx_s))
+            _, bg, fg = SLIP_STATE[gr["state"]]
+            txt = {"hit": f"✅ {gr['payout']:,}원", "miss": "❌ 미적중", "pending": "⏳ 대기"}[gr["state"]]   # 좁은 칸이라 짧게
+            recent_html.append(
+                "<div style='display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 0;"
+                "border-top:1px solid rgba(148,163,184,.15);font-size:12px'>"
+                f"<span>{_chip(KIND_LABEL[slip_kind(s)][:2], *KIND_STYLE[slip_kind(s)])} {s.get('saved_at', '')[5:]} "
+                f"· {gr['stake']:,}원</span>{_chip(txt, bg, fg)}</div>")
+        st.markdown("<div style='padding:14px 0 12px'><div style='font-size:13px;font-weight:700;margin-bottom:4px'>"
+                    f"📂 저장한 기록 {len(my_slips)}건 <span style='font-weight:400;opacity:.7'>(최근 3건)</span></div>"
+                    + "".join(recent_html) + "<div style='font-size:12px;opacity:.7;margin-top:4px'>전체 기록 · 경기별 결과 · "
+                    "불러오기 · 삭제는 📒 ④ 내 베팅 기록 탭에서</div></div>", unsafe_allow_html=True)
 
     # 지금 고르는 중인 선택 자동 저장 (바뀌었을 때만 파일에 씀) → 새로고침·재시작 후 같은 회차면 복원
     cur_payload = {"gm_ts": str(detect_current_gm_ts(predictions)), "selections": st.session_state["selections"],

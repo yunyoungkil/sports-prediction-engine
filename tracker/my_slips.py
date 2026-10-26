@@ -20,6 +20,7 @@ USER_DIR = Path("user_data")
 CURRENT_PATH = USER_DIR / "current_selections.json"
 SLIPS_PATH = USER_DIR / "my_slips.json"
 MAX_SAVED_COMBOS = 5000
+KIND_LABEL = {"real": "실제 구매", "paper": "가상 구매"}   # 구분이 없는 예전 기록은 slip_kind 참고
 
 
 def load_json(path: Path, default: Any) -> Any:
@@ -52,16 +53,35 @@ def delete_slip(slip_id: str, path: Path = SLIPS_PATH) -> None:
     save_json(path, [s for s in load_slips(path) if s.get("id") != slip_id])
 
 
+def update_slip(slip_id: str, path: Path = SLIPS_PATH, **fields: Any) -> None:
+    """메모·구분(kind) 등 바꾸기"""
+    slips = load_slips(path)
+    for s in slips:
+        if s.get("id") == slip_id:
+            s.update(fields)
+    save_json(path, slips)
+
+
+def slip_kind(slip: Dict[str, Any]) -> str:
+    """구분이 없는 예전 기록: 메모에 '가상'·'연습'이 있으면 가상 구매, 아니면 실제 구매"""
+    if slip.get("kind") in KIND_LABEL:
+        return slip["kind"]
+    memo = str(slip.get("memo", ""))
+    return "paper" if ("가상" in memo or "연습" in memo) else "real"
+
+
 def build_slip(gm_ts: Any, games: List[Dict[str, Any]], combos: List[Dict[str, Any]], memo: str = "",
-               now: Optional[datetime] = None) -> Dict[str, Any]:
+               now: Optional[datetime] = None, kind: str = "real") -> Dict[str, Any]:
     """games: [{seq, home, away, game_type, line, picks: [{key, label, odds}]}]
-    combos: [{key, legs: [[seq, pick_key, odds], ...], stake, picked}]"""
+    combos: [{key, legs: [[seq, pick_key, odds], ...], stake, picked}]
+    kind: 'real' 실제 구매 · 'paper' 가상 구매(연습)"""
     now = now or datetime.now()
     picked = [c for c in combos if c.get("picked", True)]
     return {
         "id": now.strftime("%Y%m%d-%H%M%S-%f"),
         "saved_at": now.strftime("%Y-%m-%d %H:%M"),
         "gm_ts": int(gm_ts) if str(gm_ts).isdigit() else gm_ts,
+        "kind": kind if kind in KIND_LABEL else "real",
         "memo": memo.strip(),
         "games": games,
         "combos": combos,
@@ -69,27 +89,37 @@ def build_slip(gm_ts: Any, games: List[Dict[str, Any]], combos: List[Dict[str, A
     }
 
 
-def grade_slip(slip: Dict[str, Any], result_of: Callable[[Dict[str, Any]], Optional[str]]) -> Dict[str, Any]:
+def combo_results(slip: Dict[str, Any], result_of: Callable[[Dict[str, Any]], Optional[str]]) -> List[Dict[str, Any]]:
     """
-    result_of(game) → 실제 결과 키(home_win/draw/away_win), 'void'(적중 특례·무효), None(아직 결과 없음)
-    반환 state: 'hit' 적중 · 'miss' 미적중 확정 · 'pending' 결과 대기
-    무효 경기는 베트맨 규정처럼 그 경기를 배당 1.0으로 계산한다.
+    체크한 조합마다 결과. result_of(game) → 실제 결과 키(home_win/draw/away_win), 'void'(적중 특례·무효), None(아직)
+    state: 'hit' 적중 · 'miss' 틀림(다른 경기 결과 전이어도 확정) · 'pending' 결과 대기
+    무효 경기는 베트맨 규정처럼 그 경기를 배당 1.00으로 계산한다.
     """
     outcome = {str(g["seq"]): result_of(g) for g in slip.get("games", [])}
-    done = sum(1 for v in outcome.values() if v is not None)
-    hit_n = alive = payout = 0
+    out = []
     for c in slip.get("combos", []):
         if not c.get("picked", True):
             continue
         legs = [(str(s), k, float(o)) for s, k, o in c["legs"]]
+        row = {"key": c.get("key"), "legs": legs, "stake": int(c["stake"]), "odds": None, "payout": 0}
         if any(outcome.get(s) not in (None, "void", k) for s, k, _ in legs):
-            continue   # 이미 틀린 경기가 있는 조합
-        if any(outcome.get(s) is None for s, _, _ in legs):
-            alive += 1
-            continue
-        odds = calculate_combined_odds([1.0 if outcome[s] == "void" else o for s, _, o in legs])
-        hit_n += 1
-        payout += calculate_payout(odds, int(c["stake"]))
-    state = "pending" if alive else ("hit" if hit_n else "miss")
-    return {"state": state, "done": done, "games": len(outcome), "hit_combos": hit_n,
-            "payout": payout, "stake": int(slip.get("total_stake", 0))}
+            row["state"] = "miss"
+        elif any(outcome.get(s) is None for s, _, _ in legs):
+            row["state"] = "pending"
+        else:
+            row["odds"] = calculate_combined_odds([1.0 if outcome[s] == "void" else o for s, _, o in legs])
+            row["payout"] = calculate_payout(row["odds"], row["stake"])
+            row["state"] = "hit"
+        out.append(row)
+    return out
+
+
+def grade_slip(slip: Dict[str, Any], result_of: Callable[[Dict[str, Any]], Optional[str]]) -> Dict[str, Any]:
+    """기록 전체 상태: 'hit' 적중(환급 있음) · 'miss' 미적중 확정 · 'pending' 결과 대기"""
+    rows = combo_results(slip, result_of)
+    done = sum(1 for g in slip.get("games", []) if result_of(g) is not None)
+    alive = sum(1 for r in rows if r["state"] == "pending")
+    hits = [r for r in rows if r["state"] == "hit"]
+    state = "pending" if alive else ("hit" if hits else "miss")
+    return {"state": state, "done": done, "games": len(slip.get("games", [])), "hit_combos": len(hits),
+            "payout": sum(r["payout"] for r in hits), "stake": int(slip.get("total_stake", 0))}

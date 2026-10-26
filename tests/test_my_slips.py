@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from tracker.my_slips import add_slip, build_slip, delete_slip, grade_slip, load_slips
+from tracker.my_slips import add_slip, build_slip, combo_results, delete_slip, grade_slip, load_slips, slip_kind, update_slip
 
 
 def _slip():
@@ -37,3 +37,19 @@ def test_grade_pending_hit_miss_void():
     # 함부르크 경기 무효 → 그 경기 배당 1.00 → 조합 배당 규칙 그대로 1.27 × 1.00 → 1.3배, 두 조합 모두 적중
     g = grade_slip(s, lambda g: {"965": "home_win", "940": "void"}[g["seq"]])
     assert (g["state"], g["hit_combos"], g["payout"]) == ("hit", 2, 1300 + 2600)
+
+
+def test_kind_update_and_combo_results(tmp_path):
+    path = tmp_path / "slips.json"
+    s = _slip()
+    assert s["kind"] == "real"
+    paper = build_slip(260127, s["games"], s["combos"], kind="paper", now=datetime(2026, 10, 26, 23, 0))
+    assert paper["kind"] == "paper"
+    add_slip(s, path)
+    update_slip(s["id"], path, kind="paper", memo="연습으로 바꿈")
+    got = load_slips(path)[0]
+    assert (slip_kind(got), got["memo"]) == ("paper", "연습으로 바꿈")
+    assert slip_kind({"memo": "예전 기록"}) == "real"   # 구분 없는 예전 기록은 실제 구매
+    assert slip_kind({"memo": "가상배팅"}) == "paper"   # ... 메모에 '가상'이 있으면 가상 구매
+    rows = combo_results(s, lambda g: {"965": "home_win", "940": "away_win"}[g["seq"]])
+    assert [(r["state"], r["payout"]) for r in rows] == [("miss", 0), ("hit", 5400)]
