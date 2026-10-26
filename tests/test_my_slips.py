@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from tracker.my_slips import add_slip, build_slip, combo_results, delete_slip, grade_slip, load_slips, slip_kind, update_slip
+from tracker.my_slips import add_slip, build_slip, combo_results, delete_slip, draw_is_void, grade_slip, load_slips, slip_kind, update_slip
 
 
 def _slip():
@@ -53,3 +53,10 @@ def test_kind_update_and_combo_results(tmp_path):
     assert slip_kind({"memo": "가상배팅"}) == "paper"   # ... 메모에 '가상'이 있으면 가상 구매
     rows = combo_results(s, lambda g: {"965": "home_win", "940": "away_win"}[g["seq"]])
     assert [(r["state"], r["payout"]) for r in rows] == [("miss", 0), ("hit", 5400)]
+
+
+def test_rules_draw_in_baseball_basketball_win_lose_is_refund():
+    """베트맨 규정 1-(7): 야구·농구 '승패' 무승부 → 배당 1.0 · 다른 유형은 해당 없음"""
+    assert draw_is_void("야구 승패") and draw_is_void("농구 승패")
+    assert not draw_is_void("축구 승무패") and not draw_is_void("농구 승5패") and not draw_is_void("야구 승1패")
+    assert not draw_is_void("야구 전반 승무패") and not draw_is_void("배구 승패")

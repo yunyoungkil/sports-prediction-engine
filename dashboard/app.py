@@ -63,8 +63,8 @@ from collector.betman_sharp import parse_betman_kickoff
 from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
-from tracker.my_slips import (KIND_LABEL, MAX_SAVED_COMBOS, add_slip, build_slip, combo_results, delete_slip, grade_slip,
-                              load_json, load_slips, save_json, slip_kind, update_slip)
+from tracker.my_slips import (KIND_LABEL, MAX_SAVED_COMBOS, add_slip, build_slip, combo_results, delete_slip, draw_is_void,
+                              grade_slip, load_json, load_slips, save_json, slip_kind, update_slip)
 
 # 내 선택 저장 위치 (개인 기록이라 저장소에 올리지 않음 · .gitignore). 테스트는 SPE_USER_DATA_DIR 로 다른 폴더를 씀
 MY_DATA_DIR = Path(os.environ.get("SPE_USER_DATA_DIR") or (project_root / "user_data"))
@@ -310,6 +310,11 @@ def pick_labels(m) -> dict:
         return {"home_win": "언더", "draw": "-", "away_win": "오버"}
     if "핸디캡" in cat or "핸디캡" in gt:
         return {"home_win": "핸승", "draw": "핸무", "away_win": "핸패"}
+    # 베트맨 규정: 승①패 = 1점차 이내 승부(무승부 포함), 승⑤패 = 5점차 이내 승부 — 가운데는 '무'가 아님
+    if "승1패" in gt:
+        return {"home_win": "승", "draw": "①", "away_win": "패"}
+    if "승5패" in gt:
+        return {"home_win": "승", "draw": "⑤", "away_win": "패"}
     return {"home_win": "승", "draw": "무", "away_win": "패"}
 
 
@@ -2180,7 +2185,10 @@ def _slip_result_of(slip, results_idx_):
         if r is None:
             return None
         code = str(r.get("game_result"))
-        return "void" if code == "4" else RESULT_CODE_TO_KEY.get(code)
+        key = RESULT_CODE_TO_KEY.get(code)
+        if code == "4" or (key == "draw" and draw_is_void(g.get("game_type", ""))):
+            return "void"   # 무효 · 야구/농구 승패 무승부 → 배당 1.0 (규정 1-(6)·(7))
+        return key
     return f
 
 
@@ -2317,6 +2325,8 @@ with tab4:
                         res_txt = "<span style='opacity:.6'>진행 전 · 결과 대기</span>"
                     elif str(row.get("game_result")) == "4":
                         res_txt = "↩️ 무효 (배당 1.00)"
+                    elif str(row.get("game_result")) == "1" and draw_is_void(g.get("game_type", "")):
+                        res_txt = f"↩️ 무승부 → 배당 1.00 <span style='opacity:.7'>{row.get('score', '')}</span>"
                     else:
                         actual = RESULT_CODE_TO_KEY.get(str(row.get("game_result")))
                         ok = actual in {p["key"] for p in g["picks"]}

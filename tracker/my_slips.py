@@ -62,6 +62,12 @@ def update_slip(slip_id: str, path: Path = SLIPS_PATH, **fields: Any) -> None:
     save_json(path, slips)
 
 
+def draw_is_void(game_type: str) -> bool:
+    """베트맨 규정 1-(7): 야구·농구 일반 '승패' 유형은 무승부가 나면 배당 1.0배 (적중·미적중이 아니라 돌려받음)"""
+    gt = str(game_type or "")
+    return gt.startswith(("야구", "농구")) and "승패" in gt and "전반" not in gt
+
+
 def slip_kind(slip: Dict[str, Any]) -> str:
     """구분이 없는 예전 기록: 메모에 '가상'·'연습'이 있으면 가상 구매, 아니면 실제 구매"""
     if slip.get("kind") in KIND_LABEL:
