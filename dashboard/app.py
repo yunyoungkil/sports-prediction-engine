@@ -9,6 +9,7 @@ Streamlit 기반 스포츠 승부 예측 & 가치 픽(Value Bet) 실시간 웹 �
 
 import sys
 import os
+import itertools
 from pathlib import Path
 import json
 import re
@@ -434,6 +435,13 @@ def time_key(m) -> str:
     """경기 시작 시각 정렬 키 'YYMMDDHHMM'"""
     t = re.search(r"(\d{2})\.(\d{2})\.(\d{2}).*?(\d{1,2}):(\d{2})", str(m.get("match_time", "")))
     return "".join(f"{int(x):02d}" for x in t.groups()) if t else ""
+
+
+def combo_key(pairs) -> str:
+    """조합의 고유 이름 '경기번호:선택지|…' (순서 무관).
+    조합별 금액·선택 체크를 조합 번호(#1, #2 …)가 아니라 내용에 묶는다 — 번호에 묶으면 고른 경기가 바뀌었을 때
+    예전 조합의 금액·체크가 같은 번호의 새 조합에 그대로 남는다."""
+    return "|".join(f"{seq}:{sel}" for seq, sel in sorted((str(s), k) for s, k in pairs))
 
 
 def selection_status() -> dict:
@@ -1163,18 +1171,21 @@ with tab1:
             def _bump_editor():
                 st.session_state["combo_editor_ver"] = st.session_state.get("combo_editor_ver", 0) + 1
 
+            # 조합 번호 → 조합 내용 이름 (금액·체크 저장 키). 사이드바 장바구니도 같은 키를 읽는다
+            ckey_of = {c["combo_index"]: combo_key((p["match_seq"], p["selection"]) for p in c["picks"]) for c in combos}
+
             # 2) 금액 · 정렬 · 빠른 선택 — 금액은 바꾸는 즉시 모든 조합에 적용 (표에서 조합별로 따로 바꿀 수도 있음)
             def _apply_stake(v):
                 v = max(unit, min(100000, (int(v) // unit) * unit))
                 st.session_state["batch_stake"] = v
                 st.session_state["batch_stake_input"] = v
                 for c in combos:
-                    st.session_state[f"stake_{c['combo_index']}"] = v
+                    st.session_state[f"stake_{ckey_of[c['combo_index']]}"] = v
                 _bump_editor()
 
             def _quick_select(mode):
                 for c in combos:
-                    st.session_state[f"combo_chk_{c['combo_index']}"] = (
+                    st.session_state[f"combo_chk_{ckey_of[c['combo_index']]}"] = (
                         True if mode == "all" else False if mode == "none" else c["ev"] > 0)
                 _bump_editor()
 
@@ -1217,13 +1228,13 @@ with tab1:
             default_stake = max(unit, (int(st.session_state["batch_stake"]) // unit) * unit)
             rows = []
             for c in combos:
-                idx = c["combo_index"]
-                st.session_state.setdefault(f"combo_chk_{idx}", True)
-                st.session_state.setdefault(f"stake_{idx}", default_stake)
-                row = {"선택": bool(st.session_state[f"combo_chk_{idx}"]), "#": idx}
+                idx, ck = c["combo_index"], ckey_of[c["combo_index"]]
+                st.session_state.setdefault(f"combo_chk_{ck}", True)
+                st.session_state.setdefault(f"stake_{ck}", default_stake)
+                row = {"선택": bool(st.session_state[f"combo_chk_{ck}"]), "#": idx}
                 for p in c["picks"]:
                     row[match_cols[str(p["match_seq"])]] = f"{p['selection_name']} {float(p['odds']):.2f}"
-                stake = max(unit, (int(st.session_state[f"stake_{idx}"]) // unit) * unit)
+                stake = max(unit, (int(st.session_state[f"stake_{ck}"]) // unit) * unit)
                 payout = calculate_payout(c["combined_odds"], stake)
                 row.update({
                     "배당": round(c["combined_odds"], 2),
@@ -1250,18 +1261,18 @@ with tab1:
                 col_cfg[name] = st.column_config.TextColumn(name, width="small")
 
             editor_key = f"combo_editor_{sel_sig}_{sort_option}_{st.session_state.get('combo_editor_ver', 0)}"
-            row_ids = [c["combo_index"] for c in combos]
+            row_ids = [ckey_of[c["combo_index"]] for c in combos]
 
             def _sync_editor(key=editor_key, ids=row_ids, unit_=unit):
                 """편집 직후(재실행 전) 세션에 반영하고 표를 새로 그린다.
                 이렇게 하지 않으면 '적중 시 환급' 같은 계산 열이 이전 금액 기준으로 한 번 늦게 표시된다."""
                 for pos, ch in st.session_state.get(key, {}).get("edited_rows", {}).items():
-                    idx = ids[int(pos)]
+                    ck = ids[int(pos)]
                     if "선택" in ch:
-                        st.session_state[f"combo_chk_{idx}"] = bool(ch["선택"])
+                        st.session_state[f"combo_chk_{ck}"] = bool(ch["선택"])
                     if ch.get("투표금액") is not None:
                         v = int(ch["투표금액"])
-                        st.session_state[f"stake_{idx}"] = max(unit_, min(100000, (v // unit_) * unit_))
+                        st.session_state[f"stake_{ck}"] = max(unit_, min(100000, (v // unit_) * unit_))
                 _bump_editor()
 
             edited = st.data_editor(
@@ -1278,8 +1289,8 @@ with tab1:
                 idx = int(r["#"])
                 stake = int(r["투표금액"]) if pd.notna(r["투표금액"]) else unit
                 stake = max(unit, min(100000, (stake // unit) * unit))
-                st.session_state[f"combo_chk_{idx}"] = bool(r["선택"])
-                st.session_state[f"stake_{idx}"] = stake
+                st.session_state[f"combo_chk_{ckey_of[idx]}"] = bool(r["선택"])
+                st.session_state[f"stake_{ckey_of[idx]}"] = stake
                 if bool(r["선택"]):
                     c = by_idx[idx]
                     chosen.append((c, stake, calculate_payout(c["combined_odds"], stake)))
@@ -1405,7 +1416,7 @@ with tab1:
                     per = max(unit, (k_stake // len(chosen) // unit) * unit)
                     if st.button(f"👉 선택 조합에 균등 적용 ({per:,}원씩)"):
                         for c, _, _ in chosen:
-                            st.session_state[f"stake_{c['combo_index']}"] = per
+                            st.session_state[f"stake_{ckey_of[c['combo_index']]}"] = per
                         _bump_editor()
                         st.rerun()
 
@@ -1677,10 +1688,12 @@ with tab2:
                                 f"<div style='font-size:14px;font-weight:700;color:{'#34d399' if ev_k > 0 else 'inherit'}'>"
                                 f"{ev_k:+.1f}%</div>", unsafe_allow_html=True)
                     in_cart = bool(cart_sel.get(SEL_KEY[k]))
+                    # help(말풍선)는 넣지 않음: 누르면 글자가 바뀌며 다시 그려져 말풍선이 화면에 남는다
                     c4.button("🔒 마감" if closed else ("✓ 담김" if in_cart else "🛒 담기"), key=f"t2_cart_{seq}_{k}",
                               type="primary" if in_cart and not closed else "secondary", disabled=closed,
-                              width="stretch", on_click=_t2_toggle, args=(seq, k),
-                              help=None if closed else ("한 번 더 누르면 빠져요" if in_cart else "🛒 내 선택에 담기"))
+                              width="stretch", on_click=_t2_toggle, args=(seq, k))
+                if not closed:
+                    st.caption("🛒 담기를 누르면 내 선택에 담기고, ✓ 담김을 다시 누르면 빠져요.")
 
                 if m.get("top_scores"):
                     st.caption("🎯 예상 스코어: " + " · ".join(f"{s['score']} ({s['prob']}%)" for s in m["top_scores"]))
@@ -2131,18 +2144,33 @@ with st.sidebar:
                     f"<span style='opacity:.6'>vs</span> <b>{m.get('away_team', '')}</b></div>"
                     f"<div style='padding-bottom:14px'>{picks}</div>",
                     unsafe_allow_html=True)
-                b.button("✕", key=f"cart_rm_{seq}", type="tertiary", on_click=_cart_remove, args=(seq,), help="이 경기 빼기")
+                # help(말풍선) 없음: 누르면 버튼이 사라져 말풍선이 화면에 남을 수 있음
+                b.button("✕", key=f"cart_rm_{seq}", type="tertiary", on_click=_cart_remove, args=(seq,))
 
         # 베트맨 장바구니처럼: 선택 경기수 · 조합 수 · 예상 적중 배당 · 투표금액 · 예상 적중금액
+        # 조합별 금액·선택 체크는 STEP 02 표와 같은 값(조합 내용 키)을 읽어 본문 합계와 항상 같게 한다
         unit = 1000 if cart["n"] == 1 else 100
         stake = max(unit, (int(st.session_state.get("batch_stake", 1000)) // unit) * unit)
-        lo, hi = cart["odds_lo"], cart["odds_hi"]
-        odds_txt = f"{lo:,.2f}배" if lo == hi else f"{lo:,.2f} ~ {hi:,.2f}배"
-        pay_lo, pay_hi = calculate_payout(lo, stake), calculate_payout(hi, stake)
-        pay_txt = f"{pay_lo:,}원" if pay_lo == pay_hi else f"{pay_lo:,} ~ {pay_hi:,}원"
-        total = stake * cart["combos"]
-        rows = [("선택 경기수", f"{cart['n']} 경기"), ("조합 수", f"{cart['combos']:,} 개"),
-                ("예상 적중 배당", odds_txt), ("조합당 금액", f"{stake:,}원"),
+        if cart["combos"] <= 5000:
+            picked = []   # (조합 배당, 금액) — 체크된 조합만
+            for combo in itertools.product(*[[(seq, p) for p in v["picks"]] for seq, v in sorted(cart["active"].items())]):
+                ck = combo_key((seq, p["selection"]) for seq, p in combo)
+                if st.session_state.get(f"combo_chk_{ck}", True):
+                    picked.append((calculate_combined_odds([p["odds"] for _, p in combo]),
+                                   max(unit, (int(st.session_state.get(f"stake_{ck}", stake)) // unit) * unit)))
+        else:   # 조합이 아주 많으면 모두 같은 금액·전부 선택으로 어림
+            picked = [(cart["odds_lo"], stake), (cart["odds_hi"], stake)]
+        n_pick = len(picked) if cart["combos"] <= 5000 else cart["combos"]
+        total = sum(s for _, s in picked) if cart["combos"] <= 5000 else stake * cart["combos"]
+        pays = [calculate_payout(o, s) for o, s in picked]
+        lo, hi = (min(o for o, _ in picked), max(o for o, _ in picked)) if picked else (0.0, 0.0)
+        odds_txt = "-" if not picked else (f"{lo:,.2f}배" if lo == hi else f"{lo:,.2f} ~ {hi:,.2f}배")
+        pay_txt = "-" if not pays else (f"{min(pays):,}원" if min(pays) == max(pays) else f"{min(pays):,} ~ {max(pays):,}원")
+        stakes = {s for _, s in picked}
+        rows = [("선택 경기수", f"{cart['n']} 경기"),
+                ("조합 수", f"{cart['combos']:,} 개" if n_pick == cart["combos"] else f"{n_pick:,} / {cart['combos']:,} 개 선택"),
+                ("예상 적중 배당", odds_txt),
+                ("조합당 금액", "-" if not stakes else (f"{next(iter(stakes)):,}원" if len(stakes) == 1 else "조합마다 다름")),
                 ("총 투표금액", f"{total:,}원"), ("적중 시 환급", pay_txt)]
         st.markdown(
             "<div style='font-size:13px;line-height:1.9;margin:4px 0 6px'>" + "".join(
