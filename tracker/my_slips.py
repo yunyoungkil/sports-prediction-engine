@@ -62,6 +62,81 @@ def update_slip(slip_id: str, path: Path = SLIPS_PATH, **fields: Any) -> None:
     save_json(path, slips)
 
 
+RESULT_KEYS = {"0": "home_win", "1": "draw", "2": "away_win"}   # 베트맨 결과 코드 (2지선다도 0=앞 · 2=뒤)
+
+
+def _num(x: Any) -> Optional[float]:
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return None
+
+
+def _is_line_type(game_type: str) -> bool:
+    return "핸디캡" in str(game_type) or "언더오버" in str(game_type)
+
+
+def line_row(game: Dict[str, Any], rows: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """핸디캡·언더오버: 산 시점 기준값과 같은 결과 줄 (베트맨은 발매 중 바뀐 기준값마다 결과 줄을 따로 남김)"""
+    line = float(game.get("line") or 0.0)
+    return next((r for r in rows if _num(r.get("handi_win")) is not None and abs(_num(r["handi_win"]) - line) < 1e-9), None)
+
+
+def _scores(row: Dict[str, Any]) -> Optional[tuple]:
+    try:
+        a, b = (float(x) for x in str(row.get("score", "")).split(":"))
+        return a, b
+    except ValueError:
+        return None
+
+
+def outcome_from_rows(game: Dict[str, Any], rows: List[Dict[str, Any]]) -> Optional[str]:
+    """
+    저장한 경기의 결과 키(home_win/draw/away_win) · 'void'(1.0배) · None(아직 · 판단 불가).
+    rows = 같은 회차·경기번호의 베트맨 결과 줄들.
+    - 무효·적중특례(코드 4), 야구·농구 승패 무승부(규정 1-(7)) → 'void'
+    - 핸디캡·언더오버는 산 시점 기준값으로 채점(베트맨 안내): 같은 기준값 줄이 없으면 실제 점수로 다시 계산
+      (핸디캡 줄 점수 = 홈 점수 + 그 줄 핸디캡, 언더오버 줄 점수 = '합계:0')
+    """
+    if not rows:
+        return None
+    gt = str(game.get("game_type", ""))
+    if any(str(r.get("game_result")) == "4" for r in rows):
+        return "void"
+    row = rows[0]
+    if _is_line_type(gt):
+        exact = line_row(game, rows)
+        if exact is None:
+            sc = _scores(rows[0])
+            if sc is None:
+                return None
+            line = float(game.get("line") or 0.0)
+            if "언더오버" in gt:
+                return None if sc[0] == line else ("home_win" if sc[0] < line else "away_win")   # 언더 = 앞 선택지
+            home = sc[0] - (_num(rows[0].get("handi_win")) or 0.0) + line
+            return "home_win" if home > sc[1] else ("draw" if home == sc[1] else "away_win")
+        row = exact
+    key = RESULT_KEYS.get(str(row.get("game_result")))
+    return "void" if (key == "draw" and draw_is_void(gt)) else key
+
+
+def display_score(game: Dict[str, Any], rows: List[Dict[str, Any]]) -> str:
+    """화면용 실제 점수: 핸디캡 줄은 핸디캡을 뺀 진짜 점수, 언더오버 줄은 '합계 N'"""
+    if not rows:
+        return ""
+    gt = str(game.get("game_type", ""))
+    row = (line_row(game, rows) if _is_line_type(gt) else None) or rows[0]
+    sc = _scores(row)
+    if sc is None:
+        return str(row.get("score", ""))
+    fmt = lambda x: str(int(x)) if float(x).is_integer() else f"{x:g}"
+    if "언더오버" in gt:
+        return f"합계 {fmt(sc[0])}"
+    if "핸디캡" in gt:
+        return f"{fmt(sc[0] - (_num(row.get('handi_win')) or 0.0))}:{fmt(sc[1])}"
+    return f"{fmt(sc[0])}:{fmt(sc[1])}"
+
+
 def draw_is_void(game_type: str) -> bool:
     """베트맨 규정 1-(7): 야구·농구 일반 '승패' 유형은 무승부가 나면 배당 1.0배 (적중·미적중이 아니라 돌려받음)"""
     gt = str(game_type or "")

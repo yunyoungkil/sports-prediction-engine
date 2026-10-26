@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from tracker.my_slips import add_slip, build_slip, combo_results, delete_slip, draw_is_void, grade_slip, load_slips, slip_kind, update_slip
+from tracker.my_slips import add_slip, build_slip, combo_results, delete_slip, display_score, draw_is_void, outcome_from_rows, grade_slip, load_slips, slip_kind, update_slip
 
 
 def _slip():
@@ -60,3 +60,21 @@ def test_rules_draw_in_baseball_basketball_win_lose_is_refund():
     assert draw_is_void("야구 승패") and draw_is_void("농구 승패")
     assert not draw_is_void("축구 승무패") and not draw_is_void("농구 승5패") and not draw_is_void("야구 승1패")
     assert not draw_is_void("야구 전반 승무패") and not draw_is_void("배구 승패")
+
+
+def test_line_change_graded_with_purchase_line():
+    """베트맨 안내: 핸디캡·언더오버 기준값이 바뀌면 '산 시점 기준값'으로 채점 · 결과 줄은 기준값마다 따로 있음"""
+    hc = {"seq": "6605", "game_type": "농구 핸디캡", "line": -9.5}
+    rows = [{"handi_win": -8.5, "score": "55.5:57", "game_result": "2"},   # 진짜 점수 64:57
+            {"handi_win": -9.5, "score": "54.5:57", "game_result": "2"}]
+    assert outcome_from_rows(hc, rows) == "away_win"           # 같은 기준값 줄의 결과
+    assert display_score(hc, rows) == "64:57"                   # 화면에는 핸디캡 뺀 진짜 점수
+    # 산 기준값(-5.5) 줄이 없음 → 진짜 점수로 다시 채점: 64 - 5.5 = 58.5 > 57 → 홈 승
+    assert outcome_from_rows({**hc, "line": -5.5}, rows) == "home_win"
+    uo = {"seq": "6489", "game_type": "농구 언더오버", "line": 170.5}
+    uo_rows = [{"handi_win": 158.5, "score": "166:0", "game_result": "2"}]
+    assert outcome_from_rows(uo, uo_rows) == "home_win"          # 합계 166 < 170.5 → 언더(앞 선택지)
+    assert display_score(uo, uo_rows) == "합계 166"
+    assert outcome_from_rows({"game_type": "농구 승패"}, [{"game_result": "1"}]) == "void"   # 규정 1-(7)
+    assert outcome_from_rows({"game_type": "축구 승무패"}, [{"game_result": "4"}]) == "void"
+    assert outcome_from_rows({"game_type": "축구 승무패"}, []) is None

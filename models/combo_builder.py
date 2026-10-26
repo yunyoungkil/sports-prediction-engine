@@ -5,14 +5,13 @@ models/combo_builder.py
 - 공식 규정 (2026-10 확인):
   1. 단일 경기: 원 배당률 유지 (소수 둘째 자리)
   2. 조합 경기(2~10경기): 배당률 연속 곱 -> 소수 셋째 자리 이하 절사 (0.01 ROUND_DOWN) -> 소수 둘째 자리에서 절상 (0.1 ROUND_CEILING)
-  3. 적중금: 적중배당률 * 개별투표금액 (원 단위 절사)
+  3. 적중금: 적중배당률 * 개별투표금액 (원단위 절상 — 베트맨 프로토 승부식 안내 '적중금 지급 시 원단위 절상')
   4. 비과세: 배당 100배 이하 & 환급금 200만 원 이하, 또는 배당과 무관하게 환급금 10만 원 이하
   5. 구매 한도: 1인 1회차 10만 원 이하, 조합 100원 단위 / 한경기 1,000원 단위
 """
 
 from decimal import Decimal, ROUND_DOWN, ROUND_CEILING
 import itertools
-import math
 from typing import List, Dict, Any, Tuple, Union
 
 
@@ -72,11 +71,12 @@ combined_odds = calculate_combined_odds
 
 def calculate_payout(odds: float, stake: int) -> int:
     """
-    배당률과 투표금액으로 예상 환급금을 계산합니다 (원 단위 절사).
+    배당률과 투표금액으로 예상 환급금을 계산합니다 (원단위 절상).
+    실수 곱셈(1.13 × 3000 = 3389.9999…)은 오차가 나므로 Decimal로 정확히 곱한다.
     """
-    if odds <= 0.0 or stake <= 0:
+    if float(odds) <= 0.0 or stake <= 0:
         return 0
-    return int(math.floor(odds * stake))
+    return int((Decimal(str(odds)) * Decimal(int(stake))).to_integral_value(rounding=ROUND_CEILING))
 
 
 # alias for standard naming in TODO.md

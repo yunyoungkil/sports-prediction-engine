@@ -63,8 +63,9 @@ from collector.betman_sharp import parse_betman_kickoff
 from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
-from tracker.my_slips import (KIND_LABEL, MAX_SAVED_COMBOS, add_slip, build_slip, combo_results, delete_slip, draw_is_void,
-                              grade_slip, load_json, load_slips, save_json, slip_kind, update_slip)
+from tracker.my_slips import (KIND_LABEL, MAX_SAVED_COMBOS, add_slip, build_slip, combo_results, delete_slip, display_score,
+                              draw_is_void, grade_slip, line_row, load_json, load_slips, outcome_from_rows, save_json,
+                              slip_kind, update_slip)
 
 # 내 선택 저장 위치 (개인 기록이라 저장소에 올리지 않음 · .gitignore). 테스트는 SPE_USER_DATA_DIR 로 다른 폴더를 씀
 MY_DATA_DIR = Path(os.environ.get("SPE_USER_DATA_DIR") or (project_root / "user_data"))
@@ -293,11 +294,13 @@ def detect_current_gm_ts(preds) -> str:
 def find_result(m, results_idx, gm_ts):
     if m.get("_result") is not None:      # 과거 회차 카드는 결과 행에서 직접 만들어짐
         return m["_result"]
-    cands =results_idx.get((str(gm_ts), str(m.get("match_seq"))), [])
+    cands = results_idx.get((str(gm_ts), str(m.get("match_seq"))), [])
     if len(cands) > 1:
+        # 같은 경기번호에 기준값(핸디캡·언더오버)마다 결과 줄이 있음 → 기준값(handi_win)이 같은 줄.
+        # handi_val 은 유형 코드(2, 23 …)라 비교하면 H +2.0 같은 기준값과 잘못 맞을 수 있어 쓰지 않는다
         line = float(m.get("line") or 0.0)
         for c in cands:
-            if any(abs(float(c.get(k) or 0.0) - line) < 1e-9 for k in ("handi_win", "handi_val", "handi_lose")):
+            if abs(float(c.get("handi_win") or 0.0) - line) < 1e-9:
                 return c
     return cands[0] if cands else None
 
@@ -490,6 +493,8 @@ def selection_status() -> dict:
         msg = f"⚠️ 베트맨 규정상 조합은 최대 10경기까지만 가능합니다 (현재 {n}경기)."
     elif len({v["match_key"] for v in active.values()}) != n:
         msg = "⚠️ 같은 대진의 다른 유형(예: 승무패와 핸디캡)은 한 조합에 묶을 수 없습니다."
+    elif any("더블찬스" in str(v["match"].get("game_type", "")) for v in active.values()):
+        msg = "⚠️ 더블찬스는 한경기 전용 상품이라 다른 경기와 묶을 수 없어요 (베트맨 안내)."
     else:
         valid, msg = True, f"✅ 베트맨 프로토 규정 통과! ({n}경기 선택 / 총 {combos:,}개 조합)"
     return {"active": active, "n": n, "combos": combos, "odds_lo": odds_lo, "odds_hi": odds_hi,
@@ -1340,7 +1345,13 @@ with tab1:
                     st.error("⚠️ 총 투표금액이 베트맨 1인 1회차 구매 한도(100,000원)를 넘어요.")
                 if chosen:
                     n_m = len(active_selections)
-                    why = (f" 베트맨 마진(경기당 약 15%)이 {n_m}경기만큼 겹쳐 평균 환급률이 약 {0.85 ** n_m * 100:.0f}%이기 때문이에요."
+                    # 경기별 환급률 = 1 ÷ (배당 역수의 합). 베트맨은 대부분 1 ÷ 1.15 ≈ 87%, 홀짝은 1 ÷ 1.11 ≈ 90%
+                    pay_ratio = 1.0
+                    for seq_ in active_selections:
+                        o_ = [float(x) for x in pred_map[seq_].get("betman_odds", {}).values() if float(x or 0) > 1.0]
+                        pay_ratio *= 1.0 / sum(1.0 / x for x in o_) if o_ else 1.0
+                    why = (f" 베트맨은 경기마다 배당에 약 15%(홀짝은 11%)의 마진을 붙여서, 한 경기당 평균 약 87%만 돌려줘요. "
+                           f"{n_m}경기를 묶으면 이게 곱해져 평균 환급률이 약 {pay_ratio * 100:.0f}%예요 (조합 배당 올림 덤은 빼고)."
                            if exp_pnl < 0 else " AI 확률 기준이며 아직 검증 중이에요.")
                     # 바깥 padding: Streamlit 글 블록의 -1rem 아래 여백 때문에 아래 캡션과 붙지 않게
                     st.markdown(
@@ -2173,23 +2184,15 @@ def _delete_slip(slip_id):
     delete_slip(slip_id, MY_SLIPS_PATH)
 
 
-def _slip_result_row(slip, g, results_idx_):
-    """저장한 경기의 베트맨 결과 행 (없으면 None)"""
-    return find_result({"match_seq": g["seq"], "line": g.get("line", 0.0)}, results_idx_, slip.get("gm_ts"))
+def _slip_rows(slip, g, results_idx_):
+    """저장한 경기의 베트맨 결과 줄들 (같은 경기번호에 기준값마다 한 줄씩 있을 수 있음)"""
+    return results_idx_.get((str(slip.get("gm_ts")), str(g["seq"])), [])
 
 
 def _slip_result_of(slip, results_idx_):
-    """저장한 경기의 실제 결과: home_win/draw/away_win · 'void'(무효) · None(아직)"""
-    def f(g):
-        r = _slip_result_row(slip, g, results_idx_)
-        if r is None:
-            return None
-        code = str(r.get("game_result"))
-        key = RESULT_CODE_TO_KEY.get(code)
-        if code == "4" or (key == "draw" and draw_is_void(g.get("game_type", ""))):
-            return "void"   # 무효 · 야구/농구 승패 무승부 → 배당 1.0 (규정 1-(6)·(7))
-        return key
-    return f
+    """저장한 경기의 실제 결과: home_win/draw/away_win · 'void'(1.0배) · None(아직)
+    무효·적중특례, 야구/농구 승패 무승부, 핸디캡·언더오버의 '산 시점 기준값' 채점은 outcome_from_rows 가 처리"""
+    return lambda g: outcome_from_rows(g, _slip_rows(slip, g, results_idx_))
 
 
 # ==============================================================================
@@ -2318,20 +2321,26 @@ with tab4:
                 # 경기별: 번호 · 경기 · 고른 것 · 실제 결과
                 g_rows = []
                 for g in s.get("games", []):
-                    row = _slip_result_row(s, g, res_idx4)
+                    rows_g = _slip_rows(s, g, res_idx4)
+                    out_g = outcome_from_rows(g, rows_g)
+                    score_g = display_score(g, rows_g)
                     labels_g = pick_labels({"game_type": g.get("game_type", ""), "category": ""})
                     picks_txt = " / ".join(f"{p['label']} {p['odds']:.2f}" for p in g["picks"])
-                    if row is None:
+                    # 핸디캡·언더오버 기준값이 산 뒤에 바뀌어 같은 기준값 결과 줄이 없으면 실제 점수로 다시 채점한 것
+                    regraded = bool(rows_g) and ("핸디캡" in str(g.get("game_type")) or "언더오버" in str(g.get("game_type"))) \
+                        and line_row(g, rows_g) is None
+                    if not rows_g:
                         res_txt = "<span style='opacity:.6'>진행 전 · 결과 대기</span>"
-                    elif str(row.get("game_result")) == "4":
-                        res_txt = "↩️ 무효 (배당 1.00)"
-                    elif str(row.get("game_result")) == "1" and draw_is_void(g.get("game_type", "")):
-                        res_txt = f"↩️ 무승부 → 배당 1.00 <span style='opacity:.7'>{row.get('score', '')}</span>"
+                    elif out_g == "void":
+                        why_void = "무승부" if any(str(r.get("game_result")) == "1" for r in rows_g) else "무효·적중특례"
+                        res_txt = f"↩️ {why_void} → 배당 1.00 <span style='opacity:.7'>{score_g}</span>"
+                    elif out_g is None:
+                        res_txt = "<span style='opacity:.6'>결과 확인 중</span>"
                     else:
-                        actual = RESULT_CODE_TO_KEY.get(str(row.get("game_result")))
-                        ok = actual in {p["key"] for p in g["picks"]}
-                        res_txt = (f"{'✅' if ok else '❌'} <b>{labels_g.get(actual, '?')}</b> "
-                                   f"<span style='opacity:.7'>{row.get('score', '')}</span>")
+                        ok = out_g in {p["key"] for p in g["picks"]}
+                        res_txt = (f"{'✅' if ok else '❌'} <b>{labels_g.get(out_g, '?')}</b> "
+                                   f"<span style='opacity:.7'>{score_g}</span>"
+                                   + (" <span style='font-size:11px;opacity:.6'>(산 기준값으로 채점)</span>" if regraded else ""))
                     g_rows.append(
                         "<div style='display:grid;grid-template-columns:44px 1fr 150px 130px;gap:8px;align-items:center;"
                         "padding:4px 0;font-size:13px;border-top:1px solid rgba(148,163,184,.12)'>"

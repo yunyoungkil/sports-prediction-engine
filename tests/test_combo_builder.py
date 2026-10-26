@@ -143,3 +143,11 @@ def test_expand_combinations():
     assert c2["prob_product"] == 0.18
     # EV: 0.18 * 4.5 - 1 = -0.19
     assert c2["ev"] == -0.19
+
+
+def test_payout_rounds_up_to_won_without_float_error():
+    """베트맨 안내: '적중금 지급 시 원단위 절상' · 1.13 × 3,000 = 3,390 (실수 계산이면 3,389.999…)"""
+    assert calculate_payout(1.13, 3000) == 3390
+    assert calculate_payout(2.3, 700) == 1610
+    assert calculate_payout(1.27, 1000) == 1270
+    assert calculate_payout(1.333, 100) == 134   # 소수 원 단위는 올림
