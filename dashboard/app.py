@@ -423,7 +423,7 @@ def top_pick(probs: dict, opts: list):
 
 
 def selection_status() -> dict:
-    """담은 경기 → 조합 수 · 예상 배당 범위 · 베트맨 규정 검사 (STEP 01 하단 요약과 사이드바 장바구니가 함께 사용)"""
+    """담은 경기 → 조합 수 · 예상 배당 범위 · 베트맨 규정 검사 (사이드바 🛒 내 선택에서 사용)"""
     active = {}
     for seq, sel in st.session_state["selections"].items():
         m = pred_map.get(seq)
@@ -1094,29 +1094,7 @@ with tab1:
                 if prev is not None and n > prev:
                     st.rerun(scope="app")
             _live_tick()
-
-        # 조합 구성 검증 및 전개 수 계산 (사이드바 장바구니와 같은 규칙)
-        sel_status = selection_status()
-        num_matches, total_combos_count = sel_status["n"], sel_status["combos"]
-        is_step1_valid, val_msg = sel_status["valid"], sel_status["msg"]
-
-        # 하단 상태 요약 및 다음 단계 이동 바
-        st.markdown("#### 📊 현재 선택 상태 요약")
-        sum_c1, sum_c2, sum_c3, sum_c4 = st.columns([1.5, 1.5, 2.5, 1.5])
-        with sum_c1:
-            st.metric("선택 경기 수", f"{num_matches} 경기", help="조합 구매 규정상 2~10경기 (한경기 표시 경기는 1경기만 살 수 있음)")
-        with sum_c2:
-            st.metric("생성 조합 수", f"{total_combos_count:,} 개 조합", help="경기마다 고른 선택지 개수를 모두 곱한 수")
-
-        with sum_c3:
-            if is_step1_valid:
-                st.success(val_msg)
-            else:
-                st.warning(val_msg)
-
-        with sum_c4:
-            st.button("➡️ STEP 02 결과보기", type="primary", disabled=not is_step1_valid, width="stretch",
-                      on_click=_go_step, args=(2,))
+        # 선택 요약·규정 검사·STEP 02 이동은 사이드바 🛒 내 선택에서 (목록 맨 아래 요약은 중복이라 없앰)
 
     # -------------------------------------------------------------
     # STEP 02: 조합 결과 및 시뮬레이션 화면
