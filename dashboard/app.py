@@ -1724,16 +1724,28 @@ with tab2:
                     row_css = ("display:grid;align-items:center;gap:8px;padding:4px 0;font-size:13px;"
                                "border-top:1px solid rgba(148,163,184,.12)")
 
+                    def _standing_line(sd):
+                        """현재 리그 순위 · 승점 · 시즌 경기당 득실 (유럽 5대 리그 1부 팀만 있음)"""
+                        if not sd:
+                            return ""
+                        return (f"<div style='font-size:13px;margin:4px 0 2px;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap'>"
+                                f"{league_chip(sd['league'])}<b style='font-size:15px'>{sd['pos']}위</b>"
+                                f"<span style='opacity:.7'>/ {sd['teams']}팀 · 승점 {sd['pts']} ({sd['played']}경기 {sd['w']}승 "
+                                f"{sd['d']}무 {sd['l']}패) · 시즌 경기당 득 <b>{sd['gf_pg']:.1f}</b> · 실 <b>{sd['ga_pg']:.1f}</b> "
+                                f"<span style='font-size:11px'>({sd['data_until']}까지)</span></span></div>")
+
                     def _team_card(icon, team, f):
                         head = (f"<div style='display:flex;justify-content:space-between;align-items:baseline;gap:8px'>"
                                 f"<span style='font-size:15px'>{icon} <b>{team}</b></span>"
-                                f"<b style='font-size:14px'>{f.get('record_str', '') if f.get('has_data') else ''}</b></div>")
+                                + (f"<span style='font-size:14px'><span style='font-size:11px;opacity:.65'>최근 5경기</span> "
+                                   f"<b>{f.get('record_str', '')}</b></span>" if f.get("has_data") else "") + "</div>"
+                                + _standing_line(f.get("standing")))
                         if not f.get("has_data"):
                             body = "<div style='opacity:.6;font-size:13px;padding-top:4px'>최근 경기 기록 없음</div>"
                         else:
                             body = (f"<div style='margin:4px 0 6px;display:flex;gap:3px;align-items:center;flex-wrap:wrap'>"
                                     + "".join(_pill(r) for r in f.get("form_sequence", []))
-                                    + f"<span style='font-size:12px;opacity:.75;margin-left:6px'>경기당 득 {f.get('avg_scored', 0)} · "
+                                    + f"<span style='font-size:12px;opacity:.75;margin-left:6px'>최근 경기당 득 {f.get('avg_scored', 0)} · "
                                       f"실 {f.get('avg_conceded', 0)}</span></div>"
                                     + "".join(
                                         f"<div style='{row_css};grid-template-columns:24px 40px 30px 1fr auto'>"
@@ -1745,9 +1757,9 @@ with tab2:
                         return ("<div style='border:1px solid rgba(148,163,184,.25);border-radius:8px;padding:10px 12px;"
                                 f"margin-bottom:14px'>{head}{body}</div>")
 
-                    st.markdown("<div style='font-size:14px;font-weight:700;margin-top:6px'>📈 최근 5경기 "
-                                "<span style='font-size:12px;font-weight:400;opacity:.7'>위쪽이 가장 최근 · 이 경기 전 기록 · "
-                                "점수는 그 팀 점수가 먼저</span></div>", unsafe_allow_html=True)
+                    st.markdown("<div style='font-size:14px;font-weight:700;margin-top:6px'>📈 순위 · 최근 5경기 "
+                                "<span style='font-size:12px;font-weight:400;opacity:.7'>순위는 유럽 5대 리그 1부만 · 위쪽이 가장 최근 · "
+                                "이 경기 전 기록 · 점수는 그 팀 점수가 먼저</span></div>", unsafe_allow_html=True)
                     fc1, fc2 = st.columns(2)
                     fc1.markdown(_team_card("🏠", m.get("home_team", ""), hf), unsafe_allow_html=True)
                     fc2.markdown(_team_card("✈️", m.get("away_team", ""), af), unsafe_allow_html=True)
@@ -1761,20 +1773,24 @@ with tab2:
                             w = hm.get("winner")
                             return "D" if w == "무승부" else ("W" if _ko(w) == home_t else "L")
 
-                        def _side(name):
+                        def _side(name, pos=None):
                             nm = _ko(name)
-                            return f"<b>{nm}</b>" if nm == home_t else nm
+                            pos_txt = f" <span style='font-size:11px;opacity:.65'>{pos}위</span>" if pos else ""
+                            return (f"<b>{nm}</b>" if nm == home_t else nm) + pos_txt
 
                         h_rows = "".join(
                             f"<div style='{row_css};grid-template-columns:24px 66px 1fr'>"
                             f"{_pill(_h2h_res(hm))}<span style='opacity:.7'>{_short_d(hm, with_year=True)}</span>"
-                            f"<span>{_side(hm.get('home'))} <b style='margin:0 4px'>{hm.get('score', '')}</b> {_side(hm.get('away'))}</span></div>"
+                            f"<span>{_side(hm.get('home'), hm.get('home_pos'))} <b style='margin:0 6px'>{hm.get('score', '')}</b> "
+                            f"{_side(hm.get('away'), hm.get('away_pos'))}</span></div>"
                             for hm in h2h.get("matches", []))
+                        has_pos = any(hm.get("home_pos") or hm.get("away_pos") for hm in h2h.get("matches", []))
                         st.markdown(
                             "<div style='border:1px solid rgba(148,163,184,.25);border-radius:8px;padding:10px 12px;margin-bottom:14px'>"
                             f"<div style='display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap'>"
                             f"<span style='font-size:15px'>🤝 <b>맞대결</b> <span style='font-size:12px;opacity:.7'>최근 "
-                            f"{h2h.get('total_matches', 0)}경기 · 경기 순서대로 홈팀 먼저</span></span>"
+                            f"{h2h.get('total_matches', 0)}경기 · 경기 순서대로 홈팀 먼저"
+                            f"{' · 이름 옆 = 그 경기 당시 순위' if has_pos else ''}</span></span>"
                             f"<b style='font-size:14px'>{home_t} 기준 {h2h.get('home_wins', 0)}승 {h2h.get('draws', 0)}무 "
                             f"{h2h.get('away_wins', 0)}패</b></div>{h_rows}</div>", unsafe_allow_html=True)
 

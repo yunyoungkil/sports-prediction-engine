@@ -167,6 +167,10 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         home_form = form_analyzer.get_team_recent_form(home, as_of=as_of)
         away_form = form_analyzer.get_team_recent_form(away, as_of=as_of)
         h2h_stats = form_analyzer.get_head_to_head(home, away, as_of=as_of)
+        # 현재 리그 순위·시즌 경기당 득실 (화면 표시용 · 유럽 5대 리그 1부 축구팀만, 다른 종목은 이름이 우연히 겹칠 수 있어 제외)
+        if m.get("sport", "SC") == "SC":
+            home_form["standing"] = form_analyzer.get_standing(home, as_of=as_of)
+            away_form["standing"] = form_analyzer.get_standing(away, as_of=as_of)
 
         # 폼 모멘텀 차이 산출
         h_score = (home_form['win_rate_pct'] + (home_form['avg_scored'] - home_form['avg_conceded']) * 15) if home_form.get('has_data') else 0

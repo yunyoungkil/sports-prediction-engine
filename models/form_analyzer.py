@@ -88,6 +88,7 @@ class FormAnalyzer:
         self.df = None
         self.betman_matches = []
         self.betman_by_team = {}
+        self._table_cache = {}   # (리그, 시즌, 기준일) → 순위표
         self._load_data()
 
     def _load_data(self):
@@ -206,7 +207,7 @@ class FormAnalyzer:
     @staticmethod
     def _dedup_by_date(rows: List[Dict[str, Any]], same) -> List[Dict[str, Any]]:
         """최신순 정렬 후 같은 경기(두 출처에 모두 있는 경기)를 하나로. same(앞, 뒤) → 같은 경기면 True.
-        유럽 기록에만 있는 유효슈팅(sot)은 남는 쪽에 옮겨 붙인다."""
+        유럽 기록에만 있는 정보(유효슈팅 sot, 리그·시즌·현지 날짜 = 당시 순위 계산용)는 남는 쪽에 옮겨 붙인다."""
         rows = sorted(rows, key=lambda r: r["dt"] if r["dt"] is not None and pd.notnull(r["dt"]) else pd.Timestamp.min,
                       reverse=True)
         merged: List[Dict[str, Any]] = []
@@ -214,9 +215,80 @@ class FormAnalyzer:
             dup = next((x for x in merged if same(x, r)), None)
             if dup is None:
                 merged.append(r)
-            elif dup.get("sot") is None and r.get("sot") is not None:
-                dup["sot"] = r["sot"]
+                continue
+            for k in ("sot", "league", "season", "csv_dt"):
+                if dup.get(k) is None and r.get(k) is not None:
+                    dup[k] = r[k]
         return merged
+
+    # ------------------------------------------------------------------
+    # 리그 순위 (유럽 5대 리그 과거 데이터로 계산 · 승점 → 득실차 → 다득점, 리그별 동률 규칙은 근사)
+    # ------------------------------------------------------------------
+    def _league_table(self, league: str, season: Any, before: pd.Timestamp) -> Dict[str, Dict[str, Any]]:
+        """before 날짜 '이전' 경기만으로 만든 순위표 {팀: {pos, played, w, d, l, gf, ga, pts}}"""
+        key = (league, season, before)
+        if key in self._table_cache:
+            return self._table_cache[key]
+        d = self.df[(self.df["League"] == league) & (self.df["Season"] == season) & (self.df["ParsedDate"] < before)]
+        stats: Dict[str, Dict[str, Any]] = {}
+        for h, a, hg, ag in zip(d["HomeTeam"], d["AwayTeam"], d["FTHG"], d["FTAG"]):
+            for team, gf, ga in ((h, hg, ag), (a, ag, hg)):
+                s = stats.setdefault(team, {"played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0})
+                s["played"] += 1
+                s["gf"] += int(gf)
+                s["ga"] += int(ga)
+                s["w" if gf > ga else ("d" if gf == ga else "l")] += 1
+        for s in stats.values():
+            s["pts"] = 3 * s["w"] + s["d"]
+        order = sorted(stats, key=lambda t: (-stats[t]["pts"], -(stats[t]["gf"] - stats[t]["ga"]), -stats[t]["gf"], t))
+        for i, t in enumerate(order):
+            stats[t]["pos"] = i + 1
+        self._table_cache[key] = stats
+        return stats
+
+    def _position_at(self, team_norm: str, league: Any, season: Any, before: Any) -> Optional[int]:
+        """그 경기 당시(before 이전 경기 기준) 순위. 시즌 첫 경기라 기록이 없으면 None"""
+        if self.df is None or league is None or season is None or before is None or pd.isnull(before):
+            return None
+        return self._league_table(league, season, before).get(team_norm, {}).get("pos")
+
+    def get_standing(self, team_name: str, as_of: Optional[Any] = None) -> Optional[Dict[str, Any]]:
+        """
+        현재(as_of 하루 전까지 경기 기준) 리그 순위 · 승점 · 시즌 경기당 득실.
+        유럽 5대 리그 1부 팀만 가능하며, 그 팀이 이번 시즌 그 리그에 없으면(강등 등) None.
+        as_of 하루 전까지로 자르는 이유: 한국 시각 경기일과 현지 날짜가 하루 다를 수 있어 그 경기 자체가 섞이지 않게.
+        """
+        if self.df is None or "League" not in self.df.columns or "Season" not in self.df.columns:
+            return None
+        norm = self.normalize_name(team_name)
+        if norm not in self._csv_teams:
+            return None
+        as_of_dt = parse_date_value(as_of)
+        cutoff = (as_of_dt - pd.Timedelta(days=1)) if as_of_dt is not None else self.df["ParsedDate"].max() + pd.Timedelta(days=1)
+        team_df = self.df[((self.df["HomeTeam"] == norm) | (self.df["AwayTeam"] == norm)) & (self.df["ParsedDate"] < cutoff)]
+        if team_df.empty:
+            return None
+        league, season = team_df.iloc[0]["League"], team_df.iloc[0]["Season"]
+        league_df = self.df[(self.df["League"] == league) & (self.df["ParsedDate"] < cutoff)]
+        if season != league_df["Season"].max():
+            return None   # 이번 시즌 이 리그에 없음 (강등 등)
+        table = self._league_table(league, season, cutoff)
+        s = table.get(norm)
+        if not s:
+            return None
+        lg = str(league)
+        short = re.search(r"\(([^)]*)\)", lg)
+        season_s = str(int(season)).zfill(4)
+        return {
+            "league": short.group(1).split()[-1] if short else lg,
+            "season": f"{season_s[:2]}/{season_s[2:]}",
+            "pos": s["pos"],
+            "teams": len(set(league_df[league_df["Season"] == season]["HomeTeam"]) |
+                         set(league_df[league_df["Season"] == season]["AwayTeam"])),
+            "played": s["played"], "pts": s["pts"], "w": s["w"], "d": s["d"], "l": s["l"],
+            "gf_pg": round(s["gf"] / s["played"], 2), "ga_pg": round(s["ga"] / s["played"], 2),
+            "data_until": self._short_date(league_df[league_df["Season"] == season]["ParsedDate"].max()),
+        }
 
     @staticmethod
     def _close_dates(a: Dict[str, Any], b: Dict[str, Any]) -> bool:
@@ -366,7 +438,10 @@ class FormAnalyzer:
                 h2h_df = h2h_df[h2h_df["ParsedDate"] < as_of_dt]
             for _, row in h2h_df.head(max_matches + len(rows)).iterrows():
                 rows.append({"dt": row["ParsedDate"] if pd.notnull(row["ParsedDate"]) else None, "date": str(row["Date"]),
-                             "ours_home": row["HomeTeam"] == h_norm, "hs": int(row["FTHG"]), "as": int(row["FTAG"])})
+                             "ours_home": row["HomeTeam"] == h_norm, "hs": int(row["FTHG"]), "as": int(row["FTAG"]),
+                             # 당시 순위 계산용 (그 경기의 현지 날짜 '이전' 경기로 순위표)
+                             "league": row.get("League"), "season": row.get("Season"),
+                             "csv_dt": row["ParsedDate"] if pd.notnull(row["ParsedDate"]) else None})
 
         same = lambda a, b: (a["ours_home"] == b["ours_home"] and a["hs"] == b["hs"] and a["as"] == b["as"]
                              and self._close_dates(a, b))
@@ -381,11 +456,17 @@ class FormAnalyzer:
                 "summary": "과거 맞대결 기록 없음"
             }
 
+        h_norm, a_norm = self.normalize_name(home_team), self.normalize_name(away_team)
         match_list = []
         for r in recent:
             mine, theirs = (r["hs"], r["as"]) if r["ours_home"] else (r["as"], r["hs"])
             res = "W" if mine > theirs else ("D" if mine == theirs else "L")
+            pos_h = self._position_at(h_norm, r.get("league"), r.get("season"), r.get("csv_dt"))
+            pos_a = self._position_at(a_norm, r.get("league"), r.get("season"), r.get("csv_dt"))
             match_list.append({
+                # 당시 순위 (그 경기 실제 홈팀·원정팀 순서, 유럽 5대 리그 기록이 있을 때만)
+                "home_pos": pos_h if r["ours_home"] else pos_a,
+                "away_pos": pos_a if r["ours_home"] else pos_h,
                 "date": r["date"],
                 "date_short": self._short_date(r["dt"], with_year=True),   # 맞대결은 여러 해에 걸쳐 있어 연도까지
                 "home": home_team if r["ours_home"] else away_team,   # 실제 그 경기의 홈팀

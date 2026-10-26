@@ -52,3 +52,29 @@ def test_head_to_head_dedup_and_home_perspective(tmp_path):
         ("오사수나", "2-1", "세비야", "L"), ("세비야", "1-0", "오사수나", "W")]
     assert (h["home_wins"], h["draws"], h["away_wins"]) == (1, 0, 1)
     assert h["matches"][1]["date_short"] == "25.11.08"
+
+
+def test_standing_and_h2h_position_at_the_time(tmp_path):
+    """순위: 승점 → 득실차 순, 기준일 하루 전까지 · 맞대결 당시 순위는 그 경기 '이전' 경기로"""
+    bm = tmp_path / "bm.json"
+    bm.write_text("[]", encoding="utf-8")
+    csv = tmp_path / "hist.csv"
+    lg = "LaLiga (스페인 라리가)"
+    pd.DataFrame([
+        ["01/09/2026", "Sevilla", "Osasuna", 2, 0, None, None, lg, 2627],
+        ["08/09/2026", "Osasuna", "Levante", 1, 1, None, None, lg, 2627],
+        ["15/09/2026", "Levante", "Sevilla", 0, 1, None, None, lg, 2627],
+        ["22/09/2026", "Osasuna", "Sevilla", 0, 0, None, None, lg, 2627],
+    ], columns=["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG", "HST", "AST", "League", "Season"]).to_csv(csv, index=False)
+    fa = FormAnalyzer(history_csv_path=str(csv), betman_results_path=str(bm))
+
+    s = fa.get_standing("세비야", as_of="26.09.20 (일) 04:00")   # 09.19 까지 → 앞의 3경기
+    assert (s["league"], s["season"], s["pos"], s["teams"], s["pts"], s["played"]) == ("라리가", "26/27", 1, 3, 6, 2)
+    assert (s["gf_pg"], s["ga_pg"], s["data_until"]) == (1.5, 0.0, "09.15")
+    assert fa.get_standing("오사수나", as_of="26.09.20 (일) 04:00")["pos"] == 3   # 레반테와 승점 같고 득실차에서 밀림
+    assert fa.get_standing("알아인") is None
+
+    h = fa.get_head_to_head("세비야", "오사수나")
+    first, second = h["matches"]   # 최신순: 09.22 (오사수나 홈), 09.01 (세비야 홈)
+    assert (first["home"], first["home_pos"], first["away_pos"]) == ("오사수나", 3, 1)
+    assert (second["home_pos"], second["away_pos"]) == (None, None)   # 시즌 첫 경기라 당시 순위 없음
