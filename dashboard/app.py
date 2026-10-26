@@ -75,21 +75,6 @@ st.markdown("""
 <meta name="google" content="notranslate">
 <style>
     .notranslate { translate: no !important; }
-    .badge-s { background-color: #ef4444; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 12px; }
-    .badge-a { background-color: #10b981; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 12px; }
-    .badge-b { background-color: #3b82f6; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 12px; }
-    .badge-pass { background-color: #64748b; color: white; padding: 3px 8px; border-radius: 6px; font-size: 12px; }
-    .badge-single { background-color: #f59e0b; color: #1e293b; padding: 3px 8px; border-radius: 6px; font-weight: 800; font-size: 11px; margin-left: 6px; }
-    .badge-cat { background-color: #1e293b; color: #94a3b8; padding: 3px 8px; border-radius: 6px; font-weight: 600; font-size: 11px; margin-left: 6px; border: 1px solid #334155; }
-    .match-meta-bar {
-        background-color: rgba(30, 41, 59, 0.6);
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        color: #94a3b8;
-        margin-bottom: 8px;
-        display: inline-block;
-    }
     .step-banner {
         background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
         border-left: 4px solid #3b82f6;
@@ -99,13 +84,6 @@ st.markdown("""
     }
     /* 버튼 묶음(날짜·빠른 필터·배당 선택)이 휴대폰에서 옆으로 잘리지 않고 다음 줄로 넘어가도록 */
     .stButtonGroup > div { flex-wrap: wrap; row-gap: 6px; }
-    .metric-card-box {
-        background: rgba(30, 41, 59, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin-bottom: 12px;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -228,17 +206,6 @@ def _metric_note(label, value, note=None):
     st.metric(label, value)
     if note:
         st.caption(note)
-
-
-def get_grade_badge_html(grade_raw: str) -> str:
-    """등급 문자열을 표준 HTML 배지로 변환합니다."""
-    if "S (" in grade_raw:
-        return "<span class='badge-s'>GRADE S (참고용 - 고승률)</span>"
-    elif "A (" in grade_raw:
-        return "<span class='badge-a'>GRADE A (참고용 - 밸런스)</span>"
-    elif "B (" in grade_raw:
-        return "<span class='badge-b'>GRADE B (참고용 - 고배당)</span>"
-    return "<span class='badge-pass'>PASS (참고용)</span>"
 
 
 # 3-1. 경기 결과 · 경기 전 AI 예측 기록 (맞춤조건구매 목록의 적중 여부 표시용)
@@ -402,6 +369,47 @@ def line_chip(m) -> str:
     return ""
 
 
+ONE_GAME_TAG = ("<span style='padding:1px 6px;border-radius:5px;font-size:11px;font-weight:700;"
+                "background:rgba(245,158,11,.18);color:#f59e0b'>한경기</span>")
+
+
+def league_chip(league: str) -> str:
+    """리그: 보라 칩 (핸디캡 파랑 · 언더오버 초록 · 한경기 주황과 겹치지 않는 대비색)"""
+    return ("<span style='padding:1px 8px;border-radius:5px;font-size:12px;font-weight:700;"
+            f"background:rgba(168,85,247,.16);color:#c084fc'>{league}</span>")
+
+
+def short_when(m) -> str:
+    """'26.10.26 (월) 08:30' → '10.26(월) 08:30'"""
+    tm = re.search(r"\d{2}\.(\d{2}\.\d{2})\s*\(([^)]*)\)\s*(\d{1,2}:\d{2})", str(m.get("match_time", "")))
+    return f"{tm.group(1)}({tm.group(2)}) {tm.group(3)}" if tm else str(m.get("match_time", ""))
+
+
+def render_tiles(tiles):
+    """작은 숫자 칸 한 줄: [(제목, 값, 보조 설명), ...] — 좁은 화면에서는 다음 줄로 넘어감"""
+    st.markdown(
+        "<div style='display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 6px'>" + "".join(
+            "<div style='flex:1 1 160px;padding:8px 12px;border:1px solid rgba(148,163,184,.3);border-radius:8px'>"
+            f"<div style='font-size:12px;opacity:.75'>{label}</div>"
+            f"<div style='font-size:20px;font-weight:700;line-height:1.4'>{value}</div>"
+            f"<div style='font-size:12px;opacity:.65'>{sub}</div></div>"
+            for label, value, sub in tiles) + "</div>",
+        unsafe_allow_html=True)
+
+
+def keep_valid(key, options):
+    """목록이 바뀌어(회차·종목 변경) 예전 선택값이 없어졌으면 '전체'로 되돌림 (위젯을 그리기 전에만 호출)"""
+    if st.session_state.get(key) not in options:
+        st.session_state[key] = options[0]
+
+
+def keep_valid_multi(key, options):
+    """배지(여러 개 선택)에서 지금 목록에 없는 값만 빼기 (위젯을 그리기 전에만 호출)"""
+    cur = st.session_state.get(key) or []
+    if any(v not in options for v in cur):
+        st.session_state[key] = [v for v in cur if v in options]
+
+
 def is_sale_closed(m, now_ms: float) -> bool:
     """베트맨 발매 마감 시각(close_time, ms)이 지났는지. 마감 정보가 없으면(지난 회차) 마감으로 본다."""
     ct = m.get("close_time")
@@ -420,6 +428,17 @@ def top_pick(probs: dict, opts: list):
     get = lambda k: float(probs.get(k, probs.get(k.replace("_win", ""), 0.0)) or 0.0)
     best = max(opts, key=get)
     return best, get(best)
+
+
+def prob_of(probs, k) -> float:
+    """확률 사전에서 선택지 확률 (키가 home_win/draw/away_win 또는 home/draw/away 어느 쪽이든)"""
+    return float(probs.get(k, probs.get(k.replace("_win", ""), 0.0)) or 0.0) if probs else 0.0
+
+
+def time_key(m) -> str:
+    """경기 시작 시각 정렬 키 'YYMMDDHHMM'"""
+    t = re.search(r"(\d{2})\.(\d{2})\.(\d{2}).*?(\d{1,2}):(\d{2})", str(m.get("match_time", "")))
+    return "".join(f"{int(x):02d}" for x in t.groups()) if t else ""
 
 
 def selection_status() -> dict:
@@ -618,17 +637,6 @@ with tab1:
             for k in [k for k in st.session_state if str(k).startswith("step1_day_")]:
                 del st.session_state[k]
 
-        def _keep_valid(key, options):
-            """목록이 바뀌어(회차·종목 변경) 예전 선택값이 없어졌으면 '전체'로 되돌림 (위젯을 그리기 전에만 호출)"""
-            if st.session_state.get(key) not in options:
-                st.session_state[key] = options[0]
-
-        def _keep_valid_multi(key, options):
-            """배지(여러 개 선택)에서 지금 목록에 없는 값만 빼기 (위젯을 그리기 전에만 호출)"""
-            cur = st.session_state.get(key) or []
-            if any(v not in options for v in cur):
-                st.session_state[key] = [v for v in cur if v in options]
-
         with st.container(border=True):
             # 회차 선택: 현재 판매 회차 + 결과가 있는 과거 회차 (과거는 조회 전용)
             past_rounds = sorted({ts for ts, _ in load_results_index().keys() if ts and ts != str(current_gm_ts)}, reverse=True)
@@ -655,13 +663,13 @@ with tab1:
             b1, b2 = st.columns([1.5, 2.6])
             with b1:
                 sport_opts = [s for s in ("SC", "BK", "BS", "VL") if any(m.get("sport") == s for m in round_matches)]
-                _keep_valid_multi("step1_sports", sport_opts)
+                keep_valid_multi("step1_sports", sport_opts)
                 sel_sports = st.pills("종목", sport_opts, selection_mode="multi", key="step1_sports",
                                       format_func=lambda s: f"{SPORT_ICONS.get(s, '')} {SPORT_NAMES.get(s, s)}") or []
             in_sport = [m for m in round_matches if not sel_sports or m.get("sport") in sel_sports]
             with b2:
                 type_opts = [t for t in TYPE_BADGES if any(type_badge(m) == t for m in in_sport)]
-                _keep_valid_multi("step1_types", type_opts)
+                keep_valid_multi("step1_types", type_opts)
                 sel_types = st.pills("게임 유형", type_opts, selection_mode="multi", key="step1_types") or []
 
             f1, f2 = st.columns([1.5, 2.6])
@@ -669,7 +677,7 @@ with tab1:
                 search_kw = st.text_input("🔎 팀 이름 검색", placeholder="예: 아스널, 뮌헨, 인천", key="step1_search")
             with f2:
                 league_opts = ["전체 리그"] + sorted({m.get("league", "기타") for m in in_sport})
-                _keep_valid("step1_league", league_opts)
+                keep_valid("step1_league", league_opts)
                 sel_league = st.selectbox("리그", league_opts, key="step1_league")
 
             q1, q2 = st.columns([5, 1], vertical_alignment="center")
@@ -901,14 +909,7 @@ with tab1:
                  f"{ai_hit / n_ai * 100:.0f}% · 같은 경기 배당 1순위 {ai_mk_hit}/{n_ai}" if n_ai
                  else ("결과 나온 경기에 경기 전 AI 기록 없음" if n_mk else "결과가 나오면 표시")),
             ]
-            st.markdown(
-                "<div style='display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 6px'>" + "".join(
-                    "<div style='flex:1 1 160px;padding:8px 12px;border:1px solid rgba(148,163,184,.3);border-radius:8px'>"
-                    f"<div style='font-size:12px;opacity:.75'>{label}</div>"
-                    f"<div style='font-size:20px;font-weight:700;line-height:1.4'>{value}</div>"
-                    f"<div style='font-size:12px;opacity:.65'>{sub}</div></div>"
-                    for label, value, sub in tiles) + "</div>",
-                unsafe_allow_html=True)
+            render_tiles(tiles)
             if n_mk:
                 st.caption("💡 적중률은 참고용이에요. 배당 1순위만 찍어도 꽤 맞으므로 AI는 '같은 경기'의 배당 1순위와 비교하세요. "
                            "AI 실력의 공식 지표는 ③ 성과 검증 탭의 성적표(Log loss)입니다.")
@@ -945,8 +946,7 @@ with tab1:
                 fx_score.setdefault(_fixture(m), _res(m)["score"])
 
         def _fixture_header(m, section):
-            tm = re.search(r"\d{2}\.(\d{2}\.\d{2})\s*\(([^)]*)\)\s*(\d{1,2}:\d{2})", str(m.get("match_time", "")))
-            when = f"{tm.group(1)}({tm.group(2)}) {tm.group(3)}" if tm else m.get("match_time", "")
+            when = short_when(m)
             rnd = f"{_ts(m)}회 · " if is_all else ""
             if section == "open":
                 ct = m.get("close_time")
@@ -960,15 +960,11 @@ with tab1:
                     "<div style='display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:6px;"
                     "border-bottom:1px solid rgba(148,163,184,.25)'>"
                     f"<span style='font-size:12px;opacity:.75'>{SPORT_ICONS.get(m.get('sport'), '')} {rnd}{when}</span>"
-                    # 리그: 보라 칩 (핸디캡 파랑 · 언더오버 초록 · 한경기 주황과 겹치지 않는 대비색)
-                    "<span style='padding:1px 8px;border-radius:5px;font-size:12px;font-weight:700;"
-                    f"background:rgba(168,85,247,.16);color:#c084fc'>{m.get('league', '')}</span>"
+                    + league_chip(m.get("league", "")) +
                     f"<span style='font-size:16px'><b>{m.get('home_team', '')}</b> <span style='opacity:.6'>vs</span> "
                     f"<b>{m.get('away_team', '')}</b></span>"
                     f"<span style='margin-left:auto;font-size:12px;opacity:.85'>{status}</span></div></div>")
 
-        one_game_tag = ("<span style='padding:1px 6px;border-radius:5px;font-size:11px;font-weight:700;"
-                        "background:rgba(245,158,11,.18);color:#f59e0b'>한경기</span>")
         cur_fx, fx_box, fx_rows = None, None, 0
 
         for m in page_matches:
@@ -1021,7 +1017,7 @@ with tab1:
                 c1, c2, c3 = st.columns([2.2, 3.0, 4.6], vertical_alignment="center")
                 with c1:
                     # 게임번호 · 유형 · 기준선 칩 · 한경기 (마우스를 올리면 리그·유형 전체 표시)
-                    tags = line_chip(m) + (one_game_tag if m.get("is_single") else "")
+                    tags = line_chip(m) + (ONE_GAME_TAG if m.get("is_single") else "")
                     st.markdown(
                         f"<div title='#{seq} · {m.get('league', '')} · {category_display(m)}' style='display:flex;"
                         "align-items:center;gap:8px;white-space:nowrap;overflow:hidden'>"
@@ -1420,227 +1416,303 @@ with tab2:
     if not predictions:
         st.warning("⚠️ 아직 분석된 예측 데이터가 없습니다. 먼저 터미널에서 `python run_pipeline.py`를 실행해 주세요.")
     else:
-        # 현재 실전 AI의 검증 상태 (REVIEW R3 원칙: 시장 대비 성적을 항상 투명하게 표시)
+        # A. AI 적용 상태 한 줄 + 검증 수치는 펼쳐서 (REVIEW R3: 시장 대비 성적을 항상 투명하게)
         status = load_model_status()
-        if status:
-            lines = []
-            for label, s in status["evals"]:
-                ci = s.get("ll_diff_ci", [None, None])
-                lines.append(f"- **{label}** ({s['samples']:,}경기): AI `{s['model_ll']:.4f}` vs 시장 `{s['market_ll']:.4f}` "
-                             f"(차이 `{s['ll_diff']:+.4f}`, 95% CI `[{ci[0]:+.4f}, {ci[1]:+.4f}]`)")
-            st.info(
-                f"🧠 **현재 확률 기준: {status['name']}** (축구 일반 승무패)\n\n"
-                + "\n".join(lines) + "\n\n"
-                + (f"🧩 **전 종목 보정 AI 적용 유형:** {', '.join(markets_applied_types())} "
-                   "(유형별 과거 시험에서 시장보다 나은 유형만, ③ 탭에서 유형별 성적 확인)\n\n"
-                   if markets_applied_types() else "")
-                + "그 밖의 유형은 배당 기준입니다. "
-                "과거 시험에서는 시장(배당)보다 조금 더 정확했지만 차이가 작아 **검증 중**입니다. "
-                "Log loss는 낮을수록 정확하고, 차이가 음수면 AI 우세입니다. 실전 성적은 ③ 성과 검증 탭의 공식 성적표에서 확인하세요. "
-                "모든 등급(S/A/B)은 **참고용**입니다."
-            )
+        applied = (["축구 승무패"] if status else []) + [t for t in markets_applied_types() if t != "축구 승무패"]
+        if applied:
+            # 바깥 padding: Streamlit 글 블록의 -1rem 아래 여백 때문에 아래 펼침 상자와 붙지 않게
+            st.markdown(
+                "<div style='padding-bottom:12px'><div style='padding:10px 14px;border-radius:8px;"
+                "background:rgba(59,130,246,.12);font-size:14px;line-height:1.6'>"
+                f"🧠 <b>AI 적용 유형:</b> {' · '.join(applied)} "
+                "<span style='opacity:.75'>│ 나머지 유형은 배당 기준 · 모두 <b>검증 중</b>이라 참고용이에요</span></div></div>",
+                unsafe_allow_html=True)
         else:
-            st.warning("⚠️ 검증을 통과한 AI 모델이 없어 **배당(시장) 확률 기준**으로 표시됩니다. 모든 등급은 참고용입니다.")
+            st.warning("⚠️ 검증을 통과한 AI가 없어 모든 확률이 배당 기준이에요.")
+        if status:
+            with st.expander("검증 수치 자세히 (과거 시험 · Log loss)"):
+                for label, s in status["evals"]:
+                    ci = s.get("ll_diff_ci", [None, None])
+                    st.markdown(f"- **{status['name']} · {label}** ({s['samples']:,}경기): AI `{s['model_ll']:.4f}` vs 배당 "
+                                f"`{s['market_ll']:.4f}` (차이 `{s['ll_diff']:+.4f}`, 95% 범위 `[{ci[0]:+.4f}, {ci[1]:+.4f}]`)")
+                st.caption("Log loss는 낮을수록 정확하고, 차이가 음수면 AI가 배당보다 정확했다는 뜻이에요. "
+                           "유형별 시험 결과와 실전 성적은 ③ 성과 검증 탭에서 확인하세요.")
 
-        # 1. 상단 이번 회차 KPI 카드
-        total_matches = len(predictions)
-        rec_matches = [m for m in predictions if m.get("evaluation", {}).get("is_recommended", False)]
-        rec_count = len(rec_matches)
-        single_count = sum(1 for m in predictions if m.get("is_single", False))
-        highest_ev_match = max(predictions, key=lambda x: x.get("evaluation", {}).get("best_ev", -1.0))
+        # B. 경기마다 배당 확률 vs AI 확률 비교
+        DIFF_PP = 3.0   # 'AI가 다르게 본 경기': 1순위가 다르거나 어떤 선택지든 3%p 이상 차이 (AI 적용 경기의 약 1/4)
+        t2_now = datetime.now().timestamp() * 1000
 
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            _metric_note("총 발매 경기", f"{total_matches} 개", f"한경기(단통) {single_count}개")
-        with c2:
-            _metric_note("추천 가치 픽 (EV > 0)", f"{rec_count} 개", f"{rec_count/total_matches*100:.0f}% 비율")
-        with c3:
-            _metric_note("최고 기대가치", highest_ev_match["evaluation"]["best_ev_pct"], f"{highest_ev_match['home_team']} vs {highest_ev_match['away_team']}")
-        with c4:
-            _metric_note("맞춤구매 담긴 경기", f"{len(st.session_state['selections'])} 개", "Tab 1 시뮬레이터 연동")
-
-        st.divider()
-
-        # 2. 🔍 검색 및 다차원 필터 바
-        with st.container(border=True):
-            st.markdown("##### 🔍 경기 검색 및 필터")
-            q_col1, q_col2, q_col3 = st.columns([1.5, 1.2, 1.2])
-            with q_col1:
-                t_search = st.text_input("🔎 팀 대진 검색", placeholder="예: 바르셀로나, 뮌헨, 인천", key="tab2_search")
-            with q_col2:
-                t_leagues = sorted(list(set(m["league"] for m in predictions)))
-                t_sel_league = st.selectbox("리그 선택", ["전체 리그"] + t_leagues, key="tab2_league")
-            with q_col3:
-                t_cats = ["전체 보기", "일반 승무패", "핸디캡", "언더오버", "홀짝", "전반 승무패", "전반 핸디캡", "전반 언더오버"]
-                t_sel_cat = st.selectbox("게임 유형 선택", t_cats, key="tab2_cat")
-
-            t_sort = st.radio(
-                "정렬 기준",
-                ["경기 시작 시간순", "기대가치(EV) 높은순", "홈 승률 높은순", "배당률 높은순"],
-                horizontal=True,
-                key="tab2_sort"
-            )
-
-            c_chk1, c_chk2, c_chk3 = st.columns(3)
-            with c_chk1:
-                t_only_rec = st.checkbox("🔥 추천 가치 픽만 보기", value=False, key="tab2_only_rec")
-            with c_chk2:
-                t_only_single = st.checkbox("⚡ 한경기(단통) 구매 가능만 보기", value=False, key="tab2_only_single")
-            with c_chk3:
-                t_only_has_form = st.checkbox("📊 최근 5경기 전적 있는 경기만 보기", value=False, key="tab2_only_form")
-
-        # 필터링 및 정렬 처리
-        t_filtered = predictions
-        if t_search:
-            t_filtered = [m for m in t_filtered if t_search.lower() in m["home_team"].lower() or t_search.lower() in m["away_team"].lower()]
-        if t_sel_league != "전체 리그":
-            t_filtered = [m for m in t_filtered if m["league"] == t_sel_league]
-        if t_sel_cat != "전체 보기":
-            t_filtered = [m for m in t_filtered if t_sel_cat in m.get("category", "")]
-        if t_only_single:
-            t_filtered = [m for m in t_filtered if m.get("is_single", False)]
-        if t_only_rec:
-            t_filtered = [m for m in t_filtered if m.get("evaluation", {}).get("is_recommended", False)]
-        if t_only_has_form:
-            t_filtered = [m for m in t_filtered if m.get("home_form", {}).get("has_data") or m.get("away_form", {}).get("has_data")]
-
-        if "기대가치" in t_sort:
-            t_filtered.sort(key=lambda x: x.get("evaluation", {}).get("best_ev", -1.0), reverse=True)
-        elif "경기 시작 시간" in t_sort:
-            t_filtered.sort(key=lambda x: x.get("match_time", ""))
-        elif "홈 승률" in t_sort:
-            t_filtered.sort(key=lambda x: x.get("blended_probabilities", {}).get("home_win", x.get("model_probabilities", {}).get("home_win", 0.0)), reverse=True)
-        elif "배당률" in t_sort:
-            t_filtered.sort(key=lambda x: max(x.get("betman_odds", {}).values()) if x.get("betman_odds") else 0.0, reverse=True)
-
-        st.subheader(f"📋 경기 목록 ({len(t_filtered)}경기)")
-
-        # 3. 고성능 데이터 테이블 뷰 & 상세 인스펙터 (A.6 렌더링 성능 최적화)
-        t_rows = []
-        for m in t_filtered:
-            eval_info = m.get("evaluation", {})
+        def _analyze(m):
+            opts = available_picks(m)
             odds = m.get("betman_odds", {})
-            t_rows.append({
-                "경기번호": str(m.get("match_seq", "")),
-                "일시": m.get("match_time", ""),
-                "리그": m.get("league", ""),
-                "유형": m.get("category_label", m.get("game_type", "승무패")),
-                "홈팀": m.get("home_team", ""),
-                "원정팀": m.get("away_team", ""),
-                "홈배당": float(odds.get("home_win", 0.0)),
-                "무배당": float(odds.get("draw", 0.0)),
-                "원정배당": float(odds.get("away_win", 0.0)),
-                "확률 기준": "AI" if m.get("prob_source") in AI_SOURCES else "배당",
-                "EV 최고 선택": eval_info.get("best_selection_name", "-"),
-                "기대가치": eval_info.get("best_ev_pct", "-"),
-                "등급": "추천" if eval_info.get("is_recommended") else "패스",
-                "단통": "⚡" if m.get("is_single") else ""
-            })
+            mk = m.get("market_implied_probs") or {}
+            ai = m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
+            mk_k, mk_p = top_pick(mk, opts)
+            ai_k, ai_p = top_pick(ai, opts) if ai else (None, 0.0)
+            d = {k: (prob_of(ai, k) - prob_of(mk, k)) * 100 for k in opts} if ai else {}
+            gap = max((abs(v) for v in d.values()), default=0.0)
+            ev = {k: prob_of(ai or mk, k) * float(odds[k]) - 1.0 for k in opts}
+            return {"m": m, "opts": opts, "labels": pick_labels(m), "mk": mk, "ai": ai,
+                    "mk_k": mk_k, "mk_p": mk_p, "ai_k": ai_k, "ai_p": ai_p, "d": d, "gap": gap,
+                    "up_k": max(d, key=d.get) if d else None,
+                    "differs": bool(ai) and (ai_k != mk_k or gap >= DIFF_PP),
+                    "ev": ev, "gems": {k: v for k, v in ev.items() if ai and v > 0},
+                    "best_ev": max(ev.values()) if ev else -1.0}
 
-        df_matches = pd.DataFrame(t_rows)
-        st.dataframe(df_matches, width="stretch", hide_index=True)
+        rows_all = [a for a in (_analyze(m) for m in predictions) if a["opts"]]
 
-        st.divider()
+        # C. 필터: ① 탭과 같은 배지
+        T2_QUICK = {"ai": "🧠 AI 적용만", "diff": "⚠️ 배당과 다름", "gem": "💎 플러스", "single": "⚡ 한경기만", "open": "⏳ 마감 전만"}
+        T2_SORTS = ["AI 차이 큰 순", "경기 시간순", "기대가치 높은 순"]
+        T2_DEFAULTS = {"tab2_search": "", "tab2_sports": [], "tab2_types": [], "tab2_league": "전체 리그",
+                       "tab2_quick": [], "tab2_sort_by": T2_SORTS[0]}
 
-        # 4. 개별 경기 상세 분석 인스펙터
-        st.markdown("### 🔎 경기 세부 통계 & AI 모델 vs 시장 확률 심층 분석")
-        match_options = [f"#{m['match_seq']} [{m['league']}] {m['home_team']} vs {m['away_team']} ({m.get('category_label', m.get('game_type', '승무패'))})" for m in t_filtered[:100]]
-        
-        if match_options:
-            selected_match_label = st.selectbox("분석할 경기를 선택하세요:", match_options, key="tab2_match_selector")
-            selected_seq = selected_match_label.split(" ")[0].replace("#", "")
-            target_m = pred_map.get(selected_seq)
+        def _t2_reset():
+            for k, v in T2_DEFAULTS.items():
+                st.session_state[k] = v
 
-            if target_m:
-                eval_info = target_m.get("evaluation", {})
-                odds = target_m.get("betman_odds", {})
-                probs = target_m.get("model_probabilities", {})
-                mkt_probs = target_m.get("market_implied_probs", {})
-                blended_probs = target_m.get("blended_probabilities", probs)
-                sel_labels = target_m.get("selection_labels", {})
+        with st.container(border=True):
+            b1, b2 = st.columns([1.5, 2.6])
+            with b1:
+                sp_opts = [s for s in ("SC", "BK", "BS", "VL") if any(a["m"].get("sport") == s for a in rows_all)]
+                keep_valid_multi("tab2_sports", sp_opts)
+                t_sports = st.pills("종목", sp_opts, selection_mode="multi", key="tab2_sports",
+                                    format_func=lambda s: f"{SPORT_ICONS.get(s, '')} {SPORT_NAMES.get(s, s)}") or []
+            in_sp = [a for a in rows_all if not t_sports or a["m"].get("sport") in t_sports]
+            with b2:
+                ty_opts = [t for t in TYPE_BADGES if any(type_badge(a["m"]) == t for a in in_sp)]
+                keep_valid_multi("tab2_types", ty_opts)
+                t_types = st.pills("게임 유형", ty_opts, selection_mode="multi", key="tab2_types") or []
+            f1, f2, f3 = st.columns([1.5, 1.6, 1.0])
+            with f1:
+                t_search = st.text_input("🔎 팀 이름 검색", placeholder="예: 아스널, 뮌헨, 인천", key="tab2_search")
+            with f2:
+                lg_opts = ["전체 리그"] + sorted({a["m"].get("league", "기타") for a in in_sp})
+                keep_valid("tab2_league", lg_opts)
+                t_league = st.selectbox("리그", lg_opts, key="tab2_league")
+            with f3:
+                t_sort = st.selectbox("정렬", T2_SORTS, key="tab2_sort_by")
+            q1, q2 = st.columns([5, 1], vertical_alignment="center")
+            with q1:
+                t_quick = st.pills("빠른 필터", list(T2_QUICK), format_func=T2_QUICK.get, selection_mode="multi",
+                                   key="tab2_quick", label_visibility="collapsed") or []
+            with q2:
+                st.button("↺ 필터 초기화", key="tab2_reset", on_click=_t2_reset, width="stretch")
 
-                with st.container(border=True):
-                    # 상단 헤더
-                    d_c1, d_c2 = st.columns([3, 1])
-                    with d_c1:
-                        badge_html = get_grade_badge_html(eval_info.get("grade", ""))
-                        single_badge = "<span class='badge-single'>⚡ 단통 1경기 가능</span>" if target_m.get("is_single") else ""
-                        cat_badge = f"<span class='badge-cat'>{target_m.get('category_label', target_m.get('game_type', '승무패'))}</span>"
-                        st.markdown(
-                            f"<div class='notranslate' style='font-size: 1.2rem; font-weight: 700; margin-bottom: 6px;'>"
-                            f"[{target_m['league']}] {target_m['home_team']} 🆚 {target_m['away_team']} &nbsp;&nbsp; {badge_html} {single_badge} {cat_badge}"
-                            f"</div>"
-                            f"<div class='match-meta-bar notranslate'>"
-                            f"📅 개최일시: {target_m.get('match_time')} &nbsp;|&nbsp; 🔢 베트맨 경기번호: #{selected_seq}"
-                            f"</div>",
-                            unsafe_allow_html=True
-                        )
-                    with d_c2:
-                        st.markdown(f"**EV 최고 선택:** <span style='color:#10b981; font-weight:800;'>{eval_info.get('best_selection_name')}</span>", unsafe_allow_html=True)
-                        st.markdown(f"기대가치: **`{eval_info.get('best_ev_pct')}`**")
-                        if st.button("🛒 맞춤조건구매에 담기", width="stretch"):
-                            b_sel = eval_info.get("best_selection", "home_win")
-                            st.session_state["selections"][selected_seq] = {
-                                "home": (b_sel == "home_win"),
-                                "draw": (b_sel == "draw"),
-                                "away": (b_sel == "away_win")
-                            }
-                            st.session_state["editor_version"] += 1
-                            st.success(f"#{selected_seq} 경기가 맞춤조건구매에 담겼습니다!")
+        t_rows = []
+        for a in in_sp:
+            m = a["m"]
+            if t_types and type_badge(m) not in t_types:
+                continue
+            if t_league != "전체 리그" and m.get("league") != t_league:
+                continue
+            if t_search and t_search.lower() not in (m.get("home_team", "") + " " + m.get("away_team", "")).lower():
+                continue
+            if ("ai" in t_quick and not a["ai"]) or ("diff" in t_quick and not a["differs"]) \
+                    or ("gem" in t_quick and not a["gems"]) or ("single" in t_quick and not m.get("is_single")) \
+                    or ("open" in t_quick and is_sale_closed(m, t2_now)):
+                continue
+            t_rows.append(a)
 
-                    st.divider()
+        def _seq_n(a):
+            s = str(a["m"].get("match_seq", ""))
+            return int(s) if s.isdigit() else 0
 
-                    # 확률 비교: 배당(마진 제거) 확률 vs AI 확률, EV는 실전 확률 기준
-                    is_ai_src = target_m.get("prob_source") in AI_SOURCES
-                    src_name = {"betman_corrector": "베트맨 학습 보정 AI", "market_corrector": "유럽 학습 보정 AI",
-                                "betman_markets": "전 종목 보정 AI"}.get(
-                        target_m.get("prob_source"), "배당 기준 (AI 미적용 유형)")
-                    st.markdown(f"##### 📊 배당 확률 vs AI 확률 & 기대가치(EV) — 확률 기준: {src_name}")
-                    icons = {"home_win": "🏠", "draw": "🤝", "away_win": "✈️"}
-                    defaults = {"home_win": "홈 승", "draw": "무승부", "away_win": "원정 승"}
-                    p_cols = st.columns(3)
-                    for col, k in zip(p_cols, ("home_win", "draw", "away_win")):
-                        with col:
-                            o = float(odds.get(k, 0.0) or 0.0)
-                            if o <= 1.0:
-                                st.caption("해당 선택지 없음 (2지선다 게임)")
-                                continue
-                            mk = float(mkt_probs.get(k.replace("_win", ""), 0.0) or 0.0)
-                            fin = float(blended_probs.get(k, mk) or mk) if is_ai_src else mk
-                            ev = (fin * o - 1) * 100
-                            st.markdown(f"**{icons[k]} {sel_labels.get(k, defaults[k])} ({o}배)**")
-                            if is_ai_src:
-                                st.caption(f"• 배당 확률: **{mk*100:.1f}%**\n\n• AI 확률: **{fin*100:.1f}%** ({(fin - mk)*100:+.1f}%p)")
-                            else:
-                                st.caption(f"• 배당 확률: **{mk*100:.1f}%**")
-                            st.markdown(f"• EV: **{ev:+.1f}%**")
-                            st.progress(max(0.0, min(1.0, fin)))
+        if t_sort == "AI 차이 큰 순":   # AI 적용 경기 중 차이 큰 것 먼저, 나머지는 시간순
+            t_rows.sort(key=lambda a: (0 if a["ai"] else 1, -a["gap"], time_key(a["m"]), _seq_n(a)))
+        elif t_sort == "기대가치 높은 순":
+            t_rows.sort(key=lambda a: -a["best_ev"])
+        else:
+            t_rows.sort(key=lambda a: (time_key(a["m"]), _seq_n(a)))
 
-                    # 스코어 및 폼 데이터
-                    if target_m.get("top_scores"):
-                        st.divider()
-                        score_text = " | ".join([f"{s['score']} ({s['prob']}%)" for s in target_m.get("top_scores", [])])
-                        st.caption(f"🎯 **예상 스코어 TOP 3:** {score_text}")
+        # D. 요약 칸
+        render_tiles([
+            ("📋 경기", f"{len(t_rows):,}경기", f"이번 회차 전체 {len(rows_all):,}경기"),
+            ("🧠 AI 적용", f"{sum(1 for a in t_rows if a['ai']):,}경기", "나머지는 배당 기준"),
+            ("⚠️ AI가 다르게 본 경기", f"{sum(1 for a in t_rows if a['differs']):,}경기",
+             f"1순위가 다르거나 {DIFF_PP:.0f}%p 이상 차이"),
+            ("💎 기대가치 플러스", f"{sum(1 for a in t_rows if a['gems']):,}경기", "AI 확률 기준 · 검증 중"),
+        ])
 
-                    home_form = target_m.get("home_form", {})
-                    away_form = target_m.get("away_form", {})
-                    h2h = target_m.get("h2h", {})
-                    if home_form.get("has_data") or away_form.get("has_data"):
-                        st.divider()
-                        st.markdown("##### 📈 최근 5경기 폼 & 맞대결(H2H) 전적")
-                        f_col1, f_col2 = st.columns(2)
-                        with f_col1:
-                            st.markdown(f"**🏠 {target_m['home_team']} 최근 5경기:**")
-                            st.write(f"• 전적: {home_form.get('record_str', '-')} (평균 득 {home_form.get('avg_scored', 0)} / 실 {home_form.get('avg_conceded', 0)})")
-                            if home_form.get("last_matches"):
-                                for lm in home_form["last_matches"]:
-                                    st.caption(f"• {lm.get('date')} vs {lm.get('opponent')}: {lm.get('score')} ({lm.get('result')})")
-                        with f_col2:
-                            st.markdown(f"**✈️ {target_m['away_team']} 최근 5경기:**")
-                            st.write(f"• 전적: {away_form.get('record_str', '-')} (평균 득 {away_form.get('avg_scored', 0)} / 실 {away_form.get('avg_conceded', 0)})")
-                            if away_form.get("last_matches"):
-                                for lm in away_form["last_matches"]:
-                                    st.caption(f"• {lm.get('date')} vs {lm.get('opponent')}: {lm.get('score')} ({lm.get('result')})")
+        # E. 경기 목록 (줄을 누르면 아래에 자세히)
+        def _ai_top_text(a):
+            if not a["ai"] or not a["ai_k"]:
+                return "-"
+            lab = a["labels"]
+            if a["ai_k"] != a["mk_k"]:
+                return f"⚠️ {lab[a['ai_k']]} {a['ai_p'] * 100:.0f}% (1순위 다름)"
+            dd = a["d"][a["ai_k"]]
+            arrow = f" ▲{dd:.0f}" if dd >= 0.5 else (f" ▼{-dd:.0f}" if dd <= -0.5 else "")
+            return f"{lab[a['ai_k']]} {a['ai_p'] * 100:.0f}%{arrow}"
+
+        def _ai_up_text(a):
+            """AI가 배당보다 가장 높게 본 선택지 (0.5%p 미만이면 '거의 같음')"""
+            if not a["ai"] or not a["up_k"]:
+                return "-"
+            k = a["up_k"]
+            if a["d"][k] < 0.5:
+                return "거의 같음"
+            return f"{'💎 ' if k in a['gems'] else ''}{a['labels'][k]} +{a['d'][k]:.1f}%p"
+
+        def _type_text(m):
+            line = ""
+            try:
+                lv = float(m.get("line") or 0.0)
+            except (TypeError, ValueError):
+                lv = 0.0
+            if lv and "핸디캡" in str(m.get("game_type", "")):
+                line = f" H {lv:+.1f}"
+            elif lv and "언더오버" in str(m.get("game_type", "")):
+                line = f" U/O {lv:g}"
+            return f"{type_name(m)}{line}{' ⚡' if m.get('is_single') else ''}"
+
+        st.markdown("#### 📋 경기 목록")
+        if not t_rows:
+            st.info("조건에 맞는 경기가 없어요. 필터를 초기화해 보세요.")
+        else:
+            df_t2 = pd.DataFrame([{
+                "번호": str(a["m"].get("match_seq", "")),
+                "시간": short_when(a["m"]),
+                "경기": f"{a['m'].get('home_team', '')} vs {a['m'].get('away_team', '')}",
+                "유형": _type_text(a["m"]),
+                "배당 1순위": f"{a['labels'][a['mk_k']]} {a['mk_p'] * 100:.0f}%" if a["mk_k"] else "-",
+                "AI 1순위": _ai_top_text(a),
+                "AI가 더 높게 본 쪽": _ai_up_text(a),
+            } for a in t_rows])
+            t2_sig = (tuple(t_sports), tuple(t_types), t_league, t_search, tuple(t_quick), t_sort)
+            event = st.dataframe(
+                df_t2, hide_index=True, width="stretch", height=min(38 + 35 * len(df_t2), 422),
+                on_select="rerun", selection_mode="single-row", key=f"tab2_table_{t2_sig}",
+                column_config={"번호": st.column_config.TextColumn(width="small"),
+                               "시간": st.column_config.TextColumn(width="small"),
+                               "경기": st.column_config.TextColumn(width="large"),
+                               "AI가 더 높게 본 쪽": st.column_config.TextColumn(
+                                   help="AI 확률 − 배당 확률이 가장 큰 선택지 (💎 = AI 기준 기대가치 플러스)")})
+            picked_rows = list(event.selection.rows) if event is not None else []
+            st.caption("👆 줄을 누르면 아래 분석이 그 경기로 바뀌어요." if not picked_rows
+                       else "다른 줄을 누르면 그 경기로 바뀌어요.")
+
+            # F. 경기 분석 (선택한 줄, 없으면 목록 첫 경기)
+            a = t_rows[picked_rows[0] if picked_rows and picked_rows[0] < len(t_rows) else 0]
+            m = a["m"]
+            seq, lab, odds = str(m.get("match_seq", "")), a["labels"], m.get("betman_odds", {})
+            closed = is_sale_closed(m, t2_now)
+
+            def _t2_toggle(seq_, k_):
+                """선택지 하나를 담거나 빼기 (같은 경기의 다른 선택지는 그대로)"""
+                cur = dict(st.session_state["selections"].get(seq_, {}))
+                cur[SEL_KEY[k_]] = not cur.get(SEL_KEY[k_], False)
+                if any(cur.get(x) for x in ("home", "draw", "away")):
+                    st.session_state["selections"][seq_] = cur
+                else:
+                    st.session_state["selections"].pop(seq_, None)
+                st.session_state["editor_version"] += 1   # ① 탭 배당 버튼도 같은 상태로 다시 그림
+
+            def _bar(name, p, color, note=""):
+                return (f"<div style='display:flex;align-items:center;gap:8px;font-size:12px;margin:2px 0'>"
+                        f"<span style='width:30px;opacity:.7'>{name}</span>"
+                        f"<div style='flex:1;height:8px;border-radius:4px;background:rgba(148,163,184,.18)'>"
+                        f"<div style='width:{max(0.0, min(100.0, p)):.1f}%;height:100%;border-radius:4px;background:{color}'></div></div>"
+                        f"<span style='width:78px;text-align:right;font-size:13px'>{p:.1f}%{note}</span></div>")
+
+            st.markdown("#### 🔎 경기 분석")
+            with st.container(border=True):
+                status_txt = ("🔒 발매 마감" if closed else
+                              f"🟢 {datetime.fromtimestamp(float(m['close_time']) / 1000).strftime('%m.%d %H:%M')} 마감"
+                              if m.get("close_time") else "")
+                st.markdown(
+                    "<div style='padding-bottom:12px'>"
+                    "<div style='display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:6px;"
+                    "border-bottom:1px solid rgba(148,163,184,.25)'>"
+                    f"<span style='font-size:12px;opacity:.75'>{SPORT_ICONS.get(m.get('sport'), '')} {short_when(m)}</span>"
+                    + league_chip(m.get("league", "")) +
+                    f"<span style='font-size:17px'><b>{m.get('home_team', '')}</b> <span style='opacity:.6'>vs</span> "
+                    f"<b>{m.get('away_team', '')}</b></span>"
+                    f"<span style='font-size:14px'><b>{seq}</b> {type_name(m)} {line_chip(m)} "
+                    f"{ONE_GAME_TAG if m.get('is_single') else ''}</span>"
+                    f"<span style='margin-left:auto;font-size:12px;opacity:.85'>{status_txt}</span></div></div>",
+                    unsafe_allow_html=True)
+
+                # 💬 쉬운 말 해석
+                margin = (sum(1.0 / float(odds[k]) for k in a["opts"]) - 1.0) * 100
+                says = []
+                if not a["ai"]:
+                    says.append("이 유형은 AI가 적용되지 않아 배당 기준 확률만 보여요 "
+                                "(과거 시험에서 배당보다 낫다는 근거가 없었던 유형이에요).")
+                elif a["ai_k"] != a["mk_k"]:
+                    says.append(f"AI와 배당의 1순위가 달라요: 배당은 <b>{lab[a['mk_k']]}</b> {a['mk_p'] * 100:.0f}%, "
+                                f"AI는 <b>{lab[a['ai_k']]}</b> {a['ai_p'] * 100:.0f}%예요.")
+                elif a["gap"] < 1.0:
+                    says.append(f"AI는 배당과 거의 같게 봐요 (가장 큰 차이 {a['gap']:.1f}%p).")
+                else:
+                    k = a["up_k"]
+                    says.append(f"AI는 배당보다 <b>{lab[k]}</b> 쪽을 {a['d'][k]:.1f}%p 높게 봐요 "
+                                f"(AI {prob_of(a['ai'], k) * 100:.1f}% vs 배당 {prob_of(a['mk'], k) * 100:.1f}%).")
+                bk = max(a["ev"], key=a["ev"].get)
+                bev = a["ev"][bk] * 100
+                if bev > 0 and a["ai"]:
+                    says.append(f"💎 <b>{lab[bk]}</b> 기대가치 {bev:+.1f}%: AI 기준으로는 플러스지만 아직 검증 중이에요.")
+                else:
+                    says.append(f"가장 나은 선택지(<b>{lab[bk]}</b>)도 기대가치 {bev:+.1f}%예요. 베트맨 마진(약 {margin:.0f}%)이 "
+                                + ("AI가 보는 차이보다 커서" if a["ai"] else "있어서") + " 오래 걸면 손해예요.")
+                st.markdown("<div style='padding-bottom:12px'><div style='font-size:14px;line-height:1.7'>"
+                            + "<br>".join(f"💬 {s}" if i == 0 else s for i, s in enumerate(says)) + "</div></div>",
+                            unsafe_allow_html=True)
+
+                # 선택지별: 배당 확률 vs AI 확률 막대 · 기대가치 · 담기
+                cart_sel = st.session_state["selections"].get(seq, {})
+                for k in a["opts"]:
+                    c1, c2, c3, c4 = st.columns([1.1, 3.6, 0.9, 1.1], vertical_alignment="center")
+                    c1.markdown(f"<div style='font-size:15px'><b>{lab[k]}</b> <span style='opacity:.8'>{float(odds[k]):.2f}</span>"
+                                f"{' 💎' if k in a['gems'] else ''}</div>", unsafe_allow_html=True)
+                    bars = _bar("배당", prob_of(a["mk"], k) * 100, "#94a3b8")
+                    if a["ai"]:
+                        dd = a["d"][k]
+                        bars += _bar("AI", prob_of(a["ai"], k) * 100, "#3b82f6",
+                                     f" <span style='font-size:11px;opacity:.7'>{dd:+.1f}</span>")
+                    c2.markdown(bars, unsafe_allow_html=True)
+                    ev_k = a["ev"][k] * 100
+                    c3.markdown(f"<div style='font-size:11px;color:#94a3b8'>기대가치</div>"
+                                f"<div style='font-size:14px;font-weight:700;color:{'#34d399' if ev_k > 0 else 'inherit'}'>"
+                                f"{ev_k:+.1f}%</div>", unsafe_allow_html=True)
+                    in_cart = bool(cart_sel.get(SEL_KEY[k]))
+                    c4.button("🔒 마감" if closed else ("✓ 담김" if in_cart else "🛒 담기"), key=f"t2_cart_{seq}_{k}",
+                              type="primary" if in_cart and not closed else "secondary", disabled=closed,
+                              width="stretch", on_click=_t2_toggle, args=(seq, k),
+                              help=None if closed else ("한 번 더 누르면 빠져요" if in_cart else "🛒 내 선택에 담기"))
+
+                if m.get("top_scores"):
+                    st.caption("🎯 예상 스코어: " + " · ".join(f"{s['score']} ({s['prob']}%)" for s in m["top_scores"]))
+
+                # 최근 경기 · 맞대결: 색 점 한 줄, 경기별 목록은 펼쳐서
+                hf, af, h2h = m.get("home_form") or {}, m.get("away_form") or {}, m.get("h2h") or {}
+                if hf.get("has_data") or af.get("has_data"):
+                    dots = {"W": "🟢", "D": "🟡", "L": "🔴"}
+
+                    def _form_line(icon, team, f):
+                        if not f.get("has_data"):
+                            return f"{icon} <b>{team}</b> <span style='opacity:.6'>기록 없음</span>"
+                        return (f"{icon} <b>{team}</b> {''.join(dots.get(r, '⚪') for r in f.get('form_sequence', []))} "
+                                f"<span style='opacity:.75'>{f.get('record_str', '')} · 평균 득 {f.get('avg_scored', 0)} / "
+                                f"실 {f.get('avg_conceded', 0)}</span>")
+
+                    lines = [_form_line("🏠", m.get("home_team", ""), hf), _form_line("✈️", m.get("away_team", ""), af)]
+                    if h2h.get("has_data"):
+                        lines.append(f"🤝 맞대결 최근 {h2h.get('total_matches', 0)}경기: {m.get('home_team', '')} {h2h.get('home_wins', 0)}승 · "
+                                     f"무 {h2h.get('draws', 0)} · {m.get('away_team', '')} {h2h.get('away_wins', 0)}승")
+                    st.markdown("<div style='padding:6px 0 12px'><div style='font-size:12px;opacity:.7'>"
+                                "최근 경기 (왼쪽이 가장 최근 · 🟢승 🟡무 🔴패)</div>"
+                                "<div style='font-size:14px;line-height:1.8'>" + "<br>".join(lines) + "</div></div>",
+                                unsafe_allow_html=True)
+                    with st.expander("경기별 보기"):
+                        fc1, fc2 = st.columns(2)
+                        for col, team, f in ((fc1, m.get("home_team", ""), hf), (fc2, m.get("away_team", ""), af)):
+                            with col:
+                                st.markdown(f"**{team}**")
+                                for lm in f.get("last_matches", []):
+                                    st.caption(f"{dots.get(lm.get('result'), '⚪')} {lm.get('date')} vs {lm.get('opponent')} · {lm.get('score')}")
+                        for hm in h2h.get("matches", []) if h2h.get("has_data") else []:
+                            st.caption(f"🤝 {hm.get('date')} {hm.get('home')} vs {hm.get('away')} · {hm.get('score')}")
 
 
 # ==============================================================================
