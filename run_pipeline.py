@@ -18,7 +18,7 @@ if sys.platform.startswith('win'):
 
 from collector.betman_scraper import BetmanScraper
 from collector.betman_results_scraper import BetmanResultsScraper
-from models.poisson_model import MatchPredictor
+from models.market_view import market_view
 from models.evaluator import evaluate_match_value
 from models.odds_normalizer import remove_margin
 from models.form_analyzer import FormAnalyzer
@@ -124,8 +124,7 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     except Exception as e:
         print(f"⚠️ AI 성적표 갱신 실패: {e}")
 
-    # 2. 유형별 라벨·확률(구 모델), 폼/상대전적 분석기 준비
-    predictor = MatchPredictor()
+    # 2. 폼/상대전적 분석기 준비 (유형별 라벨·배당 확률은 models/market_view.py)
     form_analyzer = FormAnalyzer()
     # [Phase 5.2] 시장 보정 모델: 검증 게이트(TEST·베트맨 실전 모두 시장보다 LL 낮음)를 통과한 경우에만 사용
     from models.market_corrector import MarketCorrector
@@ -165,17 +164,8 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         if home_form.get('has_sot') and away_form.get('has_sot'):
             sot_diff = home_form.get('sot_diff', 0.0) - away_form.get('sot_diff', 0.0)
 
-        # 카테고리별(일반/핸디캡/언더오버/전반전) 정밀 AI 확률 계산 (슈팅 기반 폼 및 리그별 모델 반영)
-        pred = predictor.predict_category(
-            home, away,
-            category=category,
-            line=line,
-            sport=m.get("sport", "SC"),
-            odds=odds,
-            form_diff=form_diff,
-            sot_diff=sot_diff,
-            league=m.get("league", "")
-        )
+        # 유형별 라벨 + 배당(마진 제거) 확률. 축구 일반 승무패는 아래에서 AI 보정 확률로 교체
+        pred = market_view(home, away, category=category, line=line, odds=odds)
         model_probs = {
             "home_win": pred["home_win"],
             "draw": pred["draw"],
@@ -255,10 +245,6 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             "h2h": h2h_stats
         })
 
-    # 미매핑 팀 목록 저장 및 신규 알림
-    unmapped_list = predictor.save_unmapped_teams()
-    if unmapped_list:
-        print(f"ℹ 미매핑 팀 관리 목록: 총 {len(unmapped_list)}개 팀 기록됨 (data/unmapped_teams.json)")
 
     # 4. 결과 JSON 저장
     output_path = Path("data/predictions.json")

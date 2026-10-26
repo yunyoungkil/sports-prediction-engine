@@ -17,7 +17,7 @@ This skill defines the architectural blueprint, realistic design constraints, ev
 2. **No Interactive Colab Dependency for Daily Automation:**
    - DO NOT rely on Google Colab for scheduled production runs (Colab requires manual execution).
    - Colab is ONLY for offline model research and experimental training.
-   - Production inference runs inside **GitHub Actions** (CPU-based, lightweight models like `penaltyblog` Poisson/Dixon-Coles).
+   - Production inference runs inside **GitHub Actions** (CPU-based, lightweight models (numpy/scipy logistic corrections)).
 
 3. **Value Betting (EV) Over Blind Accuracy:**
    - Pure win rate prediction in 3-way soccer tops out around 50~56%. **Optimizing hit rate is NOT the goal** — live data showed S-grade picks hitting 53.7% while returning ROI −6.1%.
@@ -32,7 +32,7 @@ This skill defines the architectural blueprint, realistic design constraints, ev
    - Current approach (Phase 5): start from market probabilities and learn only corrections (`models/market_corrector.py`). From-scratch Dixon-Coles adds nothing over the market (blend b = 0).
 
 5. **100% Free Serverless Architecture:**
-   - Pipeline: Betman Scraper -> Statistical Model (`penaltyblog`) -> GitHub Repository (JSON as DB) -> Streamlit Community Cloud UI -> Telegram Bot (optional).
+   - Pipeline: Betman Scraper -> Market-correction AI (`models/betman_corrector.py`) -> GitHub Repository (JSON as DB) -> Streamlit Community Cloud UI -> Telegram Bot (optional).
 
 ## Evaluation Rules (MUST follow)
 
@@ -53,7 +53,7 @@ This skill defines the architectural blueprint, realistic design constraints, ev
   - `download_history.py`: football-data.co.uk CSVs for the top 5 European leagues → `data/history/all_historical_matches.csv` (keeps B365, PS, BFE, Avg, Max odds; opening and closing).
   - `betman_sharp.py`: maps Betman leagues to The Odds API sport keys, 1 credit per league call, matches events by kickoff ±75 min / team-name similarity / odds distance (skips ambiguous), saves `data/history/sharp_snapshots/{gm_ts}.json`. Needs `ODDS_API_KEY`.
 - **`models/`**
-  - `poisson_model.py`: `MatchPredictor` — Dixon-Coles fit + per-category probabilities (승무패, 핸디캡, 언더오버, 전반전). Falls back to odds-derived λ when a team is unmapped or the sport is non-soccer.
+  - `market_view.py`: per-category display labels and margin-free market probabilities (replaced the removed Dixon-Coles `poisson_model.py`, which was worse than the market).
   - `odds_normalizer.py`: proportional margin removal (2-way and 3-way).
   - `evaluator.py`: EV calculation and S/A/B/PASS grading.
   - `form_analyzer.py`: recent form (W-D-L) and H2H.

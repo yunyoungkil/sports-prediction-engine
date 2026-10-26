@@ -48,7 +48,7 @@
 
 ## 5. 현재 상태 요약 (2026-10-25)
 
-- Dixon-Coles 단독 모델: 시장보다 나쁨 (TEST 1.0010 vs 0.9790), 블렌딩 b = 0
+- (삭제됨) 구 Dixon-Coles 모델은 시장보다 나빠서(TEST 1.0010 vs 0.9790, 블렌딩 b = 0) 2026-10-26에 코드에서 제거했다. 유형별 라벨·배당 확률은 `models/market_view.py`가 담당한다.
 - **시장 보정 모델(5.1, `models/market_corrector.py`)**: TEST, 진행 중 시즌, 베트맨 실전 모두 시장보다 LL이 낮음. 다만 CI가 0을 포함한다. 축구 1X2 실전 확률로 사용 중이다.
 - **해외 배당 비교(5.4, `collector/betman_sharp.py`)**: 회차마다 `data/history/sharp_snapshots/`에 누적하고, 실전 검증은 `evaluation/sharp_vs_betman.py`로 한다 (300건 쌓이면 판정).
 - 추천 픽은 0건이 정상이다 (보정 폭 < 베트맨 마진 약 15%).
