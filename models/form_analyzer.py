@@ -29,6 +29,20 @@ def load_team_name_map(map_path: str = "data/team_name_map.json") -> dict:
 
 TEAM_NAME_MAP = load_team_name_map()
 
+
+def _korean_display_names(name_map: dict) -> dict:
+    """영어 팀명 → 화면용 한글 팀명 (띄어쓰기 있는 정식 이름 우선, 없으면 가장 짧은 이름)"""
+    out: dict = {}
+    for ko, en in name_map.items():
+        cur = out.get(en)
+        if cur is None or ((" " in ko) and (" " not in cur)) or ((" " in ko) == (" " in cur) and len(ko) < len(cur)):
+            out[en] = ko
+    return out
+
+
+KOREAN_NAME = _korean_display_names(TEAM_NAME_MAP)
+SAME_MATCH_DAYS = 1   # 베트맨(한국 시각)과 유럽 기록(현지 날짜)은 같은 경기도 날짜가 하루 다를 수 있음
+
 PREFIXES = [
     "1.FC", "1. FC", "VfB", "ACF", "OGC", "RCD", "FSV", "TSG1899", "TSG", 
     "AFC", "AZ", "CF", "CR", "FC", "SC", "SV", "US", "RC", "UD", "CD", 
@@ -85,6 +99,7 @@ class FormAnalyzer:
                 self.df = df.sort_values(by="ParsedDate", ascending=False)
             except Exception:
                 self.df = None
+        self._csv_teams = set(self.df["HomeTeam"]).union(set(self.df["AwayTeam"])) if self.df is not None else set()
 
         # 2. 베트맨 최근 회차 실제 결과 로드 (중복 제거된 고유 경기 목록 및 인덱싱)
         self.betman_by_team = {}
@@ -94,6 +109,10 @@ class FormAnalyzer:
                     raw_bm = json.load(f)
                     seen = set()
                     for m in raw_bm:
+                        # 핸디캡 줄은 점수에 핸디캡이 더해져 있고, 전반 줄은 전반 점수라 실제 최종 점수가 아님
+                        gt = str(m.get("game_type", ""))
+                        if "핸디캡" in gt or "전반" in gt:
+                            continue
                         k = (m.get("gm_ts"), m.get("home_team"), m.get("away_team"))
                         if k not in seen and m.get("home_score") is not None:
                             seen.add(k)
@@ -166,6 +185,45 @@ class FormAnalyzer:
             return True
         return False
 
+    @staticmethod
+    def _short_date(dt: Optional[pd.Timestamp], with_year: bool = False) -> str:
+        if dt is None or pd.isnull(dt):
+            return ""
+        return (f"{dt.year % 100:02d}." if with_year else "") + f"{dt.month:02d}.{dt.day:02d}"
+
+    @staticmethod
+    def _fmt_score(x: Any) -> str:
+        f = float(x)
+        return str(int(f)) if f.is_integer() else f"{f:g}"
+
+    @staticmethod
+    def _display_name(name: str) -> str:
+        """화면용 팀명: 유럽 기록의 영어 이름은 한글로, 한글 이름은 그대로"""
+        if not name or re.search(r"[가-힣]", name):
+            return name
+        return KOREAN_NAME.get(name, name)
+
+    @staticmethod
+    def _dedup_by_date(rows: List[Dict[str, Any]], same) -> List[Dict[str, Any]]:
+        """최신순 정렬 후 같은 경기(두 출처에 모두 있는 경기)를 하나로. same(앞, 뒤) → 같은 경기면 True.
+        유럽 기록에만 있는 유효슈팅(sot)은 남는 쪽에 옮겨 붙인다."""
+        rows = sorted(rows, key=lambda r: r["dt"] if r["dt"] is not None and pd.notnull(r["dt"]) else pd.Timestamp.min,
+                      reverse=True)
+        merged: List[Dict[str, Any]] = []
+        for r in rows:
+            dup = next((x for x in merged if same(x, r)), None)
+            if dup is None:
+                merged.append(r)
+            elif dup.get("sot") is None and r.get("sot") is not None:
+                dup["sot"] = r["sot"]
+        return merged
+
+    @staticmethod
+    def _close_dates(a: Dict[str, Any], b: Dict[str, Any]) -> bool:
+        if a["dt"] is None or b["dt"] is None or pd.isnull(a["dt"]) or pd.isnull(b["dt"]):
+            return False
+        return abs((a["dt"] - b["dt"]).days) <= SAME_MATCH_DAYS
+
     def get_team_recent_form(
         self,
         team_name: str,
@@ -175,131 +233,56 @@ class FormAnalyzer:
         """
         특정 팀의 최근 N경기 결과(W-D-L), 평균 득점, 평균 실점 산출.
         as_of 날짜가 지정되면 해당 시점 '이전' 경기 데이터만 사용하여 미래 누수를 차단합니다.
-        (1차: 베트맨 최근 공식 결과 -> 2차: 유럽 5대 리그 과거 데이터)
+        베트맨 최근 공식 결과(한글 팀명·한국 시각)와 유럽 5대 리그 과거 데이터(영어 팀명·현지 날짜)를 합쳐
+        날짜순으로 정렬하고, 두 출처에 모두 있는 같은 경기(같은 상대·날짜 하루 이내)는 하나로 셉니다.
         """
-        results = []
-        scored_list = []
-        conceded_list = []
-        sot_for_list = []
-        sot_against_list = []
-        match_details = []
-        seen_dates_opps = set()
-
-        wins, draws, losses = 0, 0, 0
         as_of_dt = parse_date_value(as_of)
-
-        # [1차 소스] 베트맨 인덱스에서 빠른 O(1) 조회
         clean_name = team_name.strip()
+        rows: List[Dict[str, Any]] = []
+
+        # [1차 소스] 베트맨 최근 공식 결과
         bm_candidates = self.betman_by_team.get(clean_name) or self.betman_by_team.get(self.normalize_name(clean_name)) or []
         for m in bm_candidates:
-            if len(results) >= n_matches:
+            if len(rows) >= n_matches * 2:
                 break
-            
-            # 미래 데이터 누수 차단: as_of 시점 이후 경기 제외
-            if as_of_dt is not None:
-                m_dt = m.get("_parsed_dt")
-                if m_dt is not None and m_dt >= as_of_dt:
-                    continue
-
+            m_dt = m.get("_parsed_dt")
+            if as_of_dt is not None and m_dt is not None and m_dt >= as_of_dt:
+                continue   # 미래 데이터 누수 차단
             is_home = self._team_matches(m.get("home_team", ""), clean_name)
             is_away = self._team_matches(m.get("away_team", ""), clean_name)
             if not (is_home or is_away):
                 continue
-
-            h_s = m.get("home_score")
-            a_s = m.get("away_score")
+            h_s, a_s = m.get("home_score"), m.get("away_score")
             if h_s is None or a_s is None:
                 continue
+            opponent = (m.get("away_team") if is_home else m.get("home_team")) or ""
+            rows.append({"dt": m_dt, "date": m.get("match_time", ""), "is_home": is_home, "opponent": opponent,
+                         "opp_norm": self.normalize_name(opponent), "gf": h_s if is_home else a_s,
+                         "ga": a_s if is_home else h_s, "sot": None})
 
-            my_goals = h_s if is_home else a_s
-            opp_goals = a_s if is_home else h_s
-            opponent = m.get("away_team") if is_home else m.get("home_team")
-            dtm = m.get("match_time", "")
-
-            key = (dtm, opponent)
-            if key in seen_dates_opps:
-                continue
-            seen_dates_opps.add(key)
-
-            scored_list.append(my_goals)
-            conceded_list.append(opp_goals)
-
-            if my_goals > opp_goals:
-                res_char = "W"
-                wins += 1
-            elif my_goals == opp_goals:
-                res_char = "D"
-                draws += 1
-            else:
-                res_char = "L"
-                losses += 1
-            results.append(res_char)
-
-            match_details.append({
-                "date": dtm,
-                "venue": "홈" if is_home else "원정",
-                "opponent": opponent,
-                "score": f"{my_goals}-{opp_goals}",
-                "result": res_char
-            })
-
-        # [2차 소스] 아직 n_matches가 부족하고 유럽 데이터가 있는 경우 보충
-        if len(results) < n_matches and self.df is not None:
+        # [2차 소스] 유럽 5대 리그 과거 데이터 (유효슈팅 포함)
+        if self.df is not None:
             norm_name = self.normalize_name(team_name)
-            if norm_name in set(self.df["HomeTeam"]).union(set(self.df["AwayTeam"])):
+            if norm_name in self._csv_teams:
                 team_df = self.df[(self.df["HomeTeam"] == norm_name) | (self.df["AwayTeam"] == norm_name)]
                 if as_of_dt is not None and "ParsedDate" in team_df.columns:
                     team_df = team_df[team_df["ParsedDate"] < as_of_dt]
-
-                for _, row in team_df.iterrows():
-                    if len(results) >= n_matches:
-                        break
+                for _, row in team_df.head(n_matches + len(rows)).iterrows():
                     is_home = (row["HomeTeam"] == norm_name)
-                    hg = int(row["FTHG"])
-                    ag = int(row["FTAG"])
+                    hg, ag = int(row["FTHG"]), int(row["FTAG"])
                     opponent = row["AwayTeam"] if is_home else row["HomeTeam"]
-                    date_str = str(row["Date"])
-
-                    key = (date_str, opponent)
-                    if key in seen_dates_opps:
-                        continue
-                    seen_dates_opps.add(key)
-
-                    my_goals = hg if is_home else ag
-                    opp_goals = ag if is_home else hg
-
-                    scored_list.append(my_goals)
-                    conceded_list.append(opp_goals)
-
-                    if my_goals > opp_goals:
-                        res_char = "W"
-                        wins += 1
-                    elif my_goals == opp_goals:
-                        res_char = "D"
-                        draws += 1
-                    else:
-                        res_char = "L"
-                        losses += 1
-                    results.append(res_char)
-
-                    hst = row.get("HST")
-                    ast = row.get("AST")
+                    hst, ast = row.get("HST"), row.get("AST")
+                    sot = None
                     if pd.notnull(hst) and pd.notnull(ast):
-                        my_sot = float(hst if is_home else ast)
-                        opp_sot = float(ast if is_home else hst)
-                        sot_for_list.append(my_sot)
-                        sot_against_list.append(opp_sot)
+                        sot = (float(hst if is_home else ast), float(ast if is_home else hst))
+                    rows.append({"dt": row["ParsedDate"] if pd.notnull(row["ParsedDate"]) else None, "date": str(row["Date"]),
+                                 "is_home": is_home, "opponent": opponent, "opp_norm": self.normalize_name(opponent),
+                                 "gf": hg if is_home else ag, "ga": ag if is_home else hg, "sot": sot})
 
-                    match_details.append({
-                        "date": date_str,
-                        "venue": "홈" if is_home else "원정",
-                        "opponent": opponent,
-                        "score": f"{my_goals}-{opp_goals}",
-                        "result": res_char
-                    })
+        same = lambda a, b: a["opp_norm"] == b["opp_norm"] and self._close_dates(a, b)
+        recent = self._dedup_by_date(rows, same)[:n_matches]
 
-        count = len(results)
-        if count == 0:
+        if not recent:
             return {
                 "has_data": False,
                 "team_name": team_name,
@@ -312,10 +295,11 @@ class FormAnalyzer:
                 "last_matches": []
             }
 
-        avg_s = round(sum(scored_list) / count, 1) if count > 0 else 0.0
-        avg_c = round(sum(conceded_list) / count, 1) if count > 0 else 0.0
-        has_sot = len(sot_for_list) > 0
-        avg_sot_diff = round((sum(sot_for_list) - sum(sot_against_list)) / len(sot_for_list), 2) if has_sot else 0.0
+        results = ["W" if r["gf"] > r["ga"] else ("D" if r["gf"] == r["ga"] else "L") for r in recent]
+        wins, draws, losses = results.count("W"), results.count("D"), results.count("L")
+        count = len(recent)
+        sots = [r["sot"] for r in recent if r.get("sot") is not None]
+        has_sot = len(sots) > 0
 
         return {
             "has_data": True,
@@ -323,12 +307,19 @@ class FormAnalyzer:
             "norm_name": self.normalize_name(team_name),
             "form_sequence": results,
             "record_str": f"{wins}승 {draws}무 {losses}패",
-            "win_rate_pct": round((wins / count) * 100, 1) if count > 0 else 0.0,
-            "avg_scored": avg_s,
-            "avg_conceded": avg_c,
+            "win_rate_pct": round((wins / count) * 100, 1),
+            "avg_scored": round(sum(r["gf"] for r in recent) / count, 1),
+            "avg_conceded": round(sum(r["ga"] for r in recent) / count, 1),
             "has_sot": has_sot,
-            "sot_diff": avg_sot_diff,
-            "last_matches": match_details
+            "sot_diff": round(sum(f - a for f, a in sots) / len(sots), 2) if has_sot else 0.0,
+            "last_matches": [{
+                "date": r["date"],
+                "date_short": self._short_date(r["dt"]),
+                "venue": "홈" if r["is_home"] else "원정",
+                "opponent": self._display_name(r["opponent"]),
+                "score": f"{self._fmt_score(r['gf'])}-{self._fmt_score(r['ga'])}",   # 이 팀 점수 먼저
+                "result": res,
+            } for r, res in zip(recent, results)],
         }
 
     def get_head_to_head(
@@ -339,117 +330,49 @@ class FormAnalyzer:
         as_of: Optional[Any] = None
     ) -> Dict[str, Any]:
         """
-        두 팀 간의 과거 맞대결(H2H) 전적 분석.
+        두 팀 간의 과거 맞대결(H2H) 전적 분석 (home_team 관점의 승/무/패).
         as_of 날짜가 지정되면 해당 시점 이전 맞대결만 산출합니다.
-        (1차: 베트맨 최근 공식 결과 -> 2차: 유럽 5대 리그 과거 데이터)
+        베트맨 최근 결과와 유럽 과거 데이터를 합쳐 날짜순으로 정렬하고, 같은 경기(같은 점수·날짜 하루 이내)는 하나로 셉니다.
+        화면용 팀명은 home_team / away_team 이름을 그대로 씁니다.
         """
-        h_wins, draws, a_wins = 0, 0, 0
-        total_goals = 0
-        match_list = []
-        seen_matches = set()
         as_of_dt = parse_date_value(as_of)
+        clean_h, clean_a = home_team.strip(), away_team.strip()
+        rows: List[Dict[str, Any]] = []
 
-        # [1차 소스] 베트맨 인덱스에서 빠른 맞대결 검색
-        clean_h = home_team.strip()
-        clean_a = away_team.strip()
-        bm_h2h_candidates = self.betman_by_team.get(clean_h) or self.betman_by_team.get(self.normalize_name(clean_h)) or []
-        for m in bm_h2h_candidates:
-            if len(match_list) >= max_matches:
+        # [1차 소스] 베트맨 최근 공식 결과
+        for m in (self.betman_by_team.get(clean_h) or self.betman_by_team.get(self.normalize_name(clean_h)) or []):
+            if len(rows) >= max_matches * 2:
                 break
-
-            if as_of_dt is not None:
-                m_dt = m.get("_parsed_dt")
-                if m_dt is not None and m_dt >= as_of_dt:
-                    continue
-
+            m_dt = m.get("_parsed_dt")
+            if as_of_dt is not None and m_dt is not None and m_dt >= as_of_dt:
+                continue
             h_match = self._team_matches(m.get("home_team", ""), clean_h) and self._team_matches(m.get("away_team", ""), clean_a)
             rev_match = self._team_matches(m.get("home_team", ""), clean_a) and self._team_matches(m.get("away_team", ""), clean_h)
             if not (h_match or rev_match):
                 continue
-
-            h_s = m.get("home_score")
-            a_s = m.get("away_score")
+            h_s, a_s = m.get("home_score"), m.get("away_score")
             if h_s is None or a_s is None:
                 continue
+            rows.append({"dt": m_dt, "date": m.get("match_time", ""), "ours_home": h_match, "hs": h_s, "as": a_s})
 
-            dtm = m.get("match_time", "")
-            key = (dtm, m.get("home_team"), m.get("away_team"))
-            if key in seen_matches:
-                continue
-            seen_matches.add(key)
-
-            total_goals += (h_s + a_s)
-            
-            # home_team 관점에서의 승패
-            my_goals = h_s if h_match else a_s
-            opp_goals = a_s if h_match else h_s
-
-            if my_goals > opp_goals:
-                h_wins += 1
-                winner = home_team
-            elif my_goals == opp_goals:
-                draws += 1
-                winner = "무승부"
-            else:
-                a_wins += 1
-                winner = away_team
-
-            match_list.append({
-                "date": dtm,
-                "home": m.get("home_team"),
-                "away": m.get("away_team"),
-                "score": f"{h_s}-{a_s}",
-                "winner": winner
-            })
-
-        # [2차 소스] 유럽 5대 리그 과거 CSV 보충
-        if len(match_list) < max_matches and self.df is not None:
-            h_norm = self.normalize_name(home_team)
-            a_norm = self.normalize_name(away_team)
+        # [2차 소스] 유럽 5대 리그 과거 데이터
+        if self.df is not None:
+            h_norm, a_norm = self.normalize_name(home_team), self.normalize_name(away_team)
             h2h_df = self.df[
                 ((self.df["HomeTeam"] == h_norm) & (self.df["AwayTeam"] == a_norm)) |
                 ((self.df["HomeTeam"] == a_norm) & (self.df["AwayTeam"] == h_norm))
             ]
             if as_of_dt is not None and "ParsedDate" in h2h_df.columns:
                 h2h_df = h2h_df[h2h_df["ParsedDate"] < as_of_dt]
+            for _, row in h2h_df.head(max_matches + len(rows)).iterrows():
+                rows.append({"dt": row["ParsedDate"] if pd.notnull(row["ParsedDate"]) else None, "date": str(row["Date"]),
+                             "ours_home": row["HomeTeam"] == h_norm, "hs": int(row["FTHG"]), "as": int(row["FTAG"])})
 
-            for _, row in h2h_df.iterrows():
-                if len(match_list) >= max_matches:
-                    break
-                hg = int(row["FTHG"])
-                ag = int(row["FTAG"])
-                dt = str(row["Date"])
+        same = lambda a, b: (a["ours_home"] == b["ours_home"] and a["hs"] == b["hs"] and a["as"] == b["as"]
+                             and self._close_dates(a, b))
+        recent = self._dedup_by_date(rows, same)[:max_matches]
 
-                key = (dt, row["HomeTeam"], row["AwayTeam"])
-                if key in seen_matches:
-                    continue
-                seen_matches.add(key)
-
-                total_goals += (hg + ag)
-                is_home = (row["HomeTeam"] == h_norm)
-                my_goals = hg if is_home else ag
-                opp_goals = ag if is_home else hg
-
-                if my_goals > opp_goals:
-                    h_wins += 1
-                    winner = home_team
-                elif my_goals == opp_goals:
-                    draws += 1
-                    winner = "무승부"
-                else:
-                    a_wins += 1
-                    winner = away_team
-
-                match_list.append({
-                    "date": dt,
-                    "home": row["HomeTeam"],
-                    "away": row["AwayTeam"],
-                    "score": f"{hg}-{ag}",
-                    "winner": winner
-                })
-
-        count = len(match_list)
-        if count == 0:
+        if not recent:
             return {
                 "has_data": False,
                 "home_team": home_team,
@@ -458,7 +381,23 @@ class FormAnalyzer:
                 "summary": "과거 맞대결 기록 없음"
             }
 
-        avg_goals = round(total_goals / count, 1) if count > 0 else 0.0
+        match_list = []
+        for r in recent:
+            mine, theirs = (r["hs"], r["as"]) if r["ours_home"] else (r["as"], r["hs"])
+            res = "W" if mine > theirs else ("D" if mine == theirs else "L")
+            match_list.append({
+                "date": r["date"],
+                "date_short": self._short_date(r["dt"], with_year=True),   # 맞대결은 여러 해에 걸쳐 있어 연도까지
+                "home": home_team if r["ours_home"] else away_team,   # 실제 그 경기의 홈팀
+                "away": away_team if r["ours_home"] else home_team,
+                "score": f"{self._fmt_score(r['hs'])}-{self._fmt_score(r['as'])}",
+                "winner": home_team if res == "W" else ("무승부" if res == "D" else away_team),
+                "result": res,   # home_team 기준
+            })
+        h_wins = sum(1 for x in match_list if x["result"] == "W")
+        draws = sum(1 for x in match_list if x["result"] == "D")
+        a_wins = len(match_list) - h_wins - draws
+        count = len(match_list)
 
         return {
             "has_data": True,
@@ -469,6 +408,6 @@ class FormAnalyzer:
             "draws": draws,
             "away_wins": a_wins,
             "record_str": f"{home_team} {h_wins}승 / {draws}무 / {away_team} {a_wins}승",
-            "avg_goals": avg_goals,
+            "avg_goals": round(sum(r["hs"] + r["as"] for r in recent) / count, 1),
             "matches": match_list
         }

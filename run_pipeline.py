@@ -161,10 +161,12 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         line = m.get("line", 0.0)
         is_single = m.get("is_single", False)
         
-        # 팀별 최근 5경기 폼 및 상대 전적(H2H) 분석
-        home_form = form_analyzer.get_team_recent_form(home)
-        away_form = form_analyzer.get_team_recent_form(away)
-        h2h_stats = form_analyzer.get_head_to_head(home, away)
+        # 팀별 최근 5경기 폼 및 상대 전적(H2H) 분석 — 이 경기 날짜 이전 기록만 (학습 때 _form_features와 같은 기준,
+        # 끝난 경기를 다시 계산할 때 그 경기 자체가 '최근 경기'에 섞이지 않게)
+        as_of = m.get("match_time")
+        home_form = form_analyzer.get_team_recent_form(home, as_of=as_of)
+        away_form = form_analyzer.get_team_recent_form(away, as_of=as_of)
+        h2h_stats = form_analyzer.get_head_to_head(home, away, as_of=as_of)
 
         # 폼 모멘텀 차이 산출
         h_score = (home_form['win_rate_pct'] + (home_form['avg_scored'] - home_form['avg_conceded']) * 15) if home_form.get('has_data') else 0
