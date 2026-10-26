@@ -60,6 +60,7 @@ from models.strategy_backtest import backtest, describe_rule, extract_rule, outc
 from models.combo_finder import candidate_legs, find_combos
 from collector.betman_sharp import parse_betman_kickoff
 from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
+from models.betman_markets import SPORT_NAMES
 
 # 1. 페이지 기본 설정
 st.set_page_config(
@@ -96,6 +97,8 @@ st.markdown("""
         border-radius: 8px;
         margin-bottom: 16px;
     }
+    /* 버튼 묶음(날짜·빠른 필터·배당 선택)이 휴대폰에서 옆으로 잘리지 않고 다음 줄로 넘어가도록 */
+    .stButtonGroup > div { flex-wrap: wrap; row-gap: 6px; }
     .metric-card-box {
         background: rgba(30, 41, 59, 0.4);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -407,9 +410,9 @@ tab1, tab2, tab3 = st.tabs([
 with tab1:
     st.markdown("""
     <div class='step-banner'>
-        <b>💡 [베트맨 프로토 승부식 맞춤조건구매 시뮬레이터]</b><br>
-        경기별로 [승 / 무 / 패]를 복수 선택하면 가능한 모든 단일 조합을 직교 곱(Cartesian Product)으로 전개하여 배당률, 환급금, 비과세 여부를 자동 계산합니다.<br>
-        <span style='font-size:12px; color:#64748b;'>※ 본 기능은 계산 및 시뮬레이션 전용이며 실제 베트맨 사이트 구매 자동화는 지원하지 않습니다.</span>
+        <b>💡 맞춤조건구매 계산기</b><br>
+        경기마다 승·무·패를 하나 이상 고르면, 만들어지는 모든 조합의 배당·환급금·비과세 여부를 자동으로 계산해요.<br>
+        <span style='font-size:12px; color:#64748b;'>※ 계산 전용입니다. 실제 구매는 베트맨에서 직접 하세요.</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -520,8 +523,23 @@ with tab1:
                                   on_click=_pick_combo, args=(c["legs"],))
             st.caption("⚠️ 대부분의 조합은 기대 손익이 마이너스입니다. AI 확률은 검증 중이며, 과거 반복 결과는 비슷한 배당 경기로 같은 방식을 적용한 실제 결과입니다.")
 
-        # 필터 컨트롤
+        # 필터 컨트롤: ① 회차·날짜 ② 검색·종목·리그·유형 ③ 빠른 필터 (리그·유형 목록은 고른 종목에 맞춰 줄어듦)
         current_gm_ts = detect_current_gm_ts(predictions)
+        QUICK_FILTERS = {"open": "⏳ 마감 전만", "single": "⚡ 단통 가능만", "gem": "💎 AI 플러스만", "picked": "✔️ 내가 고른 경기만"}
+        FILTER_DEFAULTS = {"step1_search": "", "step1_sport": "전체 종목", "step1_league": "전체 리그",
+                           "step1_cat": "전체 유형", "step1_quick": []}
+
+        def _reset_filters():
+            for k, v in FILTER_DEFAULTS.items():
+                st.session_state[k] = v
+            for k in [k for k in st.session_state if str(k).startswith("step1_day_")]:
+                del st.session_state[k]
+
+        def _keep_valid(key, options):
+            """목록이 바뀌어(회차·종목 변경) 예전 선택값이 없어졌으면 '전체'로 되돌림 (위젯을 그리기 전에만 호출)"""
+            if st.session_state.get(key) not in options:
+                st.session_state[key] = options[0]
+
         with st.container(border=True):
             # 회차 선택: 현재 판매 회차 + 결과가 있는 과거 회차 (과거는 조회 전용)
             past_rounds = sorted({ts for ts, _ in load_results_index().keys() if ts and ts != str(current_gm_ts)}, reverse=True)
@@ -529,10 +547,14 @@ with tab1:
             if current_gm_ts:
                 round_labels[str(current_gm_ts)] = f"{current_gm_ts}회차 (현재 판매)"
             round_labels.update({ts: f"{ts}회차 (종료·조회 전용)" for ts in past_rounds})
-            r1, _ = st.columns([1.5, 3.6])
+            # 날짜(r2)는 다른 필터를 적용한 뒤 경기 수와 함께 채운다
+            r1, r2, r3 = st.columns([1.4, 3.3, 1.0], vertical_alignment="bottom")
             with r1:
                 sel_round = st.selectbox("🗓️ 회차", list(round_labels), index=1 if current_gm_ts else 0,
                                          format_func=lambda x: round_labels[x], key="step1_round")
+            with r3:
+                live_on = st.toggle("🔴 실시간 결과", value=True, key="step1_live",
+                                    help="대시보드를 열어 둔 동안 1분마다 베트맨 결과를 확인해, 끝난 경기의 결과·적중 여부를 바로 표시합니다.")
             is_all = sel_round == "ALL"
             is_past = (not is_all) and sel_round != str(current_gm_ts)
             if is_all:
@@ -540,29 +562,32 @@ with tab1:
             else:
                 round_matches = load_past_round_matches(sel_round) if is_past else predictions
 
-            f1, f2, f3, f4 = st.columns([1.5, 1.2, 1.2, 1.2])
+            f1, f2, f3, f4 = st.columns([1.5, 1.0, 1.3, 1.2])
             with f1:
-                search_kw = st.text_input("🔎 팀 대진 검색", placeholder="예: 아스널, 뮌헨, 인천", key="step1_search")
+                search_kw = st.text_input("🔎 팀 이름 검색", placeholder="예: 아스널, 뮌헨, 인천", key="step1_search")
             with f2:
-                avail_leagues = sorted(list(set(m.get("league", "기타") for m in round_matches)))
-                sel_league = st.selectbox("리그 필터", ["전체 리그"] + avail_leagues, key="step1_league")
+                sport_opts = ["전체 종목"] + sorted({m.get("sport", "기타") for m in round_matches})
+                _keep_valid("step1_sport", sport_opts)
+                sel_sport = st.selectbox("종목", sport_opts, key="step1_sport",
+                                         format_func=lambda s: SPORT_NAMES.get(s, s))
+            in_sport = [m for m in round_matches if sel_sport == "전체 종목" or m.get("sport") == sel_sport]
             with f3:
-                avail_cats = sorted(list(set(category_group(m) for m in round_matches)))
-                sel_cat = st.selectbox("게임 유형 필터", ["전체 유형"] + avail_cats, key="step1_cat")
+                league_opts = ["전체 리그"] + sorted({m.get("league", "기타") for m in in_sport})
+                _keep_valid("step1_league", league_opts)
+                sel_league = st.selectbox("리그", league_opts, key="step1_league")
             with f4:
-                avail_sports = sorted(list(set(m.get("sport", "기타") for m in round_matches)))
-                sel_sport = st.selectbox("종목 필터", ["전체 종목"] + avail_sports, key="step1_sport")
+                cat_opts = ["전체 유형"] + sorted({category_group(m) for m in in_sport})
+                _keep_valid("step1_cat", cat_opts)
+                sel_cat = st.selectbox("게임 유형", cat_opts, key="step1_cat")
 
-            sub_c1, sub_c2, sub_c3, sub_c4 = st.columns(4)
-            with sub_c1:
-                only_open = st.checkbox("⏳ 마감 전 경기만 보기", value=False, key="step1_only_open")
-            with sub_c2:
-                only_single_opt = st.checkbox("⚡ 한경기(단통) 가능만 보기", value=False, key="step1_only_single")
-            with sub_c3:
-                only_rec_opt = st.checkbox("💎 AI 기대가치 플러스만 보기", value=False, key="step1_only_rec")
-            with sub_c4:
-                live_on = st.checkbox("🔴 실시간 결과 (1분마다)", value=True, key="step1_live",
-                                      help="대시보드를 열어 둔 동안 1분마다 베트맨 결과를 확인해, 끝난 경기의 결과·적중 여부를 바로 표시합니다.")
+            q1, q2 = st.columns([5, 1], vertical_alignment="center")
+            with q1:
+                quick = st.pills("빠른 필터", list(QUICK_FILTERS), format_func=QUICK_FILTERS.get,
+                                 selection_mode="multi", key="step1_quick", label_visibility="collapsed") or []
+            with q2:
+                st.button("↺ 필터 초기화", key="step1_reset", on_click=_reset_filters, width="stretch")
+            count_slot = st.empty()
+            only_open, only_single_opt, only_rec_opt, only_picked = (k in quick for k in ("open", "single", "gem", "picked"))
 
         # 필터링 적용
         now_ts = datetime.now().timestamp() * 1000
@@ -638,15 +663,30 @@ with tab1:
             mt = re.search(r"\d{2}\.(\d{2})\.(\d{2})\s*(\([^)]*\))?", str(m.get("match_time", "")))
             return f"{mt.group(1)}.{mt.group(2)} {mt.group(3) or ''}".strip() if mt else "날짜 미정"
 
-        lc1, lc2, lc3 = st.columns([1.4, 1.2, 1.4])
-        with lc1:
-            day_opts = ["전체 날짜"] + sorted({_match_day(m) for m in filtered_matches})
-            # 기본값: 아직 결과가 안 나온 경기가 있는 첫 날짜 (바로 고를 수 있는 경기부터 보이도록)
-            open_days = sorted({_match_day(m) for m in filtered_matches if _res(m) is None})
-            day_idx = day_opts.index(open_days[0]) if (open_days and not is_all) else 0
-            sel_day = st.selectbox("📅 경기 날짜", day_opts, index=day_idx, key=f"step1_day_{sel_round}")
-        with lc2:
-            only_picked = st.checkbox("✔️ 선택한 경기만", value=False, key="step1_only_picked")
+        # 날짜: 며칠뿐이면 버튼으로 바로 전환, 많으면(전체 회차 보기) 목록. 날짜 옆 숫자 = 그날 경기 수
+        day_counts = {}
+        for m in filtered_matches:
+            day_counts[_match_day(m)] = day_counts.get(_match_day(m), 0) + 1
+        day_opts = ["전체 날짜"] + sorted(day_counts)
+        # 기본값: 아직 결과가 안 나온 경기가 있는 첫 날짜 (바로 고를 수 있는 경기부터 보이도록)
+        open_days = sorted({_match_day(m) for m in filtered_matches if _res(m) is None})
+        day_default = open_days[0] if (open_days and not is_all) else "전체 날짜"
+        day_buttons = len(day_opts) <= 6
+        day_key = f"step1_day_{sel_round}_{'seg' if day_buttons else 'sel'}"
+        if st.session_state.get(day_key) not in day_opts + [None]:
+            st.session_state.pop(day_key, None)
+
+        def _day_fmt(d):
+            return d if d == "전체 날짜" else f"{d} · {day_counts[d]}경기"
+
+        with r2:
+            if day_buttons:
+                # 선택된 날짜를 다시 누르면 선택이 풀림(None) → 전체 날짜
+                sel_day = st.segmented_control("📅 경기 날짜", day_opts, default=day_default, format_func=_day_fmt,
+                                               key=day_key) or "전체 날짜"
+            else:
+                sel_day = st.selectbox("📅 경기 날짜", day_opts, index=day_opts.index(day_default),
+                                       format_func=_day_fmt, key=day_key)
         if sel_day != "전체 날짜":
             filtered_matches = [m for m in filtered_matches if _match_day(m) == sel_day]
         if only_rec_opt:
@@ -656,15 +696,21 @@ with tab1:
         if only_picked:
             filtered_matches = [m for m in filtered_matches if str(m.get("match_seq")) in st.session_state["selections"]]
 
-        # 아직 결과가 없는(선택 가능한) 경기를 먼저, 끝난 경기는 뒤로 (각각 원래 시간 순서 유지)
         def _time_key(m):
             t = re.search(r"(\d{2})\.(\d{2})\.(\d{2}).*?(\d{1,2}):(\d{2})", str(m.get("match_time", "")))
             return "".join(f"{int(x):02d}" for x in t.groups()) if t else ""
 
-        # 선택 가능한(결과 없는) 경기는 시간 순으로 먼저, 끝난 경기는 최근 경기부터
-        open_ms = sorted([m for m in filtered_matches if _res(m) is None], key=_time_key)
-        done_ms = sorted([m for m in filtered_matches if _res(m) is not None], key=_time_key, reverse=True)
-        filtered_matches = open_ms + done_ms
+        def _section(m):
+            """open = 지금 고를 수 있음 · wait = 발매 마감, 결과 대기 · done = 결과 나옴"""
+            if _res(m) is not None:
+                return "done"
+            return "wait" if (_past(m) or is_sale_closed(m, now_ts)) else "open"
+
+        # 고를 수 있는 경기(시간순) → 결과 대기(시간순) → 끝난 경기(최근부터)
+        open_ms = sorted([m for m in filtered_matches if _section(m) == "open"], key=_time_key)
+        wait_ms = sorted([m for m in filtered_matches if _section(m) == "wait"], key=_time_key)
+        done_ms = sorted([m for m in filtered_matches if _section(m) == "done"], key=_time_key, reverse=True)
+        filtered_matches = open_ms + wait_ms + done_ms
 
         LOAD_STEP = 25
         # 필터가 바뀌면 처음 25경기부터 (회차·날짜·검색·필터·결과 수가 같을 때만 지금까지 불러온 만큼 유지)
@@ -675,9 +721,9 @@ with tab1:
             st.session_state["step1_shown"] = LOAD_STEP
         shown = min(int(st.session_state.get("step1_shown", LOAD_STEP)), len(filtered_matches))
         page_matches = filtered_matches[:shown]
-        with lc3:
-            st.markdown(f"<div style='padding-top:30px;font-size:14px;color:#94a3b8'>총 <b>{len(filtered_matches):,}</b>경기 중 "
-                        f"<b>{shown:,}</b>경기 표시</div>", unsafe_allow_html=True)
+        count_slot.markdown(
+            f"<div style='font-size:13px;opacity:.75'>조건에 맞는 경기 <b>{len(filtered_matches):,}</b>개</div>",
+            unsafe_allow_html=True)
 
         def _load_more():
             st.session_state["step1_shown"] = st.session_state.get("step1_shown", LOAD_STEP) + LOAD_STEP
@@ -733,19 +779,30 @@ with tab1:
             if log and log.get("model_probs"):
                 ai_k, _ = top_pick(log["model_probs"], opts)
                 ai_pairs.append((ai_k == actual, mk_k == actual))
-        if mk_hits:
-            g1, g2, g3 = st.columns(3)
-            g1.metric("결과 나온 경기 (현재 필터)", f"{len(mk_hits)}경기")
-            g2.metric("배당 1순위 적중", f"{sum(mk_hits) / len(mk_hits) * 100:.1f}%")
-            with g3:
-                if ai_pairs:
-                    st.metric(f"AI 1순위 적중 ({len(ai_pairs)}경기)", f"{sum(a for a, _ in ai_pairs) / len(ai_pairs) * 100:.1f}%")
-                    st.caption(f"같은 경기 배당 1순위 {sum(b for _, b in ai_pairs) / len(ai_pairs) * 100:.1f}%")
-                else:
-                    st.metric("AI 1순위 적중", "기록 없음")
-                    st.caption("경기 전 AI 기록은 260126회차부터")
-            st.caption("적중률은 참고용입니다. 배당 1순위만 찍어도 비슷하게 맞으므로 AI는 '같은 경기'의 배당 1순위와 비교하세요. "
-                       "AI 실력의 공식 지표는 '성과 검증' 탭의 성적표(Log loss)입니다.")
+        if filtered_matches:
+            n_mk, n_ai = len(mk_hits), len(ai_pairs)
+            mk_hit, ai_hit, ai_mk_hit = sum(mk_hits), sum(a for a, _ in ai_pairs), sum(b for _, b in ai_pairs)
+            tiles = [
+                ("🟢 지금 고를 수 있음", f"{len(open_ms):,}경기", "발매 마감 전" if open_ms else "발매 중인 경기 없음"),
+                ("⏳ 결과 대기", f"{len(wait_ms):,}경기", "발매 마감 · 진행 중"),
+                ("🏁 결과 나옴", f"{len(done_ms):,}경기", "목록 맨 뒤, 최근 경기부터" if done_ms else "아직 없음"),
+                ("📈 배당 1순위 적중", f"{mk_hit}/{n_mk}" if n_mk else "—",
+                 f"{mk_hit / n_mk * 100:.0f}% · 배당이 가장 낮은 쪽" if n_mk else "결과가 나오면 표시"),
+                ("🧠 AI 1순위 적중", f"{ai_hit}/{n_ai}" if n_ai else "—",
+                 f"{ai_hit / n_ai * 100:.0f}% · 같은 경기 배당 1순위 {ai_mk_hit}/{n_ai}" if n_ai
+                 else ("결과 나온 경기에 경기 전 AI 기록 없음" if n_mk else "결과가 나오면 표시")),
+            ]
+            st.markdown(
+                "<div style='display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 6px'>" + "".join(
+                    "<div style='flex:1 1 160px;padding:8px 12px;border:1px solid rgba(148,163,184,.3);border-radius:8px'>"
+                    f"<div style='font-size:12px;opacity:.75'>{label}</div>"
+                    f"<div style='font-size:20px;font-weight:700;line-height:1.4'>{value}</div>"
+                    f"<div style='font-size:12px;opacity:.65'>{sub}</div></div>"
+                    for label, value, sub in tiles) + "</div>",
+                unsafe_allow_html=True)
+            if n_mk:
+                st.caption("💡 적중률은 참고용이에요. 배당 1순위만 찍어도 꽤 맞으므로 AI는 '같은 경기'의 배당 1순위와 비교하세요. "
+                           "AI 실력의 공식 지표는 ③ 성과 검증 탭의 성적표(Log loss)입니다.")
 
         if not page_matches:
             open_any = [m for m in predictions if not is_sale_closed(m, now_ts)]
@@ -755,7 +812,8 @@ with tab1:
                 st.info(f"⏳ 지금은 발매 중인(마감 전) 경기가 없습니다. 현재 회차 발매가 {last}에 모두 마감되었고 다음 회차는 아직 열리지 않았습니다. "
                         "다음 회차가 열리면 하루 2번(09:30·18:30) 자동 수집 때 표시됩니다.")
             else:
-                st.info("선택하신 필터 조건에 해당하는 경기가 없습니다.")
+                st.info("조건에 맞는 경기가 없습니다. 날짜를 '전체 날짜'로 바꾸거나 필터를 초기화해 보세요.")
+                st.button("↺ 필터 초기화", key="step1_reset_empty", on_click=_reset_filters)
 
         def _prob(probs, k):
             return float(probs.get(k, probs.get(k.replace("_win", ""), 0.0)) or 0.0) if probs else 0.0
@@ -767,6 +825,7 @@ with tab1:
             return f"<span style='color:{'#10b981' if ok else '#ef4444'}'>{'✅' if ok else '❌'}</span>"
 
         cap = "<div style='font-size:11px;color:#94a3b8'>{}</div>"
+        section_shown = set()
 
         for m in page_matches:
             seq = str(m.get("match_seq", ""))
@@ -777,6 +836,18 @@ with tab1:
                 continue
             log = _log(m)
             res = _res(m)
+
+            # 목록 구간 제목: 지금 고를 수 있음 → 결과 대기 → 결과 나옴
+            section = _section(m)
+            if section not in section_shown:
+                section_shown.add(section)
+                title, n_sec, hint = {
+                    "open": ("🟢 지금 고를 수 있는 경기", len(open_ms), "배당 버튼을 눌러 고르세요 · 시간순"),
+                    "wait": ("⏳ 결과 대기", len(wait_ms), "발매 마감 · 결과가 나오면 적중 여부 표시"),
+                    "done": ("🏁 결과 나온 경기", len(done_ms), "최근 경기부터 · ✅❌ = 적중 여부"),
+                }[section]
+                st.markdown(f"<div style='margin:14px 0 4px;font-size:15px'><b>{title}</b> "
+                            f"<span style='opacity:.7'>{n_sec:,}경기 · {hint}</span></div>", unsafe_allow_html=True)
 
             # 배당 예상: 경기 전에 확정된 배당(마진 제거) 기준 → 사후 정보 없음
             mk_probs = (log or {}).get("market_probs") or m.get("market_implied_probs")
