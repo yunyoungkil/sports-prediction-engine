@@ -916,12 +916,14 @@ with tab1:
                 status = "⏳ 발매 마감 · 결과 대기"
             else:
                 status = f"🏁 최종 {fx_score[_fixture(m)]}" if _fixture(m) in fx_score else "🏁 종료"
-            return ("<div style='display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:6px;"
+            # 바깥 padding: Streamlit 글 블록은 아래 여백을 -1rem 당겨서, 여백이 없으면 첫 줄 배당 버튼이 머리줄 선에 붙는다
+            return ("<div style='padding-bottom:14px'>"
+                    "<div style='display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:6px;"
                     "border-bottom:1px solid rgba(148,163,184,.25)'>"
                     f"<span style='font-size:12px;opacity:.75'>{SPORT_ICONS.get(m.get('sport'), '')} {rnd}{when} · {m.get('league', '')}</span>"
                     f"<span style='font-size:16px'><b>{m.get('home_team', '')}</b> <span style='opacity:.6'>vs</span> "
                     f"<b>{m.get('away_team', '')}</b></span>"
-                    f"<span style='margin-left:auto;font-size:12px;opacity:.85'>{status}</span></div>")
+                    f"<span style='margin-left:auto;font-size:12px;opacity:.85'>{status}</span></div></div>")
 
         one_game_tag = ("<span style='padding:1px 6px;border-radius:5px;font-size:11px;font-weight:700;"
                         "background:rgba(245,158,11,.18);color:#f59e0b'>한경기</span>")
