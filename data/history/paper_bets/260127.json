@@ -1,0 +1,349 @@
+{
+  "gm_ts": "260127",
+  "bets": [
+    {
+      "strategy": "B_fav_double",
+      "legs": [
+        {
+          "seq": "965",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.28 (수) 04:45",
+          "home_team": "AS로마",
+          "away_team": "칼리아리",
+          "league": "이탈리아 세리에A"
+        },
+        {
+          "seq": "825",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아흘리 사우디",
+          "away_team": "알가라파SC",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "ev_ai": -0.1065,
+      "combined_odds": 1.7,
+      "stake": 1000,
+      "bet_id": "B_fav_double:965h+825h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "C_finder_top",
+      "legs": [
+        {
+          "seq": "965",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.28 (수) 04:45",
+          "home_team": "AS로마",
+          "away_team": "칼리아리",
+          "league": "이탈리아 세리에A"
+        },
+        {
+          "seq": "825",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아흘리 사우디",
+          "away_team": "알가라파SC",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "ev_ai": -0.1065,
+      "combined_odds": 1.7,
+      "stake": 1000,
+      "bet_id": "C_finder_top:965h+825h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "821",
+          "key": "home_win",
+          "odds": 1.22,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아인",
+          "away_team": "트락토르",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "825",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아흘리 사우디",
+          "away_team": "알가라파SC",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "940",
+          "key": "home_win",
+          "odds": 2.65,
+          "match_time": "26.10.28 (수) 02:00",
+          "home_team": "함부르크",
+          "away_team": "프랑크푸르트",
+          "league": "독일 FA컵"
+        }
+      ],
+      "combined_odds": 4.1,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:821h+825h+940h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "821",
+          "key": "home_win",
+          "odds": 1.22,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아인",
+          "away_team": "트락토르",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "825",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아흘리 사우디",
+          "away_team": "알가라파SC",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "940",
+          "key": "draw",
+          "odds": 3.45,
+          "match_time": "26.10.28 (수) 02:00",
+          "home_team": "함부르크",
+          "away_team": "프랑크푸르트",
+          "league": "독일 FA컵"
+        }
+      ],
+      "combined_odds": 5.4,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:821h+825h+940d",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "821",
+          "key": "home_win",
+          "odds": 1.22,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아인",
+          "away_team": "트락토르",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "825",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아흘리 사우디",
+          "away_team": "알가라파SC",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "940",
+          "key": "away_win",
+          "odds": 2.07,
+          "match_time": "26.10.28 (수) 02:00",
+          "home_team": "함부르크",
+          "away_team": "프랑크푸르트",
+          "league": "독일 FA컵"
+        }
+      ],
+      "combined_odds": 3.2,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:821h+825h+940a",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "809",
+          "key": "away_win",
+          "odds": 1.55,
+          "match_time": "26.10.26 (월) 22:45",
+          "home_team": "네프치 페르가나",
+          "away_team": "S알이티하드",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "combined_odds": 1.55,
+      "stake": 1000,
+      "bet_id": "E_market_fav:809a",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "821",
+          "key": "home_win",
+          "odds": 1.22,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아인",
+          "away_team": "트락토르",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "combined_odds": 1.22,
+      "stake": 1000,
+      "bet_id": "E_market_fav:821h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "825",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.27 (화) 01:00",
+          "home_team": "알아흘리 사우디",
+          "away_team": "알가라파SC",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "combined_odds": 1.27,
+      "stake": 1000,
+      "bet_id": "E_market_fav:825h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "829",
+          "key": "home_win",
+          "odds": 1.53,
+          "match_time": "26.10.27 (화) 03:15",
+          "home_team": "알카디시야",
+          "away_team": "알사드SC",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "combined_odds": 1.53,
+      "stake": 1000,
+      "bet_id": "E_market_fav:829h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "837",
+          "key": "away_win",
+          "odds": 1.92,
+          "match_time": "26.10.27 (화) 03:15",
+          "home_team": "에어포스 알쿠와알자위야",
+          "away_team": "파흐타코르",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "combined_odds": 1.92,
+      "stake": 1000,
+      "bet_id": "E_market_fav:837a",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "2070",
+          "key": "home_win",
+          "odds": 1.29,
+          "match_time": "26.10.27 (화) 04:30",
+          "home_team": "파리 생제르맹",
+          "away_team": "올랭피크 리옹",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 1.29,
+      "stake": 1000,
+      "bet_id": "E_market_fav:2070h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "841",
+          "key": "home_win",
+          "odds": 1.75,
+          "match_time": "26.10.27 (화) 05:00",
+          "home_team": "세비야",
+          "away_team": "오사수나",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.75,
+      "stake": 1000,
+      "bet_id": "E_market_fav:841h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "944",
+          "key": "away_win",
+          "odds": 2.02,
+          "match_time": "26.10.28 (수) 02:30",
+          "home_team": "US사수올로",
+          "away_team": "SS라치오",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 2.02,
+      "stake": 1000,
+      "bet_id": "E_market_fav:944a",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "965",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.10.28 (수) 04:45",
+          "home_team": "AS로마",
+          "away_team": "칼리아리",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.27,
+      "stake": 1000,
+      "bet_id": "E_market_fav:965h",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "971",
+          "key": "away_win",
+          "odds": 1.63,
+          "match_time": "26.10.28 (수) 04:45",
+          "home_team": "토리노",
+          "away_team": "코모1907",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.63,
+      "stake": 1000,
+      "bet_id": "E_market_fav:971a",
+      "created_at": "2026-10-26T04:50:14+00:00"
+    }
+  ]
+}

@@ -1,8 +1,30 @@
 {
-  "updated_at": "2026-10-25T15:03:48+00:00",
-  "graded_matches": 0,
-  "rounds": [],
-  "verdict": "채점할 경기 없음 (경기 전 예측 기록이 결과와 아직 만나지 않음)",
+  "updated_at": "2026-10-26T04:50:12+00:00",
+  "graded_matches": 26,
+  "rounds": [
+    260126
+  ],
+  "model_ll": 1.0095,
+  "market_ll": 1.0304,
+  "ll_diff": -0.021,
+  "ll_diff_ci": [
+    -0.0372,
+    -0.0036
+  ],
+  "hit_rate_top_pick": 42.3,
+  "value_bets": 0,
+  "roi_pct": 0.0,
+  "roi_ci_low": 0.0,
+  "roi_ci_high": 0.0,
+  "gem_bets": 0,
+  "gem_hits": 0,
+  "gem_roi_pct": 0.0,
+  "gem_roi_ci_low": 0.0,
+  "gem_roi_ci_high": 0.0,
+  "prob_sources": {
+    "betman_corrector": 26
+  },
+  "verdict": "검증 중 (표본 26/300)",
   "model": {
     "trained_at": "2026-10-25T11:27:09+00:00",
     "trained_on": [
@@ -53,6 +75,20 @@
       "roi_pct": null,
       "gem_bets": null,
       "gem_roi_pct": null
+    },
+    {
+      "date": "2026-10-26",
+      "graded_matches": 26,
+      "model_ll": 1.0095,
+      "market_ll": 1.0304,
+      "ll_diff": -0.021,
+      "ll_diff_ci": [
+        -0.0372,
+        -0.0036
+      ],
+      "roi_pct": 0.0,
+      "gem_bets": 0,
+      "gem_roi_pct": 0.0
     }
   ]
 }
