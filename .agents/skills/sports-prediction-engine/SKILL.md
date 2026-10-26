@@ -38,7 +38,7 @@ This skill defines the architectural blueprint, realistic design constraints, ev
 
 - **No lookahead:** Train only on data before the evaluated match date (strict chronological walk-forward).
 - **Fixed 3-way split (`evaluation/config.py`):** TRAIN 2223–2324 → choose constants/regularization on TUNE 2425 → report TEST 2526 only (plus in-progress 2627 and Betman live results as extra held-out sets). A fitted coefficient must come from a model that did not train on the fit season.
-- **Gates for live use:** `MarketModelBlender.load()` and `MarketCorrector.load()` return market-only unless the saved params beat the market on held-out data. Keep this fallback.
+- **Gates for live use:** `BetmanLivePredictor.load()` and `MarketCorrector.load()` return None (pipeline falls back to market probabilities) unless the saved params beat the market on held-out data. Keep this fallback.
 - **Do not edit completion criteria in TODO.md** to make an item pass. Ask the user first.
 - **Report probability quality first:** Log loss, Brier score, and calibration — always side by side with the market baseline.
 - **Report uncertainty:** Any ROI must come with a bootstrap 95% CI and sample size. Do not claim an edge from < 300 bets or from a CI that includes 0.
@@ -52,19 +52,14 @@ This skill defines the architectural blueprint, realistic design constraints, ev
   - `betman_results_scraper.py`: finished round results via `winrstDetl.do`.
   - `download_history.py`: football-data.co.uk CSVs for the top 5 European leagues → `data/history/all_historical_matches.csv` (keeps B365, PS, BFE, Avg, Max odds; opening and closing).
   - `betman_sharp.py`: maps Betman leagues to The Odds API sport keys, 1 credit per league call, matches events by kickoff ±75 min / team-name similarity / odds distance (skips ambiguous), saves `data/history/sharp_snapshots/{gm_ts}.json`. Needs `ODDS_API_KEY`.
-  - `sharp_odds.py`: historical sharp-odds extraction (`prefer_closing=False` by default).
 - **`models/`**
   - `poisson_model.py`: `MatchPredictor` — Dixon-Coles fit + per-category probabilities (승무패, 핸디캡, 언더오버, 전반전). Falls back to odds-derived λ when a team is unmapped or the sport is non-soccer.
   - `odds_normalizer.py`: proportional margin removal (2-way and 3-way).
   - `evaluator.py`: EV calculation and S/A/B/PASS grading.
   - `form_analyzer.py`: recent form (W-D-L) and H2H.
-  - `parlay_builder.py`: 2~3 fold combinations, Banker + Wheel hedging.
   - `combo_builder.py`: Betman 맞춤조건구매 rules (odds product truncated to 2 decimals then ceil to 1 decimal).
-  - `blender.py`: market/model logit blend, fitted on TUNE → `data/blender_params.json` (currently fails gate → market-only).
   - `market_corrector.py`: Phase 5.1 market-offset multinomial logit. Feature sets `live` (used in production when gate passes), `live_sharp` (waiting for Betman validation), `full` (research). Run `python -m models.market_corrector`.
-  - `sharp_value.py`: historical sharp-vs-target mispricing backtest (opening odds by default).
-- **`evaluation/`**: `report.py` (model vs market → `BASELINE.md`), `sharp_vs_betman.py` (Phase 5.4 live validation, verdict at ≥ 300 matched results).
-- **`tracker/result_evaluator.py`**: scores past rounds and writes `data/performance_stats.json`.
+- **`evaluation/`**: `scorecard.py` (official pre-kickoff scorecard), `sharp_vs_betman.py` (Phase 5.4 live validation, verdict at ≥ 300 matched results).
 - **`notifier/telegram_bot.py`**: alerts via `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` env vars.
 - **`dashboard/app.py`**: Streamlit UI (predictions, parlay basket, past-match verification tab).
 - **`run_pipeline.py`**: single entry point (collect → score past rounds → predict → EV → JSON → notify).

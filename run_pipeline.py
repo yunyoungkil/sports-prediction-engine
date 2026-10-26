@@ -124,12 +124,9 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     except Exception as e:
         print(f"⚠️ AI 성적표 갱신 실패: {e}")
 
-    # 2. Dixon-Coles AI 모델 및 폼/상대전적 분석기, 시장-모델 블렌더 준비
+    # 2. 유형별 라벨·확률(구 모델), 폼/상대전적 분석기 준비
     predictor = MatchPredictor()
     form_analyzer = FormAnalyzer()
-    from models.blender import MarketModelBlender
-    # 튜닝 셋에서 적합된 계수(data/blender_params.json) 사용, 없으면 시장 단독
-    blender = MarketModelBlender.load()
     # [Phase 5.2] 시장 보정 모델: 검증 게이트(TEST·베트맨 실전 모두 시장보다 LL 낮음)를 통과한 경우에만 사용
     from models.market_corrector import MarketCorrector
     corrector = MarketCorrector.load()
@@ -188,9 +185,10 @@ def run_full_pipeline(gm_ts: str = None) -> list:
         # 베트맨 시장 마진 분석
         market_stats = remove_margin(odds["home_win"], odds["draw"], odds["away_win"])
 
-        # [Step 3.4] 시장과 모델의 로짓 블렌딩 확률 산출
-        blended_probs = blender.predict_proba(market_stats["true_probs"], model_probs)
-        prob_source = "blender"
+        # 기본: 시장(배당, 마진 제거) 확률. AI 보정 모델이 적용되는 축구 승무패만 아래에서 교체
+        mk = market_stats["true_probs"]
+        blended_probs = {"home_win": mk["home"], "draw": mk["draw"], "away_win": mk["away"]}
+        prob_source = "market"
         # [Phase 5.2] 축구 일반 승무패는 시장 보정 모델 우선 (1X2 데이터로만 학습했으므로 다른 유형에는 쓰지 않음)
         # (주의: "일반 승무패"에 홀/짝(축구 SUM)도 섞여 있으므로 game_type과 무승부 배당으로 3-way만 골라냄)
         is_soccer_1x2 = (

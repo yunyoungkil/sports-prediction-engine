@@ -10,7 +10,7 @@
 - **작업 시작 전 항상** `git pull --rebase origin master`
 - **푸시 전 항상** `git pull --rebase origin master` → `git push origin master`
 - 로컬에서 `run_pipeline.py`를 돌려 생긴 데이터 파일은 **커밋하지 않는다** (봇과 충돌함):
-  `data/current_matches.json`, `data/predictions.json`, `data/performance_stats.json`, `data/sharp_validation.json`,
+  `data/current_matches.json`, `data/predictions.json`, `data/sharp_validation.json`, `data/paper_trading.json`,
   `data/history/betman_recent_results.json`, `data/history/odds_snapshots/`, `data/history/sharp_snapshots/`,
   `data/history/prediction_log/`, `data/model_scorecard.json`, 수요일 재학습 산출물 `data/market_corrector*.json`, `data/betman_corrector.json`,
   `data/history/betman_soccer_1x2.csv`, `data/history/betman_archive_rounds.json`, `data/history/paper_bets/`, `data/paper_trading.json`
@@ -44,7 +44,7 @@
 - 계수·상수는 TRAIN으로 학습한 모델에 대해 TUNE에서 고르고, TEST에서만 보고한다 (REVIEW R11).
 - ISO 날짜(`YYYY-MM-DD`)를 `dayfirst=True`로 파싱하지 않는다 (REVIEW R12).
 - 홀/짝은 `category == "홀짝"`이다(R14 해결). 그래도 3-way 계산은 안전하게 `game_type == "축구 승무패"`이고 무승부 배당이 1보다 큰 경기로 한정한다.
-- 실전 확률은 게이트를 통과한 모델만 쓴다: `MarketModelBlender.load()`, `MarketCorrector.load()`가 검증 실패 시 시장 단독으로 돌아가는 구조를 유지한다.
+- 실전 확률은 게이트를 통과한 모델만 쓴다: `BetmanLivePredictor.load()`, `MarketCorrector.load()`가 검증 실패 시 시장 단독으로 돌아가는 구조를 유지한다.
 
 ## 5. 현재 상태 요약 (2026-10-25)
 

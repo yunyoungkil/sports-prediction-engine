@@ -14,7 +14,6 @@
 | [REVIEW.md](./REVIEW.md) | 검증 리뷰 (R1~R16): 발견한 문제, 원인, 조치 |
 | [GEMINI.md](./GEMINI.md) | 협업 규칙 (Git, Secret, API 사용량, 절대 규칙) |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) / [ROADMAP.md](./ROADMAP.md) | 초기 설계 문서 (v1) |
-| [evaluation/BASELINE.md](./evaluation/BASELINE.md) | 구 모델 vs 시장 기준선 리포트 |
 
 ---
 
