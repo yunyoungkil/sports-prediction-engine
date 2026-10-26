@@ -67,7 +67,7 @@ st.set_page_config(
     page_title="스포츠 승부예측 & 맞춤조건구매 대시보드",
     page_icon="⚽",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="auto"   # PC에서는 🛒 내 선택 사이드바를 펼쳐 두고, 휴대폰에서는 접어 둠
 )
 
 # 2. 커스텀 CSS 스타일링 (번역 방지 및 반응형 배지 UI, 라이트/다크 테마 호환)
@@ -422,6 +422,46 @@ def top_pick(probs: dict, opts: list):
     return best, get(best)
 
 
+def selection_status() -> dict:
+    """담은 경기 → 조합 수 · 예상 배당 범위 · 베트맨 규정 검사 (STEP 01 하단 요약과 사이드바 장바구니가 함께 사용)"""
+    active = {}
+    for seq, sel in st.session_state["selections"].items():
+        m = pred_map.get(seq)
+        if not m:
+            continue
+        odds, labels = m.get("betman_odds", {}), pick_labels(m)
+        picks = [{"selection": k, "selection_name": labels[k], "odds": float(odds[k])}
+                 for k in PICK_KEYS if sel.get(SEL_KEY[k]) and float(odds.get(k) or 0.0) > 1.0]
+        if picks:
+            active[seq] = {"match": m, "match_key": m.get("match_key") or f"{m.get('home_team')}:{m.get('away_team')}",
+                           "is_single": bool(m.get("is_single")), "picks": picks}
+    n = len(active)
+    combos = 0
+    if active:
+        combos = 1
+        for v in active.values():
+            combos *= len(v["picks"])
+    odds_lo = calculate_combined_odds([min(p["odds"] for p in v["picks"]) for v in active.values()]) if active else 0.0
+    odds_hi = calculate_combined_odds([max(p["odds"] for p in v["picks"]) for v in active.values()]) if active else 0.0
+
+    valid = False
+    if n == 0:
+        msg = "ℹ️ 경기를 선택해 주세요 (조합은 최소 2경기, 한경기 표시 경기는 1경기도 가능)."
+    elif n == 1:
+        if next(iter(active.values()))["is_single"]:
+            valid, msg = True, "✅ 한경기 구매가 가능한 경기입니다. 조합 결과 보기가 가능합니다."
+        else:
+            msg = "⚠️ 1경기만 선택되었습니다. 이 경기는 한경기 구매가 안 되므로 2경기 이상 선택해야 합니다."
+    elif n > 10:
+        msg = f"⚠️ 베트맨 규정상 조합은 최대 10경기까지만 가능합니다 (현재 {n}경기)."
+    elif len({v["match_key"] for v in active.values()}) != n:
+        msg = "⚠️ 같은 대진의 다른 유형(예: 승무패와 핸디캡)은 한 조합에 묶을 수 없습니다."
+    else:
+        valid, msg = True, f"✅ 베트맨 프로토 규정 통과! ({n}경기 선택 / 총 {combos:,}개 조합)"
+    return {"active": active, "n": n, "combos": combos, "odds_lo": odds_lo, "odds_hi": odds_hi,
+            "valid": valid, "msg": msg}
+
+
 # 4. 세션 상태 초기화 (단일 상태: selections)
 if "selections" not in st.session_state:
     st.session_state["selections"] = {}  # { match_seq: {"home": bool, "draw": bool, "away": bool} }
@@ -495,7 +535,8 @@ with tab1:
     # -------------------------------------------------------------
     if st.session_state["custom_step"] == 1:
         st.markdown("### 📋 STEP 01. 대상 경기 검색 및 승/무/패 다중 선택")
-        st.caption("배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동으로 계산됩니다.")
+        st.caption("배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동으로 계산됩니다. "
+                   "고른 경기는 왼쪽 🛒 내 선택에 담겨요 (휴대폰은 왼쪽 위 › 를 누르면 열려요).")
         _chip = "display:inline-block;margin:0 14px 6px 0;font-size:13px;color:#cbd5e1"
         st.markdown(
             "<div style='margin:-4px 0 8px 0'>"
@@ -1056,59 +1097,10 @@ with tab1:
                     st.rerun(scope="app")
             _live_tick()
 
-        # 조합 구성 검증 및 전개 수 계산
-        active_selections = {}
-        total_combos_count = 1
-        has_any_selection = False
-
-        for seq, sel in list(st.session_state["selections"].items()):
-            if seq not in pred_map:
-                continue
-            m = pred_map[seq]
-            odds = m.get("betman_odds", {})
-            probs = m.get("blended_probabilities", m.get("model_probabilities", {}))
-            sel_labels = m.get("selection_labels", {})
-            
-            picks = []
-            if sel.get("home") and odds.get("home_win", 0) > 0:
-                picks.append({
-                    "selection": "home_win",
-                    "selection_name": sel_labels.get("home_win", f"{m['home_team']} 승"),
-                    "odds": odds["home_win"],
-                    "prob": probs.get("home_win", 0.33)
-                })
-            if sel.get("draw") and odds.get("draw", 0) > 0:
-                picks.append({
-                    "selection": "draw",
-                    "selection_name": sel_labels.get("draw", "무승부"),
-                    "odds": odds["draw"],
-                    "prob": probs.get("draw", 0.33)
-                })
-            if sel.get("away") and odds.get("away_win", 0) > 0:
-                picks.append({
-                    "selection": "away_win",
-                    "selection_name": sel_labels.get("away_win", f"{m['away_team']} 승"),
-                    "odds": odds["away_win"],
-                    "prob": probs.get("away_win", 0.33)
-                })
-
-            if picks:
-                has_any_selection = True
-                total_combos_count *= len(picks)
-                active_selections[seq] = {
-                    "match_seq": seq,
-                    "match_key": m.get("match_key") or f"{m.get('home_team')}:{m.get('away_team')}",
-                    "home_team": m.get("home_team", ""),
-                    "away_team": m.get("away_team", ""),
-                    "league": m.get("league", ""),
-                    "game_type": m.get("category_label", m.get("game_type", "승무패")),
-                    "is_single": m.get("is_single", False),
-                    "picks": picks
-                }
-
-        num_matches = len(active_selections)
-        if not has_any_selection:
-            total_combos_count = 0
+        # 조합 구성 검증 및 전개 수 계산 (사이드바 장바구니와 같은 규칙)
+        sel_status = selection_status()
+        num_matches, total_combos_count = sel_status["n"], sel_status["combos"]
+        is_step1_valid, val_msg = sel_status["valid"], sel_status["msg"]
 
         # 하단 상태 요약 및 다음 단계 이동 바
         st.markdown("#### 📊 현재 선택 상태 요약")
@@ -1116,30 +1108,7 @@ with tab1:
         with sum_c1:
             st.metric("선택 경기 수", f"{num_matches} 경기", help="조합 구매 규정상 2~10경기 (한경기 표시 경기는 1경기만 살 수 있음)")
         with sum_c2:
-            st.metric("생성 조합 수", f"{total_combos_count:,} 개 조합", help="각 경기별 선택지 개수의 연속 곱 (Cartesian Product)")
-        
-        # 규정 위반 검사
-        is_step1_valid = False
-        val_msg = ""
-        if num_matches == 0:
-            val_msg = "ℹ️ 경기를 선택해 주세요 (조합은 최소 2경기, 한경기 표시 경기는 1경기도 가능)."
-        elif num_matches == 1:
-            first_m = list(active_selections.values())[0]
-            if first_m["is_single"]:
-                is_step1_valid = True
-                val_msg = "✅ 한경기 구매가 가능한 경기입니다. 조합 결과 보기가 가능합니다."
-            else:
-                val_msg = "⚠️ 1경기만 선택되었습니다. 이 경기는 한경기 구매가 안 되므로 2경기 이상 선택해야 합니다."
-        elif num_matches > 10:
-            val_msg = f"⚠️ 베트맨 규정상 조합은 최대 10경기까지만 가능합니다 (현재 {num_matches}경기)."
-        else:
-            # 동일 경기 중복 검사
-            keys = [m["match_key"] for m in active_selections.values()]
-            if len(keys) != len(set(keys)):
-                val_msg = "⚠️ 동일 대상경기(match_key)의 다른 유형(예: 승무패와 핸디캡)은 한 조합에 묶을 수 없습니다."
-            else:
-                is_step1_valid = True
-                val_msg = f"✅ 베트맨 프로토 규정 통과! ({num_matches}경기 선택 / 총 {total_combos_count:,}개 조합)"
+            st.metric("생성 조합 수", f"{total_combos_count:,} 개 조합", help="경기마다 고른 선택지 개수를 모두 곱한 수")
 
         with sum_c3:
             if is_step1_valid:
@@ -1896,3 +1865,71 @@ with tab3:
                                             "베팅 내용": st.column_config.TextColumn(width="large")})
                 if len(view) > 500:
                     st.caption(f"최근 500건만 표시합니다 (전체 {len(view):,}건). 회차·전략으로 걸러 보세요.")
+
+
+# ==============================================================================
+# 사이드바: 🛒 내 선택 — 베트맨 오른쪽 장바구니처럼 어느 탭·스크롤 위치에서도 담은 경기·조합 수·배당이 보임
+# (목록에서 고른 내용이 같은 실행에서 반영되도록 스크립트 맨 끝에서 그린다)
+# ==============================================================================
+def _cart_remove(seq):
+    st.session_state["selections"].pop(seq, None)
+    st.session_state["editor_version"] += 1   # 목록의 배당 버튼도 선택 해제된 상태로 다시 그림
+
+
+def _cart_clear():
+    st.session_state["selections"] = {}
+    st.session_state["editor_version"] += 1
+
+
+with st.sidebar:
+    cart = selection_status()
+    st.markdown(f"### 🛒 내 선택 <span style='font-size:15px;opacity:.7'>{cart['n']}경기</span>", unsafe_allow_html=True)
+    if not cart["active"]:
+        st.caption("① 맞춤조건구매 탭에서 배당 버튼을 누르면 여기에 담겨요.")
+    else:
+        cart_now = datetime.now().timestamp() * 1000
+        chip_css = "display:inline-block;background:#1e3a5f;border-radius:12px;padding:1px 9px;margin:2px 4px 0 0;font-size:13px"
+        n_closed = 0
+        for seq, v in sorted(cart["active"].items(), key=lambda x: int(x[0]) if x[0].isdigit() else 0):
+            m = v["match"]
+            closed = is_sale_closed(m, cart_now)
+            n_closed += closed
+            tags = line_chip(m) + (" <span style='font-size:11px;color:#f87171'>🔒 마감</span>" if closed else "")
+            picks = "".join(f"<span style='{chip_css}'>{p['selection_name']} {p['odds']:.2f}</span>" for p in v["picks"])
+            with st.container(border=True):
+                a, b = st.columns([7, 1], vertical_alignment="top")
+                # keep-all: 팀 이름이 글자 중간이 아니라 띄어쓰기에서 줄바꿈
+                a.markdown(
+                    f"<div style='font-size:12px;opacity:.8'>{SPORT_ICONS.get(m.get('sport'), '')} <b>{seq}</b> {type_name(m)} {tags}</div>"
+                    f"<div style='font-size:14px;line-height:1.35;word-break:keep-all'><b>{m.get('home_team', '')}</b> "
+                    f"<span style='opacity:.6'>vs</span> <b>{m.get('away_team', '')}</b></div><div>{picks}</div>",
+                    unsafe_allow_html=True)
+                b.button("✕", key=f"cart_rm_{seq}", type="tertiary", on_click=_cart_remove, args=(seq,), help="이 경기 빼기")
+
+        # 베트맨 장바구니처럼: 선택 경기수 · 조합 수 · 예상 적중 배당 · 투표금액 · 예상 적중금액
+        unit = 1000 if cart["n"] == 1 else 100
+        stake = max(unit, (int(st.session_state.get("batch_stake", 1000)) // unit) * unit)
+        lo, hi = cart["odds_lo"], cart["odds_hi"]
+        odds_txt = f"{lo:,.2f}배" if lo == hi else f"{lo:,.2f} ~ {hi:,.2f}배"
+        pay_lo, pay_hi = calculate_payout(lo, stake), calculate_payout(hi, stake)
+        pay_txt = f"{pay_lo:,}원" if pay_lo == pay_hi else f"{pay_lo:,} ~ {pay_hi:,}원"
+        total = stake * cart["combos"]
+        rows = [("선택 경기수", f"{cart['n']} 경기"), ("조합 수", f"{cart['combos']:,} 개"),
+                ("예상 적중 배당", odds_txt), ("조합당 금액", f"{stake:,}원"),
+                ("총 투표금액", f"{total:,}원"), ("적중 시 환급", pay_txt)]
+        st.markdown(
+            "<div style='font-size:13px;line-height:1.9;margin:4px 0 6px'>" + "".join(
+                f"<div style='display:flex;justify-content:space-between'><span style='opacity:.75'>{k}</span><b>{val}</b></div>"
+                for k, val in rows) + "</div>", unsafe_allow_html=True)
+        st.caption("조합당 금액은 STEP 02에서 바꿀 수 있어요. 여러 개를 고른 경기는 조합마다 배당이 달라 범위로 보여요.")
+        if total > 100_000:
+            st.error("총 투표금액이 베트맨 1회차 구매 한도(100,000원)를 넘어요.")
+        if n_closed:
+            st.warning(f"발매 마감된 경기 {n_closed}개는 살 수 없어요. ✕로 빼 주세요.")
+        bg, fg = ("rgba(16,185,129,.15)", "#34d399") if cart["valid"] else ("rgba(245,158,11,.15)", "#fbbf24")
+        # 바깥 padding: Streamlit 글 블록의 -1rem 아래 여백 때문에 아래 버튼과 붙지 않게
+        st.markdown(f"<div style='padding-bottom:12px'><div style='font-size:13px;line-height:1.5;padding:8px 10px;"
+                    f"border-radius:8px;background:{bg};color:{fg}'>{cart['msg']}</div></div>", unsafe_allow_html=True)
+        st.button("➡️ 조합 결과 보기 (STEP 02)", type="primary", disabled=not cart["valid"], width="stretch",
+                  on_click=_go_step, args=(2,), key="cart_go_step2", help="① 맞춤조건구매 탭에서 열려요")
+        st.button("🗑️ 모두 빼기", width="stretch", on_click=_cart_clear, key="cart_clear")
