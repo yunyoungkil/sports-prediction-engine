@@ -1,0 +1,37 @@
+name: Results Quick Update
+
+on:
+  schedule:
+    # 1시간마다 (매시 17분 — 정각 혼잡 회피). 끝난 경기 결과만 받아 성적표·가상 베팅 채점 갱신
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+# 메인 파이프라인과 같은 그룹: 동시에 돌며 data/를 커밋하다 충돌하지 않도록 한 번에 하나씩
+concurrency:
+  group: sports-pipeline
+  cancel-in-progress: false
+
+jobs:
+  quick-results:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 가벼운 의존성만 설치 (numpy)
+        run: pip install "numpy>=1.24.0,<2.0.0"
+
+      - name: 결과 수집 및 채점 갱신
+        run: python -m tracker.quick_results
+
+      - name: 변경된 결과 커밋 & 푸시
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add data/
+          git diff --staged --quiet || (git commit -m "🤖 [결과 갱신] 끝난 경기 결과·성적표·가상 베팅 채점" && git pull --rebase origin master && git push)

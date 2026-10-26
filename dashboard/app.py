@@ -58,6 +58,7 @@ except ImportError:
 
 from models.strategy_backtest import backtest, describe_rule, extract_rule, outcome_kind
 from models.combo_finder import candidate_legs, find_combos
+from collector.betman_sharp import parse_betman_kickoff
 from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
 
 # 1. 페이지 기본 설정
@@ -180,6 +181,26 @@ def load_model_status():
             return {"name": name, "trained_at": rep.get("trained_at"),
                     "evals": [(label, rep[k]) for k, label in keys if k in rep]}
     return None
+
+
+@st.cache_data(ttl=55, show_spinner=False)
+def fetch_live_round_results(gm_ts: str) -> list:
+    """베트맨 결과 페이지에서 해당 회차의 끝난 경기 결과를 바로 조회 (대시보드 실시간 표시용, 저장하지 않음)"""
+    try:
+        from collector.betman_results_scraper import BetmanResultsScraper
+        return BetmanResultsScraper().fetch_round_results(int(gm_ts))
+    except Exception:
+        return []
+
+
+def started_without_result(preds, results_idx, gm_ts) -> bool:
+    """이미 시작했는데 결과가 아직 없는 경기가 있는지 (있을 때만 실시간 조회)"""
+    now = datetime.now().astimezone()
+    for m in preds:
+        ko = parse_betman_kickoff(m.get("match_time"))
+        if ko and ko <= now and not results_idx.get((str(gm_ts), str(m.get("match_seq")))):
+            return True
+    return False
 
 
 @st.cache_data(ttl=60)
@@ -585,13 +606,16 @@ with tab1:
                 avail_sports = sorted(list(set(m.get("sport", "기타") for m in round_matches)))
                 sel_sport = st.selectbox("종목 필터", ["전체 종목"] + avail_sports, key="step1_sport")
 
-            sub_c1, sub_c2, sub_c3 = st.columns(3)
+            sub_c1, sub_c2, sub_c3, sub_c4 = st.columns(4)
             with sub_c1:
                 only_open = st.checkbox("⏳ 마감 전 경기만 보기", value=False, key="step1_only_open")
             with sub_c2:
                 only_single_opt = st.checkbox("⚡ 한경기(단통) 가능만 보기", value=False, key="step1_only_single")
             with sub_c3:
                 only_rec_opt = st.checkbox("💎 AI 기대가치 플러스만 보기", value=False, key="step1_only_rec")
+            with sub_c4:
+                live_on = st.checkbox("🔴 실시간 결과 (1분마다)", value=True, key="step1_live",
+                                      help="대시보드를 열어 둔 동안 1분마다 베트맨 결과를 확인해, 끝난 경기의 결과·적중 여부를 바로 표시합니다.")
 
         # 필터링 적용
         now_ts = datetime.now().timestamp() * 1000
@@ -615,6 +639,15 @@ with tab1:
 
         # 경기 카드 목록: 배당 버튼을 눌러 바로 선택 (가로 스크롤 없이 휴대폰에서도 사용)
         results_idx = load_results_index()
+        live_ts = str(current_gm_ts)
+        if live_on and current_gm_ts and sel_round in (live_ts, "ALL") and started_without_result(predictions, results_idx, live_ts):
+            live_rows = fetch_live_round_results(live_ts)
+            if live_rows:
+                results_idx = dict(results_idx)
+                fresh = {}
+                for r in live_rows:
+                    fresh.setdefault((live_ts, str(r.get("match_seq"))), []).append(r)
+                results_idx.update(fresh)
         # 경기마다 자기 회차 기준으로 결과·경기 전 AI 기록을 찾는다 (전체 회차 보기 지원)
         def _ts(m):
             return str(m.get("gm_ts") or current_gm_ts)
@@ -881,6 +914,20 @@ with tab1:
                     del st.session_state["selections"][seq]
 
         _load_more_footer()
+
+        if live_on and current_gm_ts:
+            @st.fragment(run_every="60s")
+            def _live_tick():
+                rows_ = fetch_live_round_results(str(current_gm_ts)) if started_without_result(
+                    predictions, load_results_index(), str(current_gm_ts)) else []
+                n = len(rows_)
+                prev = st.session_state.get("live_result_count")
+                st.session_state["live_result_count"] = n
+                st.caption(f"🔴 실시간 결과 확인 {datetime.now().strftime('%H:%M:%S')} · 현재 회차 결과 {n}건"
+                           if rows_ else f"🔴 실시간 결과 대기 중 ({datetime.now().strftime('%H:%M')}) — 진행 중이거나 결과 대기 중인 경기가 없으면 조회하지 않습니다")
+                if prev is not None and n > prev:
+                    st.rerun(scope="app")
+            _live_tick()
 
         # 조합 구성 검증 및 전개 수 계산
         active_selections = {}

@@ -18,7 +18,7 @@
 
 ---
 
-## 🔄 자동으로 돌아가는 것 (GitHub Actions, 매일 09:30·18:30 KST)
+## 🔄 자동으로 돌아가는 것 (GitHub Actions: 전체 실행 매일 09:30·18:30 KST + 결과 갱신 1시간마다)
 대시보드를 열지 않아도, 컴퓨터를 꺼 둬도 GitHub 서버에서 실행되고 결과가 저장소에 자동 커밋됩니다.
 
 ```
@@ -31,7 +31,8 @@
 
 | 실행 | 파일 |
 |---|---|
-| 워크플로 | `.github/workflows/pipeline.yml` |
+| 워크플로 | `.github/workflows/pipeline.yml` (전체), `.github/workflows/results.yml` (1시간마다 결과·채점만, `tracker/quick_results.py`) |
+| 대시보드 실시간 | 대시보드를 열어 둔 동안 1분마다 베트맨 결과를 직접 확인해 끝난 경기 결과·✅/❌를 바로 표시 (🔴 실시간 결과 체크박스) |
 | 진입점 | `run_pipeline.py` |
 | Secret | `ODDS_API_KEY` (필수), `TELEGRAM_BOT_TOKEN`·`TELEGRAM_CHAT_ID` (선택, 미설정) |
 
