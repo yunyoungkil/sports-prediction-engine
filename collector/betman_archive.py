@@ -38,7 +38,9 @@ ROUNDS_JSON = Path("data/history/betman_archive_rounds.json")
 FIELDS = ["gm_ts", "match_seq", "kickoff_ms", "match_time", "league", "home_team", "away_team",
           "odds_win", "odds_draw", "odds_lose", "home_score", "away_score",
           # [5.7] 같은 경기의 풀타임 언더/오버 배당 (기준 2.5 / 3.5). ODDS_WIN=언더, ODDS_LOSE=오버
-          "uo25_under", "uo25_over", "uo35_under", "uo35_over"]
+          "uo25_under", "uo25_over", "uo35_under", "uo35_over",
+          # 한경기(단통) 구매 가능 여부 (1/0). 2026-10-26 이전 수집분은 2026년 회차만 채워져 있음
+          "sgl"]
 UO_LINES = (2.5, 3.5)
 REQUEST_DELAY_SEC = 0.7
 MAX_EMPTY_STREAK = 6   # 연속으로 빈 회차가 이만큼 나오면 그 해는 끝난 것으로 판단
@@ -106,6 +108,7 @@ def parse_soccer_1x2(raw: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             "league": it.get("PR_LL_WIN_LEAG_NM") or it.get("LEAG_CD_NM", ""),
             "home_team": str(it.get("HOME_TEAM", "")).strip(), "away_team": str(it.get("AWAY_TEAM", "")).strip(),
             "odds_win": ow, "odds_draw": od, "odds_lose": ol, "home_score": hs, "away_score": as_,
+            "sgl": 1 if str(it.get("SGL")) == "1" else 0,
         }
         key = (row["home_team"], row["away_team"], row["match_time"])
         row.update(ou.get(key, {}))
