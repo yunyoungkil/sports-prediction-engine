@@ -520,13 +520,11 @@ with tab1:
         st.session_state["custom_step"] = 1 if "STEP 01" in step_choice else 2
 
     with step_col2:
-        # 프리셋 및 빠른 초기화 버튼
-        p_c1, p_c2 = st.columns(2)
-        with p_c2:
-            if st.button("🗑️ 선택 전체 초기화"):
-                st.session_state["selections"] = {}
-                st.session_state["editor_version"] += 1
-                st.rerun()
+        # 빠른 초기화 버튼 (칸 전체 폭: 반 칸에 두면 좁은 화면에서 '🗑️ …'로 잘림)
+        if st.button("🗑️ 선택 전체 초기화", width="stretch"):
+            st.session_state["selections"] = {}
+            st.session_state["editor_version"] += 1
+            st.rerun()
 
     st.divider()
 
@@ -1899,10 +1897,12 @@ with st.sidebar:
             with st.container(border=True):
                 a, b = st.columns([7, 1], vertical_alignment="top")
                 # keep-all: 팀 이름이 글자 중간이 아니라 띄어쓰기에서 줄바꿈
+                # 마지막 padding: Streamlit 글 블록의 -1rem 아래 여백 때문에 배당 칩이 카드 아래 테두리에 붙지 않게
                 a.markdown(
                     f"<div style='font-size:12px;opacity:.8'>{SPORT_ICONS.get(m.get('sport'), '')} <b>{seq}</b> {type_name(m)} {tags}</div>"
                     f"<div style='font-size:14px;line-height:1.35;word-break:keep-all'><b>{m.get('home_team', '')}</b> "
-                    f"<span style='opacity:.6'>vs</span> <b>{m.get('away_team', '')}</b></div><div>{picks}</div>",
+                    f"<span style='opacity:.6'>vs</span> <b>{m.get('away_team', '')}</b></div>"
+                    f"<div style='padding-bottom:14px'>{picks}</div>",
                     unsafe_allow_html=True)
                 b.button("✕", key=f"cart_rm_{seq}", type="tertiary", on_click=_cart_remove, args=(seq,), help="이 경기 빼기")
 
