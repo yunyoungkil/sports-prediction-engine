@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-26T05:11:49+00:00",
+  "updated_at": "2026-10-26T05:35:51+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -72,5 +72,172 @@
       "cum_profit": [],
       "verdict": "판단 보류 (표본 부족)"
     }
-  }
+  },
+  "details": [
+    {
+      "gm_ts": "260127",
+      "strategy": "B_fav_double",
+      "legs": "AS로마 승 1.27 × 알아흘리 사우디 승 1.27",
+      "odds": 1.7,
+      "stake": 1000,
+      "kickoff": "2026-10-27T19:45:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "C_finder_top",
+      "legs": "AS로마 승 1.27 × 알아흘리 사우디 승 1.27",
+      "odds": 1.7,
+      "stake": 1000,
+      "kickoff": "2026-10-27T19:45:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "AS로마 승 1.27",
+      "odds": 1.27,
+      "stake": 1000,
+      "kickoff": "2026-10-27T19:45:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "코모1907 승(원정) 1.63",
+      "odds": 1.63,
+      "stake": 1000,
+      "kickoff": "2026-10-27T19:45:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "SS라치오 승(원정) 2.02",
+      "odds": 2.02,
+      "stake": 1000,
+      "kickoff": "2026-10-27T17:30:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "D_banker_cover",
+      "legs": "알아인 승 1.22 × 알아흘리 사우디 승 1.27 × 함부르크 승 2.65",
+      "odds": 4.1,
+      "stake": 1000,
+      "kickoff": "2026-10-27T17:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "D_banker_cover",
+      "legs": "알아인 승 1.22 × 알아흘리 사우디 승 1.27 × 함부르크 vs 프랑크푸르트 무 3.45",
+      "odds": 5.4,
+      "stake": 1000,
+      "kickoff": "2026-10-27T17:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "D_banker_cover",
+      "legs": "알아인 승 1.22 × 알아흘리 사우디 승 1.27 × 프랑크푸르트 승(원정) 2.07",
+      "odds": 3.2,
+      "stake": 1000,
+      "kickoff": "2026-10-27T17:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "세비야 승 1.75",
+      "odds": 1.75,
+      "stake": 1000,
+      "kickoff": "2026-10-26T20:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "파리 생제르맹 승 1.29",
+      "odds": 1.29,
+      "stake": 1000,
+      "kickoff": "2026-10-26T19:30:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "알카디시야 승 1.53",
+      "odds": 1.53,
+      "stake": 1000,
+      "kickoff": "2026-10-26T18:15:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "파흐타코르 승(원정) 1.92",
+      "odds": 1.92,
+      "stake": 1000,
+      "kickoff": "2026-10-26T18:15:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "알아인 승 1.22",
+      "odds": 1.22,
+      "stake": 1000,
+      "kickoff": "2026-10-26T16:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "알아흘리 사우디 승 1.27",
+      "odds": 1.27,
+      "stake": 1000,
+      "kickoff": "2026-10-26T16:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "S알이티하드 승(원정) 1.55",
+      "odds": 1.55,
+      "stake": 1000,
+      "kickoff": "2026-10-26T13:45:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    }
+  ]
 }
