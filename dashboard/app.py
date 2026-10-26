@@ -2136,14 +2136,22 @@ with tab3:
                     st.caption(f"표시 {len(ddf):,}건 · 끝난 베팅 {len(settled):,}건 · 적중 {int((settled['status'] == '적중').sum()):,}건 · "
                                f"손익 {int(settled['profit'].sum()):+,}원 (수익률 {settled['profit'].sum() / settled['stake'].sum() * 100:+.1f}%)")
                 mark = {"적중": "✅ 적중", "미적중": "❌ 미적중", "대기": "⏳ 대기"}
+                done_mask = ddf["status"] != "대기"
+                # 환급 = 돌려받은 돈(적중 시 배당 × 금액, 미적중 0), 손익 = 환급 − 건 돈 (적중 1.62배 × 1,000원 → 환급 1,620 · 손익 +620)
                 view = pd.DataFrame({
                     "구분": ddf["구분"], "회차": ddf["gm_ts"], "전략": ddf["전략명"], "베팅 내용": ddf["legs"],
-                    "배당": ddf["odds"], "결과": ddf["status"].map(mark), "손익(원)": ddf["profit"],
+                    "배당": ddf["odds"], "건 돈(원)": ddf["stake"], "결과": ddf["status"].map(mark),
+                    "환급(원)": ddf["payout"].where(done_mask), "손익(원)": ddf["profit"].where(done_mask),
                 })
                 st.dataframe(view.head(500), hide_index=True, width="stretch",
                              column_config={"배당": st.column_config.NumberColumn(format="%.2f배"),
-                                            "손익(원)": st.column_config.NumberColumn(format="localized"),
+                                            "건 돈(원)": st.column_config.NumberColumn(format="localized"),
+                                            "환급(원)": st.column_config.NumberColumn(format="localized",
+                                                                                   help="돌려받은 돈 (적중 시 배당 × 건 돈, 미적중 0)"),
+                                            "손익(원)": st.column_config.NumberColumn(format="%+d", help="환급 − 건 돈"),
                                             "베팅 내용": st.column_config.TextColumn(width="large")})
+                st.caption("환급 = 돌려받은 돈, 손익 = 환급 − 건 돈이에요. 예) 1.62배에 1,000원 → 적중 시 환급 1,620원 · 손익 +620원, "
+                           "미적중 시 환급 0원 · 손익 −1,000원")
                 if len(view) > 500:
                     st.caption(f"최근 500건만 보여요 (전체 {len(view):,}건). 회차·전략으로 걸러 보세요.")
 
