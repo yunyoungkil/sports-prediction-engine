@@ -1,69 +1,69 @@
 {
-  "updated_at": "2026-10-27T05:27:22+00:00",
+  "updated_at": "2026-10-27T10:38:03+00:00",
   "rounds": [
     260126,
     260127
   ],
-  "matches": 53,
-  "moved": 20,
+  "matches": 62,
+  "moved": 24,
   "toward_ai": 8,
-  "away_from_ai": 12,
-  "toward_ai_pct": 40.0,
-  "fav_toward_pct": 40.0,
+  "away_from_ai": 16,
+  "toward_ai_pct": 33.3,
+  "fav_toward_pct": 37.5,
   "mean_move_pp": {
-    "n": 53,
-    "mean": -0.27198,
+    "n": 62,
+    "mean": -0.35097,
     "ci": [
-      -0.59499,
-      0.02134
+      -0.66097,
+      -0.07225
     ]
   },
   "by_game_type": {
     "농구 승패": {
-      "matches": 10,
+      "matches": 11,
       "moved": 4,
       "toward_ai": 0,
       "away_from_ai": 4,
       "toward_ai_pct": 0.0,
       "fav_toward_pct": 0.0,
       "mean_move_pp": {
-        "n": 10,
-        "mean": -1.26591,
+        "n": 11,
+        "mean": -1.15082,
         "ci": [
-          -2.24195,
-          -0.24976
+          -2.11795,
+          -0.22706
         ]
       }
     },
     "축구 승무패": {
-      "matches": 34,
-      "moved": 11,
+      "matches": 38,
+      "moved": 13,
       "toward_ai": 6,
-      "away_from_ai": 5,
-      "toward_ai_pct": 54.5,
-      "fav_toward_pct": 54.5,
+      "away_from_ai": 7,
+      "toward_ai_pct": 46.2,
+      "fav_toward_pct": 53.8,
       "mean_move_pp": {
-        "n": 34,
-        "mean": 0.0625,
+        "n": 38,
+        "mean": 0.02944,
         "ci": [
-          -0.24192,
-          0.30499
+          -0.24061,
+          0.25577
         ]
       }
     },
     "축구 핸디캡": {
-      "matches": 9,
-      "moved": 5,
+      "matches": 13,
+      "moved": 7,
       "toward_ai": 2,
-      "away_from_ai": 3,
-      "toward_ai_pct": 40.0,
-      "fav_toward_pct": 40.0,
+      "away_from_ai": 5,
+      "toward_ai_pct": 28.6,
+      "fav_toward_pct": 28.6,
       "mean_move_pp": {
-        "n": 9,
-        "mean": -0.4312,
+        "n": 13,
+        "mean": -0.78614,
         "ci": [
-          -1.05277,
-          0.11344
+          -1.54314,
+          -0.14779
         ]
       }
     }
@@ -99,13 +99,13 @@
       ]
     },
     "E_market_fav": {
-      "n": 7,
-      "mean": -0.39379,
+      "n": 11,
+      "mean": 0.403,
       "ci": [
-        -2.87183,
-        2.30162
+        -1.61557,
+        2.54447
       ]
     }
   },
-  "verdict": "검증 중 (배당이 바뀐 경기 20/50)"
+  "verdict": "검증 중 (배당이 바뀐 경기 24/50)"
 }
