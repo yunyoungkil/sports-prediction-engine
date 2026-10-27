@@ -1,37 +1,37 @@
 {
-  "updated_at": "2026-10-26T23:55:50+00:00",
+  "updated_at": "2026-10-27T04:11:35+00:00",
   "rounds": [
     260126,
     260127
   ],
-  "matches": 48,
-  "moved": 16,
+  "matches": 53,
+  "moved": 20,
   "toward_ai": 8,
-  "away_from_ai": 8,
-  "toward_ai_pct": 50.0,
-  "fav_toward_pct": 50.0,
+  "away_from_ai": 12,
+  "toward_ai_pct": 40.0,
+  "fav_toward_pct": 40.0,
   "mean_move_pp": {
-    "n": 48,
-    "mean": -0.03658,
+    "n": 53,
+    "mean": -0.27198,
     "ci": [
-      -0.27943,
-      0.17654
+      -0.59499,
+      0.02134
     ]
   },
   "by_game_type": {
     "농구 승패": {
-      "matches": 5,
-      "moved": 0,
+      "matches": 10,
+      "moved": 4,
       "toward_ai": 0,
-      "away_from_ai": 0,
-      "toward_ai_pct": null,
-      "fav_toward_pct": null,
+      "away_from_ai": 4,
+      "toward_ai_pct": 0.0,
+      "fav_toward_pct": 0.0,
       "mean_move_pp": {
-        "n": 5,
-        "mean": 0.0,
+        "n": 10,
+        "mean": -1.26591,
         "ci": [
-          0.0,
-          0.0
+          -2.24195,
+          -0.24976
         ]
       }
     },
@@ -107,5 +107,5 @@
       ]
     }
   },
-  "verdict": "검증 중 (배당이 바뀐 경기 16/50)"
+  "verdict": "검증 중 (배당이 바뀐 경기 20/50)"
 }
