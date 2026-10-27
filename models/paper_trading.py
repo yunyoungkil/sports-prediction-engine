@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 
 from collector.betman_sharp import parse_betman_kickoff
-from evaluation.metrics import bootstrap_roi_confidence_interval
+from evaluation.metrics import cluster_roi_confidence_interval
 from models.combo_builder import calculate_combined_odds, calculate_payout
 from models.combo_finder import candidate_legs, find_combos
 
@@ -174,7 +174,8 @@ def _summarize(per: Dict[str, List[Dict[str, Any]]], pending: Dict[str, int], la
         staked = sum(r["stake"] for r in rows)
         returned = sum(r["payout"] for r in rows)
         rets = [(r["payout"] - r["stake"]) / r["stake"] for r in rows]
-        roi, lo, hi = bootstrap_roi_confidence_interval(rets) if rets else (0.0, 0.0, 0.0)
+        # [6.5] 회차 단위 신뢰구간 (같은 회차의 조합끼리는 경기를 공유해 독립이 아님)
+        roi, lo, hi = cluster_roi_confidence_interval(rets, [r["gm_ts"] for r in rows]) if rets else (0.0, 0.0, 0.0)
         cum = np.cumsum([r["payout"] - r["stake"] for r in rows]).tolist()
         out[s] = {
             "label": labels.get(s, s), "bets": len(rows), "hits": sum(r["hit"] for r in rows), "pending": pending.get(s, 0),

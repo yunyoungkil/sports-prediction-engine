@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-27T09:26:08+00:00",
+  "updated_at": "2026-10-27T12:17:33+00:00",
   "folds": [
     {
       "fold": "2024-07-01 ~ 2025-01-01",
@@ -18,7 +18,11 @@
         "bets": 0,
         "roi_pct": 0.0,
         "roi_ci_low": 0.0,
-        "roi_ci_high": 0.0
+        "roi_ci_high": 0.0,
+        "ll_diff_ci_round": [
+          -0.0024,
+          0.0007
+        ]
       },
       "strategies": {
         "A_gem_single": {
@@ -41,8 +45,8 @@
           "returned": 60800,
           "profit": 2800,
           "roi_pct": 4.83,
-          "roi_ci_low": -12.07,
-          "roi_ci_high": 20.87,
+          "roi_ci_low": -12.41,
+          "roi_ci_high": 21.21,
           "verdict": "판단 보류 (표본 부족)"
         },
         "C_finder_top": {
@@ -53,8 +57,8 @@
           "returned": 65100,
           "profit": -2900,
           "roi_pct": -4.26,
-          "roi_ci_low": -23.98,
-          "roi_ci_high": 13.68,
+          "roi_ci_low": -23.68,
+          "roi_ci_high": 14.26,
           "verdict": "판단 보류 (표본 부족)"
         },
         "D_banker_cover": {
@@ -65,8 +69,8 @@
           "returned": 146900,
           "profit": -60100,
           "roi_pct": -29.03,
-          "roi_ci_low": -45.56,
-          "roi_ci_high": -9.85,
+          "roi_ci_low": -46.33,
+          "roi_ci_high": -10.72,
           "verdict": "판단 보류 (표본 부족)"
         },
         "E_market_fav": {
@@ -100,7 +104,11 @@
         "bets": 2,
         "roi_pct": 35.0,
         "roi_ci_low": 35.0,
-        "roi_ci_high": 35.0
+        "roi_ci_high": 35.0,
+        "ll_diff_ci_round": [
+          -0.0033,
+          0.0021
+        ]
       },
       "strategies": {
         "A_gem_single": {
@@ -123,8 +131,8 @@
           "returned": 49400,
           "profit": -7600,
           "roi_pct": -13.33,
-          "roi_ci_low": -32.46,
-          "roi_ci_high": 5.44,
+          "roi_ci_low": -32.11,
+          "roi_ci_high": 5.61,
           "verdict": "판단 보류 (표본 부족)"
         },
         "C_finder_top": {
@@ -135,8 +143,8 @@
           "returned": 34600,
           "profit": -31400,
           "roi_pct": -47.58,
-          "roi_ci_low": -66.83,
-          "roi_ci_high": -23.94,
+          "roi_ci_low": -67.58,
+          "roi_ci_high": -24.69,
           "verdict": "판단 보류 (표본 부족)"
         },
         "D_banker_cover": {
@@ -147,8 +155,8 @@
           "returned": 158600,
           "profit": -36400,
           "roi_pct": -18.67,
-          "roi_ci_low": -38.47,
-          "roi_ci_high": 2.92,
+          "roi_ci_low": -39.64,
+          "roi_ci_high": 2.21,
           "verdict": "판단 보류 (표본 부족)"
         },
         "E_market_fav": {
@@ -182,7 +190,11 @@
         "bets": 0,
         "roi_pct": 0.0,
         "roi_ci_low": 0.0,
-        "roi_ci_high": 0.0
+        "roi_ci_high": 0.0,
+        "ll_diff_ci_round": [
+          -0.0058,
+          -0.0012
+        ]
       },
       "strategies": {
         "A_gem_single": {
@@ -205,8 +217,8 @@
           "returned": 56800,
           "profit": -1200,
           "roi_pct": -2.07,
-          "roi_ci_low": -19.83,
-          "roi_ci_high": 15.34,
+          "roi_ci_low": -20.52,
+          "roi_ci_high": 15.69,
           "verdict": "판단 보류 (표본 부족)"
         },
         "C_finder_top": {
@@ -217,8 +229,8 @@
           "returned": 75600,
           "profit": 11600,
           "roi_pct": 18.12,
-          "roi_ci_low": -0.32,
-          "roi_ci_high": 37.5,
+          "roi_ci_low": -0.94,
+          "roi_ci_high": 37.03,
           "verdict": "판단 보류 (표본 부족)"
         },
         "D_banker_cover": {
@@ -229,8 +241,8 @@
           "returned": 162200,
           "profit": -29800,
           "roi_pct": -15.52,
-          "roi_ci_low": -36.93,
-          "roi_ci_high": 4.43,
+          "roi_ci_low": -36.56,
+          "roi_ci_high": 5.21,
           "verdict": "판단 보류 (표본 부족)"
         },
         "E_market_fav": {
@@ -264,7 +276,11 @@
         "bets": 3,
         "roi_pct": 102.67,
         "roi_ci_low": 102.67,
-        "roi_ci_high": 102.67
+        "roi_ci_high": 102.67,
+        "ll_diff_ci_round": [
+          -0.0046,
+          0.0001
+        ]
       },
       "strategies": {
         "A_gem_single": {
@@ -275,8 +291,8 @@
           "returned": 14830,
           "profit": 4830,
           "roi_pct": 48.3,
-          "roi_ci_low": -32.7,
-          "roi_ci_high": 125.86,
+          "roi_ci_low": -61.25,
+          "roi_ci_high": 124.9,
           "verdict": "판단 보류 (표본 부족)"
         },
         "B_fav_double": {
@@ -287,8 +303,8 @@
           "returned": 75900,
           "profit": -7100,
           "roi_pct": -8.55,
-          "roi_ci_low": -23.86,
-          "roi_ci_high": 7.11,
+          "roi_ci_low": -24.82,
+          "roi_ci_high": 6.87,
           "verdict": "판단 보류 (표본 부족)"
         },
         "C_finder_top": {
@@ -299,8 +315,8 @@
           "returned": 107600,
           "profit": 6600,
           "roi_pct": 6.53,
-          "roi_ci_low": -21.68,
-          "roi_ci_high": 43.67,
+          "roi_ci_low": -22.18,
+          "roi_ci_high": 46.93,
           "verdict": "판단 보류 (표본 부족)"
         },
         "D_banker_cover": {
@@ -311,8 +327,8 @@
           "returned": 215000,
           "profit": -85000,
           "roi_pct": -28.33,
-          "roi_ci_low": -44.0,
-          "roi_ci_high": -13.03,
+          "roi_ci_low": -44.87,
+          "roi_ci_high": -12.7,
           "verdict": "수익 미입증"
         },
         "E_market_fav": {
@@ -323,8 +339,8 @@
           "returned": 3027480,
           "profit": -429520,
           "roi_pct": -12.42,
-          "roi_ci_low": -15.36,
-          "roi_ci_high": -9.49,
+          "roi_ci_low": -15.43,
+          "roi_ci_high": -9.31,
           "verdict": "수익 미입증"
         }
       }
@@ -346,7 +362,11 @@
         "bets": 2,
         "roi_pct": -100.0,
         "roi_ci_low": -100.0,
-        "roi_ci_high": -100.0
+        "roi_ci_high": -100.0,
+        "ll_diff_ci_round": [
+          -0.0118,
+          0.0026
+        ]
       },
       "strategies": {
         "A_gem_single": {
@@ -369,8 +389,8 @@
           "returned": 10400,
           "profit": 1400,
           "roi_pct": 15.56,
-          "roi_ci_low": -33.36,
-          "roi_ci_high": 51.11,
+          "roi_ci_low": -33.33,
+          "roi_ci_high": 52.22,
           "verdict": "판단 보류 (표본 부족)"
         },
         "C_finder_top": {
@@ -381,7 +401,7 @@
           "returned": 10000,
           "profit": 1000,
           "roi_pct": 11.11,
-          "roi_ci_low": -46.67,
+          "roi_ci_low": -46.69,
           "roi_ci_high": 62.22,
           "verdict": "판단 보류 (표본 부족)"
         },
@@ -393,8 +413,8 @@
           "returned": 21500,
           "profit": -5500,
           "roi_pct": -20.37,
-          "roi_ci_low": -68.15,
-          "roi_ci_high": 34.44,
+          "roi_ci_low": -68.91,
+          "roi_ci_high": 34.82,
           "verdict": "판단 보류 (표본 부족)"
         },
         "E_market_fav": {
@@ -405,8 +425,8 @@
           "returned": 345720,
           "profit": -40280,
           "roi_pct": -10.44,
-          "roi_ci_low": -19.19,
-          "roi_ci_high": -2.24,
+          "roi_ci_low": -18.95,
+          "roi_ci_high": -2.1,
           "verdict": "수익 미입증"
         }
       }
@@ -425,7 +445,11 @@
       "bets": 7,
       "roi_pct": 25.43,
       "roi_ci_low": -61.43,
-      "roi_ci_high": 111.15
+      "roi_ci_high": 111.15,
+      "ll_diff_ci_round": [
+        -0.0031,
+        -0.0008
+      ]
     },
     "by_group": {
       "kleague": {
@@ -433,6 +457,10 @@
         "ll_diff": -0.0015,
         "ll_diff_ci": [
           -0.0042,
+          0.0013
+        ],
+        "ll_diff_ci_round": [
+          -0.0043,
           0.0013
         ]
       },
@@ -442,12 +470,20 @@
         "ll_diff_ci": [
           -0.0033,
           0.0013
+        ],
+        "ll_diff_ci_round": [
+          -0.0033,
+          0.0015
         ]
       },
       "mls": {
         "n": 1205,
         "ll_diff": 0.0001,
         "ll_diff_ci": [
+          -0.0033,
+          0.0035
+        ],
+        "ll_diff_ci_round": [
           -0.0033,
           0.0035
         ]
@@ -458,6 +494,10 @@
         "ll_diff_ci": [
           -0.0068,
           0.0081
+        ],
+        "ll_diff_ci_round": [
+          -0.0068,
+          0.0081
         ]
       },
       "uefa_cup": {
@@ -466,12 +506,20 @@
         "ll_diff_ci": [
           -0.0077,
           -0.0001
+        ],
+        "ll_diff_ci_round": [
+          -0.008,
+          -0.0
         ]
       },
       "national": {
         "n": 1174,
         "ll_diff": -0.0083,
         "ll_diff_ci": [
+          -0.0126,
+          -0.0042
+        ],
+        "ll_diff_ci_round": [
           -0.0126,
           -0.0042
         ]
@@ -482,12 +530,20 @@
         "ll_diff_ci": [
           -0.0035,
           0.0004
+        ],
+        "ll_diff_ci_round": [
+          -0.0036,
+          0.0006
         ]
       },
       "europe_other": {
         "n": 1983,
         "ll_diff": 0.0015,
         "ll_diff_ci": [
+          -0.0016,
+          0.0047
+        ],
+        "ll_diff_ci_round": [
           -0.0016,
           0.0047
         ]
@@ -498,6 +554,10 @@
         "ll_diff_ci": [
           -0.0075,
           -0.0
+        ],
+        "ll_diff_ci_round": [
+          -0.0075,
+          0.0001
         ]
       }
     },
@@ -510,8 +570,8 @@
         "returned": 14830,
         "profit": 3830,
         "roi_pct": 34.82,
-        "roi_ci_low": -38.82,
-        "roi_ci_high": 113.01,
+        "roi_ci_low": -65.56,
+        "roi_ci_high": 113.28,
         "verdict": "판단 보류 (표본 부족)"
       },
       "B_fav_double": {
@@ -522,8 +582,8 @@
         "returned": 253300,
         "profit": -11700,
         "roi_pct": -4.42,
-        "roi_ci_low": -12.42,
-        "roi_ci_high": 3.7,
+        "roi_ci_low": -13.1,
+        "roi_ci_high": 4.04,
         "verdict": "판단 보류 (표본 부족)"
       },
       "C_finder_top": {
@@ -534,8 +594,8 @@
         "returned": 292900,
         "profit": -15100,
         "roi_pct": -4.9,
-        "roi_ci_low": -17.5,
-        "roi_ci_high": 9.64,
+        "roi_ci_low": -17.47,
+        "roi_ci_high": 10.13,
         "verdict": "수익 미입증"
       },
       "D_banker_cover": {
@@ -546,8 +606,8 @@
         "returned": 704200,
         "profit": -216800,
         "roi_pct": -23.54,
-        "roi_ci_low": -32.6,
-        "roi_ci_high": -14.48,
+        "roi_ci_low": -32.55,
+        "roi_ci_high": -14.43,
         "verdict": "수익 미입증"
       },
       "E_market_fav": {
@@ -558,8 +618,8 @@
         "returned": 3379200,
         "profit": -467800,
         "roi_pct": -12.16,
-        "roi_ci_low": -14.88,
-        "roi_ci_high": -9.51,
+        "roi_ci_low": -14.96,
+        "roi_ci_high": -9.5,
         "verdict": "수익 미입증"
       }
     }

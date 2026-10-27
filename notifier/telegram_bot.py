@@ -51,7 +51,12 @@ def send_telegram_alert(
     recommended.sort(key=lambda x: x["evaluation"]["best_ev"], reverse=True)
     top_picks = recommended[:3]
 
-    if not top_picks:
+    # [Phase 6.5] 추천 잠금 중이면 픽 대신 잠금 안내
+    locked = any(m.get("evaluation", {}).get("recommend_locked") for m in matches)
+    if not top_picks and locked:
+        text = ("⚽ [스포츠토토 AI]\n🔒 추천 잠금 중: AI가 검증 3단계(과거 · 실시간 확률 · 가상 베팅 수익)를 "
+                "통과하기 전에는 추천 픽을 보내지 않아요. 확률 기록과 가상 베팅은 계속돼요.")
+    elif not top_picks:
         text = "⚽ [스포츠토토 AI]\n이번 회차는 기대가치(EV > 0)가 기준을 넘는 경기가 없습니다. (패스 권장)"
     else:
         text = "🔥 <b>[스포츠토토 AI] 이번 회차 최고 가치 픽 TOP 3</b>\n\n"

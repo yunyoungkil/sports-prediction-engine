@@ -18,13 +18,15 @@ def evaluate_match_value(
     category: str = "일반 승무패",
     blended_probs: Optional[Dict[str, float]] = None,
     sport: str = "축구",
-    ai_applied: bool = True
+    ai_applied: bool = True,
+    recommend_allowed: bool = True
 ) -> Dict[str, Any]:
     """
     기대가치(EV) 분석 및 추천 픽 평가를 수행합니다.
     [Step 3.4] 모델 단독 확률 대신 시장+모델 블렌딩 확률(blended_probs)을 우선 기준으로 계산합니다.
     [Step 3.5 → 5.11] AI 보정이 적용되지 않은 유형(ai_applied=False)은 추천에서 제외하고 '참고용'으로 분류합니다.
                       (예전에는 비축구 종목 전체를 제외했으나, 전 종목 보정 모델이 생겨 AI 적용 여부로 판단)
+    [Phase 6.5] 추천 잠금(recommend_allowed=False, evaluation/gates.py 검증 3단계 통과 전)이면 EV는 계산하되 추천하지 않습니다.
     공식: EV = (확률 * 배당률) - 1.0
     """
     home_odds = betman_odds.get("home_win", 0.0)
@@ -88,7 +90,12 @@ def evaluate_match_value(
     if not ai_applied and is_recommended:
         is_recommended = False
         grade = "참고용 (AI 미적용 유형)"
-        
+
+    # [Phase 6.5] 추천 잠금 (섀도 모드): 검증을 통과하기 전에는 등급이 나와도 추천하지 않음
+    if not recommend_allowed and is_recommended:
+        is_recommended = False
+        grade = "검증 중 (추천 잠금)"
+
     return {
         "expected_values": evs,
         "best_selection": best_key,
@@ -98,6 +105,7 @@ def evaluate_match_value(
         "best_ev_pct": f"{best_ev * 100:+.1f}%",
         "grade": grade,
         "is_recommended": is_recommended,
+        "recommend_locked": not recommend_allowed,
         "is_single": is_single,
         "category": category,
         "sport": sport

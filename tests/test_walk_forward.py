@@ -66,6 +66,8 @@ def test_run_and_reproduction(tmp_path):
     rep = run(rows, ["2024-01-01", "2024-07-01"])
     assert [f["start"] for f in rep["folds"]] == ["2024-01-01", "2024-07-01"]
     assert sum(f["score"]["samples"] for f in rep["folds"]) == rep["pooled"]["score"]["samples"]
+    lo, hi = rep["pooled"]["score"]["ll_diff_ci_round"]       # [6.5] 회차 단위 CI
+    assert lo <= rep["pooled"]["score"]["ll_diff"] <= hi
     params = tmp_path / "params.json"
     params.write_text(json.dumps({"report": {"test": {"ll_diff": rep["folds"][0]["score"]["ll_diff"]}}}), encoding="utf-8")
     assert reproduction_check(rep, params, "2024-01-01")["ok"] is True

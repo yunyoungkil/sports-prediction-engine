@@ -111,3 +111,12 @@ def test_evaluate_match_value_grades_and_pass():
     )
     assert "PASS" in res_pass["grade"]
     assert res_pass["is_recommended"] is False
+
+
+def test_recommendation_lock_keeps_ev_but_blocks_pick():
+    """[6.5] 추천 잠금 중에는 EV는 그대로 계산하되 추천(등급·텔레그램 픽)은 하지 않는다"""
+    res = evaluate_match_value("바이에른뮌헨", "도르트문트", {"home_win": 1.80, "draw": 3.80, "away_win": 4.50},
+                               {"home_win": 0.60, "draw": 0.25, "away_win": 0.15}, sport="SC", recommend_allowed=False)
+    assert res["is_recommended"] is False
+    assert res["grade"] == "검증 중 (추천 잠금)"
+    assert res["best_ev"] > 0 and res["recommend_locked"] is True

@@ -17,6 +17,7 @@ models/betman_markets.py
     TRAIN < 2025-07 / TUNE 2025H2 / TEST 2026-01 ~ 컷오프 / HOLDOUT ≥ 컷오프
     통과 = TEST에서 시장보다 LL 낮음 AND (HOLDOUT ≥ 100경기면 HOLDOUT도 낮음, 아니면 TEST CI 상한 < 0)
     통과한 세그먼트만 실전에 쓰고, 전체 기간으로 다시 학습
+    [6.5] 이 게이트는 'AI를 섀도로 계산·기록할 자격'만 뜻한다. 추천은 evaluation/gates.py 검증 3단계 통과 후
 
 실행:
     python -m models.betman_markets

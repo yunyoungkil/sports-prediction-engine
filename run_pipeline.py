@@ -147,7 +147,14 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     from models.betman_markets import MarketsLivePredictor
     markets_model = MarketsLivePredictor.load()
     print(f"ℹ 전 종목 보정 모델: {', '.join(sorted(markets_model.models)) if markets_model else '적용 유형 없음'}")
-    
+    # [Phase 6.5] 추천 잠금 (섀도 모드): AI는 계산·기록·가상 베팅을 계속하고, 추천(등급·텔레그램 픽)은 검증 3단계 통과 후에만
+    from evaluation.gates import recommendation_status
+    rec_status = recommendation_status()
+    recommend_on = rec_status["features"]["gem"]["on"]
+    print(f"{'🔓 추천 켜짐' if recommend_on else '🔒 추천 잠금 (섀도 모드)'}: "
+          + " · ".join(f"{'✅' if s['ok'] else '⏳'} {s['name']}" for s in rec_status["stages"])
+          + f" · {'✅' if rec_status['features']['gem']['profit']['ok'] else '⏳'} ③ 수익")
+
     # 3. 각 경기별 예측 및 기대가치 평가
     print("\n🧠 [2/3] 전 경기 AI 승률 계산 및 기대가치(EV) 분석 중...")
     results = []
@@ -228,7 +235,8 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             category=category,
             blended_probs=blended_probs,
             sport=m.get("sport", "SC"),
-            ai_applied=(prob_source != "market")
+            ai_applied=(prob_source != "market"),
+            recommend_allowed=recommend_on
         )
         
         results.append({
@@ -309,7 +317,10 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             print(f"  📊 AI 확률: {r['model_probabilities'][ev_info['best_selection']]*100:.1f}% | 배당: {r['betman_odds'][ev_info['best_selection']]}배 | 기대가치: {ev_info['best_ev_pct']}")
             print("-" * 50)
             
-    if recommended_count == 0:
+    if recommended_count == 0 and not recommend_on:
+        print("🔒 추천 잠금 중: AI가 검증 3단계(과거 · 실시간 확률 · 가상 베팅 수익)를 통과하기 전에는 추천하지 않습니다. "
+              "확률 기록과 가상 베팅은 계속됩니다.")
+    elif recommended_count == 0:
         print("ℹ 이번 회차는 배당률 대비 수학적 우위(EV > 0)가 있는 경기가 없습니다. (패스 권장)")
         
     print(f"\n✅ 파이프라인 정상 완료! (총 {len(results)}경기 중 {recommended_count}개 경기 추천)")

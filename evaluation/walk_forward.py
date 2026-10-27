@@ -9,6 +9,7 @@ evaluation/walk_forward.py
 미래 정보 금지: 폼·Elo·휴식일은 build_rows에서 킥오프 이전 결과만 쓰고, 모델은 구간 시작 전 경기로만 학습한다.
 전략: models.paper_trading.propose_bets를 그대로 써서 회차마다 가상 베팅(A~E, 1,000원)을 만들고 채점한다.
   - 회차 첫 경기 1분 전에 한 번 만든다고 가정 (실제 가상 베팅은 하루 2번 실행이라 늦게 열린 경기에서 조금 다를 수 있음)
+[6.5] LL 차이는 경기 단위 CI(ll_diff_ci)와 회차 단위 CI(ll_diff_ci_round)를 함께 낸다. 추천 잠금 ①단계는 합친 결과의 회차 단위 CI를 쓴다
 
 출력: data/walk_forward.json
 실행:
@@ -33,6 +34,7 @@ if sys.platform.startswith('win'):
 
 from collector.betman_sharp import parse_betman_kickoff
 from evaluation.config import BETMAN_CUTOFF_DATE
+from evaluation.metrics import cluster_bootstrap_ci
 from models.betman_corrector import GROUP_NAMES, PARAMS_PATH, build_rows, load_archive_df
 from models.combo_builder import calculate_payout
 from models.market_corrector import LAMBDA_GRID, MarketCorrector
@@ -109,13 +111,28 @@ def _strategy_table(per: Dict[str, List[Dict[str, Any]]]) -> Dict[str, Any]:
     return out
 
 
+def round_ci(rows: List[Dict[str, Any]], probs: np.ndarray) -> List[float]:
+    """[6.5] LL 차이(AI − 시장)의 회차 단위 부트스트랩 95% CI (같은 회차 경기끼리는 독립이 아닐 수 있음)"""
+    y = np.array([r["actual"] for r in rows])
+    idx = np.arange(len(y))
+    mkt = np.array([r["p_market"] for r in rows])
+    d = -np.log(np.clip(probs[idx, y], 1e-15, None)) + np.log(np.clip(mkt[idx, y], 1e-15, None))
+    lo, hi = cluster_bootstrap_ci(d, [r["gm_ts"] for r in rows])
+    return [round(lo, 4), round(hi, 4)]
+
+
+def _score(rows: List[Dict[str, Any]], probs: np.ndarray) -> Dict[str, Any]:
+    return {**MarketCorrector.score(rows, probs), "ll_diff_ci_round": round_ci(rows, probs)}
+
+
 def _by_group(rows: List[Dict[str, Any]], probs: np.ndarray) -> Dict[str, Any]:
     out = {}
     for g in GROUP_NAMES + ["other"]:
         idx = [i for i, r in enumerate(rows) if r["group"] == g]
         if len(idx) >= 30:
-            s = MarketCorrector.score([rows[i] for i in idx], probs[idx])
-            out[g] = {"n": s["samples"], "ll_diff": s["ll_diff"], "ll_diff_ci": s["ll_diff_ci"]}
+            s = _score([rows[i] for i in idx], probs[idx])
+            out[g] = {"n": s["samples"], "ll_diff": s["ll_diff"], "ll_diff_ci": s["ll_diff_ci"],
+                      "ll_diff_ci_round": s["ll_diff_ci_round"]}
     return out
 
 
@@ -132,7 +149,7 @@ def run(rows: List[Dict[str, Any]], starts: List[str] = FOLD_STARTS) -> Dict[str
         for s, v in per.items():
             pooled[s] += v
         fold_reports.append({"fold": f["name"], "start": f["start"], "train": len(f["train"]), "lambda": lam,
-                             "score": MarketCorrector.score(f["test"], probs), "strategies": _strategy_table(per)})
+                             "score": _score(f["test"], probs), "strategies": _strategy_table(per)})
         all_rows += f["test"]
         all_probs.append(probs)
         print(f"  · {f['name']}: 학습 {len(f['train'])} · λ={lam} · 예측 {len(f['test'])} · "
@@ -142,7 +159,7 @@ def run(rows: List[Dict[str, Any]], starts: List[str] = FOLD_STARTS) -> Dict[str
     return {
         "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "folds": fold_reports,
-        "pooled": {"score": MarketCorrector.score(all_rows, probs) if all_rows else None,
+        "pooled": {"score": _score(all_rows, probs) if all_rows else None,
                    "by_group": _by_group(all_rows, probs) if all_rows else {},
                    "strategies": _strategy_table(pooled)},
         "folds_better_than_market": f"{sum(d < 0 for d in diffs)}/{len(diffs)}",
@@ -175,19 +192,17 @@ if __name__ == "__main__":
     rep["reproduction"] = reproduction_check(rep)
     if not args.dry_run:
         REPORT_PATH.write_text(json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n{'구간':<26}{'n':>6}{'λ':>8}{'모델 LL':>9}{'시장 LL':>9}{'차이':>9}  95% CI")
-    for f in rep["folds"]:
+    print(f"\n{'구간':<26}{'n':>6}{'λ':>8}{'모델 LL':>9}{'시장 LL':>9}{'차이':>9}  {'95% CI (경기 단위)':<22}95% CI (회차 단위)")
+    for f in rep["folds"] + ([{"fold": "전체(구간 합침)", "lambda": "", "score": rep["pooled"]["score"]}]
+                             if rep["pooled"]["score"] else []):
         s = f["score"]
+        a, b = s["ll_diff_ci"], s["ll_diff_ci_round"]
         print(f"{f['fold']:<26}{s['samples']:>6}{f['lambda']:>8}{s['model_ll']:>9.4f}{s['market_ll']:>9.4f}"
-              f"{s['ll_diff']:>+9.4f}  [{s['ll_diff_ci'][0]:+.4f}, {s['ll_diff_ci'][1]:+.4f}]")
-    p = rep["pooled"]["score"]
-    if p:
-        print(f"{'전체(구간 합침)':<26}{p['samples']:>6}{'':>8}{p['model_ll']:>9.4f}{p['market_ll']:>9.4f}"
-              f"{p['ll_diff']:>+9.4f}  [{p['ll_diff_ci'][0]:+.4f}, {p['ll_diff_ci'][1]:+.4f}]")
+              f"{s['ll_diff']:>+9.4f}  [{a[0]:+.4f}, {a[1]:+.4f}]    [{b[0]:+.4f}, {b[1]:+.4f}]")
     print(f"시장보다 나은 구간: {rep['folds_better_than_market']} · 재현성: {rep['reproduction']}")
-    print("\n리그 그룹별 (구간 합침):")
+    print("\n리그 그룹별 (구간 합침, 회차 단위 CI):")
     for g, v in rep["pooled"]["by_group"].items():
-        print(f"  {g:<14} n={v['n']:<6} {v['ll_diff']:+.4f} [{v['ll_diff_ci'][0]:+.4f}, {v['ll_diff_ci'][1]:+.4f}]")
+        print(f"  {g:<14} n={v['n']:<6} {v['ll_diff']:+.4f} [{v['ll_diff_ci_round'][0]:+.4f}, {v['ll_diff_ci_round'][1]:+.4f}]")
     print("\n전략별 가상 베팅 (구간 합침, 1,000원 단위):")
     for v in rep["pooled"]["strategies"].values():
         print(f"  {v['label']:<28} {v['bets']:>5}건 적중 {v['hits']:>4} · 수익률 {v['roi_pct']:+.1f}% "

@@ -158,3 +158,50 @@ def bootstrap_roi_confidence_interval(
     high = float(np.percentile(boot_means, 100.0 * (1.0 - alpha / 2.0))) * 100.0
 
     return round(point_est, 2), round(low, 2), round(high, 2)
+
+
+def cluster_bootstrap_ci(
+    values: List[float],
+    clusters: List[Any],
+    n_bootstrap: int = 2000,
+    alpha: float = 0.05,
+    random_seed: int = 42
+) -> Tuple[float, float]:
+    """
+    [Phase 6.5] 회차(클러스터) 단위 부트스트랩 — 평균의 95% 신뢰구간.
+    같은 회차의 경기·베팅은 독립이 아닐 수 있어서(같은 날·같은 리그, 조합끼리 경기 공유) 회차를 통째로 다시 뽑는다.
+    회차가 적으면 회차 단위 범위가 오히려 너무 좁게 나올 수 있어(회차 2개면 조합이 3가지뿐)
+    경기 단위 범위와 비교해 넓은 쪽을 쓴다 → 항상 둘 중 더 보수적인 범위.
+    :return: (하한, 상한) — values와 같은 단위
+    """
+    arr = np.asarray(values, dtype=float)
+    if len(arr) == 0:
+        return 0.0, 0.0
+    q = [100.0 * alpha / 2.0, 100.0 * (1.0 - alpha / 2.0)]
+    rng = np.random.default_rng(random_seed)
+    low, high = np.percentile(arr[rng.integers(0, len(arr), size=(n_bootstrap, len(arr)))].mean(axis=1), q)
+    keys, inv = np.unique(np.asarray([str(c) for c in clusters]), return_inverse=True)
+    if len(keys) >= 2:
+        sums = np.bincount(inv, weights=arr)
+        cnts = np.bincount(inv).astype(float)
+        pick = rng.integers(0, len(keys), size=(n_bootstrap, len(keys)))
+        c_low, c_high = np.percentile(sums[pick].sum(axis=1) / cnts[pick].sum(axis=1), q)
+        low, high = min(low, c_low), max(high, c_high)
+    return float(low), float(high)
+
+
+def cluster_roi_confidence_interval(
+    returns: List[float],
+    clusters: List[Any],
+    n_bootstrap: int = 2000,
+    alpha: float = 0.05,
+    random_seed: int = 42
+) -> Tuple[float, float, float]:
+    """bootstrap_roi_confidence_interval과 같은 형식 (평균 ROI %, 하한 %, 상한 %), 단 회차 단위로 다시 뽑음"""
+    if not returns:
+        return 0.0, 0.0, 0.0
+    point_est = float(np.mean(returns)) * 100.0
+    if len(returns) < 5:
+        return round(point_est, 2), round(point_est, 2), round(point_est, 2)
+    low, high = cluster_bootstrap_ci(returns, clusters, n_bootstrap, alpha, random_seed)
+    return round(point_est, 2), round(low * 100.0, 2), round(high * 100.0, 2)

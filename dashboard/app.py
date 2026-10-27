@@ -219,6 +219,29 @@ AI_SOURCES = ("betman_corrector", "market_corrector", "betman_markets")
 
 
 @st.cache_data(ttl=60)
+def load_recommendation_status():
+    """[Phase 6.5] 추천 잠금 상태 — 검증 3단계(과거 · 실시간 확률 · 수익)를 통과한 기능만 추천 표시 (evaluation/gates.py)"""
+    from evaluation.gates import recommendation_status
+    d = project_root / "data"
+    return recommendation_status(d / "walk_forward.json", d / "model_scorecard.json", d / "paper_trading.json")
+
+
+REC_STATUS = load_recommendation_status()
+GEM_ON = REC_STATUS["features"]["gem"]["on"]          # 💎 표시 · 가치 픽 · 💎 필터/빠른 선택
+FINDER_ON = REC_STATUS["features"]["finder"]["on"]    # 🧩 조합 찾기
+LOCK_NOTE = "검증 3단계 통과 전 · ③ 성과 검증 탭"
+
+
+def lock_notice(feature: dict) -> None:
+    """잠긴 기능 자리에: 왜 잠겼는지와 단계별 진행 상황"""
+    items = [(s["ok"], s["name"], s["detail"]) for s in REC_STATUS["stages"]]
+    items.append((feature["profit"]["ok"], feature["profit"]["name"], feature["profit"]["detail"]))
+    st.info("🔒 **추천 잠금 중** — 아래 검증 3단계를 모두 통과해야 이 기능이 켜져요. "
+            "그동안 AI 확률 기록과 가상 베팅(검증용)은 계속돼요.\n\n"
+            + "\n".join(f"- {'✅' if ok else '⏳'} {name}: {detail}" for ok, name, detail in items))
+
+
+@st.cache_data(ttl=60)
 def load_results_index():
     """(회차, 경기번호) → 결과 목록. 같은 번호에 기준선이 여러 개인 경우가 있어 리스트로 보관"""
     path = project_root / "data" / "history" / "betman_recent_results.json"
@@ -588,76 +611,83 @@ with tab1:
         st.markdown(
             "<div style='margin:-4px 0 8px 0'>"
             f"<span style='{_chip}'>⭐ AI 확률 1순위 <span style='color:#94a3b8'>(AI 없으면 배당 1순위)</span></span>"
-            f"<span style='{_chip}'>💎 AI 기준 기대가치 플러스 <span style='color:#f59e0b'>(검증 중)</span></span>"
+            + (f"<span style='{_chip}'>💎 AI 기준 기대가치 플러스 <span style='color:#f59e0b'>(검증 통과)</span></span>" if GEM_ON else
+               f"<span style='{_chip}'>🔒 💎 추천 잠금 <span style='color:#94a3b8'>({LOCK_NOTE})</span></span>") +
             f"<span style='{_chip}'>⚠️ AI 예상이 배당과 다름</span>"
             f"<span style='{_chip}'>✅ ❌ 끝난 경기의 적중 여부</span>"
             "</div>",
             unsafe_allow_html=True)
 
         # 🧩 조합 찾기 — 데이터로 확인한 원칙(저배당 정배 축, AI ▲, 💎 우선, 커버 없음)으로 2~3폴더 후보
-        with st.expander("🧩 조합 찾기 — 과거 데이터로 확인한 원칙으로 이번 회차 2~3폴더 후보 만들기", expanded=False):
-            st.caption("원칙: ① 축은 저배당 정배(1.3배 이하가 가장 손실이 작음) ② AI가 배당보다 높게 본(▲) 정배만, AI와 배당 1순위가 다르면(⚠️) 제외 "
-                       "③ 💎 선택지 우선 ④ 전배·커버 없이 2~3폴더. 정렬은 AI 기준 기대 손익이 덜 나쁜 순입니다.")
-            fc1, fc2, fc3, fc4 = st.columns([1.6, 1, 1, 1], vertical_alignment="bottom")
-            with fc1:
-                fav_rng = st.slider("축 배당 범위", 1.01, 2.0, (1.01, 1.5), 0.01, key="finder_range")
-            with fc2:
-                sizes_opt = st.selectbox("폴더 수", ["2~3폴더", "2폴더", "3폴더"], key="finder_sizes")
-            with fc3:
-                only_up = st.checkbox("AI ▲ 정배만", value=True, key="finder_up")
-            with fc4:
-                with_gems = st.checkbox("💎 포함", value=True, key="finder_gems")
-            sizes = {"2~3폴더": (2, 3), "2폴더": (2,), "3폴더": (3,)}[sizes_opt]
-            f_legs = candidate_legs(predictions, fav_rng, only_ai_up=only_up, include_gems=with_gems)
-            f_combos = find_combos(f_legs, sizes=sizes, top=8)
-            if not f_combos:
-                st.info(f"조건에 맞는 후보가 없습니다 (후보 선택지 {len(f_legs)}개). 축 배당 범위를 넓히거나 'AI ▲ 정배만'을 해제해 보세요. "
-                        "후보가 없는 회차는 무리해서 조합하지 않는 것이 원칙에 맞습니다.")
-            else:
-                st.caption(f"후보 선택지 {len(f_legs)}개 → 상위 {len(f_combos)}개 조합 (아직 시작하지 않은 축구 승무패만)")
+        if not FINDER_ON:
+            with st.expander("🔒 조합 찾기 — 추천 잠금 중 (검증 3단계 통과 전)", expanded=False):
+                lock_notice(REC_STATUS["features"]["finder"])
+        else:
+            with st.expander("🧩 조합 찾기 — 과거 데이터로 확인한 원칙으로 이번 회차 2~3폴더 후보 만들기", expanded=False):
+                st.caption("원칙: ① 축은 저배당 정배(1.3배 이하가 가장 손실이 작음) ② AI가 배당보다 높게 본(▲) 정배만, AI와 배당 1순위가 다르면(⚠️) 제외 "
+                           "③ 💎 선택지 우선 ④ 전배·커버 없이 2~3폴더. 정렬은 AI 기준 기대 손익이 덜 나쁜 순입니다.")
+                fc1, fc2, fc3, fc4 = st.columns([1.6, 1, 1, 1], vertical_alignment="bottom")
+                with fc1:
+                    fav_rng = st.slider("축 배당 범위", 1.01, 2.0, (1.01, 1.5), 0.01, key="finder_range")
+                with fc2:
+                    sizes_opt = st.selectbox("폴더 수", ["2~3폴더", "2폴더", "3폴더"], key="finder_sizes")
+                with fc3:
+                    only_up = st.checkbox("AI ▲ 정배만", value=True, key="finder_up")
+                with fc4:
+                    with_gems = st.checkbox("💎 포함", value=True, key="finder_gems")
+                sizes = {"2~3폴더": (2, 3), "2폴더": (2,), "3폴더": (3,)}[sizes_opt]
+                f_legs = candidate_legs(predictions, fav_rng, only_ai_up=only_up, include_gems=with_gems)
+                f_combos = find_combos(f_legs, sizes=sizes, top=8)
+                if not f_combos:
+                    st.info(f"조건에 맞는 후보가 없습니다 (후보 선택지 {len(f_legs)}개). 축 배당 범위를 넓히거나 'AI ▲ 정배만'을 해제해 보세요. "
+                            "후보가 없는 회차는 무리해서 조합하지 않는 것이 원칙에 맞습니다.")
+                else:
+                    st.caption(f"후보 선택지 {len(f_legs)}개 → 상위 {len(f_combos)}개 조합 (아직 시작하지 않은 축구 승무패만)")
 
-            def _pick_combo(legs_):
-                st.session_state["selections"] = {
-                    leg["seq"]: {SEL_KEY[k]: (k == leg["key"]) for k in PICK_KEYS} for leg in legs_}
-                st.session_state["editor_version"] += 1
-                _go_step(2)
+                def _pick_combo(legs_):
+                    st.session_state["selections"] = {
+                        leg["seq"]: {SEL_KEY[k]: (k == leg["key"]) for k in PICK_KEYS} for leg in legs_}
+                    st.session_state["editor_version"] += 1
+                    _go_step(2)
 
-            for ci, c in enumerate(f_combos):
-                with st.container(border=True):
-                    cc1, cc2, cc3 = st.columns([4.2, 2.6, 1.2], vertical_alignment="center")
-                    with cc1:
-                        parts = []
-                        for leg in c["legs"]:
-                            m = leg["match"]
-                            if leg["key"] == "home_win":
-                                what = f"<b>{m['home_team']}</b> 승"
-                            elif leg["key"] == "away_win":
-                                what = f"<b>{m['away_team']}</b> 승(원정)"
-                            else:
-                                what = f"<b>{m['home_team']} vs {m['away_team']}</b> 무승부"
-                            parts.append(f"{leg['role']} {what} {leg['odds']:.2f} "
-                                         f"<span style='color:#94a3b8;font-size:12px'>({m.get('league', '')}, AI {leg['p_ai'] * 100:.0f}% · 배당 {leg['p_mk'] * 100:.0f}%)</span>")
-                        st.markdown("<div style='font-size:14px;line-height:1.6'>" + "<br>".join(parts) + "</div>", unsafe_allow_html=True)
-                    with cc2:
-                        ev_col = "#10b981" if c["ev_ai"] > 0 else "#f59e0b"
-                        st.markdown(
-                            f"<div style='font-size:13px;line-height:1.6'><b style='font-size:16px'>{c['odds']:.1f}배</b> · 적중 확률(AI) {c['p_ai'] * 100:.1f}%<br>"
-                            f"기대 손익 AI <b style='color:{ev_col}'>{c['ev_ai'] * 100:+.1f}%</b> · 배당 기준 {c['ev_mk'] * 100:+.1f}%</div>",
-                            unsafe_allow_html=True)
-                        rule = [{"type": "single", "kind": outcome_kind([float(leg["match"]["betman_odds"][k]) for k in PICK_KEYS],
-                                                                         PICK_KEYS.index(leg["key"])),
-                                 "ref_odds": leg["odds"]} for leg in c["legs"]]
-                        bt = cached_backtest(tuple((r["kind"], round(r["ref_odds"], 2)) for r in rule))
-                        if bt.get("rounds"):
-                            st.caption(f"과거 반복: {bt['rounds']}회차 · 적중 {bt['hit_rate_pct']:.0f}% · 실제 수익률 {bt['roi_pct']:+.1f}%")
-                    with cc3:
-                        st.button("🛒 담기", key=f"finder_pick_{ci}", width="stretch",
-                                  on_click=_pick_combo, args=(c["legs"],))
-            st.caption("⚠️ 대부분의 조합은 기대 손익이 마이너스입니다. AI 확률은 검증 중이며, 과거 반복 결과는 비슷한 배당 경기로 같은 방식을 적용한 실제 결과입니다.")
+                for ci, c in enumerate(f_combos):
+                    with st.container(border=True):
+                        cc1, cc2, cc3 = st.columns([4.2, 2.6, 1.2], vertical_alignment="center")
+                        with cc1:
+                            parts = []
+                            for leg in c["legs"]:
+                                m = leg["match"]
+                                if leg["key"] == "home_win":
+                                    what = f"<b>{m['home_team']}</b> 승"
+                                elif leg["key"] == "away_win":
+                                    what = f"<b>{m['away_team']}</b> 승(원정)"
+                                else:
+                                    what = f"<b>{m['home_team']} vs {m['away_team']}</b> 무승부"
+                                parts.append(f"{leg['role']} {what} {leg['odds']:.2f} "
+                                             f"<span style='color:#94a3b8;font-size:12px'>({m.get('league', '')}, AI {leg['p_ai'] * 100:.0f}% · 배당 {leg['p_mk'] * 100:.0f}%)</span>")
+                            st.markdown("<div style='font-size:14px;line-height:1.6'>" + "<br>".join(parts) + "</div>", unsafe_allow_html=True)
+                        with cc2:
+                            ev_col = "#10b981" if c["ev_ai"] > 0 else "#f59e0b"
+                            st.markdown(
+                                f"<div style='font-size:13px;line-height:1.6'><b style='font-size:16px'>{c['odds']:.1f}배</b> · 적중 확률(AI) {c['p_ai'] * 100:.1f}%<br>"
+                                f"기대 손익 AI <b style='color:{ev_col}'>{c['ev_ai'] * 100:+.1f}%</b> · 배당 기준 {c['ev_mk'] * 100:+.1f}%</div>",
+                                unsafe_allow_html=True)
+                            rule = [{"type": "single", "kind": outcome_kind([float(leg["match"]["betman_odds"][k]) for k in PICK_KEYS],
+                                                                             PICK_KEYS.index(leg["key"])),
+                                     "ref_odds": leg["odds"]} for leg in c["legs"]]
+                            bt = cached_backtest(tuple((r["kind"], round(r["ref_odds"], 2)) for r in rule))
+                            if bt.get("rounds"):
+                                st.caption(f"과거 반복: {bt['rounds']}회차 · 적중 {bt['hit_rate_pct']:.0f}% · 실제 수익률 {bt['roi_pct']:+.1f}%")
+                        with cc3:
+                            st.button("🛒 담기", key=f"finder_pick_{ci}", width="stretch",
+                                      on_click=_pick_combo, args=(c["legs"],))
+                st.caption("⚠️ 대부분의 조합은 기대 손익이 마이너스입니다. AI 확률은 검증 중이며, 과거 반복 결과는 비슷한 배당 경기로 같은 방식을 적용한 실제 결과입니다.")
 
         # 필터 컨트롤: ① 회차·날짜 ② 검색·종목·리그·유형 ③ 빠른 필터 (리그·유형 목록은 고른 종목에 맞춰 줄어듦)
         current_gm_ts = detect_current_gm_ts(predictions)
         QUICK_FILTERS = {"open": "⏳ 마감 전만", "single": "⚡ 한경기만", "gem": "💎 AI 플러스만", "picked": "✔️ 내가 고른 경기만"}
+        if not GEM_ON:   # [6.5] 추천 잠금 중에는 💎 필터 없음
+            QUICK_FILTERS.pop("gem")
         FILTER_DEFAULTS = {"step1_search": "", "step1_sports": [], "step1_league": "전체 리그",
                            "step1_types": [], "step1_quick": []}
 
@@ -712,6 +742,7 @@ with tab1:
 
             q1, q2 = st.columns([5, 1], vertical_alignment="center")
             with q1:
+                keep_valid_multi("step1_quick", list(QUICK_FILTERS))
                 quick = st.pills("빠른 필터", list(QUICK_FILTERS), format_func=QUICK_FILTERS.get,
                                  selection_mode="multi", key="step1_quick", label_visibility="collapsed") or []
             with q2:
@@ -779,9 +810,9 @@ with tab1:
             return m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
 
         def _gems(m, ai_probs, opts):
-            """💎 = AI 확률 기준 기대가치(EV) 플러스 선택지 (1순위가 아니어도 표시)"""
+            """💎 = AI 확률 기준 기대가치(EV) 플러스 선택지 (1순위가 아니어도 표시). [6.5] 추천 잠금 중에는 표시 안 함"""
             out = {}
-            if ai_probs:
+            if ai_probs and GEM_ON:
                 for k in opts:
                     p_k = float(ai_probs.get(k, ai_probs.get(k.replace("_win", ""), 0.0)) or 0.0)
                     ev_k = p_k * float(m.get("betman_odds", {}).get(k, 0.0)) - 1.0
@@ -1060,7 +1091,7 @@ with tab1:
                         default=default, key=f"pick_{_ts(m)}_{m.get('_key', seq)}_{st.session_state['editor_version']}",
                         label_visibility="collapsed", disabled=(res is not None or _past(m) or closed))
                     ev = m.get("evaluation", {})
-                    if res is None and ev.get("is_recommended"):
+                    if res is None and GEM_ON and ev.get("is_recommended"):
                         st.markdown(f"<div style='font-size:12px;margin-top:-6px'>🔥 가치 픽 {ev.get('best_ev_pct', '')}</div>",
                                     unsafe_allow_html=True)
                 # 배당 예상 · AI 예상 · 점수 · 결과는 한 칸 안에 가로 4칸으로 (휴대폰에서도 세로로 길게 쌓이지 않게)
@@ -1237,8 +1268,9 @@ with tab1:
                 q1, q2, q3, _ = st.columns([1, 1, 1.5, 1.3])
                 q1.button("☑️ 전체 선택", width="stretch", on_click=_quick_select, args=("all",))
                 q2.button("⬜ 전체 해제", width="stretch", on_click=_quick_select, args=("none",))
-                q3.button("💎 기대가치 플러스만", width="stretch", on_click=_quick_select, args=("ev",),
-                          help="기대가치가 플러스인 조합만 선택")
+                if GEM_ON:   # [6.5] AI 기준 기대가치로 고르는 버튼은 추천 잠금 중 숨김
+                    q3.button("💎 기대가치 플러스만", width="stretch", on_click=_quick_select, args=("ev",),
+                              help="기대가치가 플러스인 조합만 선택")
 
             if sort_option == "배당 높은순":
                 combos.sort(key=lambda x: x["combined_odds"], reverse=True)
@@ -1511,13 +1543,15 @@ with tab2:
                     "mk_k": mk_k, "mk_p": mk_p, "ai_k": ai_k, "ai_p": ai_p, "d": d, "gap": gap,
                     "up_k": max(d, key=d.get) if d else None,
                     "differs": bool(ai) and (ai_k != mk_k or gap >= DIFF_PP),
-                    "ev": ev, "gems": {k: v for k, v in ev.items() if ai and v > 0},
+                    "ev": ev, "gems": {k: v for k, v in ev.items() if GEM_ON and ai and v > 0},
                     "best_ev": max(ev.values()) if ev else -1.0}
 
         rows_all = [a for a in (_analyze(m) for m in predictions) if a["opts"]]
 
         # C. 필터: ① 탭과 같은 배지
         T2_QUICK = {"ai": "🧠 AI 적용만", "diff": "⚠️ 배당과 다름", "gem": "💎 플러스", "single": "⚡ 한경기만", "open": "⏳ 마감 전만"}
+        if not GEM_ON:   # [6.5] 추천 잠금 중에는 💎 필터 없음
+            T2_QUICK.pop("gem")
         T2_SORTS = ["AI 차이 큰 순", "경기 시간순", "기대가치 높은 순"]
         T2_DEFAULTS = {"tab2_search": "", "tab2_sports": [], "tab2_types": [], "tab2_league": "전체 리그",
                        "tab2_quick": [], "tab2_sort_by": T2_SORTS[0]}
@@ -1549,6 +1583,7 @@ with tab2:
                 t_sort = st.selectbox("정렬", T2_SORTS, key="tab2_sort_by")
             q1, q2 = st.columns([5, 1], vertical_alignment="center")
             with q1:
+                keep_valid_multi("tab2_quick", list(T2_QUICK))
                 t_quick = st.pills("빠른 필터", list(T2_QUICK), format_func=T2_QUICK.get, selection_mode="multi",
                                    key="tab2_quick", label_visibility="collapsed") or []
             with q2:
@@ -1586,7 +1621,8 @@ with tab2:
             ("🧠 AI 적용", f"{sum(1 for a in t_rows if a['ai']):,}경기", "나머지는 배당 기준"),
             ("⚠️ AI가 다르게 본 경기", f"{sum(1 for a in t_rows if a['differs']):,}경기",
              f"1순위가 다르거나 {DIFF_PP:.0f}%p 이상 차이"),
-            ("💎 기대가치 플러스", f"{sum(1 for a in t_rows if a['gems']):,}경기", "AI 확률 기준 · 검증 중"),
+            ("💎 기대가치 플러스", f"{sum(1 for a in t_rows if a['gems']):,}경기", "AI 확률 기준 · 검증 통과") if GEM_ON else
+            ("🔒 💎 추천", "잠금", LOCK_NOTE),
         ])
 
         # E. 경기 목록 (줄을 누르면 아래에 자세히)
@@ -1705,8 +1741,11 @@ with tab2:
                                 f"(AI {prob_of(a['ai'], k) * 100:.1f}% vs 배당 {prob_of(a['mk'], k) * 100:.1f}%).")
                 bk = max(a["ev"], key=a["ev"].get)
                 bev = a["ev"][bk] * 100
-                if bev > 0 and a["ai"]:
-                    says.append(f"💎 <b>{lab[bk]}</b> 기대가치 {bev:+.1f}%: AI 기준으로는 플러스지만 아직 검증 중이에요.")
+                if bev > 0 and a["ai"] and not GEM_ON:
+                    says.append(f"AI 계산으로는 <b>{lab[bk]}</b> 기대가치 {bev:+.1f}%지만, 검증 3단계를 통과하기 전이라 "
+                                "추천하지 않아요 (🔒 추천 잠금).")
+                elif bev > 0 and a["ai"]:
+                    says.append(f"💎 <b>{lab[bk]}</b> 기대가치 {bev:+.1f}%: AI 기준 플러스예요 (검증 3단계 통과).")
                 else:
                     says.append(f"가장 나은 선택지(<b>{lab[bk]}</b>)도 기대가치 {bev:+.1f}%예요. 베트맨 마진(약 {margin:.0f}%)이 "
                                 + ("AI가 보는 차이보다 커서" if a["ai"] else "있어서") + " 오래 걸면 손해예요.")
@@ -1941,7 +1980,36 @@ with tab3:
             "- **왜 300경기?**: 축구는 운이 커서, 몇십 경기로는 실력과 운을 구분할 수 없어요. 그래서 판정 기준을 미리 정해 뒀어요.\n"
             "- **마감 배당 비교**: AI가 '배당보다 높다'고 본 쪽 배당이 마감 때 내려갔다면, 다른 배터들의 돈이 나중에 그쪽으로 몰렸다는 뜻이에요. "
             "승패보다 운이 덜 섞여서 더 적은 경기(50경기)로 방향을 볼 수 있어요.\n"
-            "- **적중률**은 참고용이에요. 배당 1순위만 골라도 꽤 맞아요. 돈을 벌 수 있는지는 **수익률**로 봐야 해요.")
+            "- **적중률**은 참고용이에요. 배당 1순위만 골라도 꽤 맞아요. 돈을 벌 수 있는지는 **수익률**로 봐야 해요.\n"
+            "- **회차 단위 95% 범위**: 같은 회차 경기끼리는 서로 영향을 줄 수 있어서(같은 날·같은 리그, 조합끼리 경기 공유) "
+            "회차를 통째로 다시 뽑아 범위를 계산해요. 회차가 적을 때는 이 방식이 범위를 너무 좁게 잡을 수 있어서, "
+            "경기 하나씩 뽑은 범위와 비교해 **넓은 쪽**을 써요.")
+
+    # ------------------------------------------------------------------
+    # 🔒 추천 잠금 (섀도 모드) — 검증 3단계 · 사전 등록 가설 (Phase 6.5)
+    # ------------------------------------------------------------------
+    st.divider()
+    st.subheader("🔒 추천 잠금 상태")
+    st.caption("AI 확률은 계속 계산·기록·채점하고 가상 베팅도 계속 만들어요(섀도 모드). 실제 구매에 영향을 주는 추천"
+               "(💎 · 가치 픽 · 텔레그램 추천 · 조합 찾기)만, 아래 3단계를 모두 통과한 기능부터 켜져요. "
+               "기준은 2026-10-27에 미리 정했고 결과를 보고 바꾸지 않아요. 범위는 모두 회차 단위예요.")
+    stage_lines = [f"{'✅' if s['ok'] else '⏳'} **{s['name']}** — {s['detail']}" for s in REC_STATUS["stages"]]
+    for f in REC_STATUS["features"].values():
+        p = f["profit"]
+        stage_lines.append(f"{'🔓 켜짐' if f['on'] else '🔒 잠금'} **{f['label']}** — {'✅' if p['ok'] else '⏳'} {p['name']}: {p['detail']}")
+    st.markdown("\n".join(f"- {line}" for line in stage_lines))
+    st.caption("① 과거 검증: 워크포워드(구간마다 그 이전 데이터로만 학습) 합친 결과의 범위 상한 < 0 · "
+               "② 실시간 확률: 경기 전 고정 예측 300경기 이상, 범위 상한 < 0 · ③ 수익: 실제 베팅 기록 300건 이상, 수익률 범위 하한 > 0. "
+               "300건은 최소치예요. 우위가 작으면(+2~3%) 범위 하한이 0을 넘기까지 수천 건이 필요해요.")
+    hyps = (card or {}).get("hypotheses") or []
+    if hyps:
+        st.markdown("**📌 사전 등록 가설** (2026-10-28 이후 킥오프한 축구 승무패만 · 300경기부터 판정 · 600경기에서도 확인 안 되면 중단)")
+        st.dataframe(pd.DataFrame([{
+            "가설": f"{h['id']} {h['name']}", "경기": h["n"],
+            "AI − 배당": f"{h['ll_diff']:+.4f}" if h.get("ll_diff") is not None else "-",
+            "95% 범위 (회차 단위)": f"[{h['ll_diff_ci'][0]:+.4f}, {h['ll_diff_ci'][1]:+.4f}]" if h.get("ll_diff_ci") else "-",
+            "EV>2% 베팅": h.get("value_bets", 0),
+            "판정": h["verdict"]} for h in hyps]), hide_index=True, width="stretch")
 
     # ------------------------------------------------------------------
     # A. 공식 AI 성적표 — 경기 시작 전에 고정 저장한 예측만 실제 결과로 채점 (사후 정보 없음)
@@ -2007,14 +2075,15 @@ with tab3:
             if mm and mm.get("segments"):
                 st.markdown("**전 종목 보정 AI** — 유형별 시험 (핸디캡·언더오버·홀짝·농구·야구·배구 …)")
                 st.caption("유형마다 '베트맨이 일관되게 잘못 매기는 쪽'을 2023~2025년 상반기로 학습하고, 2026년 시험·최근 실전에서 "
-                           f"둘 다 배당보다 나은 유형만 실전에 써요. 학습: {mm.get('trained_at', '-')[:10]}")
+                           "둘 다 배당보다 나은 유형만 AI 확률을 계산·기록해요(섀도). 추천은 위 🔒 검증 3단계를 통과해야 켜져요. "
+                           f"학습: {mm.get('trained_at', '-')[:10]}")
                 seg_rows = []
                 for key, v in mm["segments"].items():
                     gt, k = key.split("|")
                     t, h = v.get("test"), v.get("holdout")
                     seg_rows.append({
                         "유형": gt + (" (무 있음)" if k == "3" and "승무패" not in gt else ""),
-                        "실전 적용": "✅ 적용" if v.get("passes_gate") else ("⏳ 표본 부족" if v.get("reason") else "❌ 배당 기준"),
+                        "AI 계산": "✅ 계산(섀도)" if v.get("passes_gate") else ("⏳ 표본 부족" if v.get("reason") else "❌ 배당 기준"),
                         "2026 시험 경기": t["n"] if t else v["sizes"]["test"],
                         "2026 시험 AI − 배당": f"{t['ll_diff']:+.4f}" if t else "-",
                         "95% 범위": f"[{t['ll_diff_ci'][0]:+.4f}, {t['ll_diff_ci'][1]:+.4f}]" if t else "-",
@@ -2022,7 +2091,7 @@ with tab3:
                         "최근 실전 AI − 배당": f"{h['ll_diff']:+.4f}" if h else "-",
                         "강팀 저평가 정도 (β)": round(v["eval_params"]["beta"], 3) if v.get("eval_params") else None,
                     })
-                seg_rows.sort(key=lambda r: (not r["실전 적용"].startswith("✅"), -r["2026 시험 경기"]))
+                seg_rows.sort(key=lambda r: (not r["AI 계산"].startswith("✅"), -r["2026 시험 경기"]))
                 st.dataframe(pd.DataFrame(seg_rows), hide_index=True, width="stretch")
                 st.caption("AI − 배당이 음수면 AI가 더 정확해요. β가 0보다 크면 베트맨이 강한 쪽(배당 1순위)을 낮게 잡는다는 뜻이에요.")
 

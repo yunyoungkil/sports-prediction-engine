@@ -35,6 +35,7 @@ if sys.platform.startswith('win'):
         pass
 
 from models.market_corrector import FEATURE_SETS, LAMBDA_GRID, MarketCorrector, _fair_probs
+from models.league_groups import GROUP_NAMES, LEAGUE_GROUPS, league_group  # noqa: F401 (다른 모듈이 여기서 import)
 from evaluation.config import BETMAN_CUTOFF_DATE
 
 ARCHIVE_CSV = Path("data/history/betman_soccer_1x2.csv")
@@ -44,35 +45,13 @@ TUNE_START = pd.Timestamp("2025-07-01", tz="UTC")
 TEST_START = pd.Timestamp("2026-01-01", tz="UTC")
 HOLDOUT_START = pd.Timestamp(BETMAN_CUTOFF_DATE, tz="UTC")
 
-# 리그명(부분 일치) → 그룹. 순서대로 먼저 맞는 것을 사용
-LEAGUE_GROUPS = [
-    ("kleague", ["K리그"]),
-    ("jleague", ["J1", "J2", "J리그", "일본"]),
-    ("mls", ["메이저리그사커", "MLS"]),
-    ("china_aus", ["중국", "호주", "A리그"]),
-    ("uefa_cup", ["챔피언스리그", "유로파", "컨퍼런스", "UEFA"]),
-    ("national", ["월드컵", "친선", "네이션스", "골드컵", "아시안컵", "유로", "선수권", "코파 아메리카", "국가", "U20", "U23", "올림픽"]),
-    ("europe_top", ["프리미어리그", "라리가", "분데스리가", "세리에", "리그1"]),
-    ("europe_other", ["챔피언십", "EFL", "에레디비시", "포르투갈", "스코틀랜드", "벨기에", "튀르키예", "터키"]),
-]
-GROUP_NAMES = [g for g, _ in LEAGUE_GROUPS]   # 나머지는 "other" (기준 그룹, 더미 없음)
+# 리그 그룹 정의는 models/league_groups.py (성적표 사전 가설 판정과 공용)
 FORM_N = 5
 
 FEATURE_SETS["betman"] = {
     "per_outcome": ["log_p_market"],
     "match": ["form_pts_diff", "form_gd_diff"] + [f"g_{g}" for g in GROUP_NAMES],
 }
-
-
-def league_group(league: str) -> str:
-    s = str(league or "")
-    # "AFC 챔피언스리그"는 UEFA 대회가 아니므로 기타로
-    if "AFC" in s:
-        return "other"
-    for g, tokens in LEAGUE_GROUPS:
-        if any(t in s for t in tokens):
-            return g
-    return "other"
 
 
 class TeamForm:
@@ -315,6 +294,7 @@ def run(df: pd.DataFrame) -> MarketCorrector:
                     by_group[g] = {"n": s["samples"], "ll_diff": s["ll_diff"], "ll_diff_ci": s["ll_diff_ci"]}
             report[f"{name}_by_group"] = by_group
 
+    # [6.5] 이 게이트(평균 LL < 0)는 'AI를 섀도로 계산·기록할 자격'만 뜻한다. 추천은 evaluation/gates.py 검증 3단계 통과 후
     report["passes_gate"] = bool(report.get("test", {}).get("ll_diff", 1) < 0
                                  and report.get("holdout", {}).get("ll_diff", 1) < 0)
     if report["passes_gate"]:
