@@ -1,10 +1,11 @@
 {
-  "updated_at": "2026-10-27T10:38:03+00:00",
+  "updated_at": "2026-10-27T15:31:34+00:00",
   "graded_matches": 53,
   "rounds": [
     260126,
     260127
   ],
+  "ci_method": "회차 단위 부트스트랩",
   "model_ll": 0.956,
   "market_ll": 0.9675,
   "ll_diff": -0.0115,
@@ -23,8 +24,8 @@
   "gem_roi_ci_low": 0.0,
   "gem_roi_ci_high": 0.0,
   "prob_sources": {
-    "betman_corrector": 34,
-    "betman_markets": 19
+    "betman_markets": 19,
+    "betman_corrector": 34
   },
   "by_game_type": {
     "농구 승패": {
@@ -51,6 +52,142 @@
         0.0512
       ]
     }
+  },
+  "hypotheses": [
+    {
+      "id": "H1",
+      "name": "국가대표 경기에서 AI 확률 우위가 계속된다",
+      "group": "national",
+      "since": "2026-10-27T15:00:00+00:00",
+      "n": 0,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "value_bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "진행 중 (0/300경기)"
+    },
+    {
+      "id": "H2",
+      "name": "UEFA 대회에서 AI 확률 우위가 계속된다",
+      "group": "uefa_cup",
+      "since": "2026-10-27T15:00:00+00:00",
+      "n": 0,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "value_bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "진행 중 (0/300경기)"
+    }
+  ],
+  "calibration": {
+    "ai": [
+      {
+        "range": "0~10%",
+        "n": 3,
+        "said_pct": 8.6,
+        "happened_pct": 0.0
+      },
+      {
+        "range": "10~20%",
+        "n": 23,
+        "said_pct": 16.2,
+        "happened_pct": 4.3
+      },
+      {
+        "range": "20~30%",
+        "n": 51,
+        "said_pct": 24.8,
+        "happened_pct": 39.2
+      },
+      {
+        "range": "30~40%",
+        "n": 18,
+        "said_pct": 33.6,
+        "happened_pct": 33.3
+      },
+      {
+        "range": "40~50%",
+        "n": 20,
+        "said_pct": 44.7,
+        "happened_pct": 30.0
+      },
+      {
+        "range": "50~60%",
+        "n": 15,
+        "said_pct": 55.2,
+        "happened_pct": 53.3
+      },
+      {
+        "range": "60~70%",
+        "n": 10,
+        "said_pct": 62.6,
+        "happened_pct": 60.0
+      },
+      {
+        "range": "70~80%",
+        "n": 8,
+        "said_pct": 74.6,
+        "happened_pct": 62.5
+      },
+      {
+        "range": "80~90%",
+        "n": 1,
+        "said_pct": 86.2,
+        "happened_pct": 100.0
+      }
+    ],
+    "market": [
+      {
+        "range": "10~20%",
+        "n": 19,
+        "said_pct": 16.4,
+        "happened_pct": 5.3
+      },
+      {
+        "range": "20~30%",
+        "n": 60,
+        "said_pct": 24.7,
+        "happened_pct": 35.0
+      },
+      {
+        "range": "30~40%",
+        "n": 18,
+        "said_pct": 34.9,
+        "happened_pct": 38.9
+      },
+      {
+        "range": "40~50%",
+        "n": 19,
+        "said_pct": 45.0,
+        "happened_pct": 21.1
+      },
+      {
+        "range": "50~60%",
+        "n": 19,
+        "said_pct": 55.0,
+        "happened_pct": 57.9
+      },
+      {
+        "range": "60~70%",
+        "n": 8,
+        "said_pct": 64.6,
+        "happened_pct": 62.5
+      },
+      {
+        "range": "70~80%",
+        "n": 5,
+        "said_pct": 74.4,
+        "happened_pct": 60.0
+      },
+      {
+        "range": "80~90%",
+        "n": 1,
+        "said_pct": 86.2,
+        "happened_pct": 100.0
+      }
+    ]
   },
   "verdict": "검증 중 (표본 53/300)",
   "model": {
