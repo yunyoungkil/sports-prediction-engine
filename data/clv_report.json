@@ -1,21 +1,21 @@
 {
-  "updated_at": "2026-10-27T15:31:34+00:00",
+  "updated_at": "2026-10-27T16:43:17+00:00",
   "rounds": [
     260126,
     260127
   ],
-  "matches": 66,
-  "moved": 26,
-  "toward_ai": 10,
-  "away_from_ai": 16,
-  "toward_ai_pct": 38.5,
-  "fav_toward_pct": 42.3,
+  "matches": 70,
+  "moved": 35,
+  "toward_ai": 16,
+  "away_from_ai": 19,
+  "toward_ai_pct": 45.7,
+  "fav_toward_pct": 45.7,
   "mean_move_pp": {
-    "n": 66,
-    "mean": -0.24358,
+    "n": 70,
+    "mean": -0.35308,
     "ci": [
-      -0.55885,
-      0.05616
+      -0.71152,
+      -0.05544
     ]
   },
   "by_game_type": {
@@ -36,34 +36,34 @@
       }
     },
     "축구 승무패": {
-      "matches": 40,
-      "moved": 14,
-      "toward_ai": 7,
-      "away_from_ai": 7,
+      "matches": 42,
+      "moved": 18,
+      "toward_ai": 9,
+      "away_from_ai": 9,
       "toward_ai_pct": 50.0,
-      "fav_toward_pct": 57.1,
+      "fav_toward_pct": 50.0,
       "mean_move_pp": {
-        "n": 40,
-        "mean": 0.10242,
+        "n": 42,
+        "mean": -0.08986,
         "ci": [
-          -0.18523,
-          0.3658
+          -0.40623,
+          0.17796
         ]
       }
     },
     "축구 핸디캡": {
-      "matches": 15,
-      "moved": 8,
-      "toward_ai": 3,
-      "away_from_ai": 5,
-      "toward_ai_pct": 37.5,
-      "fav_toward_pct": 37.5,
+      "matches": 17,
+      "moved": 13,
+      "toward_ai": 7,
+      "away_from_ai": 6,
+      "toward_ai_pct": 53.8,
+      "fav_toward_pct": 53.8,
       "mean_move_pp": {
-        "n": 15,
-        "mean": -0.50094,
+        "n": 17,
+        "mean": -0.48718,
         "ci": [
-          -1.28256,
-          0.2367
+          -1.39376,
+          0.31375
         ]
       }
     }
@@ -99,13 +99,13 @@
       ]
     },
     "E_market_fav": {
-      "n": 13,
-      "mean": 0.69878,
+      "n": 14,
+      "mean": 0.99201,
       "ci": [
-        -1.07014,
-        2.56848
+        -1.83115,
+        4.29554
       ]
     }
   },
-  "verdict": "검증 중 (배당이 바뀐 경기 26/50)"
+  "verdict": "검증 중 (배당이 바뀐 경기 35/50)"
 }
