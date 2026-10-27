@@ -3,6 +3,7 @@ name: Results Quick Update
 on:
   schedule:
     # 1시간마다 (매시 17분 — 정각 혼잡 회피). 끝난 경기 결과만 받아 성적표·가상 베팅 채점 갱신
+    # (GitHub 무료 예약 실행은 밀려서 실제로는 4~5시간 간격으로 돎 — 운영 점검 한도는 12시간)
     - cron: '17 * * * *'
   workflow_dispatch:
 

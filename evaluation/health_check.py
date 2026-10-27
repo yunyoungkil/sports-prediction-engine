@@ -9,7 +9,7 @@ evaluation/health_check.py
 - odds_missing     : 유효 배당(1.0 초과)이 2개 미만인 경기(배당 0·누락)가 5%를 넘는다
 - count_mismatch   : 예측 파일과 경기 파일의 경기 수가 다르다
 - pipeline_stale   : 파이프라인이 36시간 넘게 실행되지 않았다 (하루 2회 예약) — 결과 갱신 때 점검
-- results_stale    : 결과 갱신이 6시간 넘게 실행되지 않았다 (1시간마다 예약) — 파이프라인 때 점검
+- results_stale    : 결과 갱신이 12시간 넘게 실행되지 않았다 (1시간마다 예약이지만 GitHub 지연으로 실제 4~5시간 간격) — 파이프라인 때 점검
 - graded_decrease  : 성적표 채점 경기 수가 직전보다 줄었다 (기록 유실)
 
 저장: data/health_state.json (직전 값 · 마지막 실행 시각), data/health_report.json (이번 점검 결과)
@@ -41,7 +41,7 @@ if sys.platform.startswith("win"):
 
 DATA_DIR = Path("data")
 PIPELINE_STALE_H = 36
-RESULTS_STALE_H = 6
+RESULTS_STALE_H = 12   # 예약은 1시간마다지만 GitHub 무료 예약 실행이 밀려 실제 간격이 4~5시간 (2026-10-27 확인)
 DROP_RATIO = 0.5
 MIN_COUNT_FOR_DROP = 20
 ODDS_MISSING_SHARE = 0.05

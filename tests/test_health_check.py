@@ -40,10 +40,19 @@ def test_broken_samples_raise_the_right_warning():
 
 def test_stale_runs_are_checked_by_the_other_job():
     old = {"pipeline_last_run": (NOW - timedelta(hours=40)).isoformat(),
-           "results_last_run": (NOW - timedelta(hours=8)).isoformat()}
+           "results_last_run": (NOW - timedelta(hours=13)).isoformat()}
     preds = _matches(10)
     assert _codes(run_checks(preds, preds, None, old, NOW, "results")) == ["pipeline_stale"]
     assert _codes(run_checks(preds, preds, None, old, NOW, "pipeline")) == ["results_stale"]
+
+
+def test_github_schedule_delay_is_not_an_alarm():
+    """GitHub 예약 실행이 밀려 결과 갱신이 5~6시간 간격이어도 경고하지 않는다 (실제 관측 최대 5시간 28분)"""
+    late = {"pipeline_last_run": (NOW - timedelta(hours=19)).isoformat(),
+            "results_last_run": (NOW - timedelta(hours=6, minutes=30)).isoformat()}
+    preds = _matches(10)
+    assert _codes(run_checks(preds, preds, None, late, NOW, "pipeline")) == []
+    assert _codes(run_checks(preds, preds, None, late, NOW, "results")) == []
 
 
 def test_record_writes_state_and_verify_fails_on_warnings(tmp_path):
