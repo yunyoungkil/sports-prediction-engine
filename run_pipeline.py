@@ -321,6 +321,13 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     except Exception:
         pass
 
+    # 6. [Phase 6.1] 운영 점검 — 경기 수 급감 · 배당 누락 · 파일 불일치 · 결과 갱신 중단 등 (경고는 기록만, Actions가 실패로 표시)
+    try:
+        from evaluation.health_check import record as health_record
+        health_record("pipeline")
+    except Exception as e:
+        print(f"⚠️ 운영 점검 실패: {e}")
+
     return results
 
 

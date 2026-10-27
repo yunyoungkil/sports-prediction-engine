@@ -66,3 +66,18 @@ jobs:
           git config --local user.name "GitHub Action Bot"
           git add data/
           git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 [자동 갱신] 최신 베트맨 경기 및 AI 승부예측 결과 업데이트" && git pull --rebase origin master && git push)
+
+      # [Phase 6.1] 데이터는 먼저 커밋해 두고, 운영 점검 경고가 있으면 이 실행을 '실패'로 표시 (GitHub 알림 메일) + 텔레그램
+      - name: 7. 운영 점검 결과 확인
+        id: verify
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m evaluation.health_check --verify
+
+      - name: 실행 실패 알림 (텔레그램 Secret이 있을 때만)
+        if: failure() && steps.verify.outcome != 'failure'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m evaluation.health_check --notify-failure "파이프라인"

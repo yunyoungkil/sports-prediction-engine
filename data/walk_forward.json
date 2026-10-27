@@ -1,0 +1,573 @@
+{
+  "updated_at": "2026-10-27T09:26:08+00:00",
+  "folds": [
+    {
+      "fold": "2024-07-01 ~ 2025-01-01",
+      "start": "2024-07-01",
+      "train": 8466,
+      "lambda": 0.1,
+      "score": {
+        "samples": 3223,
+        "model_ll": 0.9722,
+        "market_ll": 0.9731,
+        "ll_diff": -0.0008,
+        "ll_diff_ci": [
+          -0.0022,
+          0.0006
+        ],
+        "bets": 0,
+        "roi_pct": 0.0,
+        "roi_ci_low": 0.0,
+        "roi_ci_high": 0.0
+      },
+      "strategies": {
+        "A_gem_single": {
+          "label": "A. 💎 단일",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0,
+          "roi_ci_low": 0.0,
+          "roi_ci_high": 0.0,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "B_fav_double": {
+          "label": "B. 강팀 2폴더 (≤1.3배·AI▲)",
+          "bets": 58,
+          "hits": 42,
+          "staked": 58000,
+          "returned": 60800,
+          "profit": 2800,
+          "roi_pct": 4.83,
+          "roi_ci_low": -12.07,
+          "roi_ci_high": 20.87,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "C_finder_top": {
+          "label": "C. 조합 찾기 1순위",
+          "bets": 68,
+          "hits": 41,
+          "staked": 68000,
+          "returned": 65100,
+          "profit": -2900,
+          "roi_pct": -4.26,
+          "roi_ci_low": -23.98,
+          "roi_ci_high": 13.68,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "D_banker_cover": {
+          "label": "D. 축 2 + 전배 (비교용)",
+          "bets": 207,
+          "hits": 47,
+          "staked": 207000,
+          "returned": 146900,
+          "profit": -60100,
+          "roi_pct": -29.03,
+          "roi_ci_low": -45.56,
+          "roi_ci_high": -9.85,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "E_market_fav": {
+          "label": "E. 배당 1순위 단일 (기준선)",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0,
+          "roi_ci_low": 0.0,
+          "roi_ci_high": 0.0,
+          "verdict": "판단 보류 (표본 부족)"
+        }
+      }
+    },
+    {
+      "fold": "2025-01-01 ~ 2025-07-01",
+      "start": "2025-01-01",
+      "train": 11689,
+      "lambda": 0.0,
+      "score": {
+        "samples": 3185,
+        "model_ll": 0.9882,
+        "market_ll": 0.9888,
+        "ll_diff": -0.0006,
+        "ll_diff_ci": [
+          -0.0032,
+          0.0021
+        ],
+        "bets": 2,
+        "roi_pct": 35.0,
+        "roi_ci_low": 35.0,
+        "roi_ci_high": 35.0
+      },
+      "strategies": {
+        "A_gem_single": {
+          "label": "A. 💎 단일",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0,
+          "roi_ci_low": 0.0,
+          "roi_ci_high": 0.0,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "B_fav_double": {
+          "label": "B. 강팀 2폴더 (≤1.3배·AI▲)",
+          "bets": 57,
+          "hits": 34,
+          "staked": 57000,
+          "returned": 49400,
+          "profit": -7600,
+          "roi_pct": -13.33,
+          "roi_ci_low": -32.46,
+          "roi_ci_high": 5.44,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "C_finder_top": {
+          "label": "C. 조합 찾기 1순위",
+          "bets": 66,
+          "hits": 19,
+          "staked": 66000,
+          "returned": 34600,
+          "profit": -31400,
+          "roi_pct": -47.58,
+          "roi_ci_low": -66.83,
+          "roi_ci_high": -23.94,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "D_banker_cover": {
+          "label": "D. 축 2 + 전배 (비교용)",
+          "bets": 195,
+          "hits": 46,
+          "staked": 195000,
+          "returned": 158600,
+          "profit": -36400,
+          "roi_pct": -18.67,
+          "roi_ci_low": -38.47,
+          "roi_ci_high": 2.92,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "E_market_fav": {
+          "label": "E. 배당 1순위 단일 (기준선)",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0,
+          "roi_ci_low": 0.0,
+          "roi_ci_high": 0.0,
+          "verdict": "판단 보류 (표본 부족)"
+        }
+      }
+    },
+    {
+      "fold": "2025-07-01 ~ 2026-01-01",
+      "start": "2025-07-01",
+      "train": 14874,
+      "lambda": 0.01,
+      "score": {
+        "samples": 3315,
+        "model_ll": 0.9553,
+        "market_ll": 0.9586,
+        "ll_diff": -0.0034,
+        "ll_diff_ci": [
+          -0.0053,
+          -0.0013
+        ],
+        "bets": 0,
+        "roi_pct": 0.0,
+        "roi_ci_low": 0.0,
+        "roi_ci_high": 0.0
+      },
+      "strategies": {
+        "A_gem_single": {
+          "label": "A. 💎 단일",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0,
+          "roi_ci_low": 0.0,
+          "roi_ci_high": 0.0,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "B_fav_double": {
+          "label": "B. 강팀 2폴더 (≤1.3배·AI▲)",
+          "bets": 58,
+          "hits": 40,
+          "staked": 58000,
+          "returned": 56800,
+          "profit": -1200,
+          "roi_pct": -2.07,
+          "roi_ci_low": -19.83,
+          "roi_ci_high": 15.34,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "C_finder_top": {
+          "label": "C. 조합 찾기 1순위",
+          "bets": 64,
+          "hits": 46,
+          "staked": 64000,
+          "returned": 75600,
+          "profit": 11600,
+          "roi_pct": 18.12,
+          "roi_ci_low": -0.32,
+          "roi_ci_high": 37.5,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "D_banker_cover": {
+          "label": "D. 축 2 + 전배 (비교용)",
+          "bets": 192,
+          "hits": 50,
+          "staked": 192000,
+          "returned": 162200,
+          "profit": -29800,
+          "roi_pct": -15.52,
+          "roi_ci_low": -36.93,
+          "roi_ci_high": 4.43,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "E_market_fav": {
+          "label": "E. 배당 1순위 단일 (기준선)",
+          "bets": 4,
+          "hits": 4,
+          "staked": 4000,
+          "returned": 6000,
+          "profit": 2000,
+          "roi_pct": 50.0,
+          "roi_ci_low": 50.0,
+          "roi_ci_high": 50.0,
+          "verdict": "판단 보류 (표본 부족)"
+        }
+      }
+    },
+    {
+      "fold": "2026-01-01 ~ 2026-10-05",
+      "start": "2026-01-01",
+      "train": 18189,
+      "lambda": 0.0,
+      "score": {
+        "samples": 4306,
+        "model_ll": 0.988,
+        "market_ll": 0.9901,
+        "ll_diff": -0.0021,
+        "ll_diff_ci": [
+          -0.0044,
+          0.0001
+        ],
+        "bets": 3,
+        "roi_pct": 102.67,
+        "roi_ci_low": 102.67,
+        "roi_ci_high": 102.67
+      },
+      "strategies": {
+        "A_gem_single": {
+          "label": "A. 💎 단일",
+          "bets": 10,
+          "hits": 6,
+          "staked": 10000,
+          "returned": 14830,
+          "profit": 4830,
+          "roi_pct": 48.3,
+          "roi_ci_low": -32.7,
+          "roi_ci_high": 125.86,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "B_fav_double": {
+          "label": "B. 강팀 2폴더 (≤1.3배·AI▲)",
+          "bets": 83,
+          "hits": 52,
+          "staked": 83000,
+          "returned": 75900,
+          "profit": -7100,
+          "roi_pct": -8.55,
+          "roi_ci_low": -23.86,
+          "roi_ci_high": 7.11,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "C_finder_top": {
+          "label": "C. 조합 찾기 1순위",
+          "bets": 101,
+          "hits": 52,
+          "staked": 101000,
+          "returned": 107600,
+          "profit": 6600,
+          "roi_pct": 6.53,
+          "roi_ci_low": -21.68,
+          "roi_ci_high": 43.67,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "D_banker_cover": {
+          "label": "D. 축 2 + 전배 (비교용)",
+          "bets": 300,
+          "hits": 62,
+          "staked": 300000,
+          "returned": 215000,
+          "profit": -85000,
+          "roi_pct": -28.33,
+          "roi_ci_low": -44.0,
+          "roi_ci_high": -13.03,
+          "verdict": "수익 미입증"
+        },
+        "E_market_fav": {
+          "label": "E. 배당 1순위 단일 (기준선)",
+          "bets": 3457,
+          "hits": 1803,
+          "staked": 3457000,
+          "returned": 3027480,
+          "profit": -429520,
+          "roi_pct": -12.42,
+          "roi_ci_low": -15.36,
+          "roi_ci_high": -9.49,
+          "verdict": "수익 미입증"
+        }
+      }
+    },
+    {
+      "fold": "2026-10-05 ~ ",
+      "start": "2026-10-05",
+      "train": 22495,
+      "lambda": 0.001,
+      "score": {
+        "samples": 629,
+        "model_ll": 0.9553,
+        "market_ll": 0.9601,
+        "ll_diff": -0.0048,
+        "ll_diff_ci": [
+          -0.0108,
+          0.0011
+        ],
+        "bets": 2,
+        "roi_pct": -100.0,
+        "roi_ci_low": -100.0,
+        "roi_ci_high": -100.0
+      },
+      "strategies": {
+        "A_gem_single": {
+          "label": "A. 💎 단일",
+          "bets": 1,
+          "hits": 0,
+          "staked": 1000,
+          "returned": 0,
+          "profit": -1000,
+          "roi_pct": -100.0,
+          "roi_ci_low": -100.0,
+          "roi_ci_high": -100.0,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "B_fav_double": {
+          "label": "B. 강팀 2폴더 (≤1.3배·AI▲)",
+          "bets": 9,
+          "hits": 7,
+          "staked": 9000,
+          "returned": 10400,
+          "profit": 1400,
+          "roi_pct": 15.56,
+          "roi_ci_low": -33.36,
+          "roi_ci_high": 51.11,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "C_finder_top": {
+          "label": "C. 조합 찾기 1순위",
+          "bets": 9,
+          "hits": 6,
+          "staked": 9000,
+          "returned": 10000,
+          "profit": 1000,
+          "roi_pct": 11.11,
+          "roi_ci_low": -46.67,
+          "roi_ci_high": 62.22,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "D_banker_cover": {
+          "label": "D. 축 2 + 전배 (비교용)",
+          "bets": 27,
+          "hits": 7,
+          "staked": 27000,
+          "returned": 21500,
+          "profit": -5500,
+          "roi_pct": -20.37,
+          "roi_ci_low": -68.15,
+          "roi_ci_high": 34.44,
+          "verdict": "판단 보류 (표본 부족)"
+        },
+        "E_market_fav": {
+          "label": "E. 배당 1순위 단일 (기준선)",
+          "bets": 386,
+          "hits": 212,
+          "staked": 386000,
+          "returned": 345720,
+          "profit": -40280,
+          "roi_pct": -10.44,
+          "roi_ci_low": -19.19,
+          "roi_ci_high": -2.24,
+          "verdict": "수익 미입증"
+        }
+      }
+    }
+  ],
+  "pooled": {
+    "score": {
+      "samples": 14658,
+      "model_ll": 0.9758,
+      "market_ll": 0.9777,
+      "ll_diff": -0.0019,
+      "ll_diff_ci": [
+        -0.003,
+        -0.0009
+      ],
+      "bets": 7,
+      "roi_pct": 25.43,
+      "roi_ci_low": -61.43,
+      "roi_ci_high": 111.15
+    },
+    "by_group": {
+      "kleague": {
+        "n": 1157,
+        "ll_diff": -0.0015,
+        "ll_diff_ci": [
+          -0.0042,
+          0.0013
+        ]
+      },
+      "jleague": {
+        "n": 1793,
+        "ll_diff": -0.001,
+        "ll_diff_ci": [
+          -0.0033,
+          0.0013
+        ]
+      },
+      "mls": {
+        "n": 1205,
+        "ll_diff": 0.0001,
+        "ll_diff_ci": [
+          -0.0033,
+          0.0035
+        ]
+      },
+      "china_aus": {
+        "n": 399,
+        "ll_diff": 0.0004,
+        "ll_diff_ci": [
+          -0.0068,
+          0.0081
+        ]
+      },
+      "uefa_cup": {
+        "n": 1639,
+        "ll_diff": -0.004,
+        "ll_diff_ci": [
+          -0.0077,
+          -0.0001
+        ]
+      },
+      "national": {
+        "n": 1174,
+        "ll_diff": -0.0083,
+        "ll_diff_ci": [
+          -0.0126,
+          -0.0042
+        ]
+      },
+      "europe_top": {
+        "n": 3848,
+        "ll_diff": -0.0015,
+        "ll_diff_ci": [
+          -0.0035,
+          0.0004
+        ]
+      },
+      "europe_other": {
+        "n": 1983,
+        "ll_diff": 0.0015,
+        "ll_diff_ci": [
+          -0.0016,
+          0.0047
+        ]
+      },
+      "other": {
+        "n": 1460,
+        "ll_diff": -0.0038,
+        "ll_diff_ci": [
+          -0.0075,
+          -0.0
+        ]
+      }
+    },
+    "strategies": {
+      "A_gem_single": {
+        "label": "A. 💎 단일",
+        "bets": 11,
+        "hits": 6,
+        "staked": 11000,
+        "returned": 14830,
+        "profit": 3830,
+        "roi_pct": 34.82,
+        "roi_ci_low": -38.82,
+        "roi_ci_high": 113.01,
+        "verdict": "판단 보류 (표본 부족)"
+      },
+      "B_fav_double": {
+        "label": "B. 강팀 2폴더 (≤1.3배·AI▲)",
+        "bets": 265,
+        "hits": 175,
+        "staked": 265000,
+        "returned": 253300,
+        "profit": -11700,
+        "roi_pct": -4.42,
+        "roi_ci_low": -12.42,
+        "roi_ci_high": 3.7,
+        "verdict": "판단 보류 (표본 부족)"
+      },
+      "C_finder_top": {
+        "label": "C. 조합 찾기 1순위",
+        "bets": 308,
+        "hits": 164,
+        "staked": 308000,
+        "returned": 292900,
+        "profit": -15100,
+        "roi_pct": -4.9,
+        "roi_ci_low": -17.5,
+        "roi_ci_high": 9.64,
+        "verdict": "수익 미입증"
+      },
+      "D_banker_cover": {
+        "label": "D. 축 2 + 전배 (비교용)",
+        "bets": 921,
+        "hits": 212,
+        "staked": 921000,
+        "returned": 704200,
+        "profit": -216800,
+        "roi_pct": -23.54,
+        "roi_ci_low": -32.6,
+        "roi_ci_high": -14.48,
+        "verdict": "수익 미입증"
+      },
+      "E_market_fav": {
+        "label": "E. 배당 1순위 단일 (기준선)",
+        "bets": 3847,
+        "hits": 2019,
+        "staked": 3847000,
+        "returned": 3379200,
+        "profit": -467800,
+        "roi_pct": -12.16,
+        "roi_ci_low": -14.88,
+        "roi_ci_high": -9.51,
+        "verdict": "수익 미입증"
+      }
+    }
+  },
+  "folds_better_than_market": "5/5",
+  "reproduction": {
+    "ok": true,
+    "walk_forward": -0.0021,
+    "phase_5_6": -0.0021
+  }
+}

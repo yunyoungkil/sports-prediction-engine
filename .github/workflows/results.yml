@@ -35,3 +35,18 @@ jobs:
           git config --local user.name "GitHub Action Bot"
           git add data/
           git diff --staged --quiet || (git commit -m "🤖 [결과 갱신] 끝난 경기 결과·성적표·가상 베팅 채점" && git pull --rebase origin master && git push)
+
+      # [Phase 6.1] 운영 점검 경고(파이프라인 36시간 넘게 미실행 등)가 있으면 '실패'로 표시 + 텔레그램
+      - name: 운영 점검 결과 확인
+        id: verify
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m evaluation.health_check --verify
+
+      - name: 실행 실패 알림 (텔레그램 Secret이 있을 때만)
+        if: failure() && steps.verify.outcome != 'failure'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m evaluation.health_check --notify-failure "결과 갱신"

@@ -1,0 +1,426 @@
+{
+  "updated_at": "2026-10-27T09:25:15+00:00",
+  "rows": [
+    {
+      "segment": "축구 소수핸디캡|2",
+      "n_total": 3122,
+      "n_test": 402,
+      "margin_pct": 14.3,
+      "gate": false,
+      "ll_diff": -0.00252,
+      "ll_diff_ci": [
+        -0.01538,
+        0.01072
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "축구 승무패|3",
+      "n_total": 23124,
+      "n_test": 4306,
+      "margin_pct": 15.4,
+      "gate": true,
+      "ll_diff": -0.0021,
+      "ll_diff_ci": [
+        -0.0044,
+        0.0001
+      ],
+      "matches_5_11": null,
+      "bets": 3,
+      "roi_pct": 102.67,
+      "roi_ci": [
+        102.67,
+        102.67
+      ],
+      "note": "5.6 전용 모델 보고값 (EV > 2% 기준)",
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "축구 핸디캡|3",
+      "n_total": 26613,
+      "n_test": 5672,
+      "margin_pct": 15.47,
+      "gate": true,
+      "ll_diff": -0.00177,
+      "ll_diff_ci": [
+        -0.00348,
+        -3e-05
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 있음 · 마진 못 넘음"
+    },
+    {
+      "segment": "배구 승패|2",
+      "n_total": 2092,
+      "n_test": 419,
+      "margin_pct": 14.06,
+      "gate": false,
+      "ll_diff": -0.0011,
+      "ll_diff_ci": [
+        -0.00409,
+        0.00176
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "농구 SUM|2",
+      "n_total": 3785,
+      "n_test": 1204,
+      "margin_pct": 14.18,
+      "gate": false,
+      "ll_diff": -0.00022,
+      "ll_diff_ci": [
+        -0.00112,
+        0.00068
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "야구 핸디캡|2",
+      "n_total": 15238,
+      "n_test": 3748,
+      "margin_pct": 14.06,
+      "gate": false,
+      "ll_diff": -0.00013,
+      "ll_diff_ci": [
+        -0.00116,
+        0.00092
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "농구 승패|2",
+      "n_total": 6945,
+      "n_test": 1251,
+      "margin_pct": 14.77,
+      "gate": true,
+      "ll_diff": -0.0001,
+      "ll_diff_ci": [
+        -0.00019,
+        -1e-05
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 있음 · 마진 못 넘음"
+    },
+    {
+      "segment": "배구 세트핸디캡|2",
+      "n_total": 2325,
+      "n_test": 464,
+      "margin_pct": 14.03,
+      "gate": false,
+      "ll_diff": -5e-05,
+      "ll_diff_ci": [
+        -0.00012,
+        2e-05
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "농구 언더오버|2",
+      "n_total": 7207,
+      "n_test": 1356,
+      "margin_pct": 14.72,
+      "gate": false,
+      "ll_diff": -3e-05,
+      "ll_diff_ci": [
+        -0.00096,
+        0.00091
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "배구 언더오버|2",
+      "n_total": 2300,
+      "n_test": 465,
+      "margin_pct": 14.07,
+      "gate": false,
+      "ll_diff": -2e-05,
+      "ll_diff_ci": [
+        -0.00016,
+        0.00012
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "야구 SUM|2",
+      "n_total": 6987,
+      "n_test": 3716,
+      "margin_pct": 13.35,
+      "gate": false,
+      "ll_diff": -2e-05,
+      "ll_diff_ci": [
+        -6e-05,
+        2e-05
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "축구 언더오버|2",
+      "n_total": 22896,
+      "n_test": 4295,
+      "margin_pct": 14.29,
+      "gate": false,
+      "ll_diff": -2e-05,
+      "ll_diff_ci": [
+        -0.00053,
+        0.00056
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "야구 승패|2",
+      "n_total": 15877,
+      "n_test": 3821,
+      "margin_pct": 14.09,
+      "gate": false,
+      "ll_diff": -1e-05,
+      "ll_diff_ci": [
+        -0.0004,
+        0.00034
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "야구 언더오버|2",
+      "n_total": 15768,
+      "n_test": 3810,
+      "margin_pct": 14.09,
+      "gate": false,
+      "ll_diff": -1e-05,
+      "ll_diff_ci": [
+        -8e-05,
+        5e-05
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "축구 SUM|2",
+      "n_total": 10691,
+      "n_test": 3880,
+      "margin_pct": 13.24,
+      "gate": false,
+      "ll_diff": 0.0,
+      "ll_diff_ci": [
+        -6e-05,
+        7e-05
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "농구 핸디캡|2",
+      "n_total": 7208,
+      "n_test": 1358,
+      "margin_pct": 14.73,
+      "gate": false,
+      "ll_diff": 0.00021,
+      "ll_diff_ci": [
+        -0.00046,
+        0.0009
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "야구 승1패|3",
+      "n_total": 9828,
+      "n_test": 3811,
+      "margin_pct": 15.23,
+      "gate": false,
+      "ll_diff": 0.00077,
+      "ll_diff_ci": [
+        -0.00117,
+        0.00278
+      ],
+      "matches_5_11": true,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "AI 우위 없음"
+    },
+    {
+      "segment": "농구 승5패|3",
+      "n_total": 1221,
+      "n_test": 217,
+      "margin_pct": 16.07,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    },
+    {
+      "segment": "배구 SUM|2",
+      "n_total": 1132,
+      "n_test": 461,
+      "margin_pct": 13.39,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    },
+    {
+      "segment": "야구 전반 승무패|3",
+      "n_total": 1621,
+      "n_test": 840,
+      "margin_pct": 15.22,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    },
+    {
+      "segment": "야구 전반 언더오버|2",
+      "n_total": 946,
+      "n_test": 798,
+      "margin_pct": 14.03,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    },
+    {
+      "segment": "야구 전반 핸디캡|2",
+      "n_total": 946,
+      "n_test": 799,
+      "margin_pct": 14.03,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    },
+    {
+      "segment": "축구 승부식 기타|3",
+      "n_total": 10,
+      "n_test": 10,
+      "margin_pct": 16.37,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    },
+    {
+      "segment": "축구 전반 승무패|3",
+      "n_total": 353,
+      "n_test": 299,
+      "margin_pct": 14.65,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    },
+    {
+      "segment": "축구 전반 언더오버|2",
+      "n_total": 353,
+      "n_test": 299,
+      "margin_pct": 13.87,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    },
+    {
+      "segment": "축구 전반 핸디캡|3",
+      "n_total": 354,
+      "n_test": 300,
+      "margin_pct": 14.65,
+      "gate": false,
+      "ll_diff": null,
+      "ll_diff_ci": null,
+      "matches_5_11": null,
+      "bets": 0,
+      "roi_pct": null,
+      "roi_ci": null,
+      "verdict": "판정 불가 (표본 부족)"
+    }
+  ],
+  "matches_5_11": "16/16",
+  "candidates": []
+}

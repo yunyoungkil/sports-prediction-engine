@@ -268,7 +268,10 @@ def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
         y = 0 if r.home_score > r.away_score else (1 if r.home_score == r.away_score else 2)
         row = {"kickoff": r.kickoff, "gm_ts": int(r.gm_ts), "league": r.league, "group": league_group(r.league),
                "actual": y, "odds": np.array([r.odds_win, r.odds_draw, r.odds_lose], dtype=float),
-               "p_market": p, "p_avg": None, "p_sharp": None}
+               "p_market": p, "p_avg": None, "p_sharp": None,
+               # 경기 정보 (피처 아님 — 워크포워드 전략 재현용, evaluation/walk_forward.py)
+               "match_seq": getattr(r, "match_seq", None), "match_time": getattr(r, "match_time", None),
+               "home_team": r.home_team, "away_team": r.away_team, "sgl": getattr(r, "sgl", None)}
         row.update(_features(form, r.home_team, r.away_team, r.league))
         row.update(market_features(row["odds"], p))
         row.update(rest_features(last_seen, r.home_team, r.away_team, r.kickoff))

@@ -6,7 +6,7 @@ tracker/quick_results.py
 
 - 베트맨 결과: 현재 회차 + 직전 회차 (upsert)
 - [5.12] 현재 회차 배당 변화 기록 (1시간 단위로 처음 배당·변경을 잡음)
-- 갱신: 해외 배당 실전 검증, 가상 베팅 리그 정산, 공식 AI 성적표, 마감 배당 비교
+- 갱신: 해외 배당 실전 검증, 가상 베팅 리그 정산, 공식 AI 성적표, 마감 배당 비교, 지연 배당 측정
 필요 패키지: numpy (AI·모델 패키지 불필요)
 
 실행:
@@ -78,6 +78,20 @@ def main() -> None:
     settled = sum(v["bets"] for v in pt["strategies"].values())
     pending = sum(v["pending"] for v in pt["strategies"].values())
     print(f"✅ 결과 갱신: 회차 {ts} · 성적표 {card['graded_matches']}경기 · 가상 베팅 정산 {settled}건 / 대기 {pending}건 · 마감 배당 비교 {clv['verdict']}")
+
+    # [Phase 6.2] 지연 배당 측정 (평가 전용, 해외 배당 스냅샷이 쌓일수록 판정 갱신)
+    try:
+        from evaluation.stale_odds import update_report as update_stale
+        print(f"⏱️ 지연 배당: {update_stale()['verdict']}")
+    except Exception as e:
+        print(f"⚠️ 지연 배당 측정 실패: {e}")
+
+    # [Phase 6.1] 운영 점검 (파이프라인이 36시간 넘게 안 돌았는지 등). 경고는 기록만, Actions가 실패로 표시
+    try:
+        from evaluation.health_check import record as health_record
+        health_record("results")
+    except Exception as e:
+        print(f"⚠️ 운영 점검 실패: {e}")
 
 
 if __name__ == "__main__":
