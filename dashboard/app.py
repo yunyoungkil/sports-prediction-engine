@@ -25,9 +25,12 @@ if str(project_root) not in sys.path:
 
 import importlib
 
-# Streamlit 세션 유지 중 코드 변경 시 서브모듈 핫 리로딩 보장
+# Streamlit 세션 유지 중 코드 변경 시 서브모듈 핫 리로딩 보장 — 프로젝트 패키지는 전부 함께 지운다.
+# 일부만 지우면 새로 읽은 모듈이 메모리에 남은 옛 모듈을 import해서 ImportError가 난다
+# (2026-10-27: 새 models.paper_trading → 옛 evaluation.metrics, cluster_roi_confidence_interval 없음)
+_PROJECT_PKGS = ("models", "tracker", "evaluation", "collector", "notifier")
 for mod_name in list(sys.modules.keys()):
-    if mod_name.startswith("models") or mod_name.startswith("tracker"):
+    if mod_name.split(".")[0] in _PROJECT_PKGS:
         del sys.modules[mod_name]
 
 importlib.invalidate_caches()
