@@ -10,6 +10,7 @@ evaluation/market_scan.py
   - 마진 넘김: 평가 모델 기준 EV > 0 선택지에 1씩 단일로 걸었을 때 TEST+HOLDOUT 실제 수익률과 95% CI
     (실제로는 단통 경기만 단일 구매 가능 — 후보를 고르기 위한 상한 추정)
   - 축구 승무패는 전용 모델(5.6) 보고값을 옮긴다 (EV > 2% 기준, data/betman_corrector.json)
+  - [6.6] 배당 구간별 실제 환급률 (buckets): 정배·역배 구간마다 1씩 걸었다면 실제로 얼마 돌아왔나 (대시보드 '덜 손해 보는 쪽')
 판정 (미리 정한 규칙)
   - TEST 300경기 미만 → 판정 불가 (표본 부족)
   - EV > 0 베팅 ≥ 100건이고 수익률 CI 하한 > 0 → 마진 넘김 후보
@@ -36,7 +37,7 @@ if sys.platform.startswith('win'):
     except Exception:
         pass
 
-from evaluation.metrics import bootstrap_roi_confidence_interval
+from evaluation.metrics import bootstrap_roi_confidence_interval, cluster_roi_confidence_interval
 from models.betman_corrector import PARAMS_PATH as SOCCER_PARAMS, load_archive_df
 from models.betman_markets import (HOLDOUT_START, MIN_TEST, PARAMS_PATH as MARKETS_PARAMS, TEST_START,
                                    SegmentModel, _score, load_segments)
@@ -45,6 +46,10 @@ REPORT_PATH = Path("data/market_scan.json")
 SOCCER_1X2 = "축구 승무패|3"
 MIN_BETS = 100
 MATCH_TOL = 2e-5
+# [6.6] 배당 구간별 실제 환급률 (마진이 정배·역배에 고르게 붙지 않음 — 2024-07 이후)
+BUCKET_EDGES = [1.0, 1.15, 1.3, 1.5, 1.8, 2.2, 3.0, 5.0, float("inf")]
+BUCKET_SINCE = pd.Timestamp("2024-07-01", tz="UTC")
+MIN_BUCKET = 30
 
 
 def _cols(k: int) -> List[str]:
@@ -122,8 +127,46 @@ def scan_soccer_1x2(params_path: Path = SOCCER_PARAMS) -> Optional[Dict[str, Any
             "verdict": verdict(int(t["samples"]), t["ll_diff_ci"][1], bets, lo if bets else None)}
 
 
+def bucket_returns(odds: np.ndarray, hit: np.ndarray, rounds: np.ndarray) -> List[Dict[str, Any]]:
+    """배당 구간별: 그 구간 선택지에 1씩 단일로 걸었다면 실제로 얼마 돌아왔나 (환급률 %, 회차 단위 95% 범위)"""
+    out = []
+    for a, b in zip(BUCKET_EDGES[:-1], BUCKET_EDGES[1:]):
+        m = (odds > a) & (odds <= b)
+        if m.sum() < MIN_BUCKET:
+            continue
+        rets = np.where(hit[m], odds[m] - 1.0, -1.0)
+        roi, lo, hi = cluster_roi_confidence_interval(rets.tolist(), rounds[m].tolist())
+        label = f"{b:.2f} 이하" if a == BUCKET_EDGES[0] else (f"{a:.1f} 이상" if b == float("inf") else f"{a:.2f}~{b:.2f}")
+        out.append({"range": label, "n": int(m.sum()), "hit_pct": round(100.0 * float(hit[m].mean()), 1),
+                    "return_pct": round(100.0 + roi, 1), "return_ci": [round(100.0 + lo, 1), round(100.0 + hi, 1)]})
+    return out
+
+
+def bucket_tables(segments: Dict[str, pd.DataFrame], soccer_df: Optional[pd.DataFrame]) -> Dict[str, List[Dict[str, Any]]]:
+    """축구 승무패 / 그 밖의 모든 유형 — 배당 구간별 실제 환급률"""
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    if soccer_df is not None and not soccer_df.empty:
+        s = soccer_df[soccer_df["kickoff"] >= BUCKET_SINCE]
+        y = np.where(s["home_score"] > s["away_score"], 0, np.where(s["home_score"] == s["away_score"], 1, 2))
+        o = s[["odds_win", "odds_draw", "odds_lose"]].to_numpy(dtype=float)
+        out["축구 승무패"] = bucket_returns(o.ravel(), (np.arange(3)[None, :] == y[:, None]).ravel(),
+                                       np.repeat(s["gm_ts"].to_numpy(), 3))
+    parts = []
+    for key, g in segments.items():
+        g = g[g["kickoff"] >= BUCKET_SINCE]
+        k = int(key.split("|")[1])
+        idx = np.array([0, 1, 2]) if k == 3 else np.array([0, 2])
+        parts.append((g[_cols(k)].to_numpy(dtype=float).ravel(),
+                      (idx[None, :] == g["result"].to_numpy(dtype=int)[:, None]).ravel(),
+                      np.repeat(g["gm_ts"].to_numpy(), k)))
+    if parts:
+        out["그 밖의 모든 유형"] = bucket_returns(*(np.concatenate([p[i] for p in parts]) for i in range(3)))
+    return out
+
+
 def build_report(segments: Optional[Dict[str, pd.DataFrame]] = None,
-                 markets_path: Path = MARKETS_PARAMS, soccer_path: Path = SOCCER_PARAMS) -> Dict[str, Any]:
+                 markets_path: Path = MARKETS_PARAMS, soccer_path: Path = SOCCER_PARAMS,
+                 soccer_df: Optional[pd.DataFrame] = None) -> Dict[str, Any]:
     saved = json.loads(Path(markets_path).read_text(encoding="utf-8")).get("segments", {})
     segments = load_segments() if segments is None else segments
     rows = [scan_segment(key, df, saved.get(key, {})) for key, df in segments.items()]
@@ -132,9 +175,15 @@ def build_report(segments: Optional[Dict[str, pd.DataFrame]] = None,
         rows.append(soccer)
     rows.sort(key=lambda r: (r["ll_diff"] is None, r["ll_diff"] if r["ll_diff"] is not None else 0))
     checked = [r for r in rows if r["matches_5_11"] is not None]
+    if soccer_df is None:
+        try:
+            soccer_df = load_archive_df()
+        except Exception:
+            soccer_df = None
     return {"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "rows": rows,
             "matches_5_11": f"{sum(r['matches_5_11'] for r in checked)}/{len(checked)}",
-            "candidates": [r["segment"] for r in rows if r["verdict"] == "마진 넘김 후보"]}
+            "candidates": [r["segment"] for r in rows if r["verdict"] == "마진 넘김 후보"],
+            "buckets": bucket_tables(segments, soccer_df)}
 
 
 if __name__ == "__main__":
@@ -158,3 +207,8 @@ if __name__ == "__main__":
         mg = f"{r['margin_pct']:.1f}%" if r["margin_pct"] is not None else "-"
         print(f"{r['segment']:<22}{r['n_test']:>6}{mg:>8}{ll:>10}  {ci:<20}{mt:>4}{r['bets']:>7}{roi:>9}  {rci:<18}{r['verdict']}")
     print(f"\n5.11 결과와 일치: {rep['matches_5_11']} · 마진 넘김 후보: {rep['candidates'] or '없음'}")
+    for name, rows in rep["buckets"].items():
+        print(f"\n[배당 구간별 실제 환급률 — {name}, 2024-07 이후]")
+        for b in rows:
+            print(f"  {b['range']:<11} {b['n']:>7}건 · 적중 {b['hit_pct']:5.1f}% · 환급률 {b['return_pct']:5.1f}% "
+                  f"[{b['return_ci'][0]:.1f}, {b['return_ci'][1]:.1f}]")

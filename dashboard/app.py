@@ -214,6 +214,24 @@ def load_scorecard():
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+@st.cache_data(ttl=60)
+def load_market_scan():
+    """[6.4·6.6] 유형별 마진·AI 우위 표 + 배당 구간별 실제 환급률 (매주 재학습 때 갱신)"""
+    path = project_root / "data" / "market_scan.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@st.cache_data(ttl=60)
+def load_stale_odds():
+    """[6.2] 지연 배당 측정 (결과 갱신 때 자동 갱신)"""
+    path = project_root / "data" / "stale_odds_report.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 # 3-1. 경기 결과 · 경기 전 AI 예측 기록 (맞춤조건구매 목록의 적중 여부 표시용)
 PICK_KEYS = ("home_win", "draw", "away_win")
 SEL_KEY = {"home_win": "home", "draw": "draw", "away_win": "away"}
@@ -236,12 +254,158 @@ LOCK_NOTE = "검증 3단계 통과 전 · ③ 성과 검증 탭"
 
 
 def lock_notice(feature: dict) -> None:
-    """잠긴 기능 자리에: 왜 잠겼는지와 단계별 진행 상황"""
-    items = [(s["ok"], s["name"], s["detail"]) for s in REC_STATUS["stages"]]
-    items.append((feature["profit"]["ok"], feature["profit"]["name"], feature["profit"]["detail"]))
-    st.info("🔒 **추천 잠금 중** — 아래 검증 3단계를 모두 통과해야 이 기능이 켜져요. "
-            "그동안 AI 확률 기록과 가상 베팅(검증용)은 계속돼요.\n\n"
-            + "\n".join(f"- {'✅' if ok else '⏳'} {name}: {detail}" for ok, name, detail in items))
+    """잠긴 기능 자리에: 왜 잠겼는지와 단계별 진행 상황 (쉬운 말)"""
+    items = [(s["ok"], s["name"], s.get("plain", s["detail"])) for s in REC_STATUS["stages"]]
+    p = feature["profit"]
+    items.append((p["ok"], p["name"], p.get("plain", p["detail"])))
+    st.info("🔒 **추천 잠금 중** — AI가 아래 시험 3개를 모두 통과해야 이 기능이 켜져요. "
+            "그동안에도 AI는 뒤에서 계속 예측하고 채점받아요.\n\n"
+            + "\n".join(f"- {'✅' if ok else '⏳'} **{name}** — {text}" for ok, name, text in items))
+
+
+# ------------------------------------------------------------------
+# [6.6] 쉬운 말 화면 조각 — 성과 탭에서 "그래서 어떻게 판단하나"
+# ------------------------------------------------------------------
+def won(pct: float) -> str:
+    """환급률 % → 1만 원당 돌아오는 돈"""
+    return f"{pct * 100:,.0f}원"
+
+
+def bucket_summary(scan):
+    """축구 승무패 배당대별 환급률에서 정배(1.30 이하)와 고배당(5.0 이상) 요약"""
+    rows = ((scan or {}).get("buckets") or {}).get("축구 승무패") or []
+    low = [b for b in rows if b["range"] in ("1.15 이하", "1.15~1.30")]
+    high = [b for b in rows if b["range"] == "5.0 이상"]
+    if not low or not high:
+        return None
+    n = sum(b["n"] for b in low)
+    return {"low": sum(b["return_pct"] * b["n"] for b in low) / n, "high": high[0]["return_pct"]}
+
+
+def eta_text(card, target: int = 300) -> str:
+    """성적표 history의 쌓이는 속도로 목표까지 남은 기간 (근거가 부족하면 빈 문자열)"""
+    hist = [h for h in (card or {}).get("history", []) if h.get("graded_matches")]
+    n = (card or {}).get("graded_matches") or 0
+    if n >= target or len(hist) < 2:
+        return ""
+    days = (datetime.fromisoformat(hist[-1]["date"]) - datetime.fromisoformat(hist[0]["date"])).days
+    gained = hist[-1]["graded_matches"] - hist[0]["graded_matches"]
+    if days < 3 or gained <= 0:
+        return ""
+    return f" 지금 속도면 약 {max(1, round((target - n) / (gained / days) / 7))}주 뒤예요."
+
+
+def render_conclusion(card, scan, stale) -> None:
+    """🧭 지금 결론 — 질문 3개에 쉬운 말로 답"""
+    s1 = REC_STATUS["stages"][0]
+    on = [f["short"] for f in REC_STATUS["features"].values() if f["on"]]
+    if on:
+        a1 = (f"**시험을 통과한 기능만 켜져 있어요:** {', '.join(on)}. 그래도 매번 이긴다는 뜻은 아니에요. "
+              "오래 했을 때 평균이 이익이라는 뜻이에요.")
+    else:
+        a1 = ("**아직 아니에요 (🔒 추천 잠금).** "
+              + ("AI가 배당보다 확률을 *아주 조금* 더 잘 맞히는 건 과거 시험에서 확인됐어요. 하지만 그 차이가 베트맨이 떼어가는 몫보다 "
+                 "훨씬 작아서 돈으로는 이어지지 않아요. " if s1["ok"] else "AI가 배당보다 낫다는 게 아직 확인되지 않았어요. ")
+              + "그래서 💎·추천 픽·조합 찾기를 보여 주지 않아요.")
+    bs = bucket_summary(scan)
+    a2 = ((f"**배당 1.3 이하 정배**에 걸면 1만 원당 평균 약 **{won(bs['low'])}**, **5배 이상 고배당**은 약 **{won(bs['high'])}**이 "
+           "돌아왔어요 (축구 승무패, 2024년 7월 이후 실제 결과). 고배당일수록, 여러 경기를 묶을수록 떼이는 몫이 커져요. "
+           "어느 쪽이든 평균적으로는 잃는 구조라, 잃어도 괜찮은 금액만 쓰세요.")
+          if bs else "배당대별 표가 아직 없어요 (매주 재학습 때 만들어져요).")
+    n = (card or {}).get("graded_matches") or 0
+    a3 = (f"AI 실전 채점이 **{n:,} / 300경기**예요. " + ("300경기가 모이면 1차 판정이 나와요." + eta_text(card)
+                                                    if n < 300 else "판정이 나왔어요 — 아래 🔒 표를 보세요."))
+    if stale and stale.get("value"):
+        a3 += (f" '베트맨이 해외 배당을 늦게 따라가는지' 확인은 **{stale['value'].get('matches', 0)} / 100경기**예요"
+               f" (지금까지: {stale.get('verdict', '-')}).")
+    with st.container(border=True):
+        st.markdown("#### 🧭 지금 결론 — 이것만 보면 돼요")
+        st.markdown(f"**Q1. AI 추천대로 사도 되나요?**  \n{a1}")
+        st.markdown(f"**Q2. 그래도 산다면 뭐가 덜 손해예요?**  \n{a2}")
+        st.markdown(f"**Q3. 다음엔 언제 다시 보면 되나요?**  \n{a3}")
+        st.caption("볼 때 순서: ① 이 상자에서 결론 확인 → ② 아래 🔒 표에서 AI 시험이 얼마나 진행됐는지 확인 → "
+                   "③ 사고 싶은 경기가 있으면 💰 표에서 덜 손해 보는 배당대 확인")
+
+
+def render_glossary() -> None:
+    with st.expander("📖 용어 쉽게 보기"):
+        st.markdown(
+            "- **배당 확률**: 배당을 '일어날 확률'로 바꾼 것(베트맨 몫은 뺀 값). 배당 2.0이면 대략 45~50%예요.\n"
+            "- **AI 확률**: 배당 확률을 과거 경기 결과로 조금 고친 값이에요.\n"
+            "- **정배 / 역배**: 이길 가능성이 높은 쪽(낮은 배당) / 낮은 쪽(높은 배당).\n"
+            "- **환급률 / 마진**: 1만 원 걸면 평균 돌아오는 돈 / 베트맨이 떼어가는 몫. 환급률 90%면 9,000원이 돌아오고 1,000원은 베트맨 몫이에요.\n"
+            "- **기대가치 (EV)**: 똑같은 걸 아주 많이 샀을 때의 평균 손익. +면 이득, −면 손해예요.\n"
+            "- **정확도 점수 (Log loss)**: 확률이 실제 결과와 얼마나 맞았는지의 점수. **낮을수록 좋아요.** "
+            "'AI − 배당'이 마이너스면 AI가 더 잘 맞힌 거예요.\n"
+            "- **95% 범위 (운 감안 범위)**: 운까지 생각했을 때 진짜 값이 있을 만한 범위예요. 범위 **전체가** 한쪽(0보다 작거나 큼)에 "
+            "있어야 '확실'이고, 0에 걸쳐 있으면 '아직 모름'이에요.\n"
+            "- **과거 시험 (워크포워드)**: 지난 경기들을 시간 순서대로, '그때까지 알던 정보만으로' 다시 맞혀 본 시험이에요.\n"
+            "- **가상 베팅**: 실제 돈 없이 '이렇게 샀다면'을 기록만 하는 거예요.\n"
+            "- **추천 잠금 (섀도 모드)**: AI는 뒤에서 계속 예측하고 채점받지만, 시험 3개를 통과하기 전에는 추천을 보여 주지 않는 상태예요.\n"
+            "- **사전 가설**: 결과를 보기 전에 미리 적어 둔 예상이에요. 나중에 결과에 맞춰 말을 바꾸지 않으려고 미리 적어요.\n"
+            "- **회차 단위**: 같은 회차 경기끼리는 비슷하게 움직일 수 있어서, 회차를 한 덩어리로 보고 계산한 거예요. "
+            "회차가 적을 때는 범위가 너무 좁게 나올 수 있어서 경기 하나씩 본 범위와 비교해 넓은 쪽을 써요.\n"
+            "- **왜 300경기?**: 축구는 운이 커서 몇십 경기로는 실력과 운을 구분할 수 없어요. 그래서 기준을 미리 정해 뒀어요.\n"
+            "- **마감 배당 비교**: AI가 '배당보다 높다'고 본 쪽 배당이 마감 때 내려갔다면, 다른 사람들의 돈이 나중에 그쪽으로 몰렸다는 "
+            "뜻이에요 (AI가 먼저 맞게 봤다는 신호).\n"
+            "- **적중률**: 참고용이에요. 배당 1순위만 골라도 꽤 맞아요. 돈이 되는지는 **돌아온 돈(환급률·수익률)**으로 봐야 해요.")
+
+
+def render_margin_tables(scan) -> None:
+    """💰 베트맨이 떼어가는 몫 — 배당대별 실제 환급률 + 유형별 표"""
+    st.subheader("💰 베트맨이 떼어가는 몫")
+    if not scan:
+        st.info("아직 표가 없어요 (매주 재학습 때 만들어져요).")
+        return
+    st.caption("1만 원을 걸었을 때 평균적으로 **실제로 돌아온 돈**이에요. 1만 원보다 적은 만큼이 평균 손해예요. "
+               f"정배(낮은 배당)일수록 덜 떼고, 고배당일수록 많이 떼요. 갱신: {str(scan.get('updated_at', '-'))[:10]}")
+    buckets = scan.get("buckets") or {}
+    for col, (name, rows) in zip(st.columns(max(1, len(buckets))), buckets.items()):
+        with col:
+            st.markdown(f"**배당대별 — {name}** (2024년 7월 이후)")
+            st.dataframe(pd.DataFrame([{
+                "배당": b["range"], "1만 원당 돌아온 돈": won(b["return_pct"]),
+                "운 감안 범위": f"{won(b['return_ci'][0])} ~ {won(b['return_ci'][1])}",
+                "적중률": f"{b['hit_pct']:.0f}%", "기록 수": f"{b['n']:,}"} for b in rows]),
+                hide_index=True, width="stretch")
+    plain = {"AI 우위 없음": "차이 없음", "AI 우위 있음 · 마진 못 넘음": "조금 나음 (그래도 손해)",
+             "마진 넘김 후보": "이익 가능성 (확인 필요)"}
+    seg_rows = []
+    for r in scan.get("rows", []):
+        gt, k = r["segment"].split("|")
+        m = r.get("margin_pct")
+        seg_rows.append({
+            "유형": gt + (" (무 있음)" if k == "3" and "승무패" not in gt else ""),
+            "1만 원당 돌아오는 돈 (배당 기준)": won(100 / (1 + m / 100)) if m is not None else "-",
+            "AI가 배당보다 나은가": ("판단 불가 (경기 수 부족)" if str(r["verdict"]).startswith("판정 불가")
+                               else plain.get(r["verdict"], r["verdict"])),
+            "2026년 시험 경기 수": r.get("n_test", 0)})
+    with st.expander("유형별 표 (승무패 · 핸디캡 · 언더오버 · 홀짝 …)"):
+        st.dataframe(pd.DataFrame(seg_rows), hide_index=True, width="stretch")
+        cands = scan.get("candidates") or []
+        st.caption("'1만 원당 돌아오는 돈'은 배당에 들어 있는 베트맨 몫으로 계산한 평균이에요. "
+                   "'AI가 배당보다 나은가'는 2026년 시험에서 AI 확률이 배당 확률보다 더 잘 맞았는지예요. "
+                   + ("AI 기준으로 이익이 나는 유형은 없었어요." if not cands else f"이익 가능성을 확인할 유형: {', '.join(cands)}"))
+
+
+def render_calibration(card) -> None:
+    """🎯 보정 곡선 — AI가 '○○%'라고 한 선택지들이 실제로 몇 % 일어났나"""
+    cal = (card or {}).get("calibration") or {}
+    ai, mk = cal.get("ai") or [], {b["range"]: b for b in (cal.get("market") or [])}
+    if not ai:
+        return
+    st.markdown("**🎯 AI가 말한 확률, 실제로 맞았나?**")
+    st.caption("AI가 '60~70%'라고 한 선택지들이 실제로도 60~70% 정도 일어났다면, AI가 말하는 확률을 믿을 만하다는 뜻이에요. "
+               "선택지가 30개 미만인 줄은 운이 커서 참고만 하세요.")
+    rows = []
+    for b in ai:
+        diff = b["happened_pct"] - b["said_pct"]
+        judge = ("표본 적음" if b["n"] < 30 else "✅ 비슷" if abs(diff) <= 10
+                 else "⬆️ 실제로 더 자주 일어남" if diff > 0 else "⬇️ 실제로 덜 일어남")
+        m = mk.get(b["range"])
+        rows.append({"AI가 말한 확률": b["range"], "선택지 수": b["n"], "실제로 일어난 비율": f"{b['happened_pct']:.0f}%",
+                     "판단": judge, "배당이 같은 확률이라 한 것은": f"{m['happened_pct']:.0f}% ({m['n']}개)" if m else "-"})
+    st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
 
 
 @st.cache_data(ttl=60)
@@ -610,6 +774,12 @@ with tab1:
         st.markdown("### 📋 STEP 01. 대상 경기 검색 및 승/무/패 다중 선택")
         st.caption("배당 버튼을 눌러 선택하세요. 한 경기에서 여러 개를 고르면 가능한 모든 조합이 자동으로 계산됩니다. "
                    "고른 경기는 왼쪽 🛒 내 선택에 담겨요 (휴대폰은 왼쪽 위 › 를 누르면 열려요).")
+        if not GEM_ON:   # [6.6] 판단 요령 한 줄 (쉬운 말)
+            _bs = bucket_summary(load_market_scan())
+            st.info("🔒 지금은 **AI 추천이 잠겨 있어요** (AI가 시험 통과 전). "
+                    + (f"사고 싶다면 **배당 1.3 이하 정배**가 덜 손해예요 — 1만 원당 평균 약 {won(_bs['low'])} 돌아왔고, "
+                       f"5배 이상 고배당은 약 {won(_bs['high'])}이었어요. " if _bs else "")
+                    + "자세한 건 ③ 성과 검증 탭 맨 위 '🧭 지금 결론'을 보세요.")
         _chip = "display:inline-block;margin:0 14px 6px 0;font-size:13px;color:#cbd5e1"
         st.markdown(
             "<div style='margin:-4px 0 8px 0'>"
@@ -1895,6 +2065,11 @@ with tab3:
     pt = load_paper_trading()
     bf = load_paper_backfill()
     SCORE_MIN, CLV_MIN, PAPER_MIN = 300, 50, 300   # 판정에 필요한 표본 (scorecard · clv · paper_trading 과 같은 기준)
+    scan = load_market_scan()
+
+    # [6.6] 🧭 지금 결론 — 그래서 어떻게 판단하나 (쉬운 말)
+    render_conclusion(card, scan, load_stale_odds())
+    render_glossary()
 
     # ------------------------------------------------------------------
     # 0. 한눈에 보기 — 세 가지 질문에 쉬운 말로 답하고, 판정까지 얼마나 남았는지 막대로
@@ -1974,45 +2149,37 @@ with tab3:
 
     st.markdown("<div style='padding-bottom:12px'><div style='font-size:20px;font-weight:700;margin-bottom:8px'>📋 한눈에 보기</div>"
                 "<div style='display:flex;flex-wrap:wrap;gap:10px'>" + "".join(summary) + "</div></div>", unsafe_allow_html=True)
-    with st.expander("❓ 이 탭의 숫자 읽는 법"):
-        st.markdown(
-            "- **정확도 점수 (Log loss)**: 확률이 실제 결과와 얼마나 맞았는지를 나타내요. **낮을수록 좋아요.** "
-            "'AI − 배당'이 마이너스면 AI가 배당보다 정확했다는 뜻이에요.\n"
-            "- **95% 범위**: 운 때문에 생길 수 있는 범위예요. 범위 **전체가 0보다 작아야(또는 수익률은 0보다 커야)** '확실하다'고 말할 수 있어요. "
-            "경기 수가 적으면 범위가 넓어서 판단하기 어려워요.\n"
-            "- **왜 300경기?**: 축구는 운이 커서, 몇십 경기로는 실력과 운을 구분할 수 없어요. 그래서 판정 기준을 미리 정해 뒀어요.\n"
-            "- **마감 배당 비교**: AI가 '배당보다 높다'고 본 쪽 배당이 마감 때 내려갔다면, 다른 배터들의 돈이 나중에 그쪽으로 몰렸다는 뜻이에요. "
-            "승패보다 운이 덜 섞여서 더 적은 경기(50경기)로 방향을 볼 수 있어요.\n"
-            "- **적중률**은 참고용이에요. 배당 1순위만 골라도 꽤 맞아요. 돈을 벌 수 있는지는 **수익률**로 봐야 해요.\n"
-            "- **회차 단위 95% 범위**: 같은 회차 경기끼리는 서로 영향을 줄 수 있어서(같은 날·같은 리그, 조합끼리 경기 공유) "
-            "회차를 통째로 다시 뽑아 범위를 계산해요. 회차가 적을 때는 이 방식이 범위를 너무 좁게 잡을 수 있어서, "
-            "경기 하나씩 뽑은 범위와 비교해 **넓은 쪽**을 써요.")
-
     # ------------------------------------------------------------------
-    # 🔒 추천 잠금 (섀도 모드) — 검증 3단계 · 사전 등록 가설 (Phase 6.5)
+    # 🔒 추천 잠금 (섀도 모드) — 검증 3단계 · 사전 등록 가설 (Phase 6.5, 6.6 쉬운 말)
     # ------------------------------------------------------------------
     st.divider()
-    st.subheader("🔒 추천 잠금 상태")
-    st.caption("AI 확률은 계속 계산·기록·채점하고 가상 베팅도 계속 만들어요(섀도 모드). 실제 구매에 영향을 주는 추천"
-               "(💎 · 가치 픽 · 텔레그램 추천 · 조합 찾기)만, 아래 3단계를 모두 통과한 기능부터 켜져요. "
-               "기준은 2026-10-27에 미리 정했고 결과를 보고 바꾸지 않아요. 범위는 모두 회차 단위예요.")
-    stage_lines = [f"{'✅' if s['ok'] else '⏳'} **{s['name']}** — {s['detail']}" for s in REC_STATUS["stages"]]
+    st.subheader("🔒 AI 시험 진행 상황")
+    st.caption("AI 추천(💎 · 추천 픽 · 조합 찾기)은 아래 시험 3개를 **모두** 통과해야 켜져요. 그동안에도 AI는 뒤에서 계속 예측하고 "
+               "채점받아요(섀도 모드). 시험 기준은 2026-10-27에 미리 정했고, 결과를 보고 바꾸지 않아요.")
+    for s in REC_STATUS["stages"]:
+        st.markdown(f"- {'✅' if s['ok'] else '⏳'} **{s['name']}** — {s['plain']}")
     for f in REC_STATUS["features"].values():
         p = f["profit"]
-        stage_lines.append(f"{'🔓 켜짐' if f['on'] else '🔒 잠금'} **{f['label']}** — {'✅' if p['ok'] else '⏳'} {p['name']}: {p['detail']}")
-    st.markdown("\n".join(f"- {line}" for line in stage_lines))
-    st.caption("① 과거 검증: 워크포워드(구간마다 그 이전 데이터로만 학습) 합친 결과의 범위 상한 < 0 · "
-               "② 실시간 확률: 경기 전 고정 예측 300경기 이상, 범위 상한 < 0 · ③ 수익: 실제 베팅 기록 300건 이상, 수익률 범위 하한 > 0. "
-               "300건은 최소치예요. 우위가 작으면(+2~3%) 범위 하한이 0을 넘기까지 수천 건이 필요해요.")
+        st.markdown(f"- {'🔓 켜짐' if f['on'] else '🔒 잠김'} **{f['short']}** · {p['name']} — {p['plain']}")
+    with st.expander("숫자로 보기 (자세히)"):
+        st.markdown("\n".join([f"- {s['name']}: {s['detail']}" for s in REC_STATUS["stages"]]
+                              + [f"- {f['label']} · {f['profit']['name']}: {f['profit']['detail']}"
+                                 for f in REC_STATUS["features"].values()]))
+        st.caption("① 과거 시험: 워크포워드 합친 결과의 95% 범위 상한 < 0 · ② 실전 확률 시험: 경기 전 고정 예측 300경기 이상, "
+                   "95% 범위 상한 < 0 · ③ 실제 돈 시험: 300건 이상, 수익률 95% 범위 하한 > 0. 범위는 모두 회차 단위예요. "
+                   "300건은 최소치라, 우위가 작으면(+2~3%) 확인까지 수천 건이 필요해요.")
     hyps = (card or {}).get("hypotheses") or []
     if hyps:
-        st.markdown("**📌 사전 등록 가설** (2026-10-28 이후 킥오프한 축구 승무패만 · 300경기부터 판정 · 600경기에서도 확인 안 되면 중단)")
+        st.markdown("**📌 미리 적어 둔 예상 (사전 가설)** — 지난 경기 시험에서 AI가 특히 잘 맞힌 두 그룹이 앞으로도 그런지 봐요. "
+                    "2026-10-28 이후 경기만 세고, 300경기부터 판정, 600경기에서도 확인 안 되면 접어요.")
         st.dataframe(pd.DataFrame([{
-            "가설": f"{h['id']} {h['name']}", "경기": h["n"],
-            "AI − 배당": f"{h['ll_diff']:+.4f}" if h.get("ll_diff") is not None else "-",
-            "95% 범위 (회차 단위)": f"[{h['ll_diff_ci'][0]:+.4f}, {h['ll_diff_ci'][1]:+.4f}]" if h.get("ll_diff_ci") else "-",
-            "EV>2% 베팅": h.get("value_bets", 0),
+            "예상": f"{h['id']} {h['name']}", "모인 경기": f"{h['n']} / 300",
+            "AI − 배당 (음수 = AI가 더 잘 맞힘)": f"{h['ll_diff']:+.4f}" if h.get("ll_diff") is not None else "-",
             "판정": h["verdict"]} for h in hyps]), hide_index=True, width="stretch")
+
+    # [6.6] 💰 베트맨이 떼어가는 몫 — 유형별 · 배당대별 (덜 손해 보는 쪽 판단용)
+    st.divider()
+    render_margin_tables(scan)
 
     # ------------------------------------------------------------------
     # A. 공식 AI 성적표 — 경기 시작 전에 고정 저장한 예측만 실제 결과로 채점 (사후 정보 없음)
@@ -2052,6 +2219,7 @@ with tab3:
                 columns={"model_ll": "AI", "market_ll": "배당"})
             st.line_chart(h_df, height=200)
             st.caption("날짜별 누적 정확도 점수 (낮을수록 좋음) — AI 선이 배당 선보다 아래에 있으면 AI가 더 정확해요.")
+        render_calibration(card)   # [6.6] 보정 곡선 — AI가 말한 확률이 실제로 맞았나
         if len(card.get("by_game_type", {})) > 1:
             with st.expander("유형별 성적 (어느 유형에서 AI가 앞서는지)"):
                 st.dataframe(pd.DataFrame([

@@ -10,6 +10,7 @@ evaluation/scorecard.py
 - [5.11] 축구 승무패 외 유형(핸디캡·언더오버·농구·야구 등)은 베트맨 정답 코드(game_result)로 채점, 유형별 내역 포함
 - [6.5] 신뢰구간은 회차 단위 부트스트랩 (같은 회차 경기끼리는 독립이 아닐 수 있음)
 - [6.5] 사전 등록 가설(HYPOTHESES): 등록 이후 킥오프한 경기로만 판정하고, 기준은 결과를 보고 바꾸지 않는다
+- [6.6] 보정 곡선(calibration): AI·배당이 '○○%'라고 한 선택지들이 실제로 몇 % 일어났는지 10%p 구간별로
 
 실행:
     python -m evaluation.scorecard
@@ -98,6 +99,26 @@ def _value_bets(rows: List[Dict[str, Any]], threshold: float) -> List[tuple]:
     return out
 
 
+def calibration(rows: List[Dict[str, Any]], key: str, n_bins: int = 10) -> List[Dict[str, Any]]:
+    """[6.6] 보정 곡선: '○○%'라고 말한 선택지들이 실제로 몇 % 일어났나 (10%p 구간, 발매된 선택지만)"""
+    said, happened = [], []
+    for r in rows:
+        for k in range(3):
+            if r["odds"][k] > 1.0:          # 2지선다 유형의 빈 무승부 칸은 제외
+                said.append(float(r[key][k]))
+                happened.append(1.0 if k == r["y"] else 0.0)
+    said_a, happened_a = np.array(said), np.array(happened)
+    out = []
+    for i in range(n_bins):
+        lo, hi = i / n_bins, (i + 1) / n_bins
+        m = (said_a >= lo) & ((said_a < hi) if i < n_bins - 1 else (said_a <= hi))
+        if m.any():
+            out.append({"range": f"{int(lo * 100)}~{int(hi * 100)}%", "n": int(m.sum()),
+                        "said_pct": round(float(said_a[m].mean()) * 100, 1),
+                        "happened_pct": round(float(happened_a[m].mean()) * 100, 1)})
+    return out
+
+
 def hypothesis_verdict(n: int, ll_diff: float, ci: List[float]) -> str:
     """미리 정한 판정 (2026-10-27): 300경기부터 판정, 600경기에서도 확인 안 되면 중단"""
     if n < HYPOTHESIS_MIN:
@@ -182,6 +203,8 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
         "by_game_type": {gt: _ll_block([r for r in rows if r["game_type"] == gt])
                          for gt in sorted({r["game_type"] for r in rows})},
         "hypotheses": build_hypotheses(rows),
+        # [6.6] 보정 곡선 — AI와 배당이 각각 말한 확률 vs 실제로 일어난 비율
+        "calibration": {"ai": calibration(rows, "model"), "market": calibration(rows, "market")},
     })
     if len(rows) < MIN_SAMPLES_FOR_VERDICT:
         card["verdict"] = f"검증 중 (표본 {len(rows)}/{MIN_SAMPLES_FOR_VERDICT})"

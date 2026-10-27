@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from evaluation.market_scan import margin_pct, scan_segment, value_bet_returns, verdict
+from evaluation.market_scan import bucket_returns, margin_pct, scan_segment, value_bet_returns, verdict
 from models.betman_markets import SegmentModel, _score
 
 
@@ -44,6 +44,19 @@ def test_value_bets_market_model_never_bets():
 def test_no_eval_params_is_undecidable():
     row = scan_segment("배구 SUM|2", _segment(n=50), {"passes_gate": False, "reason": "표본 부족"})
     assert row["verdict"].startswith("판정 불가") and row["ll_diff"] is None
+
+
+def test_bucket_returns():
+    """[6.6] 배당 구간별 환급률: 1.20 배당 100개 중 80개 적중 → 96% · 6.0 배당 50개 중 5개 → 60% · 30개 미만 구간은 빼기"""
+    odds = np.array([1.20] * 100 + [6.0] * 50 + [2.0] * 10)
+    hit = np.array([True] * 80 + [False] * 20 + [True] * 5 + [False] * 45 + [True] * 10)
+    rounds = np.arange(160) % 20
+    rows = {b["range"]: b for b in bucket_returns(odds, hit, rounds)}
+    assert set(rows) == {"1.15~1.30", "5.0 이상"}
+    assert (rows["1.15~1.30"]["n"], rows["1.15~1.30"]["return_pct"]) == (100, 96.0)
+    assert rows["5.0 이상"]["return_pct"] == 60.0
+    lo, hi = rows["1.15~1.30"]["return_ci"]
+    assert lo <= 96.0 <= hi
 
 
 def test_verdict_rules():

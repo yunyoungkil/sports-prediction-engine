@@ -42,6 +42,9 @@ wheels/
 # 내 선택 저장 (개인 기록 · 대시보드가 자동으로 씀)
 user_data/
 
+# Claude Code 개인 설정 (대화 시작 브리핑 훅 등)
+.claude/settings.local.json
+
 # OS
 .DS_Store
 Thumbs.db

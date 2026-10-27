@@ -48,6 +48,8 @@ jobs:
             # [Phase 5.11] 전 종목·전 유형 아카이브 증분 수집 → 유형별 보정 모델 재학습 (유형별 게이트)
             python -m collector.betman_markets_archive --years $(( $(date +%y) - 1 )) $(date +%y)
             python -m models.betman_markets
+            # [Phase 6.6] 유형별 마진·우위 표 + 배당 구간별 환급률 (대시보드 성과 탭) — 실패해도 나머지 재학습은 계속
+            python -m evaluation.market_scan || echo "⚠️ 유형별 마진표 갱신 실패"
             # [Phase 5.9] 배당만 쓰는 전략(D·E)의 과거 회차 재현 갱신
             python -m models.paper_trading --backfill
           fi

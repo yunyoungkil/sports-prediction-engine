@@ -48,6 +48,11 @@ def test_scorecard_grades_logged_predictions(tmp_path):
     assert card["model_ll"] is not None and card["market_ll"] is not None
     assert card["verdict"].startswith("검증 중")
     assert card["ci_method"] == "회차 단위 부트스트랩"
+    # [6.6] 보정 곡선: AI가 60%라고 한 홈승 10개 중 6개 일어남, 20%라고 한 무·원정 20개 중 4개(0:0 무승부 4경기)
+    cal = {b["range"]: b for b in card["calibration"]["ai"]}
+    assert sum(b["n"] for b in cal.values()) == 30
+    assert (cal["60~70%"]["n"], cal["60~70%"]["happened_pct"]) == (10, 60.0)
+    assert (cal["20~30%"]["n"], cal["20~30%"]["happened_pct"]) == (20, 20.0)
 
 
 def test_hypotheses_count_only_registered_groups_after_registration(tmp_path):

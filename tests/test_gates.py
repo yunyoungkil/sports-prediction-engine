@@ -54,6 +54,16 @@ def test_locked_when_files_missing(tmp_path):
     st = recommendation_status(tmp_path / "a.json", tmp_path / "b.json", tmp_path / "c.json")
     assert st["any_on"] is False
     assert all(not s["ok"] for s in st["stages"])
+    # [6.6] 화면용 쉬운 문장
+    assert all(s["plain"] for s in st["stages"])
+    assert "0 / 300건" in st["features"]["gem"]["profit"]["plain"]
+
+
+def test_plain_text_follows_result(tmp_path):
+    st = recommendation_status(*_files(tmp_path))
+    assert "조금 더 잘 맞혔어요" in st["stages"][0]["plain"]
+    assert "더 잘 맞혔어요" in st["stages"][1]["plain"]
+    assert "이익이 확인되지 않았어요" in st["features"]["finder"]["profit"]["plain"]
 
 
 def test_feature_unlocks_only_when_all_three_stages_pass(tmp_path):
