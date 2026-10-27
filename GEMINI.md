@@ -57,3 +57,10 @@
 - 추천 픽은 0건이 정상이다 (보정 폭 < 베트맨 마진 약 15%).
 - **주간 재학습·성적표(5.3)**: 수요일 Actions가 `python -m models.market_corrector`로 재학습한다(게이트 통과 시 전체 데이터로 실전 모델 재적합). 매 실행마다 킥오프 전 예측을 `data/history/prediction_log/`에 고정 저장하고, `evaluation/scorecard.py`가 결과와 붙여 `data/model_scorecard.json`(날짜별 history)을 만든다. **AI 실력의 공식 지표는 이 성적표다.**
 - **베트맨 학습 보정 모델(5.6, `models/betman_corrector.py`)**: 베트맨 과거 23,323경기(K리그·J리그·MLS 포함)로 학습한 모델이다. TEST 4,306경기에서 베트맨 시장보다 LL −0.0021 [−0.0044, +0.0001]로, 현재 실전 1순위 확률이다. 아카이브는 `collector/betman_archive.py`로 증분 수집한다.
+- **다음 작업은 TODO.md의 Phase 6 (우위 검증과 운영 안정화)이다.** 모델·피처를 더 얹지 않고 먼저 측정한다: 6.1 운영 점검 → 6.2 지연 배당 측정 → 6.3 워크포워드 백테스트 → 6.4 유형별 마진·우위 표. 6.2에서 "지연 배당 있음"이 판정되기 전에는 지연 배당 알림·추천을 만들지 않는다. 새 API 호출은 늘리지 않는다(이미 쌓인 스냅샷만 사용). 가상 베팅 결과는 학습에 되먹이지 않는다.
+
+## 6. 여러 PC에서 작업할 때
+
+- 코드·문서는 GitHub에서 `git pull --rebase origin master`로 맞춘다. 내 선택·저장한 슬립(`user_data/`)은 `.gitignore`라 **PC마다 따로**다.
+- `user_data/`를 PC 간에 공유하려면 OneDrive 같은 동기화 폴더에 두고 환경변수 `SPE_USER_DATA_DIR`로 가리킨다 (`dashboard/app.py`가 지원). 두 PC에서 동시에 저장하면 덮어쓸 수 있으니 한 번에 한 PC에서만 쓴다.
+- 새 PC에서는 `pip install -r requirements.txt` 후 `ODDS_API_KEY`(필요할 때만)를 환경변수로 등록한다. 키는 코드·커밋에 쓰지 않는다.

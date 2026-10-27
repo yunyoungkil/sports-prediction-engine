@@ -80,7 +80,8 @@ Open items are tracked in `REVIEW.md`:
 
 - **v1 (ROADMAP.md Phase 1~5):** built, except Streamlit Cloud deployment.
 - **v2 upgrade plan:** summarized in `README.md` (🚀 고도화 계획) and broken into checkboxes in **`TODO.md`**:
-  - Step 0 무인 자동화 복구 → Phase 1 측정 기반 → Phase 2 모델 기본기 보강 → Phase 3 시장과 결합 → Phase 4 자금 관리와 제품 → **Phase 5 AI 정확도 향상** (market corrector, live sharp odds, weekly retraining, xG/lineups, more Betman leagues)
+  - Step 0 무인 자동화 복구 → Phase 1 측정 기반 → Phase 2 모델 기본기 보강 → Phase 3 시장과 결합 → Phase 4 자금 관리와 제품 → **Phase 5 AI 정확도 향상** (market corrector, live sharp odds, weekly retraining, xG/lineups, more Betman leagues) → **Phase 6 우위 검증과 운영 안정화** (health check, stale-odds measurement, walk-forward backtest, per-market margin/edge table)
+- **Phase 6 principles:** measure before building. Don't add models/features while samples are small (scorecard 52/300, sharp odds 28/300). Don't build stale-odds alerts until 6.2 judges stale odds exist. Don't feed paper-bet results back into training. Don't add new Odds API calls — use the accumulated `sharp_snapshots`/`odds_history`.
 - When picking up work: take the **first unchecked item in `TODO.md`**, do one item at a time, mark it `[x]`, and add before/after evaluation numbers to the progress table at the bottom.
 - Respect the decision checkpoints in `TODO.md`. The Phase 3 checkpoint fired (b = 0), and that led to Phase 5.
 - Collaboration: Gemini implements, Claude verifies and logs findings in `REVIEW.md` (R-numbers). Read `GEMINI.md` at the repo root for git, secret, and API-credit rules.
