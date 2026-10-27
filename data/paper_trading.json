@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-27T04:11:35+00:00",
+  "updated_at": "2026-10-27T05:09:31+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -62,7 +62,7 @@
       "label": "E. 배당 1순위 단일 (기준선)",
       "bets": 7,
       "hits": 5,
-      "pending": 3,
+      "pending": 13,
       "staked": 7000,
       "returned": 7080,
       "profit": 80,
@@ -82,6 +82,28 @@
     }
   },
   "details": [
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "감바 오사카 승 1.57",
+      "odds": 1.57,
+      "stake": 1000,
+      "kickoff": "2026-10-28T10:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "가시마 앤틀러스 승 1.23",
+      "odds": 1.23,
+      "stake": 1000,
+      "kickoff": "2026-10-28T10:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
     {
       "gm_ts": "260127",
       "strategy": "B_fav_double",
@@ -129,6 +151,17 @@
     {
       "gm_ts": "260127",
       "strategy": "E_market_fav",
+      "legs": "알힐랄SFC 승(원정) 1.30",
+      "odds": 1.3,
+      "stake": 1000,
+      "kickoff": "2026-10-27T18:15:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
       "legs": "SS라치오 승(원정) 2.02",
       "odds": 2.02,
       "stake": 1000,
@@ -166,6 +199,83 @@
       "odds": 3.2,
       "stake": 1000,
       "kickoff": "2026-10-27T17:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "샤바브 알아흘리두바이 승 1.63",
+      "odds": 1.63,
+      "stake": 1000,
+      "kickoff": "2026-10-27T16:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "가시와 레이솔 승(원정) 1.35",
+      "odds": 1.35,
+      "stake": 1000,
+      "kickoff": "2026-10-27T12:15:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "베이징 궈안 승 2.18",
+      "odds": 2.18,
+      "stake": 1000,
+      "kickoff": "2026-10-27T12:15:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "대전 하나시티즌 승 2.22",
+      "odds": 2.22,
+      "stake": 1000,
+      "kickoff": "2026-10-27T10:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "교토 상가FC 승 1.31",
+      "odds": 1.31,
+      "stake": 1000,
+      "kickoff": "2026-10-27T10:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "조호르 다룰탁짐 승 1.14",
+      "odds": 1.14,
+      "stake": 1000,
+      "kickoff": "2026-10-27T10:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260127",
+      "strategy": "E_market_fav",
+      "legs": "상하이 하이강 승 1.64",
+      "odds": 1.64,
+      "stake": 1000,
+      "kickoff": "2026-10-27T10:00:00+00:00",
       "status": "대기",
       "payout": null,
       "profit": null

@@ -1,18 +1,18 @@
 {
-  "updated_at": "2026-10-27T04:11:35+00:00",
-  "graded_matches": 52,
+  "updated_at": "2026-10-27T05:09:31+00:00",
+  "graded_matches": 53,
   "rounds": [
     260126,
     260127
   ],
-  "model_ll": 0.9487,
-  "market_ll": 0.9604,
-  "ll_diff": -0.0117,
+  "model_ll": 0.956,
+  "market_ll": 0.9675,
+  "ll_diff": -0.0115,
   "ll_diff_ci": [
-    -0.0232,
-    0.0002
+    -0.0224,
+    0.0003
   ],
-  "hit_rate_top_pick": 48.1,
+  "hit_rate_top_pick": 47.2,
   "value_bets": 0,
   "roi_pct": 0.0,
   "roi_ci_low": 0.0,
@@ -23,15 +23,15 @@
   "gem_roi_ci_low": 0.0,
   "gem_roi_ci_high": 0.0,
   "prob_sources": {
-    "betman_corrector": 34,
-    "betman_markets": 18
+    "betman_markets": 19,
+    "betman_corrector": 34
   },
   "by_game_type": {
     "농구 승패": {
-      "n": 9,
-      "ll_diff": 0.0004,
+      "n": 10,
+      "ll_diff": 0.0005,
       "ll_diff_ci": [
-        -0.0005,
+        -0.0003,
         0.0015
       ]
     },
@@ -52,7 +52,7 @@
       ]
     }
   },
-  "verdict": "검증 중 (표본 52/300)",
+  "verdict": "검증 중 (표본 53/300)",
   "model": {
     "trained_at": "2026-10-25T11:27:09+00:00",
     "trained_on": [
@@ -120,13 +120,13 @@
     },
     {
       "date": "2026-10-27",
-      "graded_matches": 52,
-      "model_ll": 0.9487,
-      "market_ll": 0.9604,
-      "ll_diff": -0.0117,
+      "graded_matches": 53,
+      "model_ll": 0.956,
+      "market_ll": 0.9675,
+      "ll_diff": -0.0115,
       "ll_diff_ci": [
-        -0.0232,
-        0.0002
+        -0.0224,
+        0.0003
       ],
       "roi_pct": 0.0,
       "gem_bets": 0,
