@@ -202,6 +202,130 @@
           }
         }
       }
+    },
+    {
+      "captured_at": "2026-10-27T05:27:02.899264+00:00",
+      "credits_remaining": 468,
+      "targets": 3,
+      "matches": {
+        "944": {
+          "event_id": "c7445242bf16a8f37afef7863af45a78",
+          "home_team": "Sassuolo",
+          "away_team": "Lazio",
+          "commence_time": "2026-10-27T17:30:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 3.37,
+            "draw": 3.71,
+            "away_win": 2.14
+          },
+          "sharp_probs": {
+            "home_win": 0.2871,
+            "draw": 0.2608,
+            "away_win": 0.4521
+          },
+          "consensus_probs": {
+            "home_win": 0.2831444444444445,
+            "draw": 0.26717777777777774,
+            "away_win": 0.44967777777777773
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0424,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 2.85,
+            "draw": 3.3,
+            "away_win": 2.02
+          },
+          "betman_home": "US사수올로",
+          "betman_away": "SS라치오",
+          "match_time": "26.10.28 (수) 02:30",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1818,
+            "draw": -0.1394,
+            "away_win": -0.0868
+          }
+        },
+        "965": {
+          "event_id": "7eecf109ae6a5f87441a79b0e4111982",
+          "home_team": "AS Roma",
+          "away_team": "Cagliari",
+          "commence_time": "2026-10-27T19:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.33,
+            "draw": 5.17,
+            "away_win": 10.59
+          },
+          "sharp_probs": {
+            "home_win": 0.7231,
+            "draw": 0.186,
+            "away_win": 0.0908
+          },
+          "consensus_probs": {
+            "home_win": 0.7193,
+            "draw": 0.18430000000000002,
+            "away_win": 0.09639999999999999
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0767,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 1.27,
+            "draw": 4.3,
+            "away_win": 7.7
+          },
+          "betman_home": "AS로마",
+          "betman_away": "칼리아리",
+          "match_time": "26.10.28 (수) 04:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0817,
+            "draw": -0.2002,
+            "away_win": -0.3008
+          }
+        },
+        "971": {
+          "event_id": "7d989a0a7bae47eb957731e97c5bd9c1",
+          "home_team": "Torino",
+          "away_team": "Como",
+          "commence_time": "2026-10-27T19:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 5.4,
+            "draw": 3.85,
+            "away_win": 1.69
+          },
+          "sharp_probs": {
+            "home_win": 0.1786,
+            "draw": 0.2506,
+            "away_win": 0.5708
+          },
+          "consensus_probs": {
+            "home_win": 0.18293333333333334,
+            "draw": 0.2478666666666667,
+            "away_win": 0.5692222222222223
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.052,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 4.25,
+            "draw": 3.6,
+            "away_win": 1.57
+          },
+          "betman_home": "토리노",
+          "betman_away": "코모1907",
+          "match_time": "26.10.28 (수) 04:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.2409,
+            "draw": -0.0978,
+            "away_win": -0.1038
+          }
+        }
+      }
     }
   ]
 }
