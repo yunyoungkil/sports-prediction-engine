@@ -1,21 +1,21 @@
 {
-  "updated_at": "2026-10-27T16:43:17+00:00",
+  "updated_at": "2026-10-27T21:22:05+00:00",
   "rounds": [
     260126,
     260127
   ],
-  "matches": 70,
-  "moved": 35,
-  "toward_ai": 16,
-  "away_from_ai": 19,
-  "toward_ai_pct": 45.7,
-  "fav_toward_pct": 45.7,
+  "matches": 89,
+  "moved": 50,
+  "toward_ai": 21,
+  "away_from_ai": 29,
+  "toward_ai_pct": 42.0,
+  "fav_toward_pct": 42.0,
   "mean_move_pp": {
-    "n": 70,
-    "mean": -0.35308,
+    "n": 89,
+    "mean": -0.46932,
     "ci": [
-      -0.71152,
-      -0.05544
+      -0.82384,
+      -0.14026
     ]
   },
   "by_game_type": {
@@ -36,34 +36,34 @@
       }
     },
     "축구 승무패": {
-      "matches": 42,
-      "moved": 18,
-      "toward_ai": 9,
-      "away_from_ai": 9,
-      "toward_ai_pct": 50.0,
-      "fav_toward_pct": 50.0,
+      "matches": 50,
+      "moved": 24,
+      "toward_ai": 13,
+      "away_from_ai": 11,
+      "toward_ai_pct": 54.2,
+      "fav_toward_pct": 54.2,
       "mean_move_pp": {
-        "n": 42,
-        "mean": -0.08986,
+        "n": 50,
+        "mean": 0.01527,
         "ci": [
-          -0.40623,
-          0.17796
+          -0.31372,
+          0.33544
         ]
       }
     },
     "축구 핸디캡": {
-      "matches": 17,
-      "moved": 13,
-      "toward_ai": 7,
-      "away_from_ai": 6,
-      "toward_ai_pct": 53.8,
-      "fav_toward_pct": 53.8,
+      "matches": 28,
+      "moved": 22,
+      "toward_ai": 8,
+      "away_from_ai": 14,
+      "toward_ai_pct": 36.4,
+      "fav_toward_pct": 36.4,
       "mean_move_pp": {
-        "n": 17,
-        "mean": -0.48718,
+        "n": 28,
+        "mean": -1.06695,
         "ci": [
-          -1.39376,
-          0.31375
+          -1.84903,
+          -0.35767
         ]
       }
     }
@@ -75,37 +75,37 @@
   },
   "paper_strategies": {
     "B_fav_double": {
-      "n": 1,
-      "mean": 5.83333,
+      "n": 2,
+      "mean": 2.91667,
       "ci": [
-        5.83333,
+        0.0,
         5.83333
       ]
     },
     "C_finder_top": {
-      "n": 1,
-      "mean": 5.83333,
+      "n": 2,
+      "mean": 2.91667,
       "ci": [
-        5.83333,
+        0.0,
         5.83333
       ]
     },
     "D_banker_cover": {
-      "n": 6,
-      "mean": 2.91667,
+      "n": 9,
+      "mean": 1.6448,
       "ci": [
-        0.97222,
-        4.86111
+        -2.72928,
+        5.21032
       ]
     },
     "E_market_fav": {
-      "n": 14,
-      "mean": 0.99201,
+      "n": 18,
+      "mean": 1.40204,
       "ci": [
-        -1.83115,
-        4.29554
+        -0.99211,
+        4.11082
       ]
     }
   },
-  "verdict": "검증 중 (배당이 바뀐 경기 35/50)"
+  "verdict": "시장이 AI 반대쪽으로 움직임 (나쁜 신호)"
 }
