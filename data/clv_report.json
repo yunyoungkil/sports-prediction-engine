@@ -1,22 +1,22 @@
 {
-  "updated_at": "2026-10-28T16:15:17+00:00",
+  "updated_at": "2026-10-28T21:08:02+00:00",
   "rounds": [
     260126,
     260127,
     260128
   ],
-  "matches": 124,
-  "moved": 79,
-  "toward_ai": 32,
-  "away_from_ai": 47,
-  "toward_ai_pct": 40.5,
-  "fav_toward_pct": 43.0,
+  "matches": 157,
+  "moved": 105,
+  "toward_ai": 46,
+  "away_from_ai": 59,
+  "toward_ai_pct": 43.8,
+  "fav_toward_pct": 44.8,
   "mean_move_pp": {
-    "n": 124,
-    "mean": -0.91884,
+    "n": 157,
+    "mean": -0.9043,
     "ci": [
-      -1.61802,
-      -0.30049
+      -1.71251,
+      -0.2393
     ]
   },
   "by_game_type": {
@@ -37,34 +37,34 @@
       }
     },
     "축구 승무패": {
-      "matches": 64,
-      "moved": 37,
-      "toward_ai": 19,
-      "away_from_ai": 18,
-      "toward_ai_pct": 51.4,
-      "fav_toward_pct": 54.1,
+      "matches": 78,
+      "moved": 49,
+      "toward_ai": 26,
+      "away_from_ai": 23,
+      "toward_ai_pct": 53.1,
+      "fav_toward_pct": 53.1,
       "mean_move_pp": {
-        "n": 64,
-        "mean": -0.06754,
+        "n": 78,
+        "mean": -0.03332,
         "ci": [
-          -0.70281,
-          0.63511
+          -0.59349,
+          0.55421
         ]
       }
     },
     "축구 핸디캡": {
-      "matches": 42,
-      "moved": 34,
-      "toward_ai": 11,
-      "away_from_ai": 23,
-      "toward_ai_pct": 32.4,
-      "fav_toward_pct": 38.2,
+      "matches": 61,
+      "moved": 48,
+      "toward_ai": 18,
+      "away_from_ai": 30,
+      "toward_ai_pct": 37.5,
+      "fav_toward_pct": 41.7,
       "mean_move_pp": {
-        "n": 42,
-        "mean": -1.73981,
+        "n": 61,
+        "mean": -1.68582,
         "ci": [
-          -2.97935,
-          -0.64091
+          -3.25811,
+          -0.37411
         ]
       }
     }
@@ -76,35 +76,35 @@
   },
   "paper_strategies": {
     "B_fav_double": {
-      "n": 3,
-      "mean": -2.98513,
+      "n": 4,
+      "mean": -1.43885,
       "ci": [
-        -14.78873,
-        5.83333
+        -10.29155,
+        4.51667
       ]
     },
     "C_finder_top": {
-      "n": 3,
-      "mean": -2.98513,
+      "n": 4,
+      "mean": -1.43885,
       "ci": [
-        -14.78873,
-        5.83333
+        -10.29155,
+        4.51667
       ]
     },
     "D_banker_cover": {
-      "n": 15,
-      "mean": -1.92318,
+      "n": 18,
+      "mean": -1.06931,
       "ci": [
-        -6.35956,
-        1.90783
+        -4.76684,
+        2.09223
       ]
     },
     "E_market_fav": {
-      "n": 22,
-      "mean": 0.76916,
+      "n": 27,
+      "mean": 0.90998,
       "ci": [
-        -1.75946,
-        3.21929
+        -1.151,
+        3.0927
       ]
     }
   },
