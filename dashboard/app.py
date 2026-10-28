@@ -108,10 +108,14 @@ st.markdown("""
     /* ① 탭 숫자 카드: 카드 아무 데나 누르면 그 구간만 보기 — 카드 위에 투명 버튼을 덮어 둠 (key → st-key-… 이름표) */
     [class*="st-key-t1card_"] { position: relative; }
     [class*="st-key-t1card_"]:hover { background: rgba(57, 135, 229, .08); border-radius: .5rem; }
-    [class*="st-key-t1tile_"] { position: absolute !important; inset: 0; z-index: 2; margin: 0 !important; }
-    [class*="st-key-t1tile_"] button { width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+    /* Streamlit이 버튼 칸을 '내용 크기'(fit-content)로 잡아서 카드 왼쪽 위 일부만 덮던 문제 → 칸·버튼 모두 카드 크기로 */
+    [class*="st-key-t1tile_"] { position: absolute !important; top: 0; left: 0; width: 100% !important; height: 100% !important;
+                                z-index: 2; margin: 0 !important; }
+    [class*="st-key-t1tile_"] div, [class*="st-key-t1tile_"] button { width: 100% !important; height: 100% !important; }
+    [class*="st-key-t1tile_"] button { opacity: 0; cursor: pointer; }
     [class*="st-key-t1tile_"] button:disabled { cursor: default; }
-    .st-key-t1card_on { outline: 2px solid #3987e5; border-radius: .5rem; background: rgba(57, 135, 229, .12); }
+    [class*="st-key-t1card_on_"] { border-color: #3987e5 !important; box-shadow: 0 0 0 1px #3987e5 !important;
+                         background: rgba(57, 135, 229, .14) !important; }   /* 테두리는 이 칸 자체가 그림 */
 </style>
 """, unsafe_allow_html=True)
 
