@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-28T12:00:57+00:00",
+  "updated_at": "2026-10-28T12:42:22+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -68,15 +68,15 @@
     },
     "E_market_fav": {
       "label": "E. 배당 1순위 단일 (기준선)",
-      "bets": 18,
-      "hits": 11,
-      "pending": 26,
-      "staked": 18000,
-      "returned": 16080,
-      "profit": -1920,
-      "roi_pct": -10.67,
-      "roi_ci_low": -44.11,
-      "roi_ci_high": 21.56,
+      "bets": 22,
+      "hits": 13,
+      "pending": 22,
+      "staked": 22000,
+      "returned": 18520,
+      "profit": -3480,
+      "roi_pct": -15.82,
+      "roi_ci_low": -46.32,
+      "roi_ci_high": 15.18,
       "cum_profit": [
         550,
         770,
@@ -95,7 +95,11 @@
         -1820,
         -2820,
         -2550,
-        -1920
+        -1920,
+        -2920,
+        -2690,
+        -3690,
+        -3480
       ],
       "verdict": "판단 보류 (표본 부족)"
     }
@@ -405,9 +409,9 @@
       "odds": 1.57,
       "stake": 1000,
       "kickoff": "2026-10-28T10:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260128",
@@ -416,9 +420,9 @@
       "odds": 1.21,
       "stake": 1000,
       "kickoff": "2026-10-28T10:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1210,
+      "profit": 210
     },
     {
       "gm_ts": "260127",
@@ -427,9 +431,9 @@
       "odds": 1.57,
       "stake": 1000,
       "kickoff": "2026-10-28T10:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260127",
@@ -438,9 +442,9 @@
       "odds": 1.23,
       "stake": 1000,
       "kickoff": "2026-10-28T10:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1230,
+      "profit": 230
     },
     {
       "gm_ts": "260127",
