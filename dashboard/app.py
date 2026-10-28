@@ -1702,7 +1702,43 @@ with tab2:
         DIFF_PP = 3.0   # 'AI가 다르게 본 경기': 1순위가 다르거나 어떤 선택지든 3%p 이상 차이 (AI 적용 경기의 약 1/4)
         t2_now = datetime.now().timestamp() * 1000
 
+        T2_STATES = ["발매 중", "마감", "경기 중", "종료"]
+        GAME_HOURS = {"SC": 2.5, "BK": 3.0, "BS": 4.0}   # 킥오프 뒤 이 시간까지는 '경기 중'으로 봄 (결과가 아직 없을 때)
+        t2_results = load_results_index()
+        t2_by_match = {}   # 예측 파일에 회차(gm_ts)가 비어 있을 때를 위해 (경기번호, 홈, 원정)으로도 결과를 찾는다
+        for _rows in t2_results.values():
+            for _r in _rows:
+                t2_by_match.setdefault((str(_r.get("match_seq")), _r.get("home_team"), _r.get("away_team")), []).append(_r)
+
+        def _t2_result_row(m):
+            gm = str(m.get("gm_ts") or "")
+            if gm:
+                return find_result(m, t2_results, gm)
+            cands = t2_by_match.get((str(m.get("match_seq")), m.get("home_team"), m.get("away_team")), [])
+            return find_result(m, {("-", str(m.get("match_seq"))): cands}, "-") if cands else None
+
+        def _game_state(m, rows):
+            """발매 중 / 마감(경기 전) / 경기 중 / 종료. 결과 줄이 있으면 종료, 없으면 베트맨 상태 코드와 시각으로 판단"""
+            if rows and outcome_from_rows(m, rows) is not None:
+                return "종료"
+            if str(m.get("match_state")) == "4":
+                return "종료"
+            if str(m.get("match_state")) == "3":
+                return "경기 중"
+            if not is_sale_closed(m, t2_now):
+                return "발매 중"
+            ko = m.get("kickoff_ts")
+            if not ko or float(ko) > t2_now:
+                return "마감"
+            return "경기 중" if (t2_now - float(ko)) / 3.6e6 <= GAME_HOURS.get(m.get("sport"), 3.0) else "종료"
+
         def _analyze(m):
+            row = _t2_result_row(m)
+            gm_ts = str(m.get("gm_ts") or (row or {}).get("gm_ts") or "")
+            rows = [row] if row else []
+            state = _game_state(m, rows)
+            res_key = outcome_from_rows(m, rows) if rows else None
+            score = display_score(m, rows) if rows and res_key is not None else ""
             opts = available_picks(m)
             odds = m.get("betman_odds", {})
             mk = m.get("market_implied_probs") or {}
@@ -1712,7 +1748,15 @@ with tab2:
             d = {k: (prob_of(ai, k) - prob_of(mk, k)) * 100 for k in opts} if ai else {}
             gap = max((abs(v) for v in d.values()), default=0.0)
             ev = {k: prob_of(ai or mk, k) * float(odds[k]) - 1.0 for k in opts}
-            return {"m": m, "opts": opts, "labels": pick_labels(m), "mk": mk, "ai": ai,
+            # 경기 전에 고정 저장한 AI 확률(prediction_log)로 맞았는지 본다 — 지금 AI 확률은 결과 이후에 다시 계산되기 때문
+            ai_hit = None
+            if res_key is not None and gm_ts:
+                lg = load_prediction_log(gm_ts).get(str(m.get("match_seq"))) or {}
+                if lg.get("prob_source") in AI_SOURCES and lg.get("first_model_probs"):
+                    fk, _ = top_pick(lg["first_model_probs"], opts)
+                    ai_hit = "void" if res_key == "void" else (fk == res_key if fk else None)
+            return {"m": m, "state": state, "res_key": res_key, "score": score, "ai_hit": ai_hit, "gm_ts": gm_ts,
+                    "opts": opts, "labels": pick_labels(m), "mk": mk, "ai": ai,
                     "mk_k": mk_k, "mk_p": mk_p, "ai_k": ai_k, "ai_p": ai_p, "d": d, "gap": gap,
                     "up_k": max(d, key=d.get) if d else None,
                     "differs": bool(ai) and (ai_k != mk_k or gap >= DIFF_PP),
@@ -1722,12 +1766,14 @@ with tab2:
         rows_all = [a for a in (_analyze(m) for m in predictions) if a["opts"]]
 
         # C. 필터: ① 탭과 같은 배지
-        T2_QUICK = {"ai": "🧠 AI 적용만", "diff": "⚠️ 배당과 다름", "gem": "💎 플러스", "single": "⚡ 한경기만", "open": "⏳ 마감 전만"}
+        T2_QUICK = {"ai": "🧠 AI 적용만", "diff": "⚠️ 배당과 다름", "gem": "💎 플러스", "single": "⚡ 한경기만"}
+        T2_STATE_ICON = {"발매 중": "🟢", "마감": "🔒", "경기 중": "▶", "종료": "✅"}
         if not GEM_ON:   # [6.5] 추천 잠금 중에는 💎 필터 없음
             T2_QUICK.pop("gem")
         T2_SORTS = ["AI 차이 큰 순", "경기 시간순", "기대가치 높은 순"]
         T2_DEFAULTS = {"tab2_search": "", "tab2_sports": [], "tab2_types": [], "tab2_league": "전체 리그",
-                       "tab2_quick": [], "tab2_sort_by": T2_SORTS[0]}
+                       "tab2_quick": [], "tab2_sort_by": T2_SORTS[0],
+                       "tab2_states": ["발매 중", "마감", "경기 중"], "tab2_round": "전체 회차"}
 
         def _t2_reset():
             for k, v in T2_DEFAULTS.items():
@@ -1745,6 +1791,16 @@ with tab2:
                 ty_opts = [t for t in TYPE_BADGES if any(type_badge(a["m"]) == t for a in in_sp)]
                 keep_valid_multi("tab2_types", ty_opts)
                 t_types = st.pills("게임 유형", ty_opts, selection_mode="multi", key="tab2_types") or []
+            st.session_state.setdefault("tab2_states", T2_DEFAULTS["tab2_states"])
+            keep_valid_multi("tab2_states", T2_STATES)
+            t_states = st.pills("경기 상태", T2_STATES, selection_mode="multi", key="tab2_states",
+                                format_func=lambda s: f"{T2_STATE_ICON[s]} {s} ({sum(1 for a in in_sp if a['state'] == s)})") or []
+            rd_opts = ["전체 회차"] + sorted({a["gm_ts"] for a in in_sp if a["gm_ts"]}, reverse=True)
+            if len(rd_opts) > 2:   # 회차가 둘 이상일 때만 (지금은 현재 회차 하나)
+                keep_valid("tab2_round", rd_opts)
+                t_round = st.selectbox("회차", rd_opts, key="tab2_round")
+            else:
+                t_round = "전체 회차"
             f1, f2, f3 = st.columns([1.5, 1.6, 1.0])
             with f1:
                 t_search = st.text_input("🔎 팀 이름 검색", placeholder="예: 아스널, 뮌헨, 인천", key="tab2_search")
@@ -1767,13 +1823,16 @@ with tab2:
             m = a["m"]
             if t_types and type_badge(m) not in t_types:
                 continue
+            if t_states and a["state"] not in t_states:
+                continue
+            if t_round != "전체 회차" and a["gm_ts"] != t_round:
+                continue
             if t_league != "전체 리그" and m.get("league") != t_league:
                 continue
             if t_search and t_search.lower() not in (m.get("home_team", "") + " " + m.get("away_team", "")).lower():
                 continue
             if ("ai" in t_quick and not a["ai"]) or ("diff" in t_quick and not a["differs"]) \
-                    or ("gem" in t_quick and not a["gems"]) or ("single" in t_quick and not m.get("is_single")) \
-                    or ("open" in t_quick and is_sale_closed(m, t2_now)):
+                    or ("gem" in t_quick and not a["gems"]) or ("single" in t_quick and not m.get("is_single")):
                 continue
             t_rows.append(a)
 
@@ -1830,24 +1889,53 @@ with tab2:
                 line = f" U/O {lv:g}"
             return f"{type_name(m)}{line}{' ⚡' if m.get('is_single') else ''}"
 
+        def _state_text(a):
+            s = a["state"]
+            return f"{T2_STATE_ICON[s]} {s}" + (" (결과 대기)" if s == "종료" and a["res_key"] is None else "")
+
+        def _close_text(m):
+            ct = m.get("close_time")
+            return datetime.fromtimestamp(float(ct) / 1000).strftime("%m.%d %H:%M") if ct else "-"
+
+        def _result_text(a):
+            if a["res_key"] is None:
+                return "-"
+            if a["res_key"] == "void":
+                return f"{a['score']} · 무효(1.0배)".strip(" ·")
+            return f"{a['score']} · {a['labels'][a['res_key']]}".strip(" ·")
+
+        def _hit_text(a):
+            return "-" if a["ai_hit"] is None else ("무효" if a["ai_hit"] == "void" else ("⭕" if a["ai_hit"] else "❌"))
+
         st.markdown("#### 📋 경기 목록")
         if not t_rows:
             st.info("조건에 맞는 경기가 없어요. 필터를 초기화해 보세요.")
         else:
             df_t2 = pd.DataFrame([{
+                "회차": a["gm_ts"] or "-",
                 "번호": str(a["m"].get("match_seq", "")),
                 "시간": short_when(a["m"]),
+                "상태": _state_text(a),
+                "마감": _close_text(a["m"]),
                 "경기": f"{a['m'].get('home_team', '')} vs {a['m'].get('away_team', '')}",
+                "점수·결과": _result_text(a),
                 "유형": _type_text(a["m"]),
                 "배당 1순위": f"{a['labels'][a['mk_k']]} {a['mk_p'] * 100:.0f}%" if a["mk_k"] else "-",
                 "AI 1순위": _ai_top_text(a),
                 "AI가 더 높게 본 쪽": _ai_up_text(a),
+                "AI 적중": _hit_text(a),
             } for a in t_rows])
-            t2_sig = (tuple(t_sports), tuple(t_types), t_league, t_search, tuple(t_quick), t_sort)
+            t2_sig = (tuple(t_sports), tuple(t_types), tuple(t_states), t_round, t_league, t_search, tuple(t_quick), t_sort)
             event = st.dataframe(
                 df_t2, hide_index=True, width="stretch", height=min(38 + 35 * len(df_t2), 422),
                 on_select="rerun", selection_mode="single-row", key=f"tab2_table_{t2_sig}",
-                column_config={"번호": st.column_config.TextColumn(width="small"),
+                column_config={"회차": st.column_config.TextColumn(width="small"),
+                               "번호": st.column_config.TextColumn(width="small"),
+                               "상태": st.column_config.TextColumn(width="small"),
+                               "마감": st.column_config.TextColumn(width="small"),
+                               "점수·결과": st.column_config.TextColumn(width="small"),
+                               "AI 적중": st.column_config.TextColumn(
+                                   width="small", help="경기 전에 고정 저장한 AI 1순위가 실제 결과와 맞았는지 (AI 적용 경기만)"),
                                "시간": st.column_config.TextColumn(width="small"),
                                "경기": st.column_config.TextColumn(width="large"),
                                "AI가 더 높게 본 쪽": st.column_config.TextColumn(
@@ -1881,7 +1969,9 @@ with tab2:
 
             st.markdown("#### 🔎 경기 분석")
             with st.container(border=True):
-                status_txt = ("🔒 발매 마감" if closed else
+                status_txt = (f"{T2_STATE_ICON[a['state']]} {a['state']}" + (f" · {_result_text(a)}" if a["res_key"] is not None else "")
+                              if a["state"] != "발매 중" else
+                              "🔒 발매 마감" if closed else
                               f"🟢 {datetime.fromtimestamp(float(m['close_time']) / 1000).strftime('%m.%d %H:%M')} 마감"
                               if m.get("close_time") else "")
                 st.markdown(
