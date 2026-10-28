@@ -1521,15 +1521,15 @@ with tab1:
                 if fx_rows:   # 같은 대진 안의 게임번호 줄 사이 얇은 구분선
                     st.markdown("<div style='border-top:1px solid rgba(148,163,184,.12);margin:-6px 0'></div>",
                                 unsafe_allow_html=True)
-                # 배당 버튼이 3개(승·무·패)여도 옆 칸에 가리지 않게 가운데 칸을 넉넉히 (2026-10-28: '패 2.15'가 잘림)
-                c1, c2, c3 = st.columns([2.3, 3.7, 4.0], vertical_alignment="center")
+                # 한 줄 유지 (줄이 바뀌면 경기마다 높이가 달라져 목록이 흐트러짐) — 가장 긴 '1255 전반 핸디캡 H -1.5 한경기'
+                # (약 300px)가 들어가도록 왼쪽을 넓히고, 여유 있는 오른쪽 예상·점수·결과 칸에서 덜어 옴. 배당 칸은 버튼 3개 폭 유지
+                c1, c2, c3 = st.columns([2.8, 3.1, 3.9], vertical_alignment="center")
                 with c1:
                     # 게임번호 · 유형 · 기준선 칩 · 한경기 (마우스를 올리면 리그·유형 전체 표시)
-                    # 길면 잘리지 않고 다음 줄로 (예: '전반 핸디캡 H -1.5 한경기')
                     tags = line_chip(m) + (ONE_GAME_TAG if m.get("is_single") else "")
                     st.markdown(
                         f"<div title='#{seq} · {m.get('league', '')} · {category_display(m)}' style='display:flex;"
-                        "align-items:center;gap:4px 8px;flex-wrap:wrap'>"
+                        "align-items:center;gap:8px;white-space:nowrap;overflow:hidden'>"
                         f"<span style='font-size:15px;font-weight:800;min-width:34px'>{seq}</span>"
                         f"<span style='font-size:15px;font-weight:600;white-space:nowrap'>{type_name(m)}</span>{tags}</div>",
                         unsafe_allow_html=True)
