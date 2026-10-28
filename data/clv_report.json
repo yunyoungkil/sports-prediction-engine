@@ -1,69 +1,70 @@
 {
-  "updated_at": "2026-10-28T09:41:55+00:00",
+  "updated_at": "2026-10-28T10:57:38+00:00",
   "rounds": [
     260126,
-    260127
+    260127,
+    260128
   ],
-  "matches": 93,
-  "moved": 51,
-  "toward_ai": 21,
-  "away_from_ai": 30,
-  "toward_ai_pct": 41.2,
-  "fav_toward_pct": 41.2,
+  "matches": 110,
+  "moved": 65,
+  "toward_ai": 26,
+  "away_from_ai": 39,
+  "toward_ai_pct": 40.0,
+  "fav_toward_pct": 41.5,
   "mean_move_pp": {
-    "n": 93,
-    "mean": -0.4742,
+    "n": 110,
+    "mean": -0.62672,
     "ci": [
-      -0.79427,
-      -0.16345
+      -1.15876,
+      -0.10442
     ]
   },
   "by_game_type": {
     "농구 승패": {
-      "matches": 15,
-      "moved": 5,
-      "toward_ai": 0,
+      "matches": 16,
+      "moved": 6,
+      "toward_ai": 1,
       "away_from_ai": 5,
-      "toward_ai_pct": 0.0,
+      "toward_ai_pct": 16.7,
       "fav_toward_pct": 0.0,
       "mean_move_pp": {
-        "n": 15,
-        "mean": -0.99931,
+        "n": 16,
+        "mean": -0.77001,
         "ci": [
-          -1.79721,
-          -0.31074
+          -1.64447,
+          0.01702
         ]
       }
     },
     "축구 승무패": {
-      "matches": 50,
-      "moved": 24,
-      "toward_ai": 13,
-      "away_from_ai": 11,
-      "toward_ai_pct": 54.2,
-      "fav_toward_pct": 54.2,
+      "matches": 58,
+      "moved": 31,
+      "toward_ai": 16,
+      "away_from_ai": 15,
+      "toward_ai_pct": 51.6,
+      "fav_toward_pct": 54.8,
       "mean_move_pp": {
-        "n": 50,
-        "mean": 0.01527,
+        "n": 58,
+        "mean": 0.0879,
         "ci": [
-          -0.31372,
-          0.33544
+          -0.56472,
+          0.74784
         ]
       }
     },
     "축구 핸디캡": {
-      "matches": 28,
-      "moved": 22,
-      "toward_ai": 8,
-      "away_from_ai": 14,
-      "toward_ai_pct": 36.4,
-      "fav_toward_pct": 36.4,
+      "matches": 36,
+      "moved": 28,
+      "toward_ai": 9,
+      "away_from_ai": 19,
+      "toward_ai_pct": 32.1,
+      "fav_toward_pct": 35.7,
       "mean_move_pp": {
-        "n": 28,
-        "mean": -1.06695,
+        "n": 36,
+        "mean": -1.71437,
         "ci": [
-          -1.84903,
-          -0.35767
+          -2.86998,
+          -0.68808
         ]
       }
     }
@@ -75,35 +76,35 @@
   },
   "paper_strategies": {
     "B_fav_double": {
-      "n": 2,
-      "mean": 2.91667,
+      "n": 3,
+      "mean": -2.98513,
       "ci": [
-        0.0,
+        -14.78873,
         5.83333
       ]
     },
     "C_finder_top": {
-      "n": 2,
-      "mean": 2.91667,
+      "n": 3,
+      "mean": -2.98513,
       "ci": [
-        0.0,
+        -14.78873,
         5.83333
       ]
     },
     "D_banker_cover": {
-      "n": 9,
-      "mean": 1.6448,
+      "n": 15,
+      "mean": -1.92318,
       "ci": [
-        -2.72928,
-        5.21032
+        -6.35956,
+        1.90783
       ]
     },
     "E_market_fav": {
-      "n": 18,
-      "mean": 1.40204,
+      "n": 22,
+      "mean": 0.76916,
       "ci": [
-        -0.99211,
-        4.11082
+        -1.75946,
+        3.21929
       ]
     }
   },
