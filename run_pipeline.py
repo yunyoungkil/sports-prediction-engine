@@ -37,120 +37,8 @@ def recover_round(matches: list):
         return None
 
 
-def run_full_pipeline(gm_ts: str = None) -> list:
-    print("=" * 60)
-    print("⚽ 스포츠 승부 예측 & 가치 픽 분석 파이프라인 시작")
-    print(f"⏰ 실행 시각: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("=" * 60)
-    
-    # 1. 베트맨 최신 발매 경기 목록 및 배당 수집
-    scraper = BetmanScraper()
-    if not gm_ts:
-        gm_ts = scraper.find_current_round()
-        if gm_ts:
-            print(f"📌 최신 판매 회차 자동 탐지 완료: {gm_ts}회차")
-        else:
-            print("⚠️ 최신 회차 자동 탐지 실패 (수동 지정 또는 캐시 확인)")
-
-    try:
-        matches = scraper.fetch_current_round_matches(gm_ts=gm_ts) if gm_ts else []
-    except Exception as e:
-        print(f"⚠️ 베트맨 실시간 수집 중 오류 발생: {e}")
-        matches = []
-
-    cached_file = Path("data/current_matches.json")
-    if matches and len(matches) > 0:
-        # 캐시에 회차 번호도 함께 저장 — 다음 실행에서 베트맨 조회가 실패해도 회차를 잃지 않게 (2026-10-28 버그)
-        for m in matches:
-            m["gm_ts"] = int(gm_ts) if str(gm_ts).isdigit() else gm_ts
-        scraper.save_matches(matches, "data/current_matches.json")
-    elif cached_file.exists():
-        warn_msg = f"베트맨 실시간 수집 실패 (회차: {gm_ts}). 기존 캐시({cached_file}) 데이터를 사용합니다."
-        print(f"⚠️ {warn_msg}")
-        try:
-            from notifier.telegram_bot import send_telegram_warning
-            send_telegram_warning(warn_msg)
-        except Exception:
-            pass
-        with open(cached_file, "r", encoding="utf-8") as f:
-            matches = json.load(f)
-        if not gm_ts:
-            gm_ts = recover_round(matches)
-            print(f"↩️ 캐시 경기의 회차 복구: {gm_ts or '실패'}")
-    else:
-        err_msg = f"베트맨 실시간 수집 및 캐시 데이터 모두 없음 (회차: {gm_ts}). 파이프라인을 중단합니다."
-        print(f"❌ {err_msg}")
-        try:
-            from notifier.telegram_bot import send_telegram_warning
-            send_telegram_warning(err_msg)
-        except Exception:
-            pass
-        return []
-    
-    # 1-1. [Phase 5.12] 배당 변화 기록 (처음 배당 + 바뀔 때만, 마감 배당 비교용)
-    if matches and gm_ts:
-        try:
-            from tracker.odds_history import update_odds_history
-            oh = update_odds_history(gm_ts, matches)
-            print(f"📸 [{gm_ts}회차] 배당 기록: 새 경기 {oh['new']} · 배당 변경 {oh['changed']}")
-        except Exception as e:
-            print(f"⚠️ 배당 기록 저장 중 오류 발생: {e}")
-
-    # 1-1b. [Phase 5.4] 해외 배당(The Odds API) 짝짓기 및 회차별 스냅샷 저장 (ODDS_API_KEY 필요)
-    sharp_by_seq = {}
-    if matches and gm_ts:
-        try:
-            from collector.betman_sharp import collect_round_sharp_odds
-            sharp_by_seq = collect_round_sharp_odds(gm_ts, matches)
-        except Exception as e:
-            print(f"⚠️ 해외 배당 비교 중 오류 발생: {e}")
-
-    # 1-2. 베트맨 직전 회차 실제 경기 결과 누적 수집 및 병합 (미수집 회차 자동 추가)
-    r_scraper = BetmanResultsScraper()
-    target_ts = int(gm_ts) if gm_ts and str(gm_ts).isdigit() else 260126
-    # 현재 판매 회차(target_ts)의 이미 끝난 경기 결과도 포함 (대시보드 적중 여부 표시용): target_ts+1 기준 직전 9개 회차
-    r_scraper.sync_recent_results(current_ts=target_ts + 1, n_rounds=9, filepath="data/history/betman_recent_results.json")
-        
-    # 1-3. (중단) 구 Dixon-Coles 모델 재채점(tracker/result_evaluator.py)은 2026-10-26부터 실행하지 않는다.
-    #      현재 실전 AI가 아닌 모델을 채점했고 미래 정보가 섞일 수 있었다(REVIEW R15).
-    #      실력 지표는 공식 성적표(evaluation/scorecard.py)와 가상 베팅 리그(models/paper_trading.py)로 대체했다.
-    #      필요하면 대시보드 ③의 '구 모델 재채점' 버튼으로 수동 실행할 수 있다.
-
-    # 1-4. [Phase 5.4] 해외 배당 스냅샷 × 실전 결과 검증 리포트 갱신 (대시보드 표시용)
-    try:
-        from evaluation.sharp_vs_betman import evaluate as evaluate_sharp_vs_betman
-        sharp_report = evaluate_sharp_vs_betman()
-        Path("data/sharp_validation.json").write_text(
-            json.dumps(sharp_report, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"🌍 [5.4] 해외 배당 실전 검증: 결과 확인 {sharp_report['with_results']}건 (판정 기준 300건)")
-    except Exception as e:
-        print(f"⚠️ 해외 배당 검증 리포트 갱신 실패: {e}")
-
-    # 1-4b. [Phase 5.9] 가상 베팅 리그 채점 (결과가 나온 가상 베팅 정산)
-    try:
-        from models.paper_trading import settle_and_summarize
-        pt = settle_and_summarize()
-        print("🧪 [5.9] 가상 베팅 리그: " + ", ".join(
-            f"{v['label'].split('.')[0]} {v['bets']}건 {v['roi_pct']:+.1f}%" for v in pt["strategies"].values()))
-    except Exception as e:
-        print(f"⚠️ 가상 베팅 채점 실패: {e}")
-
-    # 1-5. [Phase 5.3] AI 성적표 갱신 (경기 전 예측 기록 × 실전 결과)
-    try:
-        from evaluation.scorecard import update_scorecard
-        card = update_scorecard()
-        print(f"📋 [5.3] AI 성적표: 채점 {card['graded_matches']}경기 → {card['verdict']}")
-    except Exception as e:
-        print(f"⚠️ AI 성적표 갱신 실패: {e}")
-
-    # 1-6. [Phase 5.12] 마감 배당 비교 (AI ▲ 쪽으로 배당이 움직였는지)
-    try:
-        from evaluation.clv import update_report as update_clv
-        clv = update_clv()
-        print(f"📈 [5.12] 마감 배당 비교: 배당 바뀐 {clv['moved']}경기 중 AI 쪽 {clv['toward_ai']} → {clv['verdict']}")
-    except Exception as e:
-        print(f"⚠️ 마감 배당 비교 실패: {e}")
-
+def load_models() -> dict:
+    """AI 계산에 필요한 모델들 (파이프라인 · 대시보드 실시간 계산 공용)"""
     # 2. 폼/상대전적 분석기 준비 (유형별 라벨·배당 확률은 models/market_view.py)
     form_analyzer = FormAnalyzer()
     # [Phase 5.2] 시장 보정 모델: 검증 게이트(TEST·베트맨 실전 모두 시장보다 LL 낮음)를 통과한 경우에만 사용
@@ -174,6 +62,15 @@ def run_full_pipeline(gm_ts: str = None) -> list:
           + " · ".join(f"{'✅' if s['ok'] else '⏳'} {s['name']}" for s in rec_status["stages"])
           + f" · {'✅' if rec_status['features']['gem']['profit']['ok'] else '⏳'} ③ 수익")
 
+    return {"form_analyzer": form_analyzer, "corrector": corrector, "betman_model": betman_model,
+            "markets_model": markets_model, "recommend_on": recommend_on}
+
+
+def predict_matches(matches: list, gm_ts, models: dict, sharp_by_seq: dict = None) -> list:
+    """경기마다 AI 확률 · 기대가치 · 추천 판단 (파이프라인 · 대시보드 실시간 계산 공용 — 같은 결과)"""
+    form_analyzer, corrector, betman_model = models["form_analyzer"], models["corrector"], models["betman_model"]
+    markets_model, recommend_on = models["markets_model"], models["recommend_on"]
+    sharp_by_seq = sharp_by_seq or {}
     # 3. 각 경기별 예측 및 기대가치 평가
     print("\n🧠 [2/3] 전 경기 AI 승률 계산 및 기대가치(EV) 분석 중...")
     results = []
@@ -295,6 +192,127 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             "away_form": away_form,
             "h2h": h2h_stats
         })
+    return results
+
+
+def run_full_pipeline(gm_ts: str = None) -> list:
+    print("=" * 60)
+    print("⚽ 스포츠 승부 예측 & 가치 픽 분석 파이프라인 시작")
+    print(f"⏰ 실행 시각: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 60)
+    
+    # 1. 베트맨 최신 발매 경기 목록 및 배당 수집
+    scraper = BetmanScraper()
+    if not gm_ts:
+        gm_ts = scraper.find_current_round()
+        if gm_ts:
+            print(f"📌 최신 판매 회차 자동 탐지 완료: {gm_ts}회차")
+        else:
+            print("⚠️ 최신 회차 자동 탐지 실패 (수동 지정 또는 캐시 확인)")
+
+    try:
+        matches = scraper.fetch_current_round_matches(gm_ts=gm_ts) if gm_ts else []
+    except Exception as e:
+        print(f"⚠️ 베트맨 실시간 수집 중 오류 발생: {e}")
+        matches = []
+
+    cached_file = Path("data/current_matches.json")
+    if matches and len(matches) > 0:
+        # 캐시에 회차 번호도 함께 저장 — 다음 실행에서 베트맨 조회가 실패해도 회차를 잃지 않게 (2026-10-28 버그)
+        for m in matches:
+            m["gm_ts"] = int(gm_ts) if str(gm_ts).isdigit() else gm_ts
+        scraper.save_matches(matches, "data/current_matches.json")
+    elif cached_file.exists():
+        warn_msg = f"베트맨 실시간 수집 실패 (회차: {gm_ts}). 기존 캐시({cached_file}) 데이터를 사용합니다."
+        print(f"⚠️ {warn_msg}")
+        try:
+            from notifier.telegram_bot import send_telegram_warning
+            send_telegram_warning(warn_msg)
+        except Exception:
+            pass
+        with open(cached_file, "r", encoding="utf-8") as f:
+            matches = json.load(f)
+        if not gm_ts:
+            gm_ts = recover_round(matches)
+            print(f"↩️ 캐시 경기의 회차 복구: {gm_ts or '실패'}")
+    else:
+        err_msg = f"베트맨 실시간 수집 및 캐시 데이터 모두 없음 (회차: {gm_ts}). 파이프라인을 중단합니다."
+        print(f"❌ {err_msg}")
+        try:
+            from notifier.telegram_bot import send_telegram_warning
+            send_telegram_warning(err_msg)
+        except Exception:
+            pass
+        return []
+    
+    # 1-1. [Phase 5.12] 배당 변화 기록 (처음 배당 + 바뀔 때만, 마감 배당 비교용)
+    if matches and gm_ts:
+        try:
+            from tracker.odds_history import update_odds_history
+            oh = update_odds_history(gm_ts, matches)
+            print(f"📸 [{gm_ts}회차] 배당 기록: 새 경기 {oh['new']} · 배당 변경 {oh['changed']}")
+        except Exception as e:
+            print(f"⚠️ 배당 기록 저장 중 오류 발생: {e}")
+
+    # 1-1b. [Phase 5.4] 해외 배당(The Odds API) 짝짓기 및 회차별 스냅샷 저장 (ODDS_API_KEY 필요)
+    sharp_by_seq = {}
+    if matches and gm_ts:
+        try:
+            from collector.betman_sharp import collect_round_sharp_odds
+            sharp_by_seq = collect_round_sharp_odds(gm_ts, matches)
+        except Exception as e:
+            print(f"⚠️ 해외 배당 비교 중 오류 발생: {e}")
+
+    # 1-2. 베트맨 직전 회차 실제 경기 결과 누적 수집 및 병합 (미수집 회차 자동 추가)
+    r_scraper = BetmanResultsScraper()
+    target_ts = int(gm_ts) if gm_ts and str(gm_ts).isdigit() else 260126
+    # 현재 판매 회차(target_ts)의 이미 끝난 경기 결과도 포함 (대시보드 적중 여부 표시용): target_ts+1 기준 직전 9개 회차
+    r_scraper.sync_recent_results(current_ts=target_ts + 1, n_rounds=9, filepath="data/history/betman_recent_results.json")
+        
+    # 1-3. (중단) 구 Dixon-Coles 모델 재채점(tracker/result_evaluator.py)은 2026-10-26부터 실행하지 않는다.
+    #      현재 실전 AI가 아닌 모델을 채점했고 미래 정보가 섞일 수 있었다(REVIEW R15).
+    #      실력 지표는 공식 성적표(evaluation/scorecard.py)와 가상 베팅 리그(models/paper_trading.py)로 대체했다.
+    #      필요하면 대시보드 ③의 '구 모델 재채점' 버튼으로 수동 실행할 수 있다.
+
+    # 1-4. [Phase 5.4] 해외 배당 스냅샷 × 실전 결과 검증 리포트 갱신 (대시보드 표시용)
+    try:
+        from evaluation.sharp_vs_betman import evaluate as evaluate_sharp_vs_betman
+        sharp_report = evaluate_sharp_vs_betman()
+        Path("data/sharp_validation.json").write_text(
+            json.dumps(sharp_report, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"🌍 [5.4] 해외 배당 실전 검증: 결과 확인 {sharp_report['with_results']}건 (판정 기준 300건)")
+    except Exception as e:
+        print(f"⚠️ 해외 배당 검증 리포트 갱신 실패: {e}")
+
+    # 1-4b. [Phase 5.9] 가상 베팅 리그 채점 (결과가 나온 가상 베팅 정산)
+    try:
+        from models.paper_trading import settle_and_summarize
+        pt = settle_and_summarize()
+        print("🧪 [5.9] 가상 베팅 리그: " + ", ".join(
+            f"{v['label'].split('.')[0]} {v['bets']}건 {v['roi_pct']:+.1f}%" for v in pt["strategies"].values()))
+    except Exception as e:
+        print(f"⚠️ 가상 베팅 채점 실패: {e}")
+
+    # 1-5. [Phase 5.3] AI 성적표 갱신 (경기 전 예측 기록 × 실전 결과)
+    try:
+        from evaluation.scorecard import update_scorecard
+        card = update_scorecard()
+        print(f"📋 [5.3] AI 성적표: 채점 {card['graded_matches']}경기 → {card['verdict']}")
+    except Exception as e:
+        print(f"⚠️ AI 성적표 갱신 실패: {e}")
+
+    # 1-6. [Phase 5.12] 마감 배당 비교 (AI ▲ 쪽으로 배당이 움직였는지)
+    try:
+        from evaluation.clv import update_report as update_clv
+        clv = update_clv()
+        print(f"📈 [5.12] 마감 배당 비교: 배당 바뀐 {clv['moved']}경기 중 AI 쪽 {clv['toward_ai']} → {clv['verdict']}")
+    except Exception as e:
+        print(f"⚠️ 마감 배당 비교 실패: {e}")
+
+    # 2. AI 모델 준비 · 3. 경기별 AI 확률·기대가치 (대시보드 실시간 계산과 같은 함수)
+    models = load_models()
+    corrector, betman_model, recommend_on = models["corrector"], models["betman_model"], models["recommend_on"]
+    results = predict_matches(matches, gm_ts, models, sharp_by_seq)
 
 
     # 4. 결과 JSON 저장

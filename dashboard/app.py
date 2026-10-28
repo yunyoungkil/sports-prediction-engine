@@ -111,7 +111,102 @@ def load_data():
         return json.load(f)
 
 
-predictions = load_data()
+@st.cache_data(ttl=300, show_spinner=False)
+def auto_sync_github() -> dict:
+    """GitHub 최신 데이터(봇이 올린 예측·기록·결과) 자동 받기 — 5분마다 확인.
+    내가 고치던 파일이 있거나 로컬에만 있는 커밋이 있으면 건드리지 않고 건너뜀 (빨리감기만)"""
+    import subprocess
+
+    def git(*args):
+        return subprocess.run(["git", *args], cwd=project_root, capture_output=True, text=True, timeout=30)
+    try:
+        git("fetch", "-q", "origin")
+        behind = git("rev-list", "--count", "HEAD..origin/master").stdout.strip()
+        if not behind.isdigit() or int(behind) == 0:
+            return {"status": "latest", "at": datetime.now().strftime("%H:%M")}
+        if any(l.strip() for l in git("status", "--porcelain", "--untracked-files=no").stdout.splitlines()):
+            return {"status": "skipped", "behind": int(behind), "at": datetime.now().strftime("%H:%M")}
+        ok = git("pull", "--ff-only", "-q").returncode == 0
+        return {"status": "pulled" if ok else "failed", "behind": int(behind), "at": datetime.now().strftime("%H:%M")}
+    except Exception:
+        return {"status": "failed", "at": datetime.now().strftime("%H:%M")}
+
+
+SYNC = auto_sync_github()
+if SYNC["status"] == "pulled" and not st.session_state.get("_synced_once_" + SYNC["at"]):
+    st.session_state["_synced_once_" + SYNC["at"]] = True
+    load_data.clear()   # 방금 받은 파일로 다시 읽기
+
+
+@st.cache_resource(ttl=3600, show_spinner=False)
+def live_models():
+    """파이프라인과 같은 AI 모델 (1시간마다 다시 읽음 — 매주 재학습분 반영)"""
+    import run_pipeline as rp
+    return rp.load_models()
+
+
+@st.cache_data(ttl=60, show_spinner="🔴 베트맨 실시간 데이터 받고 AI 계산하는 중…")
+def live_predictions():
+    """베트맨에서 지금 회차·경기·배당·상태를 받아 파이프라인과 같은 함수로 AI 확률·기대가치를 바로 계산 (1분마다)"""
+    try:
+        import run_pipeline as rp
+        from collector.betman_scraper import BetmanScraper
+        sc = BetmanScraper()
+        ts = sc.find_current_round()
+        matches = sc.fetch_current_round_matches(gm_ts=ts) if ts else []
+        if not matches:
+            return None
+        sharp = {str(m["match_seq"]): m.get("sharp") for m in load_data()
+                 if m.get("sharp") and str(m.get("gm_ts")) == str(ts)}   # 해외 배당은 파이프라인이 회차당 한 번 받은 것
+        preds = rp.predict_matches(matches, ts, live_models(), sharp)
+        return {"ts": int(ts), "at": datetime.now().strftime("%H:%M:%S"), "preds": preds}
+    except Exception:
+        return None
+
+
+def records_behind(live, file_preds) -> list:
+    """실시간으로 본 '아직 마감 전' 경기 중 공식 기록(GitHub 파이프라인)에 없거나 배당이 달라진 경기"""
+    now_ms = datetime.now().timestamp() * 1000
+    saved = {str(m["match_seq"]): m for m in file_preds if str(m.get("gm_ts")) == str(live["ts"])}
+    out = []
+    for m in live["preds"]:
+        if m.get("close_time") and float(m["close_time"]) <= now_ms:
+            continue
+        old = saved.get(str(m["match_seq"]))
+        if old is None or old.get("betman_odds") != m.get("betman_odds"):
+            out.append(str(m["match_seq"]))
+    return out
+
+
+@st.cache_data(ttl=120, show_spinner=False)
+def wake_pipeline(live_ts: int, n_behind: int) -> str:
+    """공식 기록이 밀렸으면 GitHub 파이프라인 실행 요청 (기록은 한 곳에서만 · 30분에 한 번까지 · 이미 돌고 있으면 안 함)"""
+    import subprocess
+    marker = MY_DATA_DIR / "pipeline_wake.json"
+    last = load_json(marker, {}).get("at")
+    if last and (datetime.now() - datetime.fromisoformat(last)).total_seconds() < 1800:
+        return "waiting"
+    try:
+        r = subprocess.run(["gh", "run", "list", "--workflow", "pipeline.yml", "--limit", "1", "--json", "status"],
+                           cwd=project_root, capture_output=True, text=True, timeout=30)
+        if r.returncode == 0 and any(x.get("status") in ("queued", "in_progress") for x in json.loads(r.stdout or "[]")):
+            return "running"
+        r = subprocess.run(["gh", "workflow", "run", "pipeline.yml", "--ref", "master"],
+                           cwd=project_root, capture_output=True, text=True, timeout=30)
+        if r.returncode != 0:
+            return "failed"
+        save_json(marker, {"at": datetime.now().isoformat(timespec="seconds"), "round": live_ts, "behind": n_behind})
+        return "triggered"
+    except Exception:
+        return "failed"
+
+
+FILE_PREDICTIONS = load_data()
+st.session_state.setdefault("live_mode", True)
+LIVE = live_predictions() if st.session_state["live_mode"] else None
+predictions = LIVE["preds"] if LIVE else FILE_PREDICTIONS
+BEHIND = records_behind(LIVE, FILE_PREDICTIONS) if LIVE else []
+WAKE = wake_pipeline(LIVE["ts"], len(BEHIND)) if BEHIND else None
 
 
 @st.cache_data(ttl=3600)
@@ -742,9 +837,30 @@ def betman_live_round():
         return None
 
 
-# 새 회차가 열렸는데 대시보드 경기가 아직 지난 회차면 알림 (자동 실행이 몇 시간씩 밀릴 수 있음)
+# 🔴 실시간 상태 한 줄: 베트맨에서 받은 시각 · AI 계산 · 공식 기록(GitHub) 상태 · GitHub 자동 받기
+_h1, _h2 = st.columns([1, 4], vertical_alignment="center")
+with _h1:
+    st.toggle("🔴 실시간 (베트맨)", key="live_mode",
+              help="켜면 1분마다 베트맨에서 회차·경기·배당·마감·결과를 받아, 파이프라인과 같은 AI로 확률·기대가치를 바로 계산해요. "
+                   "끄면 GitHub 파이프라인이 저장한 데이터만 보여요.")
+with _h2:
+    _wake_txt = {"triggered": "새 경기·배당 변화를 공식 기록하도록 GitHub 파이프라인을 실행했어요 (1~2분 뒤 자동 반영)",
+                 "running": "GitHub 파이프라인이 공식 기록 중이에요", "waiting": "GitHub 공식 기록 요청 대기 중 (30분에 한 번)",
+                 "failed": "GitHub 파이프라인 실행 요청 실패 (gh 로그인 확인)"}
+    _sync_txt = {"latest": "GitHub 데이터 최신", "pulled": f"GitHub 데이터 {SYNC.get('behind', 0)}개 받음",
+                 "skipped": "고치던 파일이 있어 GitHub 자동 받기 건너뜀", "failed": "GitHub 자동 받기 실패"}.get(SYNC["status"], "")
+    if LIVE:
+        _parts = [f"🔴 베트맨 **{LIVE['ts']}회차** · {LIVE['at']} 확인 · AI 계산 {len(LIVE['preds'])}경기"]
+        _parts.append(f"공식 기록: ⏳ {_wake_txt.get(WAKE, '')} (마감 전 {len(BEHIND)}경기)" if BEHIND else "공식 기록: ✅ 최신")
+    elif st.session_state["live_mode"]:
+        _parts = ["⚠️ 베트맨 실시간 연결 실패 — 저장된 데이터를 보여 줘요"]
+    else:
+        _parts = ["저장된 데이터 (실시간 꺼짐)"]
+    st.caption(" · ".join(_parts + [_sync_txt]))
+
+# 실시간이 꺼졌거나 실패했을 때: 새 회차가 열렸는데 저장된 경기가 아직 지난 회차면 알림
 _pred_round = next((int(m["gm_ts"]) for m in predictions if str(m.get("gm_ts") or "").isdigit()), None)
-_live_round = betman_live_round()
+_live_round = None if LIVE else betman_live_round()
 if _live_round and (_pred_round is None or _live_round > _pred_round):
     st.warning(f"🆕 베트맨은 지금 **{_live_round}회차**를 팔고 있는데, 이 대시보드의 경기는 아직 "
                f"**{f'{_pred_round}회차' if _pred_round else '지난 회차'}**예요. 자동 갱신이 곧 반영해요 "
@@ -913,8 +1029,9 @@ with tab1:
                 sel_round = st.selectbox("🗓️ 회차", list(round_labels), index=1 if current_gm_ts else 0,
                                          format_func=lambda x: round_labels[x], key="step1_round")
             with r3:
-                live_on = st.toggle("🔴 실시간 결과", value=True, key="step1_live",
-                                    help="대시보드를 열어 둔 동안 1분마다 베트맨 결과를 확인해, 끝난 경기의 결과·적중 여부를 바로 표시합니다.")
+                # 실시간은 맨 위 '🔴 실시간 (베트맨)' 스위치 하나로 (회차·배당·상태·결과·AI 계산 모두)
+                live_on = bool(st.session_state.get("live_mode"))
+                st.caption(f"🔴 실시간 {LIVE['at']}" if LIVE else ("⚠️ 실시간 연결 실패" if live_on else "실시간 꺼짐"))
             is_all = sel_round == "ALL"
             is_past = (not is_all) and sel_round != str(current_gm_ts)
             if is_all:
@@ -1351,7 +1468,9 @@ with tab1:
                 st.session_state["live_result_count"] = n
                 st.caption(f"🔴 실시간 결과 확인 {datetime.now().strftime('%H:%M:%S')} · 현재 회차 결과 {n}건"
                            if rows_ else f"🔴 실시간 결과 대기 중 ({datetime.now().strftime('%H:%M')}) — 진행 중이거나 결과 대기 중인 경기가 없으면 조회하지 않습니다")
-                if prev is not None and n > prev:
+                # 새 결과가 생겼거나, 베트맨 실시간 데이터(배당·상태·AI 계산)가 새로 받아졌으면 화면 전체를 다시 그림
+                fresh = live_predictions() if LIVE else None
+                if (prev is not None and n > prev) or (fresh and LIVE and fresh["at"] != LIVE["at"]):
                     st.rerun(scope="app")
             _live_tick()
         # 선택 요약·규정 검사·STEP 02 이동은 사이드바 🛒 내 선택에서 (목록 맨 아래 요약은 중복이라 없앰)
