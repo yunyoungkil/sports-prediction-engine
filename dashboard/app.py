@@ -2422,7 +2422,12 @@ with tab2:
 
                 # 📉 배당 변경 내역 (베트맨 '배당 변경' 팝업과 같은 표: 현재 → … → 1차, 바뀐 칸은 ↑↓ 색)
                 chg = m.get("odds_changes") or []
-                if chg:
+                if not chg:   # 표가 없을 때도 이유를 보여 줌 (기능이 없는 건지 헷갈리지 않게)
+                    st.markdown("<div style='padding-bottom:10px;font-size:13px;color:#94a3b8'>📉 배당 변경 — "
+                                + ("발매 후 배당이 바뀐 적 없어요 (처음 배당 그대로)" if "odds_changes" in m
+                                   else "변경 내역을 아직 받지 못했어요 (🔴 실시간을 켜거나 다음 자동 갱신 뒤에 나와요)")
+                                + "</div>", unsafe_allow_html=True)
+                else:
                     keys = [k for k in a["opts"]]
                     snaps = [("1차", "", chg[0]["from"])] + [(f"{i + 2}차", c["at"][5:16].replace("-", "."), c["to"])
                                                             for i, c in enumerate(chg)]
