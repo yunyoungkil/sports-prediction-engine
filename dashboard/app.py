@@ -730,6 +730,27 @@ pred_map = {str(m["match_seq"]): m for m in predictions}
 st.title("⚽ 스포츠 승부 예측 & 맞춤조건구매 대시보드")
 st.caption("베트맨 프로토 승부식 공식 계산 규칙 준수 · 복수 선택 조합 시뮬레이터 · 베트맨 과거 데이터로 학습한 AI 보정 확률")
 
+
+@st.cache_data(ttl=600, show_spinner=False)
+def betman_live_round():
+    """베트맨이 지금 파는 회차 (10분마다 확인 · 실패하면 None)"""
+    try:
+        from collector.betman_scraper import BetmanScraper
+        ts = BetmanScraper().find_current_round()
+        return int(ts) if str(ts).isdigit() else None
+    except Exception:
+        return None
+
+
+# 새 회차가 열렸는데 대시보드 경기가 아직 지난 회차면 알림 (자동 실행이 몇 시간씩 밀릴 수 있음)
+_pred_round = next((int(m["gm_ts"]) for m in predictions if str(m.get("gm_ts") or "").isdigit()), None)
+_live_round = betman_live_round()
+if _live_round and (_pred_round is None or _live_round > _pred_round):
+    st.warning(f"🆕 베트맨은 지금 **{_live_round}회차**를 팔고 있는데, 이 대시보드의 경기는 아직 "
+               f"**{f'{_pred_round}회차' if _pred_round else '지난 회차'}**예요. 자동 갱신이 곧 반영해요 "
+               "(GitHub 예약 실행이 몇 시간 늦어질 수 있어요). 급하면 GitHub Actions에서 'Sports Prediction Engine Pipeline'을 "
+               "수동 실행한 뒤 `git pull` 하고 새로고침하세요.")
+
 # 5. 메인 3대 탭 구성 (중복 요소 제거 및 직관적 분류)
 # key + on_change: 열린 탭을 코드에서 바꿀 수 있게 (사이드바 '조합 결과 보기' → ① 탭으로 이동).
 # 탭을 바꾸면 앱이 한 번 다시 실행되지만, 세 탭 내용은 그대로 모두 그려 필터·선택 상태를 유지한다

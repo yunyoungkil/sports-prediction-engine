@@ -14,6 +14,7 @@ tracker/quick_results.py
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -36,6 +37,25 @@ def current_round() -> int:
         pass
     from tracker.odds_history import latest_round
     return latest_round()
+
+
+def predictions_round():
+    """대시보드 예측 파일의 회차 (없으면 None — 베트맨 조회 실패로 회차 없이 만든 경우)"""
+    try:
+        for m in json.loads(Path("data/predictions.json").read_text(encoding="utf-8")):
+            if str(m.get("gm_ts") or "").isdigit():
+                return int(m["gm_ts"])
+    except Exception:
+        pass
+    return None
+
+
+def github_output(name: str, value: str) -> None:
+    """GitHub Actions 다음 단계로 값 넘기기 (로컬 실행에서는 아무것도 안 함)"""
+    path = os.environ.get("GITHUB_OUTPUT")
+    if path:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(f"{name}={value}\n")
 
 
 def record_odds(fallback_ts: int) -> int:
@@ -67,6 +87,11 @@ def main() -> None:
     if not ts:
         print("⚠️ 현재 회차를 알 수 없어 종료합니다.")
         return
+    # 새 회차가 열렸는데 예측이 아직 지난 회차면 → 워크플로가 전체 파이프라인 실행을 요청 (하루 2번 예약이 몇 시간씩 밀리므로)
+    pred_ts = predictions_round()
+    if pred_ts is None or int(ts) > pred_ts:
+        print(f"🆕 베트맨 현재 회차 {ts} · 대시보드 예측 회차 {pred_ts} → 전체 파이프라인 실행 필요")
+        github_output("new_round", "true")
     # current_ts + 1 기준 직전 2개 = 현재 회차와 그 전 회차
     BetmanResultsScraper().sync_recent_results(current_ts=ts + 1, n_rounds=2, filepath=RESULTS_PATH)
 
