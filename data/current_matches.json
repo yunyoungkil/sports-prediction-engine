@@ -1640,14 +1640,14 @@
     "kickoff_ts": 1793185800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타오위안 파우이안 파일러츠",
     "away_team": "류큐 골든킹스",
     "odds": {
-      "home_win": 2.2,
+      "home_win": 2.41,
       "draw": 0.0,
-      "away_win": 1.44
+      "away_win": 1.36
     },
     "gm_ts": 260128
   },
@@ -1659,7 +1659,7 @@
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
     "is_single": false,
-    "line": 3.5,
+    "line": 4.5,
     "win_txt": "승",
     "draw_txt": "-",
     "lose_txt": "패",
@@ -1668,7 +1668,7 @@
     "kickoff_ts": 1793185800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타오위안 파우이안 파일러츠",
     "away_team": "류큐 골든킹스",
@@ -1696,7 +1696,7 @@
     "kickoff_ts": 1793185800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타오위안 파우이안 파일러츠",
     "away_team": "류큐 골든킹스",
@@ -1724,7 +1724,7 @@
     "kickoff_ts": 1793185800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타오위안 파우이안 파일러츠",
     "away_team": "류큐 골든킹스",
@@ -1862,7 +1862,7 @@
     "match_time": "26.10.28 (수) 21:15",
     "close_time": 1793189700000,
     "kickoff_ts": 1793189700000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -2002,7 +2002,7 @@
     "match_time": "26.10.28 (수) 21:15",
     "close_time": 1793189700000,
     "kickoff_ts": 1793189700000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -2093,9 +2093,9 @@
     "home_team": "PFC나사프",
     "away_team": "쿠웨이트SC",
     "odds": {
-      "home_win": 1.58,
-      "draw": 3.4,
-      "away_win": 4.5
+      "home_win": 1.76,
+      "draw": 3.3,
+      "away_win": 3.6
     },
     "gm_ts": 260128
   },
@@ -2121,9 +2121,9 @@
     "home_team": "PFC나사프",
     "away_team": "쿠웨이트SC",
     "odds": {
-      "home_win": 2.75,
-      "draw": 3.25,
-      "away_win": 2.09
+      "home_win": 3.2,
+      "draw": 3.2,
+      "away_win": 1.91
     },
     "gm_ts": 260128
   },
@@ -2149,9 +2149,9 @@
     "home_team": "PFC나사프",
     "away_team": "쿠웨이트SC",
     "odds": {
-      "home_win": 1.84,
+      "home_win": 1.91,
       "draw": 0.0,
-      "away_win": 1.65
+      "away_win": 1.6
     },
     "gm_ts": 260128
   },
@@ -2205,9 +2205,9 @@
     "home_team": "골고하르 시르잔",
     "away_team": "아르카다그",
     "odds": {
-      "home_win": 1.78,
-      "draw": 2.95,
-      "away_win": 4.0
+      "home_win": 1.85,
+      "draw": 2.9,
+      "away_win": 3.8
     },
     "gm_ts": 260128
   },
@@ -2233,9 +2233,9 @@
     "home_team": "골고하르 시르잔",
     "away_team": "아르카다그",
     "odds": {
-      "home_win": 3.5,
-      "draw": 3.15,
-      "away_win": 1.83
+      "home_win": 3.8,
+      "draw": 3.1,
+      "away_win": 1.77
     },
     "gm_ts": 260128
   },
@@ -2653,9 +2653,9 @@
     "home_team": "AC밀란",
     "away_team": "볼로냐",
     "odds": {
-      "home_win": 1.58,
-      "draw": 3.45,
-      "away_win": 4.4
+      "home_win": 1.53,
+      "draw": 3.5,
+      "away_win": 4.75
     },
     "gm_ts": 260128
   },
@@ -3213,9 +3213,9 @@
     "home_team": "알칼디야SC",
     "away_team": "U알와흐다",
     "odds": {
-      "home_win": 3.85,
-      "draw": 3.4,
-      "away_win": 1.68
+      "home_win": 3.3,
+      "draw": 3.6,
+      "away_win": 1.76
     },
     "gm_ts": 260128
   },
@@ -3241,9 +3241,9 @@
     "home_team": "알칼디야SC",
     "away_team": "U알와흐다",
     "odds": {
-      "home_win": 1.93,
+      "home_win": 1.77,
       "draw": 3.35,
-      "away_win": 3.0
+      "away_win": 3.5
     },
     "gm_ts": 260128
   },
@@ -3269,9 +3269,9 @@
     "home_team": "알칼디야SC",
     "away_team": "U알와흐다",
     "odds": {
-      "home_win": 1.85,
+      "home_win": 1.92,
       "draw": 0.0,
-      "away_win": 1.64
+      "away_win": 1.59
     },
     "gm_ts": 260128
   },
@@ -3458,7 +3458,7 @@
     "match_time": "26.10.29 (목) 04:30",
     "close_time": 1793196000000,
     "kickoff_ts": 1793215800000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -3941,9 +3941,9 @@
     "home_team": "풀럼",
     "away_team": "크리스털 팰리스",
     "odds": {
-      "home_win": 1.74,
-      "draw": 3.45,
-      "away_win": 3.5
+      "home_win": 1.64,
+      "draw": 3.6,
+      "away_win": 3.8
     },
     "gm_ts": 260128
   },
@@ -3969,9 +3969,9 @@
     "home_team": "풀럼",
     "away_team": "크리스털 팰리스",
     "odds": {
-      "home_win": 3.05,
-      "draw": 3.5,
-      "away_win": 1.87
+      "home_win": 2.8,
+      "draw": 3.45,
+      "away_win": 1.99
     },
     "gm_ts": 260128
   },
@@ -4165,9 +4165,9 @@
     "home_team": "리버풀",
     "away_team": "첼시",
     "odds": {
-      "home_win": 1.98,
-      "draw": 3.55,
-      "away_win": 2.75
+      "home_win": 1.92,
+      "draw": 3.6,
+      "away_win": 2.85
     },
     "gm_ts": 260128
   },
@@ -4193,9 +4193,9 @@
     "home_team": "리버풀",
     "away_team": "첼시",
     "odds": {
-      "home_win": 3.55,
-      "draw": 3.8,
-      "away_win": 1.65
+      "home_win": 3.45,
+      "draw": 3.75,
+      "away_win": 1.69
     },
     "gm_ts": 260128
   },
@@ -4221,9 +4221,9 @@
     "home_team": "리버풀",
     "away_team": "첼시",
     "odds": {
-      "home_win": 1.56,
+      "home_win": 1.6,
       "draw": 0.0,
-      "away_win": 1.97
+      "away_win": 1.91
     },
     "gm_ts": 260128
   },

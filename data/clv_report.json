@@ -1,38 +1,38 @@
 {
-  "updated_at": "2026-10-28T10:57:38+00:00",
+  "updated_at": "2026-10-28T11:28:50+00:00",
   "rounds": [
     260126,
     260127,
     260128
   ],
-  "matches": 110,
-  "moved": 65,
+  "matches": 111,
+  "moved": 66,
   "toward_ai": 26,
-  "away_from_ai": 39,
-  "toward_ai_pct": 40.0,
-  "fav_toward_pct": 41.5,
+  "away_from_ai": 40,
+  "toward_ai_pct": 39.4,
+  "fav_toward_pct": 40.9,
   "mean_move_pp": {
-    "n": 110,
-    "mean": -0.62672,
+    "n": 111,
+    "mean": -0.64835,
     "ci": [
-      -1.15876,
-      -0.10442
+      -1.18752,
+      -0.11535
     ]
   },
   "by_game_type": {
     "농구 승패": {
-      "matches": 16,
-      "moved": 6,
+      "matches": 17,
+      "moved": 7,
       "toward_ai": 1,
-      "away_from_ai": 5,
-      "toward_ai_pct": 16.7,
+      "away_from_ai": 6,
+      "toward_ai_pct": 14.3,
       "fav_toward_pct": 0.0,
       "mean_move_pp": {
-        "n": 16,
-        "mean": -0.77001,
+        "n": 17,
+        "mean": -0.90278,
         "ci": [
-          -1.64447,
-          0.01702
+          -1.72544,
+          -0.08009
         ]
       }
     },

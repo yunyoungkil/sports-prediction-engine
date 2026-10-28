@@ -11399,51 +11399,51 @@
     "kickoff_ts": 1793185800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타오위안 파우이안 파일러츠",
     "away_team": "류큐 골든킹스",
     "betman_odds": {
-      "home_win": 2.2,
+      "home_win": 2.41,
       "draw": 0.0,
-      "away_win": 1.44
+      "away_win": 1.36
     },
     "prediction_odds": {
-      "home_win": 2.2,
+      "home_win": 2.41,
       "draw": 0.0,
-      "away_win": 1.44
+      "away_win": 1.36
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3956,
+      "home": 0.3607,
       "draw": 0.0,
-      "away": 0.6044
+      "away": 0.6393
     },
     "model_probabilities": {
-      "home_win": 0.3956,
+      "home_win": 0.3607,
       "draw": 0.0,
-      "away_win": 0.6044
+      "away_win": 0.6393
     },
     "blended_probabilities": {
-      "home_win": 0.3943,
+      "home_win": 0.3593,
       "draw": 0.0,
-      "away_win": 0.6057
+      "away_win": 0.6407
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1325,
+        "home_win": -0.1341,
         "draw": -1.0,
-        "away_win": -0.1278
+        "away_win": -0.1286
       },
       "best_selection": "away_win",
       "best_selection_name": "류큐 골든킹스 승",
       "raw_selection_name": "류큐 골든킹스 승",
-      "best_ev": -0.1278,
-      "best_ev_pct": "-12.8%",
+      "best_ev": -0.1286,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -11489,20 +11489,20 @@
     "league": "동아시아 슈퍼리그",
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
-    "category_label": "핸디캡 (+3.5)",
+    "category_label": "핸디캡 (+4.5)",
     "selection_labels": {
-      "home_win": "타오위안 파우이안 파일러츠 (+3.5) 승",
+      "home_win": "타오위안 파우이안 파일러츠 (+4.5) 승",
       "draw": "-",
       "away_win": "류큐 골든킹스 반대승"
     },
     "is_single": false,
-    "line": 3.5,
+    "line": 4.5,
     "match_time": "26.10.28 (수) 20:10",
     "close_time": 1793185800000,
     "kickoff_ts": 1793185800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타오위안 파우이안 파일러츠",
     "away_team": "류큐 골든킹스",
@@ -11605,7 +11605,7 @@
     "kickoff_ts": 1793185800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타오위안 파우이안 파일러츠",
     "away_team": "류큐 골든킹스",
@@ -11708,7 +11708,7 @@
     "kickoff_ts": 1793185800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타오위안 파우이안 파일러츠",
     "away_team": "류큐 골든킹스",
@@ -12273,7 +12273,7 @@
     "match_time": "26.10.28 (수) 21:15",
     "close_time": 1793189700000,
     "kickoff_ts": 1793189700000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -13063,7 +13063,7 @@
     "match_time": "26.10.28 (수) 21:15",
     "close_time": 1793189700000,
     "kickoff_ts": 1793189700000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -13544,46 +13544,46 @@
     "home_team": "PFC나사프",
     "away_team": "쿠웨이트SC",
     "betman_odds": {
-      "home_win": 1.58,
-      "draw": 3.4,
-      "away_win": 4.5
+      "home_win": 1.76,
+      "draw": 3.3,
+      "away_win": 3.6
     },
     "prediction_odds": {
-      "home_win": 1.58,
-      "draw": 3.4,
-      "away_win": 4.5
+      "home_win": 1.76,
+      "draw": 3.3,
+      "away_win": 3.6
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5507,
-      "draw": 0.2559,
-      "away": 0.1934
+      "home": 0.4945,
+      "draw": 0.2637,
+      "away": 0.2418
     },
     "model_probabilities": {
-      "home_win": 0.5507,
-      "draw": 0.2559,
-      "away_win": 0.1934
+      "home_win": 0.4945,
+      "draw": 0.2637,
+      "away_win": 0.2418
     },
     "blended_probabilities": {
-      "home_win": 0.5822,
-      "draw": 0.2592,
-      "away_win": 0.1586
+      "home_win": 0.5175,
+      "draw": 0.2721,
+      "away_win": 0.2104
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0801,
-        "draw": -0.1187,
-        "away_win": -0.2863
+        "home_win": -0.0892,
+        "draw": -0.1021,
+        "away_win": -0.2426
       },
       "best_selection": "home_win",
       "best_selection_name": "PFC나사프 승",
       "raw_selection_name": "PFC나사프 승",
-      "best_ev": -0.0801,
-      "best_ev_pct": "-8.0%",
+      "best_ev": -0.0892,
+      "best_ev_pct": "-8.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -13675,46 +13675,46 @@
     "home_team": "PFC나사프",
     "away_team": "쿠웨이트SC",
     "betman_odds": {
-      "home_win": 2.75,
-      "draw": 3.25,
-      "away_win": 2.09
+      "home_win": 3.2,
+      "draw": 3.2,
+      "away_win": 1.91
     },
     "prediction_odds": {
-      "home_win": 2.75,
-      "draw": 3.25,
-      "away_win": 2.09
+      "home_win": 3.2,
+      "draw": 3.2,
+      "away_win": 1.91
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3163,
-      "draw": 0.2676,
-      "away": 0.4161
+      "home": 0.2721,
+      "draw": 0.2721,
+      "away": 0.4558
     },
     "model_probabilities": {
-      "home_win": 0.3163,
-      "draw": 0.2676,
-      "away_win": 0.4161
+      "home_win": 0.2721,
+      "draw": 0.2721,
+      "away_win": 0.4558
     },
     "blended_probabilities": {
-      "home_win": 0.3,
-      "draw": 0.2711,
-      "away_win": 0.4288
+      "home_win": 0.25,
+      "draw": 0.2751,
+      "away_win": 0.475
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.175,
-        "draw": -0.1189,
-        "away_win": -0.1038
+        "home_win": -0.2,
+        "draw": -0.1197,
+        "away_win": -0.0928
       },
       "best_selection": "away_win",
       "best_selection_name": "쿠웨이트SC 반대승",
       "raw_selection_name": "쿠웨이트SC 반대승",
-      "best_ev": -0.1038,
-      "best_ev_pct": "-10.4%",
+      "best_ev": -0.0928,
+      "best_ev_pct": "-9.3%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -13806,46 +13806,46 @@
     "home_team": "PFC나사프",
     "away_team": "쿠웨이트SC",
     "betman_odds": {
-      "home_win": 1.84,
+      "home_win": 1.91,
       "draw": 0.0,
-      "away_win": 1.65
+      "away_win": 1.6
     },
     "prediction_odds": {
-      "home_win": 1.84,
+      "home_win": 1.91,
       "draw": 0.0,
-      "away_win": 1.65
+      "away_win": 1.6
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4728,
+      "home": 0.4558,
       "draw": 0.0,
-      "away": 0.5272
+      "away": 0.5442
     },
     "model_probabilities": {
-      "home_win": 0.4728,
+      "home_win": 0.4558,
       "draw": 0.0,
-      "away_win": 0.5272
+      "away_win": 0.5442
     },
     "blended_probabilities": {
-      "home_win": 0.4728,
+      "home_win": 0.4558,
       "draw": 0.0,
-      "away_win": 0.5272
+      "away_win": 0.5442
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.13,
+        "home_win": -0.1294,
         "draw": -1.0,
-        "away_win": -0.1301
+        "away_win": -0.1293
       },
-      "best_selection": "home_win",
-      "best_selection_name": "언더 (< 2.5)",
-      "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.13,
-      "best_ev_pct": "-13.0%",
+      "best_selection": "away_win",
+      "best_selection_name": "오버 (> 2.5)",
+      "raw_selection_name": "오버 (> 2.5)",
+      "best_ev": -0.1293,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -14068,46 +14068,46 @@
     "home_team": "골고하르 시르잔",
     "away_team": "아르카다그",
     "betman_odds": {
-      "home_win": 1.78,
-      "draw": 2.95,
-      "away_win": 4.0
+      "home_win": 1.85,
+      "draw": 2.9,
+      "away_win": 3.8
     },
     "prediction_odds": {
-      "home_win": 1.78,
-      "draw": 2.95,
-      "away_win": 4.0
+      "home_win": 1.85,
+      "draw": 2.9,
+      "away_win": 3.8
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4882,
-      "draw": 0.2946,
-      "away": 0.2172
+      "home": 0.4706,
+      "draw": 0.3002,
+      "away": 0.2291
     },
     "model_probabilities": {
-      "home_win": 0.4882,
-      "draw": 0.2946,
-      "away_win": 0.2172
+      "home_win": 0.4706,
+      "draw": 0.3002,
+      "away_win": 0.2291
     },
     "blended_probabilities": {
-      "home_win": 0.5075,
-      "draw": 0.3087,
-      "away_win": 0.1839
+      "home_win": 0.4868,
+      "draw": 0.3166,
+      "away_win": 0.1966
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0967,
-        "draw": -0.0893,
-        "away_win": -0.2644
+        "home_win": -0.0994,
+        "draw": -0.0819,
+        "away_win": -0.2529
       },
       "best_selection": "draw",
       "best_selection_name": "무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0893,
-      "best_ev_pct": "-8.9%",
+      "best_ev": -0.0819,
+      "best_ev_pct": "-8.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -14199,46 +14199,46 @@
     "home_team": "골고하르 시르잔",
     "away_team": "아르카다그",
     "betman_odds": {
-      "home_win": 3.5,
-      "draw": 3.15,
-      "away_win": 1.83
+      "home_win": 3.8,
+      "draw": 3.1,
+      "away_win": 1.77
     },
     "prediction_odds": {
-      "home_win": 3.5,
-      "draw": 3.15,
-      "away_win": 1.83
+      "home_win": 3.8,
+      "draw": 3.1,
+      "away_win": 1.77
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2485,
-      "draw": 0.2761,
-      "away": 0.4753
+      "home": 0.2287,
+      "draw": 0.2803,
+      "away": 0.491
     },
     "model_probabilities": {
-      "home_win": 0.2485,
-      "draw": 0.2761,
-      "away_win": 0.4753
+      "home_win": 0.2287,
+      "draw": 0.2803,
+      "away_win": 0.491
     },
     "blended_probabilities": {
-      "home_win": 0.2239,
-      "draw": 0.2789,
-      "away_win": 0.4972
+      "home_win": 0.2023,
+      "draw": 0.2829,
+      "away_win": 0.5148
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2164,
-        "draw": -0.1215,
-        "away_win": -0.0901
+        "home_win": -0.2313,
+        "draw": -0.123,
+        "away_win": -0.0888
       },
       "best_selection": "away_win",
       "best_selection_name": "아르카다그 반대승",
       "raw_selection_name": "아르카다그 반대승",
-      "best_ev": -0.0901,
-      "best_ev_pct": "-9.0%",
+      "best_ev": -0.0888,
+      "best_ev_pct": "-8.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -16624,31 +16624,31 @@
     "home_team": "AC밀란",
     "away_team": "볼로냐",
     "betman_odds": {
-      "home_win": 1.58,
-      "draw": 3.45,
-      "away_win": 4.4
+      "home_win": 1.53,
+      "draw": 3.5,
+      "away_win": 4.75
     },
     "prediction_odds": {
-      "home_win": 1.58,
-      "draw": 3.45,
-      "away_win": 4.4
+      "home_win": 1.53,
+      "draw": 3.5,
+      "away_win": 4.75
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5503,
-      "draw": 0.252,
-      "away": 0.1976
+      "home": 0.5684,
+      "draw": 0.2485,
+      "away": 0.1831
     },
     "model_probabilities": {
-      "home_win": 0.5503,
-      "draw": 0.252,
-      "away_win": 0.1976
+      "home_win": 0.5684,
+      "draw": 0.2485,
+      "away_win": 0.1831
     },
     "blended_probabilities": {
-      "home_win": 0.5652,
-      "draw": 0.2625,
-      "away_win": 0.1723
+      "home_win": 0.586,
+      "draw": 0.2574,
+      "away_win": 0.1567
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -16693,15 +16693,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.107,
-        "draw": -0.0944,
-        "away_win": -0.2419
+        "home_win": -0.1034,
+        "draw": -0.0991,
+        "away_win": -0.2557
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0944,
-      "best_ev_pct": "-9.4%",
+      "best_ev": -0.0991,
+      "best_ev_pct": "-9.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -21793,46 +21793,46 @@
     "home_team": "알칼디야SC",
     "away_team": "U알와흐다",
     "betman_odds": {
-      "home_win": 3.85,
-      "draw": 3.4,
-      "away_win": 1.68
+      "home_win": 3.3,
+      "draw": 3.6,
+      "away_win": 1.76
     },
     "prediction_odds": {
-      "home_win": 3.85,
-      "draw": 3.4,
-      "away_win": 1.68
+      "home_win": 3.3,
+      "draw": 3.6,
+      "away_win": 1.76
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.226,
-      "draw": 0.256,
-      "away": 0.518
+      "home": 0.2637,
+      "draw": 0.2418,
+      "away": 0.4945
     },
     "model_probabilities": {
-      "home_win": 0.226,
-      "draw": 0.256,
-      "away_win": 0.518
+      "home_win": 0.2637,
+      "draw": 0.2418,
+      "away_win": 0.4945
     },
     "blended_probabilities": {
-      "home_win": 0.2061,
-      "draw": 0.2622,
-      "away_win": 0.5317
+      "home_win": 0.2494,
+      "draw": 0.2458,
+      "away_win": 0.5048
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2065,
-        "draw": -0.1085,
-        "away_win": -0.1067
+        "home_win": -0.177,
+        "draw": -0.1151,
+        "away_win": -0.1116
       },
       "best_selection": "away_win",
       "best_selection_name": "U알와흐다 승",
       "raw_selection_name": "U알와흐다 승",
-      "best_ev": -0.1067,
-      "best_ev_pct": "-10.7%",
+      "best_ev": -0.1116,
+      "best_ev_pct": "-11.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -21924,46 +21924,46 @@
     "home_team": "알칼디야SC",
     "away_team": "U알와흐다",
     "betman_odds": {
-      "home_win": 1.93,
+      "home_win": 1.77,
       "draw": 3.35,
-      "away_win": 3.0
+      "away_win": 3.5
     },
     "prediction_odds": {
-      "home_win": 1.93,
+      "home_win": 1.77,
       "draw": 3.35,
-      "away_win": 3.0
+      "away_win": 3.5
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4506,
-      "draw": 0.2596,
-      "away": 0.2899
+      "home": 0.4916,
+      "draw": 0.2598,
+      "away": 0.2486
     },
     "model_probabilities": {
-      "home_win": 0.4506,
-      "draw": 0.2596,
-      "away_win": 0.2899
+      "home_win": 0.4916,
+      "draw": 0.2598,
+      "away_win": 0.2486
     },
     "blended_probabilities": {
-      "home_win": 0.4567,
-      "draw": 0.2624,
-      "away_win": 0.2809
+      "home_win": 0.5045,
+      "draw": 0.2618,
+      "away_win": 0.2337
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1186,
-        "draw": -0.121,
-        "away_win": -0.1573
+        "home_win": -0.107,
+        "draw": -0.123,
+        "away_win": -0.1821
       },
       "best_selection": "home_win",
       "best_selection_name": "알칼디야SC (+1.0) 승",
       "raw_selection_name": "알칼디야SC (+1.0) 승",
-      "best_ev": -0.1186,
-      "best_ev_pct": "-11.9%",
+      "best_ev": -0.107,
+      "best_ev_pct": "-10.7%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -22055,46 +22055,46 @@
     "home_team": "알칼디야SC",
     "away_team": "U알와흐다",
     "betman_odds": {
-      "home_win": 1.85,
+      "home_win": 1.92,
       "draw": 0.0,
-      "away_win": 1.64
+      "away_win": 1.59
     },
     "prediction_odds": {
-      "home_win": 1.85,
+      "home_win": 1.92,
       "draw": 0.0,
-      "away_win": 1.64
+      "away_win": 1.59
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4699,
+      "home": 0.453,
       "draw": 0.0,
-      "away": 0.5301
+      "away": 0.547
     },
     "model_probabilities": {
-      "home_win": 0.4699,
+      "home_win": 0.453,
       "draw": 0.0,
-      "away_win": 0.5301
+      "away_win": 0.547
     },
     "blended_probabilities": {
-      "home_win": 0.4699,
+      "home_win": 0.453,
       "draw": 0.0,
-      "away_win": 0.5301
+      "away_win": 0.547
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1307,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.1306
+        "away_win": -0.1303
       },
-      "best_selection": "away_win",
-      "best_selection_name": "오버 (> 2.5)",
-      "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.1306,
-      "best_ev_pct": "-13.1%",
+      "best_selection": "home_win",
+      "best_selection_name": "언더 (< 2.5)",
+      "raw_selection_name": "언더 (< 2.5)",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -23124,7 +23124,7 @@
     "match_time": "26.10.29 (목) 04:30",
     "close_time": 1793196000000,
     "kickoff_ts": 1793215800000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -28137,46 +28137,46 @@
     "home_team": "풀럼",
     "away_team": "크리스털 팰리스",
     "betman_odds": {
-      "home_win": 1.74,
-      "draw": 3.45,
-      "away_win": 3.5
+      "home_win": 1.64,
+      "draw": 3.6,
+      "away_win": 3.8
     },
     "prediction_odds": {
-      "home_win": 1.74,
-      "draw": 3.45,
-      "away_win": 3.5
+      "home_win": 1.64,
+      "draw": 3.6,
+      "away_win": 3.8
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4996,
-      "draw": 0.252,
-      "away": 0.2484
+      "home": 0.5299,
+      "draw": 0.2414,
+      "away": 0.2287
     },
     "model_probabilities": {
-      "home_win": 0.4996,
-      "draw": 0.252,
-      "away_win": 0.2484
+      "home_win": 0.5299,
+      "draw": 0.2414,
+      "away_win": 0.2287
     },
     "blended_probabilities": {
-      "home_win": 0.5051,
-      "draw": 0.2734,
-      "away_win": 0.2215
+      "home_win": 0.5411,
+      "draw": 0.259,
+      "away_win": 0.1999
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1211,
-        "draw": -0.0568,
-        "away_win": -0.2248
+        "home_win": -0.1126,
+        "draw": -0.0676,
+        "away_win": -0.2404
       },
       "best_selection": "draw",
       "best_selection_name": "무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0568,
-      "best_ev_pct": "-5.7%",
+      "best_ev": -0.0676,
+      "best_ev_pct": "-6.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -28427,46 +28427,46 @@
     "home_team": "풀럼",
     "away_team": "크리스털 팰리스",
     "betman_odds": {
-      "home_win": 3.05,
-      "draw": 3.5,
-      "away_win": 1.87
+      "home_win": 2.8,
+      "draw": 3.45,
+      "away_win": 1.99
     },
     "prediction_odds": {
-      "home_win": 3.05,
-      "draw": 3.5,
-      "away_win": 1.87
+      "home_win": 2.8,
+      "draw": 3.45,
+      "away_win": 1.99
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2855,
-      "draw": 0.2488,
-      "away": 0.4657
+      "home": 0.3107,
+      "draw": 0.2522,
+      "away": 0.4372
     },
     "model_probabilities": {
-      "home_win": 0.2855,
-      "draw": 0.2488,
-      "away_win": 0.4657
+      "home_win": 0.3107,
+      "draw": 0.2522,
+      "away_win": 0.4372
     },
     "blended_probabilities": {
-      "home_win": 0.2648,
-      "draw": 0.2478,
-      "away_win": 0.4874
+      "home_win": 0.2935,
+      "draw": 0.2525,
+      "away_win": 0.454
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1924,
-        "draw": -0.1327,
-        "away_win": -0.0886
+        "home_win": -0.1782,
+        "draw": -0.1289,
+        "away_win": -0.0965
       },
       "best_selection": "away_win",
       "best_selection_name": "크리스털 팰리스 반대승",
       "raw_selection_name": "크리스털 팰리스 반대승",
-      "best_ev": -0.0886,
-      "best_ev_pct": "-8.9%",
+      "best_ev": -0.0965,
+      "best_ev_pct": "-9.7%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -30369,46 +30369,46 @@
     "home_team": "리버풀",
     "away_team": "첼시",
     "betman_odds": {
-      "home_win": 1.98,
-      "draw": 3.55,
-      "away_win": 2.75
+      "home_win": 1.92,
+      "draw": 3.6,
+      "away_win": 2.85
     },
     "prediction_odds": {
-      "home_win": 1.98,
-      "draw": 3.55,
-      "away_win": 2.75
+      "home_win": 1.92,
+      "draw": 3.6,
+      "away_win": 2.85
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.439,
-      "draw": 0.2449,
-      "away": 0.3161
+      "home": 0.4531,
+      "draw": 0.2417,
+      "away": 0.3052
     },
     "model_probabilities": {
-      "home_win": 0.439,
-      "draw": 0.2449,
-      "away_win": 0.3161
+      "home_win": 0.4531,
+      "draw": 0.2417,
+      "away_win": 0.3052
     },
     "blended_probabilities": {
-      "home_win": 0.4331,
-      "draw": 0.2659,
-      "away_win": 0.301
+      "home_win": 0.4499,
+      "draw": 0.2616,
+      "away_win": 0.2885
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1425,
-        "draw": -0.0561,
-        "away_win": -0.1723
+        "home_win": -0.1362,
+        "draw": -0.0582,
+        "away_win": -0.1778
       },
       "best_selection": "draw",
       "best_selection_name": "무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0561,
-      "best_ev_pct": "-5.6%",
+      "best_ev": -0.0582,
+      "best_ev_pct": "-5.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -30659,45 +30659,45 @@
     "home_team": "리버풀",
     "away_team": "첼시",
     "betman_odds": {
-      "home_win": 3.55,
-      "draw": 3.8,
-      "away_win": 1.65
+      "home_win": 3.45,
+      "draw": 3.75,
+      "away_win": 1.69
     },
     "prediction_odds": {
-      "home_win": 3.55,
-      "draw": 3.8,
-      "away_win": 1.65
+      "home_win": 3.45,
+      "draw": 3.75,
+      "away_win": 1.69
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2448,
-      "draw": 0.2287,
-      "away": 0.5266
+      "home": 0.2524,
+      "draw": 0.2322,
+      "away": 0.5153
     },
     "model_probabilities": {
-      "home_win": 0.2448,
-      "draw": 0.2287,
-      "away_win": 0.5266
+      "home_win": 0.2524,
+      "draw": 0.2322,
+      "away_win": 0.5153
     },
     "blended_probabilities": {
-      "home_win": 0.219,
-      "draw": 0.2224,
-      "away_win": 0.5586
+      "home_win": 0.2275,
+      "draw": 0.2269,
+      "away_win": 0.5456
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2226,
-        "draw": -0.1549,
-        "away_win": -0.0783
+        "home_win": -0.2151,
+        "draw": -0.1491,
+        "away_win": -0.0779
       },
       "best_selection": "away_win",
       "best_selection_name": "첼시 반대승",
       "raw_selection_name": "첼시 반대승",
-      "best_ev": -0.0783,
+      "best_ev": -0.0779,
       "best_ev_pct": "-7.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -30949,45 +30949,45 @@
     "home_team": "리버풀",
     "away_team": "첼시",
     "betman_odds": {
-      "home_win": 1.56,
+      "home_win": 1.6,
       "draw": 0.0,
-      "away_win": 1.97
+      "away_win": 1.91
     },
     "prediction_odds": {
-      "home_win": 1.56,
+      "home_win": 1.6,
       "draw": 0.0,
-      "away_win": 1.97
+      "away_win": 1.91
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5581,
+      "home": 0.5442,
       "draw": 0.0,
-      "away": 0.4419
+      "away": 0.4558
     },
     "model_probabilities": {
-      "home_win": 0.5581,
+      "home_win": 0.5442,
       "draw": 0.0,
-      "away_win": 0.4419
+      "away_win": 0.4558
     },
     "blended_probabilities": {
-      "home_win": 0.5581,
+      "home_win": 0.5442,
       "draw": 0.0,
-      "away_win": 0.4419
+      "away_win": 0.4558
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1294,
+        "home_win": -0.1293,
         "draw": -1.0,
-        "away_win": -0.1295
+        "away_win": -0.1294
       },
       "best_selection": "home_win",
       "best_selection_name": "언더 (< 3.5)",
       "raw_selection_name": "언더 (< 3.5)",
-      "best_ev": -0.1294,
+      "best_ev": -0.1293,
       "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
