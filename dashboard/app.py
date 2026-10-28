@@ -246,6 +246,24 @@ def wake_pipeline(live_ts: int, n_behind: int) -> str:
         return "failed"
 
 
+def odds_arrow(m, k, colored: bool = True) -> str:
+    """대시보드를 켜 둔 동안 이 선택지 배당이 바뀌었으면 ▲(오름·빨강) / ▼(내림·파랑) — 주식 화면과 같은 색"""
+    mv = ((LIVE or {}).get("moves") or {}).get(str(m.get("match_seq")), {}).get(k)
+    if not mv:
+        return ""
+    up = mv[1] > mv[0]
+    if not colored:
+        return " ▲" if up else " ▼"
+    return " :red[▲]" if up else " :blue[▼]"
+
+
+def odds_move_text(m) -> str:
+    """'승 1.85→1.90 (21:40)' — 마우스를 올렸을 때 보여 줄 변화 내역"""
+    mv = ((LIVE or {}).get("moves") or {}).get(str(m.get("match_seq")), {})
+    labels = pick_labels(m)
+    return " · ".join(f"{labels.get(k, k)} {o:.2f}→{n:.2f} ({at})" for k, (o, n, at) in mv.items())
+
+
 FILE_PREDICTIONS = load_data()
 st.session_state.setdefault("live_mode", True)
 LIVE = get_live() if st.session_state["live_mode"] else None
@@ -992,18 +1010,10 @@ with _h2:
 if st.session_state["live_mode"]:
     @st.fragment(run_every="5s")
     def _live_watch():
-        """뒤에서 받은 실시간 데이터 반영 (어느 탭이든) — 처음 받았으면 바로 화면 전환, 그 뒤 배당·상태·마감이 바뀌면
-        '반영' 버튼 (고르던 화면이 저절로 흔들리지 않게). ① 경기 고르기 목록은 예전처럼 바로 반영.
-        5초마다 확인하면서 1분이 지났으면 뒤에서 새로 받게 한다 (베트맨 요청은 여전히 1분에 대개 1번)"""
-        from collector.live_feed import changed_matches
+        """뒤에서 받은 실시간 데이터 반영 (어느 탭이든) — 처음 받았거나 배당·상태·마감이 바뀌면 바로 화면 전체를 다시 그림.
+        바뀐 배당은 ▲▼로 표시. 5초마다 확인하면서 1분이 지났으면 뒤에서 새로 받게 한다 (베트맨 요청은 1분에 대개 1번)"""
         new = get_live()
-        if not new or (LIVE and new["sig"] == LIVE["sig"]):
-            return
-        picking = st.session_state.get("main_tab", "🛒").startswith("🛒") and st.session_state.get("custom_step", 1) == 1
-        if LIVE is None or picking:
-            st.rerun(scope="app")
-        if st.button(f"🔄 배당·상태가 바뀐 경기 {changed_matches(LIVE, new)}개 ({new['at']} 확인) — 눌러서 반영",
-                     key="live_apply", type="primary"):
+        if new and (LIVE is None or new["sig"] != LIVE["sig"]):
             st.rerun(scope="app")
     _live_watch()
 
@@ -1084,6 +1094,8 @@ with tab1:
                f"<span style='{_chip}'>🔒 💎 추천 잠금 <span style='color:#94a3b8'>({LOCK_NOTE})</span></span>") +
             f"<span style='{_chip}'>⚠️ AI 예상이 배당과 다름</span>"
             f"<span style='{_chip}'>✅ ❌ 끝난 경기의 적중 여부</span>"
+            f"<span style='{_chip}'><span style='color:#ef4444'>▲</span> <span style='color:#3b82f6'>▼</span> 배당 오름·내림 "
+            "<span style='color:#94a3b8'>(대시보드를 켜 둔 동안 바뀐 것)</span></span>"
             "</div>",
             unsafe_allow_html=True)
 
@@ -1554,7 +1566,8 @@ with tab1:
             cur = st.session_state["selections"].get(seq, {})
             default = [k for k in opts if cur.get(SEL_KEY[k])]
             star_k = ai_k or mk_k
-            disp = {k: f"{'💎' if k in gems else ''}{'⭐' if k == star_k else ''}{labels[k]} {float(odds[k]):.2f}" for k in opts}
+            disp = {k: f"{'💎' if k in gems else ''}{'⭐' if k == star_k else ''}{labels[k]} {float(odds[k]):.2f}"
+                       f"{odds_arrow(m, k)}" for k in opts}
             closed = is_sale_closed(m, now_ts) and not _past(m)
             actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
 
@@ -1576,7 +1589,8 @@ with tab1:
                     # 게임번호 · 유형 · 기준선 칩 · 한경기 (마우스를 올리면 리그·유형 전체 표시)
                     tags = line_chip(m) + (ONE_GAME_TAG if m.get("is_single") else "")
                     st.markdown(
-                        f"<div title='#{seq} · {m.get('league', '')} · {category_display(m)}' style='display:flex;"
+                        f"<div title='#{seq} · {m.get('league', '')} · {category_display(m)}"
+                        f"{(' · 배당 변화 ' + odds_move_text(m)) if odds_move_text(m) else ''}' style='display:flex;"
                         "align-items:center;gap:8px;white-space:nowrap;overflow:hidden'>"
                         f"<span style='font-size:15px;font-weight:800;min-width:34px'>{seq}</span>"
                         f"<span style='font-size:15px;font-weight:600;white-space:nowrap'>{type_name(m)}</span>{tags}</div>",
@@ -2238,7 +2252,7 @@ with tab2:
             if k not in a["opts"]:
                 return "-"
             odd = float(a["m"].get("betman_odds", {}).get(k) or 0)
-            return (f"{odd:.2f}" + (" ⭐" if a["ai"] and k == a["ai_k"] else "")
+            return (f"{odd:.2f}" + odds_arrow(a["m"], k, colored=False) + (" ⭐" if a["ai"] and k == a["ai_k"] else "")
                     + (" 🏁" if a["res_key"] == k else ""))
 
         def _ai_text(a):

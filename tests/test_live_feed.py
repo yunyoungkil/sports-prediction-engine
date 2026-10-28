@@ -129,3 +129,18 @@ def test_screen_redraws_only_when_odds_or_state_change():
     feed.get(*args); wait(feed)
     assert feed.data["sig"] != first["sig"] and changed_matches(first, feed.data) == 1
     assert changed_matches(None, feed.data) == 1 and changed_matches(first, None) == 0
+
+
+def test_odds_moves_recorded_with_direction():
+    """지난번과 배당이 다르면 선택지마다 (이전, 새 배당, 시각) — 같은 배당이면 기록 없음"""
+    clock, state, feed, args = setup()
+    feed.get(*args); wait(feed)
+    assert feed.data["moves"] == {}
+    state["odds"]["home_win"] = 1.62
+    clock.t += 61
+    feed.get(*args); wait(feed)
+    o, n, at = feed.data["moves"]["1"]["home_win"]
+    assert (o, n) == (1.5, 1.62) and len(at) == 5
+    clock.t += 61                              # 다음에 그대로면 마지막 변화가 남아 있음 (화살표 유지)
+    feed.get(*args); wait(feed)
+    assert feed.data["moves"]["1"]["home_win"][:2] == (1.5, 1.62)
