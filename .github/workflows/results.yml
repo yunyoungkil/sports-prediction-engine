@@ -19,7 +19,11 @@ jobs:
       contents: write
       actions: write   # 새 회차를 발견하면 전체 파이프라인 실행 요청
     steps:
+      # 실행이 예약된 순간의 커밋이 아니라 지금 master 끝을 받음 — 같은 그룹의 앞 실행(파이프라인)을 기다리는 동안
+      # 그 실행이 올린 데이터를 받지 못하고 옛 파일로 계산해 올리다 충돌함 (2026-10-28 17:38 실패)
       - uses: actions/checkout@v4
+        with:
+          ref: master
 
       - uses: actions/setup-python@v5
         with:

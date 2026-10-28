@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: 1. 코스 코드 체크아웃
         uses: actions/checkout@v4
+        with:
+          ref: master   # 예약된 순간의 커밋이 아니라 지금 master 끝 (앞 실행을 기다린 뒤 그 데이터 위에서 계산 · results.yml 참고)
 
       - name: 2. 파이썬 환경 설정
         uses: actions/setup-python@v5
