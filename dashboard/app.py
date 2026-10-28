@@ -190,15 +190,11 @@ def live_feed():
 
 
 def get_live():
-    """베트맨 실시간 + AI 계산 결과 (뒤에서 1분마다 새로 받음) · 받은 게 없거나 3분 넘게 못 받았으면 None → 저장된 데이터"""
+    """베트맨 실시간 + AI 계산 결과 — 기다리지 않음 (받을 때가 됐으면 뒤에서 받기 시작).
+    아직 받은 게 없거나 30분 넘게 못 받았으면 None → 저장된 데이터"""
     import run_pipeline as rp
     from collector.betman_scraper import BetmanScraper
-    feed = live_feed()
-    args = (BetmanScraper, rp.predict_matches, live_models(), FILE_PREDICTIONS)
-    if feed.must_wait():
-        with st.spinner("🔴 베트맨 실시간 데이터 받고 AI 계산하는 중…"):
-            return feed.get(*args)
-    return feed.get(*args)
+    return live_feed().get(BetmanScraper, rp.predict_matches, live_models(), FILE_PREDICTIONS)
 
 
 def records_behind(live, file_preds) -> list:
@@ -867,7 +863,9 @@ def render_saved_slip_sync(active: dict, unit: int, where: str) -> bool:
     elif not new_total:
         st.caption(f"📒 저장한 기록({when})에 반영하려면 조합을 하나 이상 선택하세요.")
     else:
-        st.info(f"📒 저장한 기록({when})과 금액·선택이 달라요. 총 {int(slip.get('total_stake', 0)):,}원 → {new_total:,}원")
+        msg = f"📒 저장한 기록({when})과 금액·선택이 달라요. 총 {int(slip.get('total_stake', 0)):,}원 → {new_total:,}원"
+        # 사이드바는 좁고 STEP 02 본문에도 같은 안내가 있어 한 줄로
+        st.caption(msg) if where == "side" else st.info(msg)
         st.button("📒 저장한 기록에 반영", key=f"slip_sync_{where}", type="primary", width="stretch",
                   on_click=_sync_saved_slip, args=(slip["id"], changes))
     return True
@@ -931,15 +929,36 @@ with _h2:
     if LIVE:
         _parts = [f"🔴 베트맨 **{LIVE['ts']}회차** · {LIVE['at']} 확인 · AI 계산 {len(LIVE['preds'])}경기"]
         _parts.append(f"공식 기록: ⏳ {_wake_txt.get(WAKE, '')} (마감 전 {len(BEHIND)}경기)" if BEHIND else "공식 기록: ✅ 최신")
-    elif st.session_state["live_mode"]:
+    elif st.session_state["live_mode"] and live_feed().failed_recently():
         _parts = ["⚠️ 베트맨 실시간 연결 실패 — 저장된 데이터를 보여 줘요"]
+    elif st.session_state["live_mode"]:
+        _parts = ["🔴 베트맨 실시간 데이터 받는 중… 그동안 저장된 데이터를 보여 줘요 (받으면 화면이 바로 바뀌어요)"]
     else:
         _parts = ["저장된 데이터 (실시간 꺼짐)"]
     st.caption(" · ".join(_parts + [_sync_txt]))
 
+if st.session_state["live_mode"]:
+    @st.fragment(run_every="5s")
+    def _live_watch():
+        """뒤에서 받은 실시간 데이터 반영 (어느 탭이든) — 처음 받았으면 바로 화면 전환, 그 뒤 배당·상태·마감이 바뀌면
+        '반영' 버튼 (고르던 화면이 저절로 흔들리지 않게). ① 경기 고르기 목록은 예전처럼 바로 반영.
+        5초마다 확인하면서 1분이 지났으면 뒤에서 새로 받게 한다 (베트맨 요청은 여전히 1분에 대개 1번)"""
+        from collector.live_feed import changed_matches
+        new = get_live()
+        if not new or (LIVE and new["sig"] == LIVE["sig"]):
+            return
+        picking = st.session_state.get("main_tab", "🛒").startswith("🛒") and st.session_state.get("custom_step", 1) == 1
+        if LIVE is None or picking:
+            st.rerun(scope="app")
+        if st.button(f"🔄 배당·상태가 바뀐 경기 {changed_matches(LIVE, new)}개 ({new['at']} 확인) — 눌러서 반영",
+                     key="live_apply", type="primary"):
+            st.rerun(scope="app")
+    _live_watch()
+
 # 실시간이 꺼졌거나 실패했을 때: 새 회차가 열렸는데 저장된 경기가 아직 지난 회차면 알림
 _pred_round = next((int(m["gm_ts"]) for m in predictions if str(m.get("gm_ts") or "").isdigit()), None)
-_live_round = None if LIVE else betman_live_round()
+# (실시간을 받는 중이면 따로 확인하지 않음 — 실시간이 꺼졌거나 연결에 실패했을 때만)
+_live_round = None if (LIVE or (st.session_state["live_mode"] and not live_feed().failed_recently())) else betman_live_round()
 if _live_round and (_pred_round is None or _live_round > _pred_round):
     st.warning(f"🆕 베트맨은 지금 **{_live_round}회차**를 팔고 있는데, 이 대시보드의 경기는 아직 "
                f"**{f'{_pred_round}회차' if _pred_round else '지난 회차'}**예요. 자동 갱신이 곧 반영해요 "
@@ -1110,7 +1129,8 @@ with tab1:
             with r3:
                 # 실시간은 맨 위 '🔴 실시간 (베트맨)' 스위치 하나로 (회차·배당·상태·결과·AI 계산 모두)
                 live_on = bool(st.session_state.get("live_mode"))
-                st.caption(f"🔴 실시간 {LIVE['at']}" if LIVE else ("⚠️ 실시간 연결 실패" if live_on else "실시간 꺼짐"))
+                st.caption(f"🔴 실시간 {LIVE['at']}" if LIVE else (("⚠️ 실시간 연결 실패" if live_feed().failed_recently()
+                                                                else "🔴 실시간 받는 중…") if live_on else "실시간 꺼짐"))
             is_all = sel_round == "ALL"
             is_past = (not is_all) and sel_round != str(current_gm_ts)
             if is_all:
@@ -1547,9 +1567,8 @@ with tab1:
                 st.session_state["live_result_count"] = n
                 st.caption(f"🔴 실시간 결과 확인 {datetime.now().strftime('%H:%M:%S')} · 현재 회차 결과 {n}건"
                            if rows_ else f"🔴 실시간 결과 대기 중 ({datetime.now().strftime('%H:%M')}) — 진행 중이거나 결과 대기 중인 경기가 없으면 조회하지 않습니다")
-                # 새 결과가 생겼거나, 뒤에서 새로 받은 베트맨 실시간 데이터의 배당·상태·마감이 바뀌었으면 화면 전체를 다시 그림
-                fresh = get_live() if LIVE else None
-                if (prev is not None and n > prev) or (fresh and LIVE and fresh["sig"] != LIVE["sig"]):
+                # 새 결과가 생겼으면 화면 전체를 다시 그림 (새 배당·상태 반영은 맨 위 _live_watch)
+                if prev is not None and n > prev:
                     st.rerun(scope="app")
             _live_tick()
         # 선택 요약·규정 검사·STEP 02 이동은 사이드바 🛒 내 선택에서 (목록 맨 아래 요약은 중복이라 없앰)
@@ -2869,13 +2888,20 @@ def _save_memo(slip_id):
 
 
 def _save_stake_edit(slip_id, key, combo_keys, unit_):
-    """④ 탭 조합 표에서 바꾼 금액을 그 기록에 바로 저장 (단위·한도에 맞춰 내림)"""
+    """④ 탭 조합 표에서 바꾼 '샀음' 체크 · 금액을 그 기록에 바로 저장 (금액은 단위·한도에 맞춰 내림)"""
     changes = {}
     for pos, ch in st.session_state.get(key, {}).get("edited_rows", {}).items():
         ck = combo_keys[int(pos)]
-        if ck and ch.get("금액(원)") is not None:
-            changes[ck] = {"stake": max(unit_, min(100000, (int(ch["금액(원)"]) // unit_) * unit_))}
-    if changes:
+        if not ck:
+            continue
+        if ch.get("금액(원)") is not None:
+            changes.setdefault(ck, {})["stake"] = max(unit_, min(100000, (int(ch["금액(원)"]) // unit_) * unit_))
+        if ch.get("샀음") is not None:
+            changes.setdefault(ck, {})["picked"] = bool(ch["샀음"])
+    slip = next((x for x in load_slips(MY_SLIPS_PATH) if x.get("id") == slip_id), None)
+    if changes and slip and not apply_combo_changes(slip, changes)["total_stake"]:
+        st.session_state["slip_edit_refused"] = True   # 산 조합이 하나도 없는 기록은 만들지 않음 (지우려면 🗑️ 삭제)
+    elif changes:
         update_combos(slip_id, changes, MY_SLIPS_PATH)
         st.session_state["slip_synced_toast"] = True
     st.session_state["my_stake_ver"] = st.session_state.get("my_stake_ver", 0) + 1   # 표를 저장한 금액으로 새로 그림
@@ -2913,8 +2939,7 @@ with tab4:
     st.subheader("📒 내 베팅 기록")
     st.caption("사이드바 '💾 저장하기'로 남긴 기록이에요. 경기 결과가 나오면 적중·환급금이 자동으로 채워져요 (결과는 1시간마다 갱신). "
                "이 컴퓨터의 user_data 폴더에만 저장되고 GitHub에는 올라가지 않아요.")
-    st.caption("✏️ 조합 표의 금액 칸을 고치면 바로 저장돼요. 조합을 빼거나 넣으려면 '불러오기' → STEP 02에서 고친 뒤 "
-               "'📒 저장한 기록에 반영'을 누르세요 (불러오기는 지금 회차만).")
+    st.caption("✏️ 조합 표의 '샀음' 체크와 금액 칸을 고치면 바로 저장돼요. 실제로 사지 않은 조합은 체크를 끄면 손익에서 빠져요.")
     my_all = load_slips(MY_SLIPS_PATH)
     if not my_all:
         st.info("아직 저장한 기록이 없어요. ① 탭에서 경기를 고른 뒤 사이드바의 '💾 저장하기'를 누르세요. "
@@ -3063,21 +3088,27 @@ with tab4:
                              if res_of(game_of.get(seq, {"seq": seq})) not in (None, "void", k)]
                     return "❌ " + ", ".join(wrong) + " 틀림" if wrong else "❌"
 
-                c_rows = combo_results(s, res_of)
-                # 금액만 고칠 수 있음 → 고치면 바로 저장 (한경기 1,000원 · 조합 100원 단위)
+                # 저장한 조합 전부 (산 것 먼저) — '샀음' 체크·금액을 고치면 바로 저장 (한경기 1,000원 · 조합 100원 단위)
+                graded = {c["key"]: c for c in combo_results(s, res_of)}
+                all_c = sorted(s.get("combos", []), key=lambda c: not c.get("picked", True))
+                c_rows = [graded.get(c.get("key")) or {"key": c.get("key"), "legs": c["legs"], "stake": int(c["stake"]),
+                                                       "state": "off", "payout": 0} for c in all_c]
                 unit4 = 1000 if len(s.get("games", [])) == 1 else 100
                 ed_key = f"my_stake_ed_{sid}_{st.session_state.get('my_stake_ver', 0)}"
                 st.data_editor(pd.DataFrame([{
-                    "조합": " × ".join(f"{seq} {lab_of.get((seq, k), k)}" for seq, k, _ in c["legs"]),
+                    "샀음": c["state"] != "off",
+                    "조합": " × ".join(f"{seq} {lab_of.get((str(seq), k), k)}" for seq, k, _ in c["legs"]),
                     "배당": calculate_combined_odds([o for _, _, o in c["legs"]]),
                     "금액(원)": c["stake"],
-                    "결과": _combo_state(c),
+                    "결과": "— 안 삼" if c["state"] == "off" else _combo_state(c),
                     "환급(원)": c["payout"] if c["state"] == "hit" else 0,
-                    "손익(원)": f"{c['payout'] - c['stake']:+,}" if c["state"] != "pending" else "-",
+                    "손익(원)": f"{c['payout'] - c['stake']:+,}" if c["state"] not in ("pending", "off") else "-",
                 } for c in c_rows]), hide_index=True, width="stretch", height=min(38 + 35 * len(c_rows), 248),
                     key=ed_key, on_change=_save_stake_edit, args=(sid, ed_key, [c["key"] for c in c_rows], unit4),
                     disabled=["조합", "배당", "결과", "환급(원)", "손익(원)"],
-                    column_config={"배당": st.column_config.NumberColumn(format="%.2f배"),
+                    column_config={"샀음": st.column_config.CheckboxColumn("샀음 ✏️", width="small",
+                                                                         help="실제로 산(또는 가상으로 건) 조합만 체크 — 손익은 체크한 조합으로 계산"),
+                                   "배당": st.column_config.NumberColumn(format="%.2f배"),
                                    "금액(원)": st.column_config.NumberColumn(
                                        "금액(원) ✏️", min_value=unit4, max_value=100000, step=unit4, format="localized",
                                        help=f"{unit4:,}원 단위로 고칠 수 있어요. 고치면 바로 저장돼요."),
@@ -3148,6 +3179,8 @@ with st.sidebar:
     st.markdown(f"### 🛒 내 선택 <span style='font-size:15px;opacity:.7'>{cart['n']}경기</span>", unsafe_allow_html=True)
     if st.session_state.pop("slip_saved_toast", False):
         st.toast("💾 저장했어요. 아래 '저장한 선택'에서 볼 수 있어요.")
+    if st.session_state.pop("slip_edit_refused", False):
+        st.toast("⚠️ 산 조합이 하나는 있어야 해요. 기록을 지우려면 ④ 탭의 🗑️ 삭제를 누르세요.")
     if st.session_state.pop("slip_synced_toast", False):
         st.toast("📒 저장한 기록을 고쳤어요. ④ 내 베팅 기록에 바로 반영돼요.")
     if not cart["active"]:

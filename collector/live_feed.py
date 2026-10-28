@@ -3,8 +3,9 @@ collector/live_feed.py
 ======================
 대시보드 실시간 모드: 베트맨에서 지금 회차·경기·배당·상태를 받아 파이프라인과 같은 함수로 AI 확률·기대가치를 계산해 두는 곳.
 
-- 화면은 마지막 결과를 기다리지 않고 바로 쓰고, 1분(FRESH)이 지났으면 뒤(별도 스레드)에서 새로 받는다.
-  처음이거나 3분(MAX_AGE) 넘게 묵었을 때만 기다린다. 실패하면 1분 동안은 다시 시도하지 않는다.
+- 화면은 절대 기다리지 않는다: 마지막 결과를 바로 쓰고, 1분(FRESH)이 지났으면 뒤(별도 스레드)에서 새로 받는다.
+  처음 열 때는 아직 결과가 없으니 저장된 데이터(GitHub)를 먼저 보여 주고, 받으면 화면이 바뀐다.
+  30분(STALE_LIMIT) 넘게 못 받은 결과는 쓰지 않는다. 실패하면 1분 동안은 다시 시도하지 않는다.
 - 베트맨 접속(세션)은 계속 쓰고, 회차는 10분(ROUND_EVERY)마다 또는 살 수 있는 경기가 없을 때만 다시 확인
   → 새로고침 한 번에 베트맨 요청은 대개 1번 (예전: 1분마다 4번)
 - 이 컴퓨터의 모든 화면(PC·휴대폰)이 함께 쓴다 (대시보드가 st.cache_resource로 하나만 만듦)
@@ -18,7 +19,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 
 class LiveFeed:
-    FRESH, MAX_AGE, ROUND_EVERY = 60, 180, 600
+    FRESH, STALE_LIMIT, ROUND_EVERY = 60, 1800, 600
 
     def __init__(self, clock: Callable[[], float] = time.time):
         self.clock = clock
@@ -32,9 +33,12 @@ class LiveFeed:
     def age(self) -> float:
         return self.clock() - self.data["got"] if self.data else float("inf")
 
-    def must_wait(self) -> bool:
-        """처음이거나 너무 묵어서 화면이 기다려야 하는지 (방금 실패했으면 기다리지 않고 저장된 데이터로)"""
-        return self.age() > self.MAX_AGE and self.clock() - self.failed_at >= self.FRESH
+    def busy(self) -> bool:
+        """지금 뒤에서 받는 중인지"""
+        return self.lock.locked()
+
+    def failed_recently(self) -> bool:
+        return self.clock() - self.failed_at < self.FRESH
 
     def _round_stale(self) -> bool:
         if not self.round or self.clock() - self.round_at > self.ROUND_EVERY:
@@ -83,10 +87,17 @@ class LiveFeed:
             self.lock.release()
 
     def get(self, *args) -> Optional[Dict[str, Any]]:
-        """args = (스크레이퍼 클래스, predict_matches, AI 모델, 저장된 예측 목록)"""
-        if self.must_wait():
-            self.refresh(self.MAX_AGE, *args)
-        elif self.age() > self.FRESH and self.clock() - self.failed_at >= self.FRESH and not self.lock.locked():
+        """args = (스크레이퍼 클래스, predict_matches, AI 모델, 저장된 예측 목록). 기다리지 않음 — 받을 때가 됐으면 뒤에서 시작"""
+        if self.age() > self.FRESH and not self.failed_recently() and not self.busy():
             self.thread = threading.Thread(target=self.refresh, args=(self.FRESH, *args), daemon=True)
             self.thread.start()
-        return self.data if self.age() <= self.MAX_AGE else None
+        return self.data if self.age() <= self.STALE_LIMIT else None
+
+
+def changed_matches(old: Optional[Dict[str, Any]], new: Optional[Dict[str, Any]]) -> int:
+    """화면의 데이터(old)와 새로 받은 데이터(new) 사이에 배당·상태·마감이 바뀌었거나 새로 생긴 경기 수"""
+    if not new:
+        return 0
+    key = lambda m: (m.get("betman_odds"), m.get("match_state"), m.get("proto_status"), m.get("close_time"))
+    before = {str(m.get("match_seq")): key(m) for m in (old or {}).get("preds", [])}
+    return sum(1 for m in new["preds"] if before.get(str(m.get("match_seq"))) != key(m))
