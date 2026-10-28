@@ -24,6 +24,19 @@ from models.odds_normalizer import remove_margin
 from models.form_analyzer import FormAnalyzer
 
 
+def recover_round(matches: list):
+    """베트맨 회차 조회가 실패해 캐시를 쓸 때: 캐시에 저장된 회차 → 없으면 배당 변화 기록의 마지막 회차"""
+    for m in matches:
+        if str(m.get("gm_ts") or "").isdigit():
+            return str(m["gm_ts"])
+    try:
+        from tracker.odds_history import latest_round
+        ts = latest_round()
+        return str(ts) if ts else None
+    except Exception:
+        return None
+
+
 def run_full_pipeline(gm_ts: str = None) -> list:
     print("=" * 60)
     print("⚽ 스포츠 승부 예측 & 가치 픽 분석 파이프라인 시작")
@@ -47,6 +60,9 @@ def run_full_pipeline(gm_ts: str = None) -> list:
 
     cached_file = Path("data/current_matches.json")
     if matches and len(matches) > 0:
+        # 캐시에 회차 번호도 함께 저장 — 다음 실행에서 베트맨 조회가 실패해도 회차를 잃지 않게 (2026-10-28 버그)
+        for m in matches:
+            m["gm_ts"] = int(gm_ts) if str(gm_ts).isdigit() else gm_ts
         scraper.save_matches(matches, "data/current_matches.json")
     elif cached_file.exists():
         warn_msg = f"베트맨 실시간 수집 실패 (회차: {gm_ts}). 기존 캐시({cached_file}) 데이터를 사용합니다."
@@ -58,6 +74,9 @@ def run_full_pipeline(gm_ts: str = None) -> list:
             pass
         with open(cached_file, "r", encoding="utf-8") as f:
             matches = json.load(f)
+        if not gm_ts:
+            gm_ts = recover_round(matches)
+            print(f"↩️ 캐시 경기의 회차 복구: {gm_ts or '실패'}")
     else:
         err_msg = f"베트맨 실시간 수집 및 캐시 데이터 모두 없음 (회차: {gm_ts}). 파이프라인을 중단합니다."
         print(f"❌ {err_msg}")

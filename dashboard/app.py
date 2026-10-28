@@ -1732,9 +1732,11 @@ with tab2:
                 return "마감"
             return "경기 중" if (t2_now - float(ko)) / 3.6e6 <= GAME_HOURS.get(m.get("sport"), 3.0) else "종료"
 
+        T2_CUR_TS = detect_current_gm_ts(predictions)   # 예측 파일에 회차가 비어 있을 때 (베트맨 조회 실패로 캐시를 쓴 실행)
+
         def _analyze(m):
             row = _t2_result_row(m)
-            gm_ts = str(m.get("gm_ts") or (row or {}).get("gm_ts") or "")
+            gm_ts = str(m.get("gm_ts") or (row or {}).get("gm_ts") or T2_CUR_TS or "")
             rows = [row] if row else []
             state = _game_state(m, rows)
             res_key = outcome_from_rows(m, rows) if rows else None
@@ -1868,15 +1870,6 @@ with tab2:
             arrow = f" ▲{dd:.0f}" if dd >= 0.5 else (f" ▼{-dd:.0f}" if dd <= -0.5 else "")
             return f"{lab[a['ai_k']]} {a['ai_p'] * 100:.0f}%{arrow}"
 
-        def _ai_up_text(a):
-            """AI가 배당보다 가장 높게 본 선택지 (0.5%p 미만이면 '거의 같음')"""
-            if not a["ai"] or not a["up_k"]:
-                return "-"
-            k = a["up_k"]
-            if a["d"][k] < 0.5:
-                return "거의 같음"
-            return f"{'💎 ' if k in a['gems'] else ''}{a['labels'][k]} +{a['d'][k]:.1f}%p"
-
         def _type_text(m):
             line = ""
             try:
@@ -1889,13 +1882,16 @@ with tab2:
                 line = f" U/O {lv:g}"
             return f"{type_name(m)}{line}{' ⚡' if m.get('is_single') else ''}"
 
-        def _state_text(a):
-            s = a["state"]
-            return f"{T2_STATE_ICON[s]} {s}" + (" (결과 대기)" if s == "종료" and a["res_key"] is None else "")
-
         def _close_text(m):
             ct = m.get("close_time")
             return datetime.fromtimestamp(float(ct) / 1000).strftime("%m.%d %H:%M") if ct else "-"
+
+        def _state_text(a):
+            """발매 중이면 언제 마감인지까지 (마감 시각은 그때만 의미가 있음)"""
+            s = a["state"]
+            if s == "발매 중" and a["m"].get("close_time"):
+                return f"🟢 {_close_text(a['m'])} 마감"
+            return f"{T2_STATE_ICON[s]} {s}" + (" (결과 대기)" if s == "종료" and a["res_key"] is None else "")
 
         def _result_text(a):
             if a["res_key"] is None:
@@ -1904,42 +1900,60 @@ with tab2:
                 return f"{a['score']} · 무효(1.0배)".strip(" ·")
             return f"{a['score']} · {a['labels'][a['res_key']]}".strip(" ·")
 
-        def _hit_text(a):
-            return "-" if a["ai_hit"] is None else ("무효" if a["ai_hit"] == "void" else ("⭕" if a["ai_hit"] else "❌"))
+        def _result_hit_text(a):
+            """결과 + 경기 전 AI 1순위 적중 (⭕/❌)"""
+            if a["res_key"] is None:
+                return "-"
+            hit = "" if a["ai_hit"] in (None, "void") else (" ⭕" if a["ai_hit"] else " ❌")
+            return _result_text(a) + hit
 
-        st.markdown("#### 📋 경기 목록")
+        def _odds_text(a):
+            """베트맨 배당 전부 (⭐ = AI가 1순위로 본 선택지)"""
+            odds_ = a["m"].get("betman_odds", {})
+            return " · ".join(f"{'⭐' if a['ai'] and k == a['ai_k'] else ''}{a['labels'][k]} {float(odds_[k]):.2f}"
+                              for k in a["opts"])
+
+        def _ai_text(a):
+            """AI 1순위 + (다르면) 배당보다 가장 높게 본 쪽"""
+            if not a["ai"] or not a["ai_k"]:
+                return "배당 기준"
+            txt = _ai_top_text(a)
+            k = a["up_k"]
+            if k and k != a["ai_k"] and a["d"][k] >= 1.0:
+                txt += f" · {a['labels'][k]} ▲{a['d'][k]:.0f}"
+            return txt
+
+        shown_rounds = sorted({a["gm_ts"] for a in t_rows if a["gm_ts"]})
+        st.markdown("#### 📋 경기 목록" + (f" · {shown_rounds[0]}회차" if len(shown_rounds) == 1 else ""))
         if not t_rows:
             st.info("조건에 맞는 경기가 없어요. 필터를 초기화해 보세요.")
         else:
             df_t2 = pd.DataFrame([{
-                "회차": a["gm_ts"] or "-",
                 "번호": str(a["m"].get("match_seq", "")),
-                "시간": short_when(a["m"]),
+                "시간": re.sub(r"\([^)]*\)\s*", " ", short_when(a["m"])),
                 "상태": _state_text(a),
-                "마감": _close_text(a["m"]),
                 "경기": f"{a['m'].get('home_team', '')} vs {a['m'].get('away_team', '')}",
-                "점수·결과": _result_text(a),
                 "유형": _type_text(a["m"]),
-                "배당 1순위": f"{a['labels'][a['mk_k']]} {a['mk_p'] * 100:.0f}%" if a["mk_k"] else "-",
-                "AI 1순위": _ai_top_text(a),
-                "AI가 더 높게 본 쪽": _ai_up_text(a),
-                "AI 적중": _hit_text(a),
+                "배당": _odds_text(a),
+                "AI 예상": _ai_text(a),
+                "결과": _result_hit_text(a),
             } for a in t_rows])
             t2_sig = (tuple(t_sports), tuple(t_types), tuple(t_states), t_round, t_league, t_search, tuple(t_quick), t_sort)
             event = st.dataframe(
                 df_t2, hide_index=True, width="stretch", height=min(38 + 35 * len(df_t2), 422),
                 on_select="rerun", selection_mode="single-row", key=f"tab2_table_{t2_sig}",
-                column_config={"회차": st.column_config.TextColumn(width="small"),
-                               "번호": st.column_config.TextColumn(width="small"),
-                               "상태": st.column_config.TextColumn(width="small"),
-                               "마감": st.column_config.TextColumn(width="small"),
-                               "점수·결과": st.column_config.TextColumn(width="small"),
-                               "AI 적중": st.column_config.TextColumn(
-                                   width="small", help="경기 전에 고정 저장한 AI 1순위가 실제 결과와 맞았는지 (AI 적용 경기만)"),
+                column_config={"번호": st.column_config.TextColumn(width="small"),
                                "시간": st.column_config.TextColumn(width="small"),
-                               "경기": st.column_config.TextColumn(width="large"),
-                               "AI가 더 높게 본 쪽": st.column_config.TextColumn(
-                                   help="AI 확률 − 배당 확률이 가장 큰 선택지 (💎 = AI 기준 기대가치 플러스)")})
+                               "상태": st.column_config.TextColumn(width="small"),
+                               "경기": st.column_config.TextColumn(width="medium"),
+                               "유형": st.column_config.TextColumn(width="small"),
+                               "배당": st.column_config.TextColumn(
+                                   width="medium", help="베트맨 배당 전부. ⭐ = AI가 가장 가능성 높게 본 선택지"),
+                               "AI 예상": st.column_config.TextColumn(
+                                   width="medium", help="AI 1순위와 확률. ▲ = 배당보다 높게 본 정도(%p), "
+                                                        "⚠️ = AI와 배당의 1순위가 다름. '배당 기준' = AI가 적용되지 않는 유형"),
+                               "결과": st.column_config.TextColumn(
+                                   width="small", help="점수 · 결과. ⭕/❌ = 경기 전에 저장한 AI 1순위가 맞았는지")})
             picked_rows = list(event.selection.rows) if event is not None else []
             st.caption("👆 줄을 누르면 아래 분석이 그 경기로 바뀌어요." if not picked_rows
                        else "다른 줄을 누르면 그 경기로 바뀌어요.")
