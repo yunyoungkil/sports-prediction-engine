@@ -752,6 +752,31 @@ def is_sale_closed(m, now_ms: float) -> bool:
     return True if not ct else float(ct) <= now_ms
 
 
+GAME_HOURS = {"SC": 2.5, "BK": 3.0, "BS": 4.0}   # 킥오프 뒤 이 시간까지는 '경기 중'으로 봄 (결과가 아직 없을 때)
+WAIT_PHASE = {"before": ("🔒", "경기 전"), "live": ("▶", "경기 중"), "late": ("⏱", "결과 기다리는 중")}
+
+
+def wait_phase(m, now_ms: float) -> str:
+    """발매가 끝났고 결과가 아직 없는 경기: before 경기 전(발매만 마감) · live 경기 중 · late 끝났을 시간인데 결과 미등록"""
+    if str(m.get("match_state")) == "3":
+        return "live"
+    ko = m.get("kickoff_ts")
+    if not ko:   # 시작 시각 숫자가 없는 기록(지난 회차 등)은 '26.10.29 (목) 02:30' 글자로
+        dt = parse_betman_kickoff(m.get("match_time"))
+        ko = dt.timestamp() * 1000 if dt else None
+    if not ko or float(ko) > now_ms:
+        return "before"
+    return "live" if (now_ms - float(ko)) / 3.6e6 <= GAME_HOURS.get(m.get("sport"), 3.0) else "late"
+
+
+def wait_phase_counts(ms, now_ms: float) -> str:
+    """'🔒 경기 전 3 · ▶ 경기 중 2 · ⏱ 결과 기다리는 중 1' (0인 것은 뺌)"""
+    n = {k: 0 for k in WAIT_PHASE}
+    for m in ms:
+        n[wait_phase(m, now_ms)] += 1
+    return " · ".join(f"{WAIT_PHASE[k][0]} {WAIT_PHASE[k][1]} {v}" for k, v in n.items() if v) or "없음"
+
+
 def available_picks(m) -> list:
     odds = m.get("betman_odds", {})
     return [k for k in PICK_KEYS if float(odds.get(k) or 0.0) > 1.0]
@@ -1381,7 +1406,7 @@ with tab1:
             mk_hit, ai_hit, ai_mk_hit = sum(mk_hits), sum(a for a, _ in ai_pairs), sum(b for _, b in ai_pairs)
             tiles = [
                 ("🟢 지금 고를 수 있음", f"{len(open_ms):,}경기", "발매 마감 전" if open_ms else "발매 중인 경기 없음"),
-                ("⏳ 결과 대기", f"{len(wait_ms):,}경기", "발매 마감 · 진행 중"),
+                ("⏳ 발매 마감 · 결과 전", f"{len(wait_ms):,}경기", wait_phase_counts(wait_ms, now_ts)),
                 ("🏁 결과 나옴", f"{len(done_ms):,}경기", "목록 맨 뒤, 최근 경기부터" if done_ms else "아직 없음"),
                 ("📈 배당 1순위 적중", f"{mk_hit}/{n_mk}" if n_mk else "—",
                  f"{mk_hit / n_mk * 100:.0f}% · 배당이 가장 낮은 쪽" if n_mk else "결과가 나오면 표시"),
@@ -1432,7 +1457,8 @@ with tab1:
                 ct = m.get("close_time")
                 status = f"🟢 {datetime.fromtimestamp(float(ct) / 1000).strftime('%m.%d %H:%M')} 마감" if ct else "🟢 발매 중"
             elif section == "wait":
-                status = "⏳ 발매 마감 · 결과 대기"
+                icon, txt = WAIT_PHASE[wait_phase(m, now_ts)]
+                status = f"{icon} 발매 마감 · {txt}"
             else:
                 status = f"🏁 최종 {fx_score[_fixture(m)]}" if _fixture(m) in fx_score else "🏁 종료"
             # 바깥 padding: Streamlit 글 블록은 아래 여백을 -1rem 당겨서, 여백이 없으면 첫 줄 배당 버튼이 머리줄 선에 붙는다
@@ -1463,7 +1489,8 @@ with tab1:
                 section_shown.add(section)
                 title, n_sec, hint = {
                     "open": ("🟢 지금 고를 수 있는 경기", len(open_ms), "배당 버튼을 눌러 고르세요 · 시간순"),
-                    "wait": ("⏳ 결과 대기", len(wait_ms), "발매 마감 · 결과가 나오면 적중 여부 표시"),
+                    "wait": ("⏳ 발매 마감 · 결과 전", len(wait_ms),
+                             f"{wait_phase_counts(wait_ms, now_ts)} · 결과가 나오면 적중 여부 표시"),
                     "done": ("🏁 결과 나온 경기", len(done_ms), "최근 경기부터 · ✅❌ = 적중 여부"),
                 }[section]
                 st.markdown(f"<div style='margin:14px 0 4px;font-size:15px'><b>{title}</b> "
@@ -1536,7 +1563,8 @@ with tab1:
                 if actual:
                     res_body = f"<div style='font-size:15px'><b>{labels.get(actual, '?')}</b></div>"
                 else:
-                    res_body = ("<div style='font-size:13px;color:#94a3b8'>마감 · 결과 대기</div>" if closed
+                    res_body = (f"<div style='font-size:13px;color:#94a3b8'>{' '.join(WAIT_PHASE[wait_phase(m, now_ts)])}</div>"
+                                if closed
                                 else "<div style='font-size:13px;color:#94a3b8'>진행 전</div>")
                 cell = "<div style='flex:{} 1 0;min-width:{}px'>{}{}</div>"
                 c3.markdown(
@@ -1952,7 +1980,6 @@ with tab2:
         t2_now = datetime.now().timestamp() * 1000
 
         T2_STATES = ["발매 중", "마감", "경기 중", "종료"]
-        GAME_HOURS = {"SC": 2.5, "BK": 3.0, "BS": 4.0}   # 킥오프 뒤 이 시간까지는 '경기 중'으로 봄 (결과가 아직 없을 때)
         t2_results = load_results_index()
         t2_by_match = {}   # 예측 파일에 회차(gm_ts)가 비어 있을 때를 위해 (경기번호, 홈, 원정)으로도 결과를 찾는다
         for _rows in t2_results.values():
