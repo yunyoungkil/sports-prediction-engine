@@ -66,9 +66,10 @@ from collector.betman_sharp import parse_betman_kickoff
 from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
-from tracker.my_slips import (BASIS_LABEL, KIND_LABEL, MAX_SAVED_COMBOS, REASON_LABEL, add_slip, build_slip, combo_results,
-                              delete_slip, display_score, draw_is_void, grade_slip, line_row, load_json, load_slips,
-                              outcome_from_rows, pick_basis, save_json, slip_kind, update_slip)
+from tracker.my_slips import (BASIS_LABEL, KIND_LABEL, MAX_SAVED_COMBOS, REASON_LABEL, add_slip, apply_combo_changes,
+                              build_slip, combo_changes, combo_results, delete_slip, display_score, draw_is_void, find_slip,
+                              grade_slip, line_row, load_json, load_slips, outcome_from_rows, pick_basis, save_json, slip_kind,
+                              update_combos, update_slip)
 
 # 내 선택 저장 위치 (개인 기록이라 저장소에 올리지 않음 · .gitignore). 테스트는 SPE_USER_DATA_DIR 로 다른 폴더를 씀
 MY_DATA_DIR = Path(os.environ.get("SPE_USER_DATA_DIR") or (project_root / "user_data"))
@@ -793,6 +794,41 @@ def selection_status() -> dict:
         valid, msg = True, f"✅ 베트맨 프로토 규정 통과! ({n}경기 선택 / 총 {combos:,}개 조합)"
     return {"active": active, "n": n, "combos": combos, "odds_lo": odds_lo, "odds_hi": odds_hi,
             "valid": valid, "msg": msg}
+
+
+def _sync_saved_slip(slip_id, changes):
+    """STEP 02에서 바꾼 조합별 금액·체크를 같은 선택의 저장한 기록에 반영"""
+    update_combos(slip_id, changes, MY_SLIPS_PATH)
+    st.session_state["slip_synced_toast"] = True
+
+
+def render_saved_slip_sync(active: dict, unit: int, where: str) -> bool:
+    """지금 고른 것과 같은 선택으로 저장한 기록이 있으면 알려 주고, 금액·체크가 달라졌으면 '저장한 기록에 반영' 버튼.
+    실제 구매 기록이 모르게 바뀌지 않도록 자동이 아니라 버튼으로만 고친다. 기록이 있으면 True"""
+    if not active:
+        return False
+    gm = next((v["match"].get("gm_ts") for v in active.values() if v["match"].get("gm_ts")), detect_current_gm_ts(predictions))
+    games = [{"seq": seq, "line": v["match"].get("line"), "picks": [{"key": p["selection"]} for p in v["picks"]]}
+             for seq, v in active.items()]
+    slip = find_slip(load_slips(MY_SLIPS_PATH), gm, games)
+    if not slip:
+        return False
+    # 조합별 금액·체크는 STEP 02 표 · 사이드바와 같은 세션 값(조합 내용 키)을 읽는다
+    default = max(unit, (int(st.session_state.get("batch_stake", 1000)) // unit) * unit)
+    cur = [{"key": c["key"], "stake": max(unit, (int(st.session_state.get(f"stake_{c['key']}", default)) // unit) * unit),
+            "picked": bool(st.session_state.get(f"combo_chk_{c['key']}", True))} for c in slip.get("combos", []) if c.get("key")]
+    changes = combo_changes(slip, cur)
+    when = f"{slip.get('saved_at', '')[5:]} 저장 · {KIND_LABEL[slip_kind(slip)]}"
+    new_total = apply_combo_changes(slip, changes)["total_stake"]
+    if not changes:
+        st.caption(f"📒 저장한 기록({when})과 같아요.")
+    elif not new_total:
+        st.caption(f"📒 저장한 기록({when})에 반영하려면 조합을 하나 이상 선택하세요.")
+    else:
+        st.info(f"📒 저장한 기록({when})과 금액·선택이 달라요. 총 {int(slip.get('total_stake', 0)):,}원 → {new_total:,}원")
+        st.button("📒 저장한 기록에 반영", key=f"slip_sync_{where}", type="primary", width="stretch",
+                  on_click=_sync_saved_slip, args=(slip["id"], changes))
+    return True
 
 
 # 4. 세션 상태 초기화 (단일 상태: selections)
@@ -1717,6 +1753,8 @@ with tab1:
                     st.info("표에서 조합을 하나 이상 선택해 주세요.")
                 st.caption("확률: AI 적용 유형(② 탭 맨 위 참고)은 AI 확률, 그 외 유형은 배당(마진 제거) 확률이에요. "
                            "표의 선택·투표금액 ✏️ 칸은 직접 바꿀 수 있어요.")
+                # 저장한 뒤 여기서 금액·선택을 바꿨으면 그 기록에도 반영 (표 편집 결과가 세션에 들어간 뒤라 지금 값으로 비교)
+                render_saved_slip_sync(rule_check["active"], unit, "step2")
 
             # 4-1) 이 방식을 과거에 반복했다면? (실제 결과 기준 백테스트)
             with st.container(border=True):
@@ -2787,6 +2825,19 @@ def _save_memo(slip_id):
     update_slip(slip_id, MY_SLIPS_PATH, memo=str(st.session_state.get(f"memo_edit_{slip_id}", "")).strip())
 
 
+def _save_stake_edit(slip_id, key, combo_keys, unit_):
+    """④ 탭 조합 표에서 바꾼 금액을 그 기록에 바로 저장 (단위·한도에 맞춰 내림)"""
+    changes = {}
+    for pos, ch in st.session_state.get(key, {}).get("edited_rows", {}).items():
+        ck = combo_keys[int(pos)]
+        if ck and ch.get("금액(원)") is not None:
+            changes[ck] = {"stake": max(unit_, min(100000, (int(ch["금액(원)"]) // unit_) * unit_))}
+    if changes:
+        update_combos(slip_id, changes, MY_SLIPS_PATH)
+        st.session_state["slip_synced_toast"] = True
+    st.session_state["my_stake_ver"] = st.session_state.get("my_stake_ver", 0) + 1   # 표를 저장한 금액으로 새로 그림
+
+
 BASIS_ICON = {k: v.split()[0] for k, v in BASIS_LABEL.items()}   # 🎯 📊 🧠 💡
 
 
@@ -2819,6 +2870,8 @@ with tab4:
     st.subheader("📒 내 베팅 기록")
     st.caption("사이드바 '💾 저장하기'로 남긴 기록이에요. 경기 결과가 나오면 적중·환급금이 자동으로 채워져요 (결과는 1시간마다 갱신). "
                "이 컴퓨터의 user_data 폴더에만 저장되고 GitHub에는 올라가지 않아요.")
+    st.caption("✏️ 조합 표의 금액 칸을 고치면 바로 저장돼요. 조합을 빼거나 넣으려면 '불러오기' → STEP 02에서 고친 뒤 "
+               "'📒 저장한 기록에 반영'을 누르세요 (불러오기는 지금 회차만).")
     my_all = load_slips(MY_SLIPS_PATH)
     if not my_all:
         st.info("아직 저장한 기록이 없어요. ① 탭에서 경기를 고른 뒤 사이드바의 '💾 저장하기'를 누르세요. "
@@ -2945,7 +2998,9 @@ with tab4:
                 head = (f"<div style='display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap'>"
                         f"<span style='font-size:14px'>{_chip(KIND_LABEL[kind], *KIND_STYLE[kind])} "
                         + (_chip(REASON_LABEL[s['reason']], 'rgba(148,163,184,.2)', '#e2e8f0') + " " if s.get("reason") in REASON_LABEL else "")
-                        + f"<b>{s.get('saved_at', '')}</b> <span style='opacity:.7'>· {s.get('gm_ts', '')}회 · "
+                        + f"<b>{s.get('saved_at', '')}</b>"
+                        + (f" <span style='opacity:.6'>({s['edited_at'][5:]} 고침)</span>" if s.get("edited_at") else "")
+                        + f" <span style='opacity:.7'>· {s.get('gm_ts', '')}회 · "
                         f"{len(s.get('games', []))}경기 {n_comb}조합 · {gr['stake']:,}원</span>"
                         + (f" · <b>{s['memo']}</b>" if s.get("memo") else "") + "</span>"
                         f"{_slip_chip(gr)}</div>")
@@ -2966,7 +3021,10 @@ with tab4:
                     return "❌ " + ", ".join(wrong) + " 틀림" if wrong else "❌"
 
                 c_rows = combo_results(s, res_of)
-                st.dataframe(pd.DataFrame([{
+                # 금액만 고칠 수 있음 → 고치면 바로 저장 (한경기 1,000원 · 조합 100원 단위)
+                unit4 = 1000 if len(s.get("games", [])) == 1 else 100
+                ed_key = f"my_stake_ed_{sid}_{st.session_state.get('my_stake_ver', 0)}"
+                st.data_editor(pd.DataFrame([{
                     "조합": " × ".join(f"{seq} {lab_of.get((seq, k), k)}" for seq, k, _ in c["legs"]),
                     "배당": calculate_combined_odds([o for _, _, o in c["legs"]]),
                     "금액(원)": c["stake"],
@@ -2974,8 +3032,12 @@ with tab4:
                     "환급(원)": c["payout"] if c["state"] == "hit" else 0,
                     "손익(원)": f"{c['payout'] - c['stake']:+,}" if c["state"] != "pending" else "-",
                 } for c in c_rows]), hide_index=True, width="stretch", height=min(38 + 35 * len(c_rows), 248),
+                    key=ed_key, on_change=_save_stake_edit, args=(sid, ed_key, [c["key"] for c in c_rows], unit4),
+                    disabled=["조합", "배당", "결과", "환급(원)", "손익(원)"],
                     column_config={"배당": st.column_config.NumberColumn(format="%.2f배"),
-                                   "금액(원)": st.column_config.NumberColumn(format="localized"),
+                                   "금액(원)": st.column_config.NumberColumn(
+                                       "금액(원) ✏️", min_value=unit4, max_value=100000, step=unit4, format="localized",
+                                       help=f"{unit4:,}원 단위로 고칠 수 있어요. 고치면 바로 저장돼요."),
                                    "환급(원)": st.column_config.NumberColumn(format="localized"),
                                    "손익(원)": st.column_config.TextColumn(help="환급 − 금액"),
                                    "조합": st.column_config.TextColumn(width="medium")})
@@ -3043,6 +3105,8 @@ with st.sidebar:
     st.markdown(f"### 🛒 내 선택 <span style='font-size:15px;opacity:.7'>{cart['n']}경기</span>", unsafe_allow_html=True)
     if st.session_state.pop("slip_saved_toast", False):
         st.toast("💾 저장했어요. 아래 '저장한 선택'에서 볼 수 있어요.")
+    if st.session_state.pop("slip_synced_toast", False):
+        st.toast("📒 저장한 기록을 고쳤어요. ④ 내 베팅 기록에 바로 반영돼요.")
     if not cart["active"]:
         st.caption("① 맞춤조건구매 탭에서 배당 버튼을 누르면 여기에 담겨요. 고른 경기는 자동 저장돼서 새로고침해도 남아요.")
     else:
@@ -3130,13 +3194,16 @@ with st.sidebar:
         slip_round = next((v["match"].get("gm_ts") for v in cart["active"].values() if v["match"].get("gm_ts")),
                           detect_current_gm_ts(predictions))
         st.markdown("<div style='font-size:13px;font-weight:700;margin-top:10px'>💾 이 선택 저장</div>", unsafe_allow_html=True)
+        already_saved = bool(slip_combos) and render_saved_slip_sync(cart["active"], unit, "side")
         st.radio("구분", [KIND_LABEL["real"], KIND_LABEL["paper"]], key="slip_kind", horizontal=True, label_visibility="collapsed")
         st.pills("왜 골랐어요? (선택)", list(REASON_LABEL), format_func=REASON_LABEL.get, key="slip_reason",
                  help="나중에 ④ 탭에서 '무엇을 보고 고를 때 잘 맞았나'를 볼 수 있어요. "
                       "배당 1순위·AI 1순위였는지는 누르지 않아도 자동으로 기록돼요.")
         st.text_input("메모", key="slip_memo", placeholder="메모 (선택) 예: 소액 테스트", label_visibility="collapsed")
-        st.button("💾 저장하기", width="stretch", key="slip_save", on_click=_save_slip,
+        st.button("💾 새 기록으로 저장" if already_saved else "💾 저장하기", width="stretch", key="slip_save", on_click=_save_slip,
                   args=(games_payload, slip_combos, slip_round), disabled=not slip_combos)
+        if already_saved:
+            st.caption("같은 선택을 새로 저장하면 기록이 2건이 돼요. 금액·선택만 바꿨다면 위 '저장한 기록에 반영'을 누르세요.")
         if not slip_combos:
             st.caption(f"조합이 {MAX_SAVED_COMBOS:,}개를 넘으면 저장할 수 없어요.")
 

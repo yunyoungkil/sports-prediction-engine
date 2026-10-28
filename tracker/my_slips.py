@@ -9,6 +9,7 @@ tracker/my_slips.py
 개인 기록이라 저장소에 올리지 않는 user_data/ 폴더에 둔다 (.gitignore).
 """
 
+import copy
 import json
 from datetime import datetime
 from pathlib import Path
@@ -60,6 +61,52 @@ def update_slip(slip_id: str, path: Path = SLIPS_PATH, **fields: Any) -> None:
         if s.get("id") == slip_id:
             s.update(fields)
     save_json(path, slips)
+
+
+def selection_sig(gm_ts: Any, games: List[Dict[str, Any]]) -> str:
+    """같은 선택인지 비교하는 이름: 회차 + 경기번호·기준값·고른 선택지 (배당·금액·순서는 무관)"""
+    return f"{gm_ts}|" + "|".join(sorted(
+        f"{g['seq']}@{float(g.get('line') or 0.0):g}:{','.join(sorted(p['key'] for p in g['picks']))}" for g in games))
+
+
+def find_slip(slips: List[Dict[str, Any]], gm_ts: Any, games: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """지금 고른 것과 같은 선택으로 저장한 기록 (여러 건이면 가장 최근 것) · 없으면 None"""
+    sig = selection_sig(gm_ts, games)
+    return next((s for s in reversed(slips) if selection_sig(s.get("gm_ts"), s.get("games", [])) == sig), None)
+
+
+def combo_changes(slip: Dict[str, Any], combos: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    """저장한 기록과 금액·체크가 다른 조합만 {조합 키: {stake, picked}} (기록에 없는 조합은 무시)"""
+    saved = {c["key"]: c for c in slip.get("combos", []) if c.get("key")}
+    out = {}
+    for c in combos:
+        s = saved.get(c.get("key"))
+        if s and (int(s["stake"]) != int(c["stake"]) or bool(s.get("picked", True)) != bool(c.get("picked", True))):
+            out[c["key"]] = {"stake": int(c["stake"]), "picked": bool(c.get("picked", True))}
+    return out
+
+
+def apply_combo_changes(slip: Dict[str, Any], changes: Dict[str, Dict[str, Any]],
+                        now: Optional[datetime] = None) -> Dict[str, Any]:
+    """조합별 금액·체크를 바꾼 기록 (원본은 그대로). 경기·선택지·배당은 저장 때 값 그대로 두고 총 금액만 다시 계산"""
+    out = copy.deepcopy(slip)
+    for c in out.get("combos", []):
+        ch = changes.get(c["key"]) if c.get("key") else None
+        if ch:
+            if ch.get("stake") is not None:
+                c["stake"] = int(ch["stake"])
+            if ch.get("picked") is not None:
+                c["picked"] = bool(ch["picked"])
+    out["total_stake"] = sum(int(c["stake"]) for c in out.get("combos", []) if c.get("picked", True))
+    if changes:
+        out["edited_at"] = (now or datetime.now()).strftime("%Y-%m-%d %H:%M")
+    return out
+
+
+def update_combos(slip_id: str, changes: Dict[str, Dict[str, Any]], path: Path = SLIPS_PATH,
+                  now: Optional[datetime] = None) -> None:
+    """저장한 기록의 조합별 금액·체크 고치기 (④ 탭 금액 칸 · STEP 02 '저장한 기록에 반영')"""
+    save_json(path, [apply_combo_changes(s, changes, now) if s.get("id") == slip_id else s for s in load_slips(path)])
 
 
 RESULT_KEYS = {"0": "home_win", "1": "draw", "2": "away_win"}   # 베트맨 결과 코드 (2지선다도 0=앞 · 2=뒤)

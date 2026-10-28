@@ -90,3 +90,50 @@ def test_pick_basis_and_reason():
     s = build_slip(260127, [], [{"key": "a", "legs": [], "stake": 1000}], reason="ai")
     assert s["reason"] == "ai"
     assert build_slip(260127, [], [], reason="이상한값")["reason"] == ""
+
+
+def test_find_saved_selection():
+    """같은 선택(회차 · 경기번호 · 기준값 · 고른 선택지)으로 저장한 기록 찾기 — 순서·배당은 무관, 여러 건이면 가장 최근"""
+    from tracker.my_slips import find_slip, selection_sig
+    s = _slip()
+    same = [{"seq": "940", "line": 0.0, "picks": [{"key": "away_win"}, {"key": "draw"}]},
+            {"seq": "965", "line": 0, "picks": [{"key": "home_win", "odds": 1.30}]}]
+    assert selection_sig(260127, same) == selection_sig("260127", s["games"])
+    assert find_slip([s], "260127", same)["id"] == s["id"]
+    assert find_slip([s], 260127, same[:1]) is None                                    # 경기 하나 뺌
+    assert find_slip([s], 260128, same) is None                                        # 다른 회차
+    assert find_slip([s], 260127, [same[0], {**same[1], "line": -1.0}]) is None         # 기준값이 다름
+    assert find_slip([s], 260127, [{**same[0], "picks": [{"key": "draw"}]}, same[1]]) is None   # 고른 선택지가 다름
+    later = build_slip(260127, s["games"], s["combos"], now=datetime(2026, 10, 27, 9, 0))
+    assert find_slip([s, later], 260127, same)["id"] == later["id"]
+
+
+def test_update_combo_stakes(tmp_path):
+    """저장한 기록의 조합별 금액·체크 고치기 — 바뀐 조합만 · 경기·배당은 그대로 · 총 금액과 채점이 새 금액으로"""
+    from models.combo_builder import calculate_combined_odds, calculate_payout
+    from tracker.my_slips import apply_combo_changes, combo_changes, update_combos
+    s, other = _slip(), build_slip(260127, [], [{"key": "a", "legs": [], "stake": 500}], now=datetime(2026, 10, 27, 9, 0))
+    path = tmp_path / "slips.json"
+    add_slip(s, path)
+    add_slip(other, path)
+    k1, k2 = s["combos"][0]["key"], s["combos"][1]["key"]
+    # 1번 조합(무) 1,000 → 4,000원 · 2번 조합(패) 빼기 · 기록에 없는 조합은 무시
+    cur = [{"key": k1, "stake": 4000, "picked": True}, {"key": k2, "stake": 2000, "picked": False},
+           {"key": "없는:조합", "stake": 500, "picked": True}]
+    changes = combo_changes(s, cur)
+    assert changes == {k1: {"stake": 4000, "picked": True}, k2: {"stake": 2000, "picked": False}}
+    assert combo_changes(s, [{"key": k1, "stake": 1000, "picked": True}]) == {}
+    new = apply_combo_changes(s, changes, now=datetime(2026, 10, 27, 10, 5))
+    assert (new["total_stake"], new["edited_at"]) == (4000, "2026-10-27 10:05")
+    assert (s["total_stake"], s["combos"][0]["stake"], "edited_at" in s) == (3000, 1000, False)   # 원본은 그대로
+    assert apply_combo_changes(s, {})["total_stake"] == 3000 and "edited_at" not in apply_combo_changes(s, {})
+
+    update_combos(s["id"], changes, path, now=datetime(2026, 10, 27, 10, 5))
+    saved = {x["id"]: x for x in load_slips(path)}
+    assert saved[s["id"]]["total_stake"] == 4000 and saved[s["id"]]["games"] == s["games"]
+    assert saved[s["id"]]["combos"][0]["legs"] == s["combos"][0]["legs"]
+    assert saved[other["id"]] == other                                                  # 다른 기록은 안 건드림
+    # 로마 승 · 함부르크 무 → 1번 조합만 적중, 4,000원 기준 환급 · 빠진 2번 조합은 채점에서 빠짐
+    g = grade_slip(saved[s["id"]], lambda g: {"965": "home_win", "940": "draw"}[g["seq"]])
+    assert (g["state"], g["stake"], g["hit_combos"]) == ("hit", 4000, 1)
+    assert g["payout"] == calculate_payout(calculate_combined_odds([1.27, 3.45]), 4000)
