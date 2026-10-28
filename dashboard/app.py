@@ -2331,14 +2331,32 @@ with tab3:
                      f"{card.get('gem_roi_ci_high', 0):+.1f}%])" + (" — 아직 판단하기엔 적어요." if gb < SCORE_MIN else ""))
         elif gb is not None:
             says += "<br>💎 AI 추천(기대가치 플러스) 선택지는 아직 0건이에요. AI가 고치는 폭이 베트맨 마진보다 작아서 드물게 나와요."
-        st.markdown(f"<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>{says}</div></div>",
+        st.markdown(f"<div style='padding-bottom:18px'><div style='font-size:14px;line-height:1.7'>{says}</div></div>",
                     unsafe_allow_html=True)
-        hist = [h for h in card.get("history", []) if h.get("ll_diff") is not None]
+        # 날짜별 누적 'AI가 배당보다 더 잘 맞힌 정도' (= 배당 점수 − AI 점수) + 운 감안 범위 띠 + 0 기준선
+        # (예전처럼 두 점수를 0~1 축에 따로 그리면 차이가 0.004뿐이라 선이 겹쳐 안 보임)
+        hist = [h for h in card.get("history", []) if h.get("ll_diff") is not None and h.get("ll_diff_ci")]
         if len(hist) >= 2:
-            h_df = pd.DataFrame(hist).set_index("date")[["model_ll", "market_ll"]].rename(
-                columns={"model_ll": "AI", "market_ll": "배당"})
-            st.line_chart(h_df, height=200)
-            st.caption("날짜별 누적 정확도 점수 (낮을수록 좋음) — AI 선이 배당 선보다 아래에 있으면 AI가 더 정확해요.")
+            import altair as alt
+            h_df = pd.DataFrame([{"날짜": h["date"], "채점한 경기": h.get("graded_matches") or 0, "AI 우위": -h["ll_diff"],
+                                  "범위 아래": -h["ll_diff_ci"][1], "범위 위": -h["ll_diff_ci"][0]} for h in hist])
+            tips = [alt.Tooltip("날짜:N"), alt.Tooltip("채점한 경기:Q", format=","),
+                    alt.Tooltip("AI 우위:Q", format="+.4f", title="AI 우위 (0보다 크면 AI가 나음)"),
+                    alt.Tooltip("범위 아래:Q", format="+.4f", title="운 감안 범위 아래"),
+                    alt.Tooltip("범위 위:Q", format="+.4f", title="운 감안 범위 위")]
+            base = alt.Chart(h_df).encode(x=alt.X("날짜:N", title=None, axis=alt.Axis(labelAngle=0, grid=False)))
+            band = base.mark_area(opacity=0.18, color="#3b82f6").encode(
+                y=alt.Y("범위 아래:Q", title="AI가 배당보다 더 잘 맞힌 정도", axis=alt.Axis(format="+.3f", gridOpacity=0.15)),
+                y2="범위 위:Q", tooltip=tips)
+            line = base.mark_line(color="#3b82f6", strokeWidth=2,
+                                  point=alt.OverlayMarkDef(size=80, filled=True, color="#3b82f6")).encode(
+                y="AI 우위:Q", tooltip=tips)
+            zero = alt.Chart(pd.DataFrame({"y": [0.0]})).mark_rule(color="#94a3b8", strokeDash=[4, 4]).encode(y="y:Q")
+            st.markdown("**📈 날짜별 누적: AI가 배당보다 더 잘 맞힌 정도**")
+            st.altair_chart((band + line + zero).properties(height=220), width="stretch")
+            st.caption("파란 점이 점선(0)보다 위에 있으면, 그날까지 채점한 경기에서 AI가 배당보다 확률을 더 잘 맞힌 거예요. "
+                       "옅은 띠는 운을 감안한 범위예요 — 띠 전체가 점선 위로 올라가야 '확실히 낫다'고 할 수 있어요. "
+                       "경기가 쌓일수록 띠가 좁아져요. 점에 마우스를 올리면 숫자가 보여요.")
         render_calibration(card)   # [6.6] 보정 곡선 — AI가 말한 확률이 실제로 맞았나
         if len(card.get("by_game_type", {})) > 1:
             with st.expander("유형별 성적 (어느 유형에서 AI가 앞서는지)"):
