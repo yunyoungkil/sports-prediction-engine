@@ -1907,11 +1907,13 @@ with tab2:
             hit = "" if a["ai_hit"] in (None, "void") else (" ⭕" if a["ai_hit"] else " ❌")
             return _result_text(a) + hit
 
-        def _odds_text(a):
-            """베트맨 배당 전부 (⭐ = AI가 1순위로 본 선택지)"""
-            odds_ = a["m"].get("betman_odds", {})
-            return " · ".join(f"{'⭐' if a['ai'] and k == a['ai_k'] else ''}{a['labels'][k]} {float(odds_[k]):.2f}"
-                              for k in a["opts"])
+        def _odd_cell(a, k):
+            """베트맨 화면처럼 선택지별 칸: 배당 숫자 + ⭐(AI 1순위) + 🏁(실제 결과)"""
+            if k not in a["opts"]:
+                return "-"
+            odd = float(a["m"].get("betman_odds", {}).get(k) or 0)
+            return (f"{odd:.2f}" + (" ⭐" if a["ai"] and k == a["ai_k"] else "")
+                    + (" 🏁" if a["res_key"] == k else ""))
 
         def _ai_text(a):
             """AI 1순위 + (다르면) 배당보다 가장 높게 본 쪽"""
@@ -1934,7 +1936,9 @@ with tab2:
                 "상태": _state_text(a),
                 "경기": f"{a['m'].get('home_team', '')} vs {a['m'].get('away_team', '')}",
                 "유형": _type_text(a["m"]),
-                "배당": _odds_text(a),
+                "승 (언더·홀)": _odd_cell(a, "home_win"),
+                "무": _odd_cell(a, "draw"),
+                "패 (오버·짝)": _odd_cell(a, "away_win"),
                 "AI 예상": _ai_text(a),
                 "결과": _result_hit_text(a),
             } for a in t_rows])
@@ -1947,8 +1951,12 @@ with tab2:
                                "상태": st.column_config.TextColumn(width="small"),
                                "경기": st.column_config.TextColumn(width="medium"),
                                "유형": st.column_config.TextColumn(width="small"),
-                               "배당": st.column_config.TextColumn(
-                                   width="medium", help="베트맨 배당 전부. ⭐ = AI가 가장 가능성 높게 본 선택지"),
+                               "승 (언더·홀)": st.column_config.TextColumn(
+                                   width="small", help="홈 승 배당 (언더오버는 언더, 홀짝은 홀, 핸디캡은 핸디 적용 승). "
+                                                       "⭐ = AI 1순위 · 🏁 = 실제 결과"),
+                               "무": st.column_config.TextColumn(width="small", help="무승부 배당 (무승부가 없는 유형은 -)"),
+                               "패 (오버·짝)": st.column_config.TextColumn(
+                                   width="small", help="원정 승 배당 (언더오버는 오버, 홀짝은 짝). ⭐ = AI 1순위 · 🏁 = 실제 결과"),
                                "AI 예상": st.column_config.TextColumn(
                                    width="medium", help="AI 1순위와 확률. ▲ = 배당보다 높게 본 정도(%p), "
                                                         "⚠️ = AI와 배당의 1순위가 다름. '배당 기준' = AI가 적용되지 않는 유형"),
