@@ -141,9 +141,14 @@ def run_batch(batch: int = BATCH, interval: float = INTERVAL, vote_dir: Path = V
     state = load_state(vote_dir)
     known, queried = known_keys(vote_dir), set(state.get("queried", []))
     queue = build_queue(known, queried)[:batch]
-    client = Client()
     new = done = 0
     blocked = False
+    try:
+        client = Client()   # 차단 중에는 첫 접속부터 연결이 끊김 → 차단으로 처리
+    except Exception:
+        state["blocked_at"] = datetime.now().isoformat(timespec="seconds")
+        save_state(state, vote_dir)
+        return {"requests": 0, "new_samples": 0, "blocked": True, "total_samples": len(known), "left": len(queue)}
     for i, (gm_ts, seq, odds) in enumerate(queue):
         if i:
             time.sleep(interval)
@@ -184,7 +189,12 @@ def loop(batch: int = BATCH, interval: float = INTERVAL, rest: int = REST) -> No
                 continue
             state["blocked_at"] = None
             save_state(state)
-        r = run_batch(batch, interval)
+        try:
+            r = run_batch(batch, interval)
+        except Exception as e:   # 예상 못 한 오류에도 꺼지지 않고 1시간 뒤 다시
+            print(f"⚠️ {datetime.now():%H:%M} 묶음 실패: {e} — 1시간 뒤 다시")
+            time.sleep(rest)
+            continue
         print(f"📥 {datetime.now():%m-%d %H:%M} 요청 {r['requests']} · 새 표본 {r['new_samples']} · 전체 {r['total_samples']} · "
               f"남은 경기 {r['left']}" + (" · ⛔ 차단됨 (3시간 쉼)" if r["blocked"] else ""))
         if not r["left"]:
