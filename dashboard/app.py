@@ -1562,8 +1562,10 @@ with tab1:
                 st.markdown(f"<div style='margin:14px 0 4px;font-size:15px'><b>{title}</b> "
                             f"<span style='opacity:.7'>{n_sec:,}경기 · {hint}</span></div>", unsafe_allow_html=True)
 
-            # 배당 예상: 경기 전에 확정된 배당(마진 제거) 기준 → 사후 정보 없음
-            mk_probs = (log or {}).get("market_probs") or m.get("market_implied_probs")
+            # 배당 예상 (마진 제거): 아직 안 끝난 경기는 지금 배당 (버튼의 배당·AI 예상과 같은 시점),
+            # 끝난 경기는 경기 전 고정 기록 (채점에 사후 정보가 섞이지 않게) — AI 예상(_ai_probs)과 같은 규칙
+            mk_probs = (((log or {}).get("market_probs") if res is not None else None)
+                        or m.get("market_implied_probs") or (log or {}).get("market_probs"))
             mk_k, mk_p = top_pick(mk_probs, opts)
             ai_probs = _ai_probs(m, res, log)
             ai_k, ai_p = top_pick(ai_probs, opts)
@@ -1589,8 +1591,9 @@ with tab1:
                     st.markdown("<div style='border-top:1px solid rgba(148,163,184,.12);margin:-6px 0'></div>",
                                 unsafe_allow_html=True)
                 # 한 줄 유지 (줄이 바뀌면 경기마다 높이가 달라져 목록이 흐트러짐) — 가장 긴 '1255 전반 핸디캡 H -1.5 한경기'
-                # (약 300px)가 들어가도록 왼쪽을 넓히고, 여유 있는 오른쪽 예상·점수·결과 칸에서 덜어 옴. 배당 칸은 버튼 3개 폭 유지
-                c1, c2, c3 = st.columns([2.8, 3.1, 3.9], vertical_alignment="center")
+                # (약 300px)가 들어가도록 왼쪽을 넓히고, 여유 있는 오른쪽 예상·점수·결과 칸에서 덜어 옴.
+                # 배당 칸은 화살표(↑↓)가 붙은 버튼 3개('핸패 10.50↓')도 한 줄에 들어가게 (2026-10-28: 두 줄로 넘어감)
+                c1, c2, c3 = st.columns([2.8, 3.6, 3.4], vertical_alignment="center")
                 with c1:
                     # 게임번호 · 유형 · 기준선 칩 · 한경기 (마우스를 올리면 리그·유형 전체 표시)
                     tags = line_chip(m) + (ONE_GAME_TAG if m.get("is_single") else "")
