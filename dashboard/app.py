@@ -2749,7 +2749,8 @@ with tab4:
                         f"{len(s.get('games', []))}경기 {n_comb}조합 · {gr['stake']:,}원</span>"
                         + (f" · <b>{s['memo']}</b>" if s.get("memo") else "") + "</span>"
                         f"{_slip_chip(gr)}</div>")
-                st.markdown(f"<div style='padding-bottom:8px'>{head}</div>", unsafe_allow_html=True)
+                # 아래 표의 도구 아이콘(오른쪽 위)이 배지를 가리지 않게 충분히 띄움
+                st.markdown(f"<div style='padding-bottom:26px'>{head}</div>", unsafe_allow_html=True)
 
                 # 💰 조합별 결과 (돈은 조합 단위로 나가고 들어오므로 먼저) — 틀린 조합은 어느 경기 때문인지
                 lab_of = {(g["seq"], p["key"]): p["label"] for g in s.get("games", []) for p in g["picks"]}
@@ -2771,12 +2772,12 @@ with tab4:
                     "금액(원)": c["stake"],
                     "결과": _combo_state(c),
                     "환급(원)": c["payout"] if c["state"] == "hit" else 0,
-                    "손익(원)": (c["payout"] - c["stake"]) if c["state"] != "pending" else None,
+                    "손익(원)": f"{c['payout'] - c['stake']:+,}" if c["state"] != "pending" else "-",
                 } for c in c_rows]), hide_index=True, width="stretch", height=min(38 + 35 * len(c_rows), 248),
                     column_config={"배당": st.column_config.NumberColumn(format="%.2f배"),
                                    "금액(원)": st.column_config.NumberColumn(format="localized"),
                                    "환급(원)": st.column_config.NumberColumn(format="localized"),
-                                   "손익(원)": st.column_config.NumberColumn(format="%+d"),
+                                   "손익(원)": st.column_config.TextColumn(help="환급 − 금액"),
                                    "조합": st.column_config.TextColumn(width="medium")})
 
                 # 🎮 경기별: 번호 · 경기 · 고른 것(+ 고른 기준) · 실제 결과
@@ -2786,8 +2787,14 @@ with tab4:
                     out_g = outcome_from_rows(g, rows_g)
                     score_g = display_score(g, rows_g)
                     labels_g = pick_labels({"game_type": g.get("game_type", ""), "category": ""})
-                    picks_txt = " / ".join(f"{p['label']} {p['odds']:.2f} {BASIS_ICON.get(_pick_basis_of(s, g, p), '')}".strip()
-                                           for p in g["picks"])
+                    # 고른 것마다 맞음·틀림 (한 경기에서 여러 개 골랐을 때 어느 것이 맞았는지)
+                    def _mark(p):
+                        if out_g in (None, "void"):
+                            return ""
+                        return " ✅" if out_g == p["key"] else " ❌"
+                    picks_txt = " / ".join(
+                        f"{p['label']} {p['odds']:.2f} {BASIS_ICON.get(_pick_basis_of(s, g, p), '')}".strip() + _mark(p)
+                        for p in g["picks"])
                     # 핸디캡·언더오버 기준값이 산 뒤에 바뀌어 같은 기준값 결과 줄이 없으면 실제 점수로 다시 채점한 것
                     regraded = bool(rows_g) and ("핸디캡" in str(g.get("game_type")) or "언더오버" in str(g.get("game_type"))) \
                         and line_row(g, rows_g) is None
@@ -2798,9 +2805,8 @@ with tab4:
                         res_txt = f"↩️ {why_void} → 배당 1.00 <span style='opacity:.7'>{score_g}</span>"
                     elif out_g is None:
                         res_txt = "<span style='opacity:.6'>결과 확인 중</span>"
-                    else:
-                        ok = out_g in {p["key"] for p in g["picks"]}
-                        res_txt = (f"{'✅' if ok else '❌'} <b>{labels_g.get(out_g, '?')}</b> "
+                    else:   # 실제 결과만 (맞음·틀림은 고른 것 옆에)
+                        res_txt = (f"<b>{labels_g.get(out_g, '?')}</b> "
                                    f"<span style='opacity:.7'>{score_g}</span>"
                                    + (" <span style='font-size:11px;opacity:.6'>(산 기준값으로 채점)</span>" if regraded else ""))
                     g_rows.append(
@@ -2813,8 +2819,8 @@ with tab4:
                             + "<div style='display:grid;grid-template-columns:44px 1fr 190px 130px;gap:8px;font-size:11px;"
                               "opacity:.6;margin-top:4px'><span>번호</span><span>경기</span><span>고른 것 (기준)</span><span>결과</span></div>"
                             + "".join(g_rows)
-                            + "<div style='font-size:11px;opacity:.55;margin-top:4px'>기준: 🎯 배당·AI 둘 다 1순위 · 📊 배당 1순위 · "
-                              "🧠 AI 1순위 · 💡 1순위 아님 (저장한 순간 기준)</div></div>", unsafe_allow_html=True)
+                            + "<div style='font-size:11px;opacity:.55;margin-top:4px'>✅ ❌ = 고른 것이 맞았는지 · 기준: 🎯 배당·AI 둘 다 1순위 · "
+                              "📊 배당 1순위 · 🧠 AI 1순위 · 💡 1순위 아님 (저장한 순간 기준)</div></div>", unsafe_allow_html=True)
 
                 a1, a2, a3, a4, _ = st.columns([1, 1.3, 1, 1, 1.7])
                 a1.button("불러오기", key=f"my_load_{sid}", width="stretch", on_click=_load_slip, args=(s,),
