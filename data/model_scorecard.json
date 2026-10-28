@@ -1,20 +1,20 @@
 {
-  "updated_at": "2026-10-28T13:17:22+00:00",
-  "graded_matches": 110,
+  "updated_at": "2026-10-28T16:06:16+00:00",
+  "graded_matches": 115,
   "rounds": [
     260126,
     260127,
     260128
   ],
   "ci_method": "회차 단위 부트스트랩",
-  "model_ll": 0.9638,
-  "market_ll": 0.968,
-  "ll_diff": -0.0043,
+  "model_ll": 0.9555,
+  "market_ll": 0.9594,
+  "ll_diff": -0.0038,
   "ll_diff_ci": [
     -0.0222,
-    0.0087
+    0.0079
   ],
-  "hit_rate_top_pick": 50.9,
+  "hit_rate_top_pick": 52.2,
   "value_bets": 0,
   "roi_pct": 0.0,
   "roi_ci_low": 0.0,
@@ -25,31 +25,31 @@
   "gem_roi_ci_low": 0.0,
   "gem_roi_ci_high": 0.0,
   "prob_sources": {
-    "betman_corrector": 58,
-    "betman_markets": 52
+    "betman_corrector": 60,
+    "betman_markets": 55
   },
   "by_game_type": {
     "농구 승패": {
-      "n": 16,
-      "ll_diff": 0.0002,
+      "n": 17,
+      "ll_diff": 0.0001,
       "ll_diff_ci": [
-        -0.0004,
-        0.0009
+        -0.0006,
+        0.0008
       ]
     },
     "축구 승무패": {
-      "n": 58,
-      "ll_diff": -0.019,
+      "n": 60,
+      "ll_diff": -0.0186,
       "ll_diff_ci": [
-        -0.0347,
-        -0.0006
+        -0.0335,
+        -0.0008
       ]
     },
     "축구 핸디캡": {
-      "n": 36,
-      "ll_diff": 0.0175,
+      "n": 38,
+      "ll_diff": 0.0177,
       "ll_diff_ci": [
-        -0.0024,
+        -0.0007,
         0.0401
       ]
     }
@@ -92,27 +92,27 @@
       },
       {
         "range": "10~20%",
-        "n": 53,
+        "n": 55,
         "said_pct": 16.1,
-        "happened_pct": 11.3
+        "happened_pct": 10.9
       },
       {
         "range": "20~30%",
-        "n": 109,
+        "n": 113,
         "said_pct": 25.0,
-        "happened_pct": 32.1
+        "happened_pct": 31.9
       },
       {
         "range": "30~40%",
-        "n": 36,
-        "said_pct": 33.9,
-        "happened_pct": 30.6
+        "n": 40,
+        "said_pct": 34.2,
+        "happened_pct": 30.0
       },
       {
         "range": "40~50%",
-        "n": 39,
-        "said_pct": 44.3,
-        "happened_pct": 35.9
+        "n": 41,
+        "said_pct": 44.5,
+        "happened_pct": 36.6
       },
       {
         "range": "50~60%",
@@ -122,9 +122,9 @@
       },
       {
         "range": "60~70%",
-        "n": 17,
-        "said_pct": 62.8,
-        "happened_pct": 70.6
+        "n": 19,
+        "said_pct": 62.7,
+        "happened_pct": 73.7
       },
       {
         "range": "70~80%",
@@ -148,39 +148,39 @@
       },
       {
         "range": "10~20%",
-        "n": 42,
+        "n": 43,
         "said_pct": 16.3,
-        "happened_pct": 16.7
+        "happened_pct": 16.3
       },
       {
         "range": "20~30%",
-        "n": 125,
+        "n": 130,
         "said_pct": 24.7,
-        "happened_pct": 28.0
+        "happened_pct": 26.9
       },
       {
         "range": "30~40%",
-        "n": 40,
-        "said_pct": 34.7,
-        "happened_pct": 35.0
+        "n": 44,
+        "said_pct": 34.9,
+        "happened_pct": 36.4
       },
       {
         "range": "40~50%",
-        "n": 38,
+        "n": 39,
         "said_pct": 44.3,
-        "happened_pct": 31.6
+        "happened_pct": 30.8
       },
       {
         "range": "50~60%",
-        "n": 39,
-        "said_pct": 54.8,
-        "happened_pct": 59.0
+        "n": 40,
+        "said_pct": 54.7,
+        "happened_pct": 60.0
       },
       {
         "range": "60~70%",
-        "n": 18,
-        "said_pct": 64.8,
-        "happened_pct": 61.1
+        "n": 20,
+        "said_pct": 64.4,
+        "happened_pct": 65.0
       },
       {
         "range": "70~80%",
@@ -196,7 +196,7 @@
       }
     ]
   },
-  "verdict": "검증 중 (표본 110/300)",
+  "verdict": "검증 중 (표본 115/300)",
   "model": {
     "trained_at": "2026-10-25T11:27:09+00:00",
     "trained_on": [
@@ -278,13 +278,13 @@
     },
     {
       "date": "2026-10-28",
-      "graded_matches": 110,
-      "model_ll": 0.9638,
-      "market_ll": 0.968,
-      "ll_diff": -0.0043,
+      "graded_matches": 115,
+      "model_ll": 0.9555,
+      "market_ll": 0.9594,
+      "ll_diff": -0.0038,
       "ll_diff_ci": [
         -0.0222,
-        0.0087
+        0.0079
       ],
       "roi_pct": 0.0,
       "gem_bets": 0,

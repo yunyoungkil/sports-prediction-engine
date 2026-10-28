@@ -1,70 +1,70 @@
 {
-  "updated_at": "2026-10-28T13:17:22+00:00",
+  "updated_at": "2026-10-28T16:06:16+00:00",
   "rounds": [
     260126,
     260127,
     260128
   ],
-  "matches": 116,
-  "moved": 71,
-  "toward_ai": 29,
-  "away_from_ai": 42,
-  "toward_ai_pct": 40.8,
-  "fav_toward_pct": 42.3,
+  "matches": 124,
+  "moved": 79,
+  "toward_ai": 32,
+  "away_from_ai": 47,
+  "toward_ai_pct": 40.5,
+  "fav_toward_pct": 43.0,
   "mean_move_pp": {
-    "n": 116,
-    "mean": -0.93632,
+    "n": 124,
+    "mean": -0.91884,
     "ci": [
-      -1.63117,
-      -0.29236
+      -1.61802,
+      -0.30049
     ]
   },
   "by_game_type": {
     "농구 승패": {
       "matches": 18,
       "moved": 8,
-      "toward_ai": 1,
-      "away_from_ai": 7,
-      "toward_ai_pct": 12.5,
-      "fav_toward_pct": 0.0,
+      "toward_ai": 2,
+      "away_from_ai": 6,
+      "toward_ai_pct": 25.0,
+      "fav_toward_pct": 12.5,
       "mean_move_pp": {
         "n": 18,
-        "mean": -2.22377,
+        "mean": -2.0301,
         "ci": [
-          -5.02354,
-          -0.3029
+          -4.90089,
+          -0.1076
         ]
       }
     },
     "축구 승무패": {
-      "matches": 60,
-      "moved": 33,
-      "toward_ai": 18,
-      "away_from_ai": 15,
-      "toward_ai_pct": 54.5,
-      "fav_toward_pct": 57.6,
+      "matches": 64,
+      "moved": 37,
+      "toward_ai": 19,
+      "away_from_ai": 18,
+      "toward_ai_pct": 51.4,
+      "fav_toward_pct": 54.1,
       "mean_move_pp": {
-        "n": 60,
-        "mean": 0.14726,
+        "n": 64,
+        "mean": -0.06754,
         "ci": [
-          -0.47663,
-          0.81603
+          -0.70281,
+          0.63511
         ]
       }
     },
     "축구 핸디캡": {
-      "matches": 38,
-      "moved": 30,
-      "toward_ai": 10,
-      "away_from_ai": 20,
-      "toward_ai_pct": 33.3,
-      "fav_toward_pct": 36.7,
+      "matches": 42,
+      "moved": 34,
+      "toward_ai": 11,
+      "away_from_ai": 23,
+      "toward_ai_pct": 32.4,
+      "fav_toward_pct": 38.2,
       "mean_move_pp": {
-        "n": 38,
-        "mean": -2.03739,
+        "n": 42,
+        "mean": -1.73981,
         "ci": [
-          -3.2806,
-          -0.91944
+          -2.97935,
+          -0.64091
         ]
       }
     }

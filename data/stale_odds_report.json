@@ -1,21 +1,22 @@
 {
-  "updated_at": "2026-10-28T01:25:19+00:00",
+  "updated_at": "2026-10-28T16:06:16+00:00",
   "rounds": [
     260126,
-    260127
+    260127,
+    260128
   ],
   "value": {
-    "matches": 31,
-    "options": 93,
+    "matches": 44,
+    "options": 132,
     "value_options": 0,
     "value_share_pct": 0.0,
-    "ev_all_mean_pct": -14.21,
+    "ev_all_mean_pct": -14.14,
     "ev_best_per_match": {
-      "n": 31,
-      "mean": -0.083,
+      "n": 44,
+      "mean": -0.0864,
       "ci": [
-        -0.0921,
-        -0.0736
+        -0.0934,
+        -0.0789
       ]
     },
     "ev_value_options": {
@@ -26,18 +27,18 @@
     "max_ev_pct": -1.94
   },
   "follow": {
-    "with_history": 31,
-    "moved": 2,
-    "toward_sharp": 1,
-    "toward_sharp_pct": 50.0,
+    "with_history": 44,
+    "moved": 9,
+    "toward_sharp": 7,
+    "toward_sharp_pct": 77.8,
     "dist_change_pp": {
-      "n": 2,
-      "mean": 0.8016,
+      "n": 9,
+      "mean": -1.4745,
       "ci": [
-        -0.1218,
-        1.725
+        -2.8058,
+        -0.0754
       ]
     }
   },
-  "verdict": "아직 모름 (표본 부족: 경기 31/100, 해외보다 높은 선택지 0/100)"
+  "verdict": "아직 모름 (표본 부족: 경기 44/100, 해외보다 높은 선택지 0/100)"
 }
