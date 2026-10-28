@@ -73,6 +73,7 @@ from collector.betman_sharp import parse_betman_kickoff
 from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
+from tracker.prob_view import current_probs, shown_probs
 from tracker.my_slips import (BASIS_LABEL, KIND_LABEL, MAX_SAVED_COMBOS, REASON_LABEL, add_slip, apply_combo_changes,
                               build_slip, combo_changes, combo_results, delete_slip, display_score, draw_is_void, find_slip,
                               grade_slip, line_row, load_json, load_slips, outcome_from_rows, pick_basis, save_json, slip_kind,
@@ -406,7 +407,7 @@ def load_stale_odds():
 PICK_KEYS = ("home_win", "draw", "away_win")
 SEL_KEY = {"home_win": "home", "draw": "draw", "away_win": "away"}
 RESULT_CODE_TO_KEY = {"0": "home_win", "1": "draw", "2": "away_win"}   # 2-way(언더/오버, 홀/짝)도 0=앞, 2=뒤
-AI_SOURCES = ("betman_corrector", "market_corrector", "betman_markets")
+from tracker.prediction_log import AI_SOURCES   # AI가 적용되는 확률 출처 (기록·확률 규칙과 같은 목록)
 
 
 @st.cache_data(ttl=60)
@@ -634,7 +635,7 @@ def load_past_round_matches(gm_ts: str) -> list:
                 "league": r.get("league", ""), "sport": r.get("sport", ""), "game_type": gt,
                 "category": cat, "category_label": label, "line": float(hw),
                 "home_team": r.get("home_team", ""), "away_team": r.get("away_team", ""),
-                "betman_odds": odds, "market_implied_probs": mkt, "is_single": False,
+                "betman_odds": odds, "market_implied_probs": mkt, "is_single": False,   # prob-rule-ok: 지난 회차 카드를 만드는 곳
                 "prob_source": None, "evaluation": {}, "_result": r,
                 # 같은 경기번호에 기준선이 여러 개 있을 수 있어 카드 고유 키를 따로 둔다
                 "_key": f"{r.get('match_seq')}_{r.get('bettyp_cd', '')}_{r.get('handi_win', '')}_{r.get('handi_lose', '')}",
@@ -1293,10 +1294,8 @@ with tab1:
                     f"AI 예상·💎는 경기 전 AI 기록이 있는 회차({', '.join(logged) or '없음'})에서만 나옵니다.")
 
         def _ai_probs(m, res, log):
-            """AI 예상 확률: AI가 적용된 유형만. 끝난 경기는 경기 전 고정 기록으로만 (경기 후 재계산 값은 결과가 섞일 수 있음)"""
-            if res is not None:
-                return log.get("model_probs") if log else None
-            return m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
+            """AI 예상 확률 — 규칙은 tracker/prob_view.shown_probs 한 곳 (끝난 경기는 경기 전 마지막 기록)"""
+            return shown_probs(m, log, res is not None)[1]
 
         def _gems(m, ai_probs, opts):
             """💎 = AI 확률 기준 기대가치(EV) 플러스 선택지 (1순위가 아니어도 표시). [6.5] 추천 잠금 중에는 표시 안 함"""
@@ -1444,12 +1443,12 @@ with tab1:
             if not actual:
                 continue
             opts = available_picks(m)
-            log = _log(m)
-            mk_k, _ = top_pick((log or {}).get("market_probs") or m.get("market_implied_probs"), opts)
+            mk_g, ai_g = shown_probs(m, _log(m), finished=True)   # 채점: 경기 전 마지막 기록 (성적표와 같은 값)
+            mk_k, _ = top_pick(mk_g, opts)
             if mk_k:
                 mk_hits.append(mk_k == actual)
-            if log and log.get("model_probs"):
-                ai_k, _ = top_pick(log["model_probs"], opts)
+            if ai_g:
+                ai_k, _ = top_pick(ai_g, opts)
                 ai_pairs.append((ai_k == actual, mk_k == actual))
         if open_ms or wait_ms or done_ms:
             n_mk, n_ai = len(mk_hits), len(ai_pairs)
@@ -1562,10 +1561,8 @@ with tab1:
                 st.markdown(f"<div style='margin:14px 0 4px;font-size:15px'><b>{title}</b> "
                             f"<span style='opacity:.7'>{n_sec:,}경기 · {hint}</span></div>", unsafe_allow_html=True)
 
-            # 배당 예상 (마진 제거): 아직 안 끝난 경기는 지금 배당 (버튼의 배당·AI 예상과 같은 시점),
-            # 끝난 경기는 경기 전 고정 기록 (채점에 사후 정보가 섞이지 않게) — AI 예상(_ai_probs)과 같은 규칙
-            mk_probs = (((log or {}).get("market_probs") if res is not None else None)
-                        or m.get("market_implied_probs") or (log or {}).get("market_probs"))
+            # 배당 예상 (마진 제거) — 규칙은 tracker/prob_view.shown_probs 한 곳 (안 끝난 경기는 지금 배당)
+            mk_probs = shown_probs(m, log, res is not None)[0]
             mk_k, mk_p = top_pick(mk_probs, opts)
             ai_probs = _ai_probs(m, res, log)
             ai_k, ai_p = top_pick(ai_probs, opts)
@@ -1685,7 +1682,8 @@ with tab1:
                 continue
             m = pred_map[seq]
             odds = m.get("betman_odds", {})
-            probs = m.get("blended_probabilities") or m.get("market_implied_probs") or {}
+            _mk, _ai = current_probs(m)   # STEP 02는 지금 살 수 있는 경기 → 지금 값
+            probs = _ai or _mk or {}
             picks = []
             for k in PICK_KEYS:
                 if sel.get(SEL_KEY[k]) and float(odds.get(k, 0) or 0) > 1.0:
@@ -2092,20 +2090,20 @@ with tab2:
             score = display_score(m, rows) if rows and res_key is not None else ""
             opts = available_picks(m)
             odds = m.get("betman_odds", {})
-            mk = m.get("market_implied_probs") or {}
-            ai = m.get("blended_probabilities") if m.get("prob_source") in AI_SOURCES else None
+            # 규칙은 tracker/prob_view.shown_probs 한 곳: 안 끝난 경기는 지금 값, 끝난 경기는 경기 전 마지막 기록 (① 탭·성적표와 같음)
+            lg = load_prediction_log(gm_ts).get(str(m.get("match_seq"))) if gm_ts else None
+            mk, ai = shown_probs(m, lg, res_key is not None)
+            mk = mk or {}
             mk_k, mk_p = top_pick(mk, opts)
             ai_k, ai_p = top_pick(ai, opts) if ai else (None, 0.0)
             d = {k: (prob_of(ai, k) - prob_of(mk, k)) * 100 for k in opts} if ai else {}
             gap = max((abs(v) for v in d.values()), default=0.0)
             ev = {k: prob_of(ai or mk, k) * float(odds[k]) - 1.0 for k in opts}
-            # 경기 전에 고정 저장한 AI 확률(prediction_log)로 맞았는지 본다 — 지금 AI 확률은 결과 이후에 다시 계산되기 때문
+            # 맞았는지: 위 ai가 끝난 경기에서는 이미 경기 전 마지막 기록 (예전엔 '처음 저장한' 기록이라 성적표와 기준이 달랐음)
             ai_hit = None
-            if res_key is not None and gm_ts:
-                lg = load_prediction_log(gm_ts).get(str(m.get("match_seq"))) or {}
-                if lg.get("prob_source") in AI_SOURCES and lg.get("first_model_probs"):
-                    fk, _ = top_pick(lg["first_model_probs"], opts)
-                    ai_hit = "void" if res_key == "void" else (fk == res_key if fk else None)
+            if res_key is not None and ai:
+                fk, _ = top_pick(ai, opts)
+                ai_hit = "void" if res_key == "void" else (fk == res_key if fk else None)
             return {"m": m, "state": state, "res_key": res_key, "score": score, "ai_hit": ai_hit, "gm_ts": gm_ts,
                     "opts": opts, "labels": pick_labels(m), "mk": mk, "ai": ai,
                     "mk_k": mk_k, "mk_p": mk_p, "ai_k": ai_k, "ai_p": ai_p, "d": d, "gap": gap,
@@ -3027,11 +3025,12 @@ def _pick_basis_of(slip, g, p):
     if b is not None:
         return b
     lg = load_prediction_log(str(slip.get("gm_ts"))).get(str(g["seq"])) or {}
-    mk = lg.get("first_market_probs") or lg.get("market_probs")
+    # prob-rule-ok: '고를 때 1순위였나'는 저장 순간과 가장 가까운 처음 기록이 맞음 (화면 표시·채점 규칙과 다른 목적)
+    mk = lg.get("first_market_probs") or lg.get("market_probs")   # prob-rule-ok
     odds_ = lg.get("first_odds") or lg.get("betman_odds") or {}
     if not mk:
         return None
-    ai = (lg.get("first_model_probs") or lg.get("model_probs")) if lg.get("prob_source") in AI_SOURCES else None
+    ai = (lg.get("first_model_probs") or lg.get("model_probs")) if lg.get("prob_source") in AI_SOURCES else None   # prob-rule-ok
     return pick_basis(basis_fields(mk, ai, [k for k in PICK_KEYS if float(odds_.get(k) or 0) > 1.0], p["key"]))
 
 
@@ -3400,8 +3399,7 @@ with st.sidebar:
             "league": v["match"].get("league", ""), "match_time": v["match"].get("match_time", ""),
             # 저장 순간 화면 기준으로 고른 선택지가 배당 1순위·AI 1순위였는지 함께 남김 (④ 탭 '뭘 보고 골랐나')
             "picks": [{"key": p["selection"], "label": p["selection_name"], "odds": float(p["odds"]),
-                       **basis_fields(v["match"].get("market_implied_probs"),
-                                      v["match"].get("blended_probabilities") if v["match"].get("prob_source") in AI_SOURCES else None,
+                       **basis_fields(*current_probs(v["match"]),   # 저장하는 순간의 지금 값
                                       available_picks(v["match"]), p["selection"])} for p in v["picks"]],
         } for seq, v in sorted(cart["active"].items())]
         slip_round = next((v["match"].get("gm_ts") for v in cart["active"].values() if v["match"].get("gm_ts")),
