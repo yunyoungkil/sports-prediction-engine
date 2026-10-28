@@ -278,6 +278,32 @@ def odds_move_text(m) -> str:
     return " → ".join([f"1차 {fmt(ch[0]['from'])}"] + [f"{c['at'][11:16]} {fmt(c['to'])}" for c in ch])
 
 
+def odds_change_table_html(m, keys, labels) -> str:
+    """📉 배당 변경 표 (베트맨 '배당 변경' 팝업과 같은 모양: 현재 → … → 1차, 바뀐 칸은 ↑ 빨강 · ↓ 파랑) — ①·② 탭 공용"""
+    chg = m.get("odds_changes") or []
+    if not chg:
+        return ""
+    snaps = [("1차", "", chg[0]["from"])] + [(f"{i + 2}차", c["at"][5:16].replace("-", "."), c["to"]) for i, c in enumerate(chg)]
+    snaps[-1] = ("현재",) + snaps[-1][1:]
+
+    def cell(o, prev, k):
+        v = float(o.get(k) or 0)
+        if prev is None or abs(v - float(prev.get(k) or 0)) < 1e-9:
+            return f"{v:.2f}"
+        up = v > float(prev.get(k) or 0)
+        return f"<span style='color:{'#ef4444' if up else '#3b82f6'}'>{v:.2f} {'↑' if up else '↓'}</span>"
+    th = "padding:4px 10px;font-size:12px;color:#94a3b8;text-align:center"
+    td = "padding:4px 10px;font-size:13px;text-align:center;border-top:1px solid rgba(148,163,184,.15)"
+    rows = "".join(
+        f"<tr><td style='{td};white-space:nowrap'><b>{name}</b> <span style='opacity:.6;font-size:11px'>{when}</span></td>"
+        + "".join(f"<td style='{td}'>{cell(o, snaps[i - 1][2] if i else None, k)}</td>" for k in keys) + "</tr>"
+        for i, (name, when, o) in reversed(list(enumerate(snaps))))
+    return ("<div style='padding-bottom:10px'><div style='font-size:14px;font-weight:700;margin:6px 0 4px'>"
+            f"📉 배당 변경 <span style='font-weight:400;font-size:12px;opacity:.7'>베트맨 발표 · {len(chg)}번 바뀜</span></div>"
+            f"<table style='border-collapse:collapse'><tr><th style='{th}'>변경</th>"
+            + "".join(f"<th style='{th}'>{labels[k]}</th>" for k in keys) + "</tr>" + rows + "</table></div>")
+
+
 FILE_PREDICTIONS = load_data()
 st.session_state.setdefault("live_mode", True)
 LIVE = get_live() if st.session_state["live_mode"] else None
@@ -1597,7 +1623,10 @@ with tab1:
                 # 한 줄 유지 (줄이 바뀌면 경기마다 높이가 달라져 목록이 흐트러짐) — 가장 긴 '1255 전반 핸디캡 H -1.5 한경기'
                 # (약 300px)가 들어가도록 왼쪽을 넓히고, 여유 있는 오른쪽 예상·점수·결과 칸에서 덜어 옴.
                 # 배당 칸은 화살표(↑↓)가 붙은 버튼 3개('핸패 10.50↓')도 한 줄에 들어가게 (2026-10-28: 두 줄로 넘어감)
-                c1, c2, c3 = st.columns([2.8, 3.6, 3.4], vertical_alignment="center")
+                c1, c1b, c2, c3 = st.columns([2.75, 0.65, 3.45, 2.95], vertical_alignment="center")   # c1b = 📉 버튼 칸 (그림+펼침 표시가 들어가는 폭)
+                if m.get("odds_changes"):   # 배당이 바뀐 게임번호만 📉 → 누르면 베트맨 팝업 같은 변경표
+                    with c1b.popover("📉", help="배당 변경 내역"):
+                        st.markdown(odds_change_table_html(m, opts, labels), unsafe_allow_html=True)
                 with c1:
                     # 게임번호 · 유형 · 기준선 칩 · 한경기 (마우스를 올리면 리그·유형 전체 표시)
                     tags = line_chip(m) + (ONE_GAME_TAG if m.get("is_single") else "")
@@ -2428,29 +2457,7 @@ with tab2:
                                    else "변경 내역을 아직 받지 못했어요 (🔴 실시간을 켜거나 다음 자동 갱신 뒤에 나와요)")
                                 + "</div>", unsafe_allow_html=True)
                 else:
-                    keys = [k for k in a["opts"]]
-                    snaps = [("1차", "", chg[0]["from"])] + [(f"{i + 2}차", c["at"][5:16].replace("-", "."), c["to"])
-                                                            for i, c in enumerate(chg)]
-                    snaps[-1] = ("현재",) + snaps[-1][1:]
-
-                    def _cell(o, prev, k):
-                        v = float(o.get(k) or 0)
-                        if prev is None or abs(v - float(prev.get(k) or 0)) < 1e-9:
-                            return f"{v:.2f}"
-                        up = v > float(prev.get(k) or 0)
-                        return f"<span style='color:{'#ef4444' if up else '#3b82f6'}'>{v:.2f} {'↑' if up else '↓'}</span>"
-                    th = "padding:4px 10px;font-size:12px;color:#94a3b8;text-align:center"
-                    td = "padding:4px 10px;font-size:13px;text-align:center;border-top:1px solid rgba(148,163,184,.15)"
-                    rows_h = "".join(
-                        f"<tr><td style='{td}'><b>{name}</b> <span style='opacity:.6;font-size:11px'>{when}</span></td>"
-                        + "".join(f"<td style='{td}'>{_cell(o, snaps[i - 1][2] if i else None, k)}</td>" for k in keys) + "</tr>"
-                        for i, (name, when, o) in reversed(list(enumerate(snaps))))
-                    st.markdown(
-                        "<div style='padding-bottom:10px'><div style='font-size:14px;font-weight:700;margin:6px 0 4px'>"
-                        f"📉 배당 변경 <span style='font-weight:400;font-size:12px;opacity:.7'>베트맨 발표 · {len(chg)}번 바뀜</span></div>"
-                        f"<table style='border-collapse:collapse'><tr><th style='{th}'>변경</th>"
-                        + "".join(f"<th style='{th}'>{lab[k]}</th>" for k in keys) + "</tr>" + rows_h + "</table></div>",
-                        unsafe_allow_html=True)
+                    st.markdown(odds_change_table_html(m, a["opts"], lab), unsafe_allow_html=True)
 
                 if m.get("top_scores"):
                     st.caption("🎯 예상 스코어: " + " · ".join(f"{s['score']} ({s['prob']}%)" for s in m["top_scores"]))
