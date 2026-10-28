@@ -12,6 +12,7 @@ import os
 import itertools
 from pathlib import Path
 import json
+import html
 import re
 import threading
 import time
@@ -2912,6 +2913,13 @@ def _toggle_kind(slip_id, kind):
     update_slip(slip_id, MY_SLIPS_PATH, kind="paper" if kind == "real" else "real")
 
 
+def _open_record(slip_id):
+    """사이드바 기록 → ④ 내 베팅 기록 탭을 열고 그 기록을 맨 위에 (가려지지 않게 필터는 풀기)"""
+    st.session_state["main_tab"] = MAIN_TABS[3]
+    st.session_state["my_focus"] = slip_id
+    st.session_state.update({"my_kind": [], "my_state": [], "my_round": "전체 회차", "my_search": ""})
+
+
 def _save_memo(slip_id):
     update_slip(slip_id, MY_SLIPS_PATH, memo=str(st.session_state.get(f"memo_edit_{slip_id}", "")).strip())
 
@@ -3102,6 +3110,8 @@ with tab4:
         if not view:
             st.info("조건에 맞는 기록이 없어요. 필터를 바꿔 보세요.")
         shown_v = sorted(view, key=lambda r: r["slip"].get("saved_at", ""), reverse=True)[:50]
+        focus = st.session_state.pop("my_focus", None)   # 사이드바에서 누른 기록 → 이번 한 번 맨 위
+        shown_v.sort(key=lambda r: r["slip"]["id"] != focus)
         for r in shown_v:
             s, gr, kind = r["slip"], r["grade"], r["kind"]
             sid = s["id"]
@@ -3114,9 +3124,13 @@ with tab4:
                         + f"<b>{s.get('saved_at', '')}</b>"
                         + (f" <span style='opacity:.6'>({s['edited_at'][5:]} 고침)</span>" if s.get("edited_at") else "")
                         + f" <span style='opacity:.7'>· {s.get('gm_ts', '')}회 · "
-                        f"{len(s.get('games', []))}경기 {n_comb}조합 · {gr['stake']:,}원</span>"
-                        + (f" · <b>{s['memo']}</b>" if s.get("memo") else "") + "</span>"
-                        f"{_slip_chip(gr, _best_if_hit(s, res_of))}</div>")
+                        f"{len(s.get('games', []))}경기 {n_comb}조합 · {gr['stake']:,}원</span></span>"
+                        f"{_slip_chip(gr, _best_if_hit(s, res_of))}</div>"
+                        # 메모는 아래 줄에 따로 (한 줄에 이어 붙이면 한눈에 안 들어옴)
+                        + (f"<div style='margin-top:6px;font-size:14px'>📝 <b>{html.escape(s['memo'])}</b></div>"
+                           if s.get("memo") else "")
+                        + ("<div style='margin-top:4px;font-size:12px;color:#38bdf8'>👉 사이드바에서 연 기록</div>"
+                           if s["id"] == focus else ""))
                 # 아래 표의 도구 아이콘(오른쪽 위)이 배지를 가리지 않게 충분히 띄움
                 st.markdown(f"<div style='padding-bottom:26px'>{head}</div>", unsafe_allow_html=True)
 
@@ -3336,20 +3350,27 @@ with st.sidebar:
     my_slips = load_slips(MY_SLIPS_PATH)
     if my_slips:
         res_idx_s = load_results_index()
-        recent_html = []
+        st.markdown("<div style='padding:14px 0 4px;font-size:13px;font-weight:700'>"
+                    f"📂 저장한 기록 {len(my_slips)}건 <span style='font-weight:400;opacity:.7'>(최근 3건 · 누르면 ④ 탭)</span></div>",
+                    unsafe_allow_html=True)
         for s in reversed(my_slips[-3:]):
             gr = grade_slip(s, _slip_result_of(s, res_idx_s))
             _, bg, fg = SLIP_STATE[gr["state"]]
             txt = {"hit": f"✅ {gr['payout']:,}원", "miss": "❌ 미적중", "pending": "⏳ 대기"}[gr["state"]]   # 좁은 칸이라 짧게
-            recent_html.append(
-                "<div style='display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 0;"
-                "border-top:1px solid rgba(148,163,184,.15);font-size:12px'>"
+            # 어떤 경기를 걸었는지: '1050 PFC나사프 승 · 1054 골고하르 승' (길면 … · 마우스를 올리면 전체)
+            games_txt = html.escape(" · ".join(f"{g['seq']} {g['home']} {'·'.join(p['label'] for p in g['picks'])}"
+                                               for g in s.get("games", [])))
+            a, b = st.columns([6, 1], vertical_alignment="center")
+            a.markdown(
+                "<div style='font-size:12px;padding:4px 0;border-top:1px solid rgba(148,163,184,.15)'>"
+                "<div style='display:flex;justify-content:space-between;align-items:center;gap:6px'>"
                 f"<span>{_chip(KIND_LABEL[slip_kind(s)][:2], *KIND_STYLE[slip_kind(s)])} {s.get('saved_at', '')[5:]} "
-                f"· {gr['stake']:,}원</span>{_chip(txt, bg, fg)}</div>")
-        st.markdown("<div style='padding:14px 0 12px'><div style='font-size:13px;font-weight:700;margin-bottom:4px'>"
-                    f"📂 저장한 기록 {len(my_slips)}건 <span style='font-weight:400;opacity:.7'>(최근 3건)</span></div>"
-                    + "".join(recent_html) + "<div style='font-size:12px;opacity:.7;margin-top:4px'>전체 기록 · 경기별 결과 · "
-                    "불러오기 · 삭제는 📒 ④ 내 베팅 기록 탭에서</div></div>", unsafe_allow_html=True)
+                f"· {gr['stake']:,}원</span>{_chip(txt, bg, fg)}</div>"
+                f"<div title='{games_txt}' style='opacity:.8;margin-top:3px;white-space:nowrap;overflow:hidden;"
+                f"text-overflow:ellipsis'>{games_txt}</div></div>", unsafe_allow_html=True)
+            b.button("›", key=f"side_open_{s['id']}", type="tertiary", on_click=_open_record, args=(s["id"],))
+        st.markdown("<div style='font-size:12px;opacity:.7;padding-bottom:12px'>경기별 결과 · 불러오기 · 삭제는 "
+                    "📒 ④ 내 베팅 기록 탭에서</div>", unsafe_allow_html=True)
 
     # 지금 고르는 중인 선택 자동 저장 (바뀌었을 때만 파일에 씀) → 새로고침·재시작 후 같은 회차면 복원
     cur_payload = {"gm_ts": str(detect_current_gm_ts(predictions)), "selections": st.session_state["selections"],
