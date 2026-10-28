@@ -2953,10 +2953,22 @@ def _pick_basis_of(slip, g, p):
     return pick_basis(basis_fields(mk, ai, [k for k in PICK_KEYS if float(odds_.get(k) or 0) > 1.0], p["key"]))
 
 
-def _slip_chip(gr):
-    """기록 상태 배지 — 적중했어도 손해면 주황 (초록은 실제로 번 기록만)"""
+def _hit_payout(c) -> int:
+    """이 조합이 맞으면 돌려받는 돈 (저장 때 배당 × 금액, 베트맨 조합 배당 규칙)"""
+    return calculate_payout(calculate_combined_odds([float(o) for _, _, o in c["legs"]]), int(c["stake"]))
+
+
+def _best_if_hit(slip, res_of) -> int:
+    """결과 대기 중인 기록이 앞으로 맞으면 받을 수 있는 최대 환급 (아직 살아 있는 조합 중 가장 큰 것 —
+    같은 경기들의 다른 선택지 조합이라 보통 하나만 맞음)"""
+    return max((_hit_payout(c) for c in combo_results(slip, res_of) if c["state"] == "pending"), default=0)
+
+
+def _slip_chip(gr, best=0):
+    """기록 상태 배지 — 적중했어도 손해면 주황 (초록은 실제로 번 기록만) · 결과 대기면 맞을 때 최대 환급"""
     if gr["state"] == "pending":
-        return _chip(f"⏳ 결과 대기 ({gr['done']}/{gr['games']}경기 끝남)", "rgba(234,179,8,.15)", "#facc15")
+        return _chip(f"⏳ 결과 대기 ({gr['done']}/{gr['games']}경기 끝남)" + (f" · 맞으면 최대 {best:,}원" if best else ""),
+                     "rgba(234,179,8,.15)", "#facc15")
     pnl = gr["payout"] - gr["stake"]
     if gr["state"] == "miss":
         return _chip(f"❌ 미적중 · 손익 {pnl:+,}원", "rgba(239,68,68,.15)", "#f87171")
@@ -3004,8 +3016,12 @@ with tab4:
         inv = sum(r["grade"]["stake"] for r in done)
         ret = sum(r["grade"]["payout"] for r in done)
         pnl = ret - inv
+        pend = [r for r in view if r["grade"]["state"] == "pending"]
+        pend_best = sum(_best_if_hit(r["slip"], _slip_result_of(r["slip"], res_idx4)) for r in pend)
         render_tiles([
             ("📒 기록", f"{len(view):,}건", f"결과 나옴 {len(done)} · 결과 대기 {len(view) - len(done)}"),
+            ("⏳ 결과 대기", f"{sum(r['grade']['stake'] for r in pend):,}원 걸림",
+             f"다 맞으면 최대 {pend_best:,}원 돌려받음" if pend_best else "기다리는 기록 없음"),
             ("💰 총 투자", f"{inv:,}원", "결과 나온 기록만"),
             ("🎯 총 환급", f"{ret:,}원", f"적중 {sum(1 for r in done if r['grade']['state'] == 'hit')} / {len(done)}건"),
             ("📊 손익", f"<span style='color:{'#f87171' if pnl < 0 else '#34d399'}'>{pnl:+,}원</span>",
@@ -3100,7 +3116,7 @@ with tab4:
                         + f" <span style='opacity:.7'>· {s.get('gm_ts', '')}회 · "
                         f"{len(s.get('games', []))}경기 {n_comb}조합 · {gr['stake']:,}원</span>"
                         + (f" · <b>{s['memo']}</b>" if s.get("memo") else "") + "</span>"
-                        f"{_slip_chip(gr)}</div>")
+                        f"{_slip_chip(gr, _best_if_hit(s, res_of))}</div>")
                 # 아래 표의 도구 아이콘(오른쪽 위)이 배지를 가리지 않게 충분히 띄움
                 st.markdown(f"<div style='padding-bottom:26px'>{head}</div>", unsafe_allow_html=True)
 
@@ -3129,20 +3145,24 @@ with tab4:
                     "조합": " × ".join(f"{seq} {lab_of.get((str(seq), k), k)}" for seq, k, _ in c["legs"]),
                     "배당": calculate_combined_odds([o for _, _, o in c["legs"]]),
                     "금액(원)": c["stake"],
+                    "적중 시(원)": _hit_payout(c) if c["state"] != "off" else None,
                     "결과": "— 안 삼" if c["state"] == "off" else _combo_state(c),
                     "환급(원)": c["payout"] if c["state"] == "hit" else 0,
                     "손익(원)": f"{c['payout'] - c['stake']:+,}" if c["state"] not in ("pending", "off") else "-",
                 } for c in c_rows]), hide_index=True, width="stretch", height=min(38 + 35 * len(c_rows), 248),
                     key=ed_key, on_change=_save_stake_edit, args=(sid, ed_key, [c["key"] for c in c_rows], unit4),
-                    disabled=["조합", "배당", "결과", "환급(원)", "손익(원)"],
+                    disabled=["조합", "배당", "적중 시(원)", "결과", "환급(원)", "손익(원)"],
                     column_config={"샀음": st.column_config.CheckboxColumn("샀음 ✏️", width="small",
                                                                          help="실제로 산(또는 가상으로 건) 조합만 체크 — 손익은 체크한 조합으로 계산"),
                                    "배당": st.column_config.NumberColumn(format="%.2f배"),
                                    "금액(원)": st.column_config.NumberColumn(
                                        "금액(원) ✏️", min_value=unit4, max_value=100000, step=unit4, format="localized",
                                        help=f"{unit4:,}원 단위로 고칠 수 있어요. 고치면 바로 저장돼요."),
-                                   "환급(원)": st.column_config.NumberColumn(format="localized"),
-                                   "손익(원)": st.column_config.TextColumn(help="환급 − 금액"),
+                                   "적중 시(원)": st.column_config.NumberColumn(
+                                       format="localized", help="이 조합이 맞으면 돌려받는 돈 (배당 × 금액)"),
+                                   "환급(원)": st.column_config.NumberColumn(
+                                       "실제 환급(원)", format="localized", help="결과가 나온 뒤 실제로 돌려받은 돈"),
+                                   "손익(원)": st.column_config.TextColumn(help="실제 환급 − 금액"),
                                    "조합": st.column_config.TextColumn(width="medium")})
 
                 # 🎮 경기별: 번호 · 경기 · 고른 것(+ 고른 기준) · 실제 결과
