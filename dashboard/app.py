@@ -246,15 +246,21 @@ def wake_pipeline(live_ts: int, n_behind: int) -> str:
         return "failed"
 
 
+def odds_move(m, k):
+    """이 선택지의 마지막 배당 변화 (이전, 새 배당, 'HH:MM') · 대시보드를 켜 둔 동안 본 것만, 없으면 None"""
+    return ((LIVE or {}).get("moves") or {}).get(str(m.get("match_seq")), {}).get(k)
+
+
 def odds_arrow(m, k, colored: bool = True) -> str:
-    """대시보드를 켜 둔 동안 이 선택지 배당이 바뀌었으면 ▲(오름·빨강) / ▼(내림·파랑) — 주식 화면과 같은 색"""
-    mv = ((LIVE or {}).get("moves") or {}).get(str(m.get("match_seq")), {}).get(k)
+    """배당이 바뀌었으면 ↑(오름·빨강) / ↓(내림·파랑) — 주식 화면과 같은 색.
+    ▲▼는 'AI가 배당보다 높게/낮게 봄'에 이미 쓰고 있어 배당 변화는 ↑↓로 구분"""
+    mv = odds_move(m, k)
     if not mv:
         return ""
     up = mv[1] > mv[0]
     if not colored:
-        return " ▲" if up else " ▼"
-    return " :red[▲]" if up else " :blue[▼]"
+        return "↑" if up else "↓"
+    return ":red[↑]" if up else ":blue[↓]"
 
 
 def odds_move_text(m) -> str:
@@ -1094,7 +1100,7 @@ with tab1:
                f"<span style='{_chip}'>🔒 💎 추천 잠금 <span style='color:#94a3b8'>({LOCK_NOTE})</span></span>") +
             f"<span style='{_chip}'>⚠️ AI 예상이 배당과 다름</span>"
             f"<span style='{_chip}'>✅ ❌ 끝난 경기의 적중 여부</span>"
-            f"<span style='{_chip}'><span style='color:#ef4444'>▲</span> <span style='color:#3b82f6'>▼</span> 배당 오름·내림 "
+            f"<span style='{_chip}'><span style='color:#ef4444'>↑</span> <span style='color:#3b82f6'>↓</span> 배당 오름·내림 "
             "<span style='color:#94a3b8'>(대시보드를 켜 둔 동안 바뀐 것)</span></span>"
             "</div>",
             unsafe_allow_html=True)
@@ -1567,7 +1573,7 @@ with tab1:
             default = [k for k in opts if cur.get(SEL_KEY[k])]
             star_k = ai_k or mk_k
             disp = {k: f"{'💎' if k in gems else ''}{'⭐' if k == star_k else ''}{labels[k]} {float(odds[k]):.2f}"
-                       f"{odds_arrow(m, k)}" for k in opts}
+                       f"{odds_arrow(m, k)}" for k in opts}   # 예: 승 1.85↑
             closed = is_sale_closed(m, now_ts) and not _past(m)
             actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
 
@@ -2303,8 +2309,9 @@ with tab2:
                                "결과": st.column_config.TextColumn(
                                    width="small", help="점수 · 결과. ⭕/❌ = 경기 전에 저장한 AI 1순위가 맞았는지")})
             picked_rows = list(event.selection.rows) if event is not None else []
-            st.caption("👆 줄을 누르면 아래 분석이 그 경기로 바뀌어요." if not picked_rows
-                       else "다른 줄을 누르면 그 경기로 바뀌어요.")
+            st.caption(("👆 줄을 누르면 아래 분석이 그 경기로 바뀌어요." if not picked_rows
+                        else "다른 줄을 누르면 그 경기로 바뀌어요.")
+                       + " · 배당 옆 ↑↓ = 배당이 오름·내림(대시보드를 켜 둔 동안) · AI 칸 ▲▼ = AI가 배당보다 높게·낮게 본 정도(%p)")
 
             # F. 경기 분석 (선택한 줄, 없으면 목록 첫 경기)
             a = t_rows[picked_rows[0] if picked_rows and picked_rows[0] < len(t_rows) else 0]
@@ -2382,8 +2389,11 @@ with tab2:
                 cart_sel = st.session_state["selections"].get(seq, {})
                 for k in a["opts"]:
                     c1, c2, c3, c4 = st.columns([1.1, 3.6, 0.9, 1.1], vertical_alignment="center")
+                    mv = odds_move(a["m"], k)   # 배당이 바뀌었으면 숫자 아래에 '2.75→2.60 · 21:58'
+                    mv_html = (f"<div style='font-size:11px;color:{'#ef4444' if mv[1] > mv[0] else '#3b82f6'}'>"
+                               f"{'↑' if mv[1] > mv[0] else '↓'} {mv[0]:.2f}→{mv[1]:.2f} · {mv[2]}</div>") if mv else ""
                     c1.markdown(f"<div style='font-size:15px'><b>{lab[k]}</b> <span style='opacity:.8'>{float(odds[k]):.2f}</span>"
-                                f"{' 💎' if k in a['gems'] else ''}</div>", unsafe_allow_html=True)
+                                f"{' 💎' if k in a['gems'] else ''}</div>{mv_html}", unsafe_allow_html=True)
                     bars = _bar("배당", prob_of(a["mk"], k) * 100, "#94a3b8")
                     if a["ai"]:
                         dd = a["d"][k]
