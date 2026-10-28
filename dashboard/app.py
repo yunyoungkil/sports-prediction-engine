@@ -105,6 +105,13 @@ st.markdown("""
     }
     /* 버튼 묶음(날짜·빠른 필터·배당 선택)이 휴대폰에서 옆으로 잘리지 않고 다음 줄로 넘어가도록 */
     .stButtonGroup > div { flex-wrap: wrap; row-gap: 6px; }
+    /* ① 탭 숫자 카드: 카드 아무 데나 누르면 그 구간만 보기 — 카드 위에 투명 버튼을 덮어 둠 (key → st-key-… 이름표) */
+    [class*="st-key-t1card_"] { position: relative; }
+    [class*="st-key-t1card_"]:hover { background: rgba(57, 135, 229, .08); border-radius: .5rem; }
+    [class*="st-key-t1tile_"] { position: absolute !important; inset: 0; z-index: 2; margin: 0 !important; }
+    [class*="st-key-t1tile_"] button { width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+    [class*="st-key-t1tile_"] button:disabled { cursor: default; }
+    .st-key-t1card_on { outline: 2px solid #3987e5; border-radius: .5rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1422,19 +1429,22 @@ with tab1:
                  f"{ai_hit / n_ai * 100:.0f}% · 같은 경기 배당 1순위 {ai_mk_hit}/{n_ai}" if n_ai
                  else ("결과 나온 경기에 경기 전 AI 기록 없음" if n_mk else "결과가 나오면 표시")),
             ]
-            # 누르면 아래 목록을 그 구간만 (적중률 두 칸은 '결과 나온 경기'로) · 보고 있는 칸은 ✔ · 다시 누르면 전체
+            # 카드를 누르면 아래 목록을 그 구간만 (적중률 두 칸은 '결과 나온 경기') · 보고 있는 카드는 파란 테두리 · 다시 누르면 전체
             tile_sec = ["open", "wait", "done", "done", "done"]
             sec_n = {"open": len(open_ms), "wait": len(wait_ms), "done": len(done_ms)}
             for i, (col, (label, value, sub), sec) in enumerate(zip(st.columns(len(tiles)), tiles, tile_sec)):
-                on = sec_only == sec and i < 3   # ✔ · '전체 보기'는 구간 칸에만 (적중률 칸은 늘 '결과 나온 경기 보기')
-                with col.container(border=True):
-                    st.markdown(f"<div style='font-size:12px;opacity:.75'>{'✔ ' if on else ''}{label}</div>"
+                on = sec_only == sec and i < 3   # 표시는 구간 카드에만 (적중률 카드는 늘 '결과 나온 경기 보기')
+                hint = ("✔ 보는 중 · 누르면 전체" if on else "0경기" if not sec_n[sec]
+                        else "› 눌러서 결과 나온 경기 보기" if i >= 3 else "› 눌러서 이것만 보기")
+                with col.container(border=True, key=f"t1card_on_{i}" if on else f"t1card_{i}"):
+                    st.markdown(f"<div style='font-size:12px;opacity:.75'>{label}</div>"
                                 f"<div style='font-size:20px;font-weight:700;line-height:1.4'>{value}</div>"
-                                f"<div style='font-size:12px;opacity:.65;min-height:36px'>{sub}</div>",
+                                f"<div style='font-size:12px;opacity:.65;min-height:36px'>{sub}</div>"
+                                f"<div style='font-size:11px;color:{'#3987e5' if on else '#94a3b8'};margin-top:4px'>{hint}</div>",
                                 unsafe_allow_html=True)
-                    st.button("✕ 전체 보기" if on else ("결과 나온 경기 보기 ›" if label.startswith(("📈", "🧠")) else "이것만 보기 ›"),
-                              key=f"t1_tile_{label[:2]}", type="tertiary", on_click=_set_section, args=(None if on else sec,),
-                              disabled=not on and not sec_n[sec])   # 0경기 구간은 눌러도 빈 목록이라 막음
+                    # 카드 전체를 덮는 투명 버튼 (위 CSS) · 0경기 구간은 눌러도 빈 목록이라 막음
+                    st.button(label, key=f"t1tile_{i}", on_click=_set_section, args=(None if on else sec,),
+                              disabled=not on and not sec_n[sec])
             if n_mk:
                 st.caption("💡 적중률은 참고용이에요. 배당 1순위만 찍어도 꽤 맞으므로 AI는 '같은 경기'의 배당 1순위와 비교하세요. "
                            "AI 실력의 공식 지표는 ③ 성과 검증 탭의 성적표(Log loss)입니다.")
