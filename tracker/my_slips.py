@@ -151,11 +151,25 @@ def slip_kind(slip: Dict[str, Any]) -> str:
     return "paper" if ("가상" in memo or "연습" in memo) else "real"
 
 
+REASON_LABEL = {"market": "📊 배당 보고", "ai": "🧠 AI 보고", "own": "💡 내 판단"}   # 저장할 때 직접 고르는 이유 (선택)
+BASIS_LABEL = {"both": "🎯 배당·AI 1순위", "market": "📊 배당 1순위", "ai": "🧠 AI 1순위", "other": "💡 1순위 아님"}
+
+
+def pick_basis(pick: Dict[str, Any]) -> Optional[str]:
+    """고른 선택지가 저장 시점에 배당 1순위·AI 1순위였는지 → both/market/ai/other (기록 없으면 None)"""
+    mk, ai = pick.get("is_mk_top"), pick.get("is_ai_top")
+    if mk is None:
+        return None
+    if mk and ai:
+        return "both"
+    return "market" if mk else ("ai" if ai else "other")
+
+
 def build_slip(gm_ts: Any, games: List[Dict[str, Any]], combos: List[Dict[str, Any]], memo: str = "",
-               now: Optional[datetime] = None, kind: str = "real") -> Dict[str, Any]:
-    """games: [{seq, home, away, game_type, line, picks: [{key, label, odds}]}]
+               now: Optional[datetime] = None, kind: str = "real", reason: str = "") -> Dict[str, Any]:
+    """games: [{seq, home, away, game_type, line, picks: [{key, label, odds, is_mk_top, is_ai_top, p_mk, p_ai}]}]
     combos: [{key, legs: [[seq, pick_key, odds], ...], stake, picked}]
-    kind: 'real' 실제 구매 · 'paper' 가상 구매(연습)"""
+    kind: 'real' 실제 구매 · 'paper' 가상 구매(연습) · reason: 직접 고른 이유 (REASON_LABEL 키, 없으면 '')"""
     now = now or datetime.now()
     picked = [c for c in combos if c.get("picked", True)]
     return {
@@ -163,6 +177,7 @@ def build_slip(gm_ts: Any, games: List[Dict[str, Any]], combos: List[Dict[str, A
         "saved_at": now.strftime("%Y-%m-%d %H:%M"),
         "gm_ts": int(gm_ts) if str(gm_ts).isdigit() else gm_ts,
         "kind": kind if kind in KIND_LABEL else "real",
+        "reason": reason if reason in REASON_LABEL else "",
         "memo": memo.strip(),
         "games": games,
         "combos": combos,

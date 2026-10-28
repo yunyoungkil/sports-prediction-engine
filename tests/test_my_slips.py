@@ -78,3 +78,15 @@ def test_line_change_graded_with_purchase_line():
     assert outcome_from_rows({"game_type": "농구 승패"}, [{"game_result": "1"}]) == "void"   # 규정 1-(7)
     assert outcome_from_rows({"game_type": "축구 승무패"}, [{"game_result": "4"}]) == "void"
     assert outcome_from_rows({"game_type": "축구 승무패"}, []) is None
+
+def test_pick_basis_and_reason():
+    """저장 순간 고른 선택지가 배당·AI 1순위였는지 → 기준 (예전 기록은 None) · 직접 고른 이유 저장"""
+    from tracker.my_slips import build_slip, pick_basis
+    assert pick_basis({"is_mk_top": True, "is_ai_top": True}) == "both"
+    assert pick_basis({"is_mk_top": True, "is_ai_top": False}) == "market"
+    assert pick_basis({"is_mk_top": False, "is_ai_top": True}) == "ai"
+    assert pick_basis({"is_mk_top": False, "is_ai_top": None}) == "other"   # AI 미적용 유형
+    assert pick_basis({"key": "home_win"}) is None
+    s = build_slip(260127, [], [{"key": "a", "legs": [], "stake": 1000}], reason="ai")
+    assert s["reason"] == "ai"
+    assert build_slip(260127, [], [], reason="이상한값")["reason"] == ""
