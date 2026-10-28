@@ -2478,14 +2478,55 @@ with tab3:
         st.caption("실시간: 경기 시작 전에 고정 저장한 베팅 (2026-10-26, 260127회차부터). "
                    "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당과 실제 결과로 재현 — "
                    "AI 전략(A·B·C)은 지금 AI가 그 결과까지 학습했기 때문에 재현하지 않아요.")
-        curves = {}
-        for data_ in (pt, bf):
-            for v in (data_ or {}).get("strategies", {}).values():
-                if len(v["cum_profit"]) >= 2:
-                    curves[v["label"]] = pd.Series(v["cum_profit"])
-        if curves:
-            st.line_chart(pd.DataFrame(curves), height=220)
-            st.caption("가로: 끝난 베팅 순서 · 세로: 누적 가상 손익(원) — 오른쪽 아래로 내려가면 계속 잃고 있다는 뜻이에요.")
+        # 누적 수익률(%) 그래프 — 과거 재현과 실시간을 따로 (베팅 수가 수십 배 달라 한 축에 그리면 실시간 선이 묻힘)
+        # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교
+        # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용 1~5번, 대시보드 배경에서 검사 통과)
+        import altair as alt
+        STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181"}
+
+        def _roi_chart(data_, title, min_bets=3):
+            unit = (data_ or {}).get("stake_unit", 1000)
+            rows_, dom, rng_ = [], [], []
+            for key, v in (data_ or {}).get("strategies", {}).items():
+                cp = v.get("cum_profit") or []
+                if len(cp) < min_bets:
+                    continue
+                lab = v["label"].split(" (")[0]
+                dom.append(lab)
+                rng_.append(STRAT_COLOR.get(key[:1], "#94a3b8"))
+                skip = 10 if len(cp) > 50 else 0   # 처음 몇 건은 ±100%로 크게 흔들려 나머지가 납작해짐
+                rows_ += [{"전략": lab, "끝난 베팅 수": i + 1, "누적 수익률": cp[i] / ((i + 1) * unit) * 100,
+                           "누적 손익(원)": cp[i]} for i in range(skip, len(cp))]
+            if not rows_:
+                return False
+            df_ = pd.DataFrame(rows_)
+            color = alt.Color("전략:N", scale=alt.Scale(domain=dom, range=rng_),
+                              legend=alt.Legend(orient="bottom", title=None, labelLimit=300))
+            tips = [alt.Tooltip("전략:N"), alt.Tooltip("끝난 베팅 수:Q", format=","),
+                    alt.Tooltip("누적 수익률:Q", format="+.1f", title="누적 수익률 (%)"),
+                    alt.Tooltip("누적 손익(원):Q", format="+,")]
+            x = alt.X("끝난 베팅 수:Q", title="끝난 베팅 수", axis=alt.Axis(grid=False, format=","))
+            line = alt.Chart(df_).mark_line(strokeWidth=2).encode(
+                x=x, y=alt.Y("누적 수익률:Q", title="누적 수익률 (%)", axis=alt.Axis(format="+.0f", gridOpacity=0.15)),
+                color=color, tooltip=tips)
+            last = df_.groupby("전략").tail(1)
+            end_pt = alt.Chart(last).mark_point(filled=True, size=80, opacity=1).encode(
+                x=x, y="누적 수익률:Q", color=color, tooltip=tips)
+            end_txt = alt.Chart(last).mark_text(align="right", dx=-8, dy=-12, color="#e2e8f0", fontSize=12).encode(
+                x=x, y="누적 수익률:Q", text=alt.Text("누적 수익률:Q", format="+.1f"))
+            zero = alt.Chart(pd.DataFrame({"y": [0.0]})).mark_rule(color="#94a3b8", strokeDash=[4, 4]).encode(y="y:Q")
+            st.markdown(f"**{title}**")
+            st.altair_chart((line + zero + end_pt + end_txt).properties(height=230), width="stretch")
+            return True
+
+        shown_past = _roi_chart(bf, f"📉 과거 재현 ({bf['rounds'][0]}~{bf['rounds'][1]}회차): 배당만 보고 고르는 전략" if bf and bf.get("rounds")
+                                else "📉 과거 재현")
+        shown_live = _roi_chart(pt, "🧪 실시간 가상 베팅 (260127회차부터)")
+        if not shown_live:
+            st.caption("실시간 가상 베팅은 끝난 베팅이 전략마다 3건 이상 모이면 그래프가 나와요.")
+        if shown_past or shown_live:
+            st.caption("세로: 누적 수익률 — 그때까지 건 돈 대비 얼마를 벌었나·잃었나예요. 점선(0%)보다 아래면 잃는 중이에요. "
+                       "예) −12%면 1만 원 걸 때마다 평균 1,200원을 잃은 것. 선 끝 숫자가 지금 수익률이고, 선에 마우스를 올리면 자세히 보여요.")
 
         # 개별 베팅 내역
         with st.expander("📜 가상 베팅 내역 (회차·전략·결과별)", expanded=False):
