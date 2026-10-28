@@ -786,10 +786,20 @@ def wait_phase(m, now_ms: float) -> str:
     return "live" if (now_ms - float(ko)) / 3.6e6 <= GAME_HOURS.get(m.get("sport"), 3.0) else "late"
 
 
+def fixture_key(m) -> tuple:
+    """같은 대진(회차·홈·원정·시작 시각) — 승무패·핸디캡·언더오버·홀짝 게임번호들이 한 경기"""
+    return (str(m.get("gm_ts") or ""), m.get("home_team", ""), m.get("away_team", ""), m.get("match_time", ""))
+
+
+def n_fixtures(ms) -> int:
+    """경기 수 (게임번호가 아니라 대진 단위 — 목록이 대진으로 묶여 보이므로 숫자도 같은 기준)"""
+    return len({fixture_key(m) for m in ms})
+
+
 def wait_phase_counts(ms, now_ms: float) -> str:
-    """'🔒 경기 전 3 · ▶ 경기 중 2 · ⏱ 결과 기다리는 중 1' (0인 것은 뺌)"""
+    """'🔒 경기 전 3 · ▶ 경기 중 2 · ⏱ 결과 기다리는 중 1' (대진 단위 · 0인 것은 뺌)"""
     n = {k: 0 for k in WAIT_PHASE}
-    for m in ms:
+    for m in {fixture_key(m): m for m in ms}.values():
         n[wait_phase(m, now_ms)] += 1
     return " · ".join(f"{WAIT_PHASE[k][0]} {WAIT_PHASE[k][1]} {v}" for k, v in n.items() if v) or "없음"
 
@@ -1286,9 +1296,10 @@ with tab1:
             return f"{mt.group(1)}.{mt.group(2)} {mt.group(3) or ''}".strip() if mt else "날짜 미정"
 
         # 날짜: 며칠뿐이면 버튼으로 바로 전환, 많으면(전체 회차 보기) 목록. 날짜 옆 숫자 = 그날 경기 수
-        day_counts = {}
+        day_counts = {}   # 날짜 → 경기 수 (대진 단위)
         for m in filtered_matches:
-            day_counts[_match_day(m)] = day_counts.get(_match_day(m), 0) + 1
+            day_counts.setdefault(_match_day(m), set()).add(fixture_key(m))
+        day_counts = {d: len(v) for d, v in day_counts.items()}
         day_opts = ["전체 날짜"] + sorted(day_counts)
         # 기본값: 아직 결과가 안 나온 경기가 있는 첫 날짜 (바로 고를 수 있는 경기부터 보이도록)
         open_days = sorted({_match_day(m) for m in filtered_matches if _res(m) is None})
@@ -1363,7 +1374,8 @@ with tab1:
         shown = min(int(st.session_state.get("step1_shown", LOAD_STEP)), len(filtered_matches))
         page_matches = filtered_matches[:shown]
         count_slot.markdown(
-            f"<div style='font-size:13px;opacity:.75'>조건에 맞는 경기 <b>{len(filtered_matches):,}</b>개</div>",
+            f"<div style='font-size:13px;opacity:.75'>조건에 맞는 경기 <b>{n_fixtures(filtered_matches):,}</b>개 "
+            f"<span style='opacity:.8'>(게임번호 {len(filtered_matches):,}개)</span></div>",
             unsafe_allow_html=True)
 
         def _load_more():
@@ -1373,10 +1385,11 @@ with tab1:
             """목록 끝의 '더 보기' 버튼 + 화면에 보이면 자동으로 누르는 스크립트 (무한 스크롤)"""
             if shown >= len(filtered_matches):
                 if len(filtered_matches) > LOAD_STEP:
-                    st.caption(f"— 마지막 경기까지 모두 표시했습니다 ({len(filtered_matches):,}경기) —")
+                    st.caption(f"— 마지막 경기까지 모두 표시했습니다 ({n_fixtures(filtered_matches):,}경기 · "
+                               f"게임번호 {len(filtered_matches):,}개) —")
                 return
             left = len(filtered_matches) - shown
-            st.button(f"▼ 더 보기 ({min(LOAD_STEP, left)}경기 더 · 남은 {left:,}경기)", key="step1_load_more",
+            st.button(f"▼ 더 보기 (게임번호 {min(LOAD_STEP, left)}개 더 · 남은 {left:,}개)", key="step1_load_more",
                       width="stretch", on_click=_load_more)
             # 같은 출처 iframe에서 부모 문서의 '더 보기' 버튼을 감시 → 화면에 들어오면 클릭. 실패해도 버튼은 수동으로 동작
             components.html("""
@@ -1424,9 +1437,12 @@ with tab1:
             n_mk, n_ai = len(mk_hits), len(ai_pairs)
             mk_hit, ai_hit, ai_mk_hit = sum(mk_hits), sum(a for a, _ in ai_pairs), sum(b for _, b in ai_pairs)
             tiles = [
-                ("🟢 지금 고를 수 있음", f"{len(open_ms):,}경기", "발매 마감 전" if open_ms else "발매 중인 경기 없음"),
-                ("⏳ 발매 마감 · 결과 전", f"{len(wait_ms):,}경기", wait_phase_counts(wait_ms, now_ts)),
-                ("🏁 결과 나옴", f"{len(done_ms):,}경기", "목록 맨 뒤, 최근 경기부터" if done_ms else "아직 없음"),
+                # 경기 수 = 대진 단위(목록과 같은 기준) · 게임번호(승무패·핸디캡 등 각각) 수는 작게
+                ("🟢 지금 고를 수 있음", f"{n_fixtures(open_ms):,}경기",
+                 f"게임번호 {len(open_ms):,}개 · 발매 마감 전" if open_ms else "발매 중인 경기 없음"),
+                ("⏳ 발매 마감 · 결과 전", f"{n_fixtures(wait_ms):,}경기", wait_phase_counts(wait_ms, now_ts)),
+                ("🏁 결과 나옴", f"{n_fixtures(done_ms):,}경기",
+                 f"게임번호 {len(done_ms):,}개 · 최근 경기부터" if done_ms else "아직 없음"),
                 ("📈 배당 1순위 적중", f"{mk_hit}/{n_mk}" if n_mk else "—",
                  f"{mk_hit / n_mk * 100:.0f}% · 배당이 가장 낮은 쪽" if n_mk else "결과가 나오면 표시"),
                 ("🧠 AI 1순위 적중", f"{ai_hit}/{n_ai}" if n_ai else "—",
@@ -1520,10 +1536,10 @@ with tab1:
             if section not in section_shown:
                 section_shown.add(section)
                 title, n_sec, hint = {
-                    "open": ("🟢 지금 고를 수 있는 경기", len(open_ms), "배당 버튼을 눌러 고르세요 · 시간순"),
-                    "wait": ("⏳ 발매 마감 · 결과 전", len(wait_ms),
+                    "open": ("🟢 지금 고를 수 있는 경기", n_fixtures(open_ms), "배당 버튼을 눌러 고르세요 · 시간순"),
+                    "wait": ("⏳ 발매 마감 · 결과 전", n_fixtures(wait_ms),
                              f"{wait_phase_counts(wait_ms, now_ts)} · 결과가 나오면 적중 여부 표시"),
-                    "done": ("🏁 결과 나온 경기", len(done_ms), "최근 경기부터 · ✅❌ = 적중 여부"),
+                    "done": ("🏁 결과 나온 경기", n_fixtures(done_ms), "최근 경기부터 · ✅❌ = 적중 여부"),
                 }[section]
                 st.markdown(f"<div style='margin:14px 0 4px;font-size:15px'><b>{title}</b> "
                             f"<span style='opacity:.7'>{n_sec:,}경기 · {hint}</span></div>", unsafe_allow_html=True)
