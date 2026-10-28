@@ -696,7 +696,7 @@ def line_chip(m) -> str:
         line = float(m.get("line") or 0.0)
     except (TypeError, ValueError):
         return ""
-    style = "padding:1px 7px;border-radius:5px;font-size:12px;font-weight:700"
+    style = "padding:1px 7px;border-radius:5px;font-size:12px;font-weight:700;white-space:nowrap"
     if "핸디캡" in gt and line:
         return f"<span style='{style};background:rgba(59,130,246,.15);color:#60a5fa'>H {line:+.1f}</span>"
     if "언더오버" in gt and line:
@@ -704,7 +704,7 @@ def line_chip(m) -> str:
     return ""
 
 
-ONE_GAME_TAG = ("<span style='padding:1px 6px;border-radius:5px;font-size:11px;font-weight:700;"
+ONE_GAME_TAG = ("<span style='padding:1px 6px;border-radius:5px;font-size:11px;font-weight:700;white-space:nowrap;"
                 "background:rgba(245,158,11,.18);color:#f59e0b'>한경기</span>")
 
 
@@ -1521,15 +1521,17 @@ with tab1:
                 if fx_rows:   # 같은 대진 안의 게임번호 줄 사이 얇은 구분선
                     st.markdown("<div style='border-top:1px solid rgba(148,163,184,.12);margin:-6px 0'></div>",
                                 unsafe_allow_html=True)
-                c1, c2, c3 = st.columns([2.2, 3.0, 4.6], vertical_alignment="center")
+                # 배당 버튼이 3개(승·무·패)여도 옆 칸에 가리지 않게 가운데 칸을 넉넉히 (2026-10-28: '패 2.15'가 잘림)
+                c1, c2, c3 = st.columns([2.3, 3.7, 4.0], vertical_alignment="center")
                 with c1:
                     # 게임번호 · 유형 · 기준선 칩 · 한경기 (마우스를 올리면 리그·유형 전체 표시)
+                    # 길면 잘리지 않고 다음 줄로 (예: '전반 핸디캡 H -1.5 한경기')
                     tags = line_chip(m) + (ONE_GAME_TAG if m.get("is_single") else "")
                     st.markdown(
                         f"<div title='#{seq} · {m.get('league', '')} · {category_display(m)}' style='display:flex;"
-                        "align-items:center;gap:8px;white-space:nowrap;overflow:hidden'>"
+                        "align-items:center;gap:4px 8px;flex-wrap:wrap'>"
                         f"<span style='font-size:15px;font-weight:800;min-width:34px'>{seq}</span>"
-                        f"<span style='font-size:15px;font-weight:600'>{type_name(m)}</span>{tags}</div>",
+                        f"<span style='font-size:15px;font-weight:600;white-space:nowrap'>{type_name(m)}</span>{tags}</div>",
                         unsafe_allow_html=True)
                 with c2:
                     picked = st.pills(
