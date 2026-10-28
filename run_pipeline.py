@@ -177,6 +177,7 @@ def predict_matches(matches: list, gm_ts, models: dict, sharp_by_seq: dict = Non
             "home_team": home,
             "away_team": away,
             "betman_odds": odds,
+            "odds_changes": m.get("odds_changes") or [],   # 베트맨 배당 변경 내역 (1차 → … → 지금)
             "prediction_odds": odds,
             "closing_odds": None,
             "clv_pct": None,

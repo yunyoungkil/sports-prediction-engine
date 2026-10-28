@@ -248,8 +248,13 @@ def wake_pipeline(live_ts: int, n_behind: int) -> str:
 
 
 def odds_move(m, k):
-    """이 선택지의 마지막 배당 변화 (이전, 새 배당, 'HH:MM') · 대시보드를 켜 둔 동안 본 것만, 없으면 None"""
-    return ((LIVE or {}).get("moves") or {}).get(str(m.get("match_seq")), {}).get(k)
+    """이 선택지의 마지막 배당 변화 (이전, 새 배당, 'HH:MM') — 베트맨 '배당 변경' 내역 기준 (베트맨 화면 화살표와 같음).
+    대시보드를 켜 둔 시간과 상관없이 처음 배당부터 모든 변경이 들어 있음. 없으면 None"""
+    for c in reversed(m.get("odds_changes") or []):
+        o, n = float(c["from"].get(k) or 0), float(c["to"].get(k) or 0)
+        if o > 1.0 and n > 1.0 and abs(o - n) > 1e-9:
+            return o, n, c["at"][11:16]
+    return None
 
 
 def odds_arrow(m, k, colored: bool = True) -> str:
@@ -265,10 +270,12 @@ def odds_arrow(m, k, colored: bool = True) -> str:
 
 
 def odds_move_text(m) -> str:
-    """'승 1.85→1.90 (21:40)' — 마우스를 올렸을 때 보여 줄 변화 내역"""
-    mv = ((LIVE or {}).get("moves") or {}).get(str(m.get("match_seq")), {})
-    labels = pick_labels(m)
-    return " · ".join(f"{labels.get(k, k)} {o:.2f}→{n:.2f} ({at})" for k, (o, n, at) in mv.items())
+    """'1차 3.15/3.20/1.93 → 16:53 3.60/3.25/1.77 → 17:07 4.20/3.25/1.66' — 마우스를 올렸을 때 보여 줄 변경 내역"""
+    ch = m.get("odds_changes") or []
+    if not ch:
+        return ""
+    fmt = lambda o: "/".join(f"{float(o[k]):.2f}" for k in ("home_win", "draw", "away_win") if float(o.get(k) or 0) > 1.0)
+    return " → ".join([f"1차 {fmt(ch[0]['from'])}"] + [f"{c['at'][11:16]} {fmt(c['to'])}" for c in ch])
 
 
 FILE_PREDICTIONS = load_data()
@@ -1102,7 +1109,7 @@ with tab1:
             f"<span style='{_chip}'>⚠️ AI 예상이 배당과 다름</span>"
             f"<span style='{_chip}'>✅ ❌ 끝난 경기의 적중 여부</span>"
             f"<span style='{_chip}'><span style='color:#ef4444'>↑</span> <span style='color:#3b82f6'>↓</span> 배당 오름·내림 "
-            "<span style='color:#94a3b8'>(대시보드를 켜 둔 동안 바뀐 것)</span></span>"
+            "<span style='color:#94a3b8'>(베트맨 배당 변경 · 마지막 변경 기준)</span></span>"
             "</div>",
             unsafe_allow_html=True)
 
@@ -2312,7 +2319,7 @@ with tab2:
             picked_rows = list(event.selection.rows) if event is not None else []
             st.caption(("👆 줄을 누르면 아래 분석이 그 경기로 바뀌어요." if not picked_rows
                         else "다른 줄을 누르면 그 경기로 바뀌어요.")
-                       + " · 배당 옆 ↑↓ = 배당이 오름·내림(대시보드를 켜 둔 동안) · AI 칸 ▲▼ = AI가 배당보다 높게·낮게 본 정도(%p)")
+                       + " · 배당 옆 ↑↓ = 베트맨 배당 변경(마지막 변경 기준) · AI 칸 ▲▼ = AI가 배당보다 높게·낮게 본 정도(%p)")
 
             # F. 경기 분석 (선택한 줄, 없으면 목록 첫 경기)
             a = t_rows[picked_rows[0] if picked_rows and picked_rows[0] < len(t_rows) else 0]
@@ -2412,6 +2419,33 @@ with tab2:
                               width="stretch", on_click=_t2_toggle, args=(seq, k))
                 if not closed:
                     st.caption("🛒 담기를 누르면 내 선택에 담기고, ✓ 담김을 다시 누르면 빠져요.")
+
+                # 📉 배당 변경 내역 (베트맨 '배당 변경' 팝업과 같은 표: 현재 → … → 1차, 바뀐 칸은 ↑↓ 색)
+                chg = m.get("odds_changes") or []
+                if chg:
+                    keys = [k for k in a["opts"]]
+                    snaps = [("1차", "", chg[0]["from"])] + [(f"{i + 2}차", c["at"][5:16].replace("-", "."), c["to"])
+                                                            for i, c in enumerate(chg)]
+                    snaps[-1] = ("현재",) + snaps[-1][1:]
+
+                    def _cell(o, prev, k):
+                        v = float(o.get(k) or 0)
+                        if prev is None or abs(v - float(prev.get(k) or 0)) < 1e-9:
+                            return f"{v:.2f}"
+                        up = v > float(prev.get(k) or 0)
+                        return f"<span style='color:{'#ef4444' if up else '#3b82f6'}'>{v:.2f} {'↑' if up else '↓'}</span>"
+                    th = "padding:4px 10px;font-size:12px;color:#94a3b8;text-align:center"
+                    td = "padding:4px 10px;font-size:13px;text-align:center;border-top:1px solid rgba(148,163,184,.15)"
+                    rows_h = "".join(
+                        f"<tr><td style='{td}'><b>{name}</b> <span style='opacity:.6;font-size:11px'>{when}</span></td>"
+                        + "".join(f"<td style='{td}'>{_cell(o, snaps[i - 1][2] if i else None, k)}</td>" for k in keys) + "</tr>"
+                        for i, (name, when, o) in reversed(list(enumerate(snaps))))
+                    st.markdown(
+                        "<div style='padding-bottom:10px'><div style='font-size:14px;font-weight:700;margin:6px 0 4px'>"
+                        f"📉 배당 변경 <span style='font-weight:400;font-size:12px;opacity:.7'>베트맨 발표 · {len(chg)}번 바뀜</span></div>"
+                        f"<table style='border-collapse:collapse'><tr><th style='{th}'>변경</th>"
+                        + "".join(f"<th style='{th}'>{lab[k]}</th>" for k in keys) + "</tr>" + rows_h + "</table></div>",
+                        unsafe_allow_html=True)
 
                 if m.get("top_scores"):
                     st.caption("🎯 예상 스코어: " + " · ".join(f"{s['score']} ({s['prob']}%)" for s in m["top_scores"]))

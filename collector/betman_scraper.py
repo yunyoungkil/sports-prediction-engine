@@ -8,6 +8,7 @@ betman_scraper.py
 
 import json
 import sys
+from typing import Any
 import http.cookiejar
 import urllib.request
 from datetime import datetime
@@ -44,6 +45,27 @@ def categorize_bet(bet_nm: str, win_txt: str = None) -> str:
     if "SUM" in bet_nm.upper() or win_txt == "홀":
         return "홀짝"
     return "일반 승무패"
+
+
+def parse_odds_changes(tooltip_list: list, gm_ts: Any = None) -> dict:
+    """경기 목록 응답의 tooltipList(베트맨 '배당 변경' 팝업 데이터) → {경기번호: [변경, ...]} (오래된 것부터)
+    변경 = {"at": "2026-10-28 17:07:33", "from": {home_win, draw, away_win}, "to": {...}, "line_from", "line_to"}
+    배당은 ×100 정수로 옴 (360 → 3.60). 첫 변경의 from = 처음(1차) 배당 · 마지막 변경의 to = 지금 배당"""
+    def odds(x, side):
+        return {k: round(float(x.get(f"{side}_{c}_ODDS") or 0) / 100, 2)
+                for k, c in (("home_win", "W"), ("draw", "D"), ("away_win", "L"))}
+    out: dict = {}
+    for x in tooltip_list or []:
+        if x.get("DEL_YN") == "Y" or (gm_ts is not None and str(x.get("GM_TS")) != str(gm_ts)):
+            continue
+        t = str(x.get("CHG_DTM") or x.get("LST_CHG_DTM") or "")
+        at = f"{t[:4]}-{t[4:6]}-{t[6:8]} {t[8:10]}:{t[10:12]}:{t[12:14]}" if len(t) >= 14 else t
+        out.setdefault(str(x.get("GM_SEQ")), []).append({
+            "at": at, "from": odds(x, "BCHG"), "to": odds(x, "ACHG"),
+            "line_from": float(x.get("BCHG_W_HANDI_RT") or 0), "line_to": float(x.get("ACHG_W_HANDI_RT") or 0)})
+    for v in out.values():
+        v.sort(key=lambda c: c["at"])
+    return out
 
 
 class BetmanScraper:
@@ -153,6 +175,7 @@ class BetmanScraper:
                 data = json.loads(resp.read().decode("utf-8"))
 
             schedules = data.get("schedules", [])
+            changes = parse_odds_changes(data.get("tooltipList"), gm_ts)   # 배당 변경 내역 (같은 응답 · 요청 추가 없음)
             print(f"  ✓ 베트맨 실시간 서버로부터 {len(schedules)}개 경기 데이터 수신 완료!")
 
             # 3. 경기 정보 추출 및 카테고리 세분화
@@ -202,6 +225,7 @@ class BetmanScraper:
                         "match_state": s.get("matchState"),
                         "home_team": home_name.strip(),
                         "away_team": away_name.strip(),
+                        "odds_changes": changes.get(str(s.get("matchSeq", "")), []),
                         "odds": {
                             "home_win": win_allot,
                             "draw": draw_allot,

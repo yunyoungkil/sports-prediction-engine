@@ -8,6 +8,9 @@ tracker/odds_history.py
 (구 tracker/odds_snapshot.py는 실행마다 전 경기 배당을 통째로 복사해 회차당 2MB가 넘고,
  기록 시각이 한국 시간·UTC로 섞여 있어 이 형식으로 대체)
 
+베트맨 자체 '배당 변경' 내역(경기 목록 응답의 tooltipList)도 경기마다 "changes"로 함께 저장 — 우리 기록 간격과
+상관없이 1차(처음) 배당부터 모든 변경과 시각이 남는다 (마감 전 값만 있으므로 시작한 경기도 갱신).
+
 파일: data/history/odds_history/{gm_ts}.json
     {"gm_ts": 260127, "matches": {"783": {"game_type": "농구 승패", "line": 0.0, "kickoff_ms": ...,
                                           "points": [["2026-10-26T04:49:50+00:00", 1.71, 0.0, 1.77], ...]}}}
@@ -52,6 +55,8 @@ def update_odds_history(gm_ts: Any, matches: List[Dict[str, Any]], now: Optional
         odds = _odds_tuple(m)
         if not seq or odds is None:
             continue
+        if m.get("odds_changes") and seq in data["matches"]:   # 베트맨 변경 내역은 늘 전체가 오므로 덮어씀
+            data["matches"][seq]["changes"] = m["odds_changes"]
         ko = m.get("kickoff_ts")
         if ko and float(ko) <= now_ms:
             continue   # 시작한 경기는 더 이상 기록하지 않음 (마감 이후 값 섞임 방지)
@@ -60,6 +65,8 @@ def update_odds_history(gm_ts: Any, matches: List[Dict[str, Any]], now: Optional
             data["matches"][seq] = {"game_type": m.get("game_type"), "category": m.get("category"),
                                     "line": float(m.get("line") or 0.0), "kickoff_ms": ko,
                                     "points": [[stamp] + odds]}
+            if m.get("odds_changes"):
+                data["matches"][seq]["changes"] = m["odds_changes"]
             added += 1
         elif e["points"][-1][1:] != odds:
             e["points"].append([stamp] + odds)

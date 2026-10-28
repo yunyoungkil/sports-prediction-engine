@@ -29,8 +29,6 @@ class LiveFeed:
         self.thread: Optional[threading.Thread] = None   # 마지막으로 시작한 '뒤에서 받기'
         self.scraper = None
         self.round, self.round_at = None, 0.0
-        # 배당 변화: {회차: {경기번호: {선택지: (이전 배당, 새 배당, 바뀐 시각 'HH:MM')}}} — 대시보드를 켜 둔 동안 본 것만
-        self.moves: Dict[str, Dict[str, Dict[str, tuple]]] = {}
 
     def age(self) -> float:
         return self.clock() - self.data["got"] if self.data else float("inf")
@@ -65,29 +63,10 @@ class LiveFeed:
         sharp = {str(m["match_seq"]): m.get("sharp") for m in file_preds
                  if m.get("sharp") and str(m.get("gm_ts")) == str(ts)}   # 해외 배당은 파이프라인이 회차당 한 번 받은 것
         preds = predict(matches, ts, models, sharp)
-        self._track_moves(str(ts), preds)
         sig = json.dumps([[m.get("match_seq"), m.get("betman_odds"), m.get("match_state"), m.get("proto_status"),
                            m.get("close_time")] for m in preds], ensure_ascii=False, default=str)
         return {"ts": int(ts), "at": datetime.fromtimestamp(self.clock()).strftime("%H:%M:%S"), "preds": preds,
-                "sig": hash(sig), "got": self.clock(), "moves": {k: dict(v) for k, v in self.moves.get(str(ts), {}).items()}}
-
-    def _track_moves(self, ts: str, preds: List[Dict[str, Any]]) -> None:
-        """지난번 받은 배당과 비교해 바뀐 선택지를 기록 (같은 회차일 때만 · 선택지마다 마지막 변화 하나)"""
-        prev = {str(m.get("match_seq")): m.get("betman_odds") or {}
-                for m in (self.data or {}).get("preds", []) if str((self.data or {}).get("ts")) == ts}
-        at = datetime.fromtimestamp(self.clock()).strftime("%H:%M")
-        moves = self.moves.setdefault(ts, {})
-        for m in preds:
-            old = prev.get(str(m.get("match_seq")))
-            for k, v in (m.get("betman_odds") or {}).items():
-                try:
-                    o, n = float((old or {}).get(k) or 0), float(v or 0)
-                except (TypeError, ValueError):
-                    continue
-                if o > 1.0 and n > 1.0 and abs(o - n) > 1e-9:
-                    moves.setdefault(str(m.get("match_seq")), {})[k] = (o, n, at)
-        for old_ts in [t for t in self.moves if t != ts]:   # 지난 회차 기록은 버림
-            del self.moves[old_ts]
+                "sig": hash(sig), "got": self.clock()}
 
     def refresh(self, older_than: float, *args) -> None:
         """older_than초보다 묵었을 때만 새로 받음 — 기다리는 사이 다른 화면이 이미 받았으면 건너뜀"""
