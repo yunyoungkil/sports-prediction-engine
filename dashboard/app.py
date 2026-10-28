@@ -13,6 +13,8 @@ import itertools
 from pathlib import Path
 import json
 import re
+import threading
+import time
 from datetime import datetime
 import streamlit as st
 import streamlit.components.v1 as components
@@ -28,10 +30,14 @@ import importlib
 # Streamlit 세션 유지 중 코드 변경 시 서브모듈 핫 리로딩 보장 — 프로젝트 패키지는 전부 함께 지운다.
 # 일부만 지우면 새로 읽은 모듈이 메모리에 남은 옛 모듈을 import해서 ImportError가 난다
 # (2026-10-27: 새 models.paper_trading → 옛 evaluation.metrics, cluster_roi_confidence_interval 없음)
+# 코드 파일이 바뀌었을 때만 지운다 — 매번 지우면 뒤에서 실시간 데이터를 받는 스레드가 쓰던 모듈과 부딪힐 수 있음
 _PROJECT_PKGS = ("models", "tracker", "evaluation", "collector", "notifier")
-for mod_name in list(sys.modules.keys()):
-    if mod_name.split(".")[0] in _PROJECT_PKGS:
-        del sys.modules[mod_name]
+_code_mtime = max((p.stat().st_mtime for pkg in _PROJECT_PKGS for p in (project_root / pkg).rglob("*.py")), default=0.0)
+if getattr(sys, "_spe_code_mtime", None) != _code_mtime:
+    for mod_name in list(sys.modules.keys()):
+        if mod_name.split(".")[0] in _PROJECT_PKGS:
+            del sys.modules[mod_name]
+    sys._spe_code_mtime = _code_mtime
 
 importlib.invalidate_caches()
 
@@ -112,25 +118,55 @@ def load_data():
         return json.load(f)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def auto_sync_github() -> dict:
-    """GitHub 최신 데이터(봇이 올린 예측·기록·결과) 자동 받기 — 5분마다 확인.
-    내가 고치던 파일이 있거나 로컬에만 있는 커밋이 있으면 건드리지 않고 건너뜀 (빨리감기만)"""
+def _git(*args):
     import subprocess
+    return subprocess.run(["git", *args], cwd=project_root, capture_output=True, text=True, timeout=30)
 
-    def git(*args):
-        return subprocess.run(["git", *args], cwd=project_root, capture_output=True, text=True, timeout=30)
+
+@st.cache_resource(show_spinner=False)
+def _github_check() -> dict:
+    """GitHub에 새 커밋이 있는지 확인한 결과 하나 (모든 화면이 함께 씀)"""
+    return {"lock": threading.Lock(), "checked": 0.0, "behind": 0, "ok": True}
+
+
+def _git_fetch(state: dict) -> None:
+    """느린 확인(git fetch = 네트워크, 2초 안팎)은 뒤에서 — 화면을 붙잡지 않게"""
     try:
-        git("fetch", "-q", "origin")
-        behind = git("rev-list", "--count", "HEAD..origin/master").stdout.strip()
-        if not behind.isdigit() or int(behind) == 0:
-            return {"status": "latest", "at": datetime.now().strftime("%H:%M")}
-        if any(l.strip() for l in git("status", "--porcelain", "--untracked-files=no").stdout.splitlines()):
-            return {"status": "skipped", "behind": int(behind), "at": datetime.now().strftime("%H:%M")}
-        ok = git("pull", "--ff-only", "-q").returncode == 0
-        return {"status": "pulled" if ok else "failed", "behind": int(behind), "at": datetime.now().strftime("%H:%M")}
+        _git("fetch", "-q", "origin")
+        behind = _git("rev-list", "--count", "HEAD..origin/master").stdout.strip()
+        state["ok"], state["behind"] = behind.isdigit(), int(behind) if behind.isdigit() else 0
     except Exception:
-        return {"status": "failed", "at": datetime.now().strftime("%H:%M")}
+        state["ok"] = False
+    finally:
+        state["checked"] = time.time()
+        state["lock"].release()
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _git_pull(behind: int, checked: float) -> str:
+    """받을 커밋이 있을 때만 빨리감기 (확인 결과마다 한 번) — 파일을 바꾸므로 화면 쪽에서 한다.
+    내가 고치던 파일이 있거나 로컬에만 있는 커밋이 있으면 건드리지 않고 건너뜀"""
+    try:
+        if any(l.strip() for l in _git("status", "--porcelain", "--untracked-files=no").stdout.splitlines()):
+            return "skipped"
+        return "pulled" if _git("pull", "--ff-only", "-q").returncode == 0 else "failed"
+    except Exception:
+        return "failed"
+
+
+def auto_sync_github() -> dict:
+    """GitHub 최신 데이터(봇이 올린 예측·기록·결과) 자동 받기 — 5분마다 확인 (확인은 뒤에서, 받을 게 있을 때만 빨리감기)"""
+    state = _github_check()
+    if time.time() - state["checked"] >= 300 and state["lock"].acquire(blocking=False):
+        threading.Thread(target=_git_fetch, args=(state,), daemon=True).start()
+    if not state["checked"]:
+        return {"status": "checking", "at": ""}
+    at = datetime.fromtimestamp(state["checked"]).strftime("%H:%M")
+    if not state["ok"]:
+        return {"status": "failed", "at": at}
+    if not state["behind"]:
+        return {"status": "latest", "at": at}
+    return {"status": _git_pull(state["behind"], state["checked"]), "behind": state["behind"], "at": at}
 
 
 SYNC = auto_sync_github()
@@ -146,23 +182,23 @@ def live_models():
     return rp.load_models()
 
 
-@st.cache_data(ttl=60, show_spinner="🔴 베트맨 실시간 데이터 받고 AI 계산하는 중…")
-def live_predictions():
-    """베트맨에서 지금 회차·경기·배당·상태를 받아 파이프라인과 같은 함수로 AI 확률·기대가치를 바로 계산 (1분마다)"""
-    try:
-        import run_pipeline as rp
-        from collector.betman_scraper import BetmanScraper
-        sc = BetmanScraper()
-        ts = sc.find_current_round()
-        matches = sc.fetch_current_round_matches(gm_ts=ts) if ts else []
-        if not matches:
-            return None
-        sharp = {str(m["match_seq"]): m.get("sharp") for m in load_data()
-                 if m.get("sharp") and str(m.get("gm_ts")) == str(ts)}   # 해외 배당은 파이프라인이 회차당 한 번 받은 것
-        preds = rp.predict_matches(matches, ts, live_models(), sharp)
-        return {"ts": int(ts), "at": datetime.now().strftime("%H:%M:%S"), "preds": preds}
-    except Exception:
-        return None
+@st.cache_resource(show_spinner=False)
+def live_feed():
+    """[실시간] 베트맨 받기 + AI 계산을 뒤에서 해 두는 곳 하나 (모든 화면이 함께 씀 · collector/live_feed.py)"""
+    from collector.live_feed import LiveFeed
+    return LiveFeed()
+
+
+def get_live():
+    """베트맨 실시간 + AI 계산 결과 (뒤에서 1분마다 새로 받음) · 받은 게 없거나 3분 넘게 못 받았으면 None → 저장된 데이터"""
+    import run_pipeline as rp
+    from collector.betman_scraper import BetmanScraper
+    feed = live_feed()
+    args = (BetmanScraper, rp.predict_matches, live_models(), FILE_PREDICTIONS)
+    if feed.must_wait():
+        with st.spinner("🔴 베트맨 실시간 데이터 받고 AI 계산하는 중…"):
+            return feed.get(*args)
+    return feed.get(*args)
 
 
 def records_behind(live, file_preds) -> list:
@@ -204,7 +240,7 @@ def wake_pipeline(live_ts: int, n_behind: int) -> str:
 
 FILE_PREDICTIONS = load_data()
 st.session_state.setdefault("live_mode", True)
-LIVE = live_predictions() if st.session_state["live_mode"] else None
+LIVE = get_live() if st.session_state["live_mode"] else None
 predictions = LIVE["preds"] if LIVE else FILE_PREDICTIONS
 BEHIND = records_behind(LIVE, FILE_PREDICTIONS) if LIVE else []
 WAKE = wake_pipeline(LIVE["ts"], len(BEHIND)) if BEHIND else None
@@ -244,12 +280,18 @@ def load_model_status():
     return None
 
 
+@st.cache_resource(show_spinner=False)
+def live_results_scraper():
+    """결과 조회용 베트맨 접속(세션) — 1분마다 새로 만들지 않고 계속 씀 (베트맨 요청 수 줄임)"""
+    from collector.betman_results_scraper import BetmanResultsScraper
+    return BetmanResultsScraper()
+
+
 @st.cache_data(ttl=55, show_spinner=False)
 def fetch_live_round_results(gm_ts: str) -> list:
     """베트맨 결과 페이지에서 해당 회차의 끝난 경기 결과를 바로 조회 (대시보드 실시간 표시용, 저장하지 않음)"""
     try:
-        from collector.betman_results_scraper import BetmanResultsScraper
-        return BetmanResultsScraper().fetch_round_results(int(gm_ts))
+        return live_results_scraper().fetch_round_results(int(gm_ts))
     except Exception:
         return []
 
@@ -883,7 +925,8 @@ with _h2:
     _wake_txt = {"triggered": "새 경기·배당 변화를 공식 기록하도록 GitHub 파이프라인을 실행했어요 (1~2분 뒤 자동 반영)",
                  "running": "GitHub 파이프라인이 공식 기록 중이에요", "waiting": "GitHub 공식 기록 요청 대기 중 (30분에 한 번)",
                  "failed": "GitHub 파이프라인 실행 요청 실패 (gh 로그인 확인)"}
-    _sync_txt = {"latest": "GitHub 데이터 최신", "pulled": f"GitHub 데이터 {SYNC.get('behind', 0)}개 받음",
+    _sync_txt = {"checking": "GitHub 데이터 확인 중", "latest": "GitHub 데이터 최신",
+                 "pulled": f"GitHub 데이터 {SYNC.get('behind', 0)}개 받음",
                  "skipped": "고치던 파일이 있어 GitHub 자동 받기 건너뜀", "failed": "GitHub 자동 받기 실패"}.get(SYNC["status"], "")
     if LIVE:
         _parts = [f"🔴 베트맨 **{LIVE['ts']}회차** · {LIVE['at']} 확인 · AI 계산 {len(LIVE['preds'])}경기"]
@@ -1504,9 +1547,9 @@ with tab1:
                 st.session_state["live_result_count"] = n
                 st.caption(f"🔴 실시간 결과 확인 {datetime.now().strftime('%H:%M:%S')} · 현재 회차 결과 {n}건"
                            if rows_ else f"🔴 실시간 결과 대기 중 ({datetime.now().strftime('%H:%M')}) — 진행 중이거나 결과 대기 중인 경기가 없으면 조회하지 않습니다")
-                # 새 결과가 생겼거나, 베트맨 실시간 데이터(배당·상태·AI 계산)가 새로 받아졌으면 화면 전체를 다시 그림
-                fresh = live_predictions() if LIVE else None
-                if (prev is not None and n > prev) or (fresh and LIVE and fresh["at"] != LIVE["at"]):
+                # 새 결과가 생겼거나, 뒤에서 새로 받은 베트맨 실시간 데이터의 배당·상태·마감이 바뀌었으면 화면 전체를 다시 그림
+                fresh = get_live() if LIVE else None
+                if (prev is not None and n > prev) or (fresh and LIVE and fresh["sig"] != LIVE["sig"]):
                     st.rerun(scope="app")
             _live_tick()
         # 선택 요약·규정 검사·STEP 02 이동은 사이드바 🛒 내 선택에서 (목록 맨 아래 요약은 중복이라 없앰)

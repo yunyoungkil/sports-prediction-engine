@@ -51,6 +51,13 @@ class BetmanScraper:
         self.gm_id = gm_id
         self.cookie_jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cookie_jar))
+        self._visited = set()   # 이 세션에서 이미 연 쿠키용 시작 페이지 — 같은 객체로 다시 받을 때는 또 열지 않음
+
+    def _visit_once(self, url: str, timeout: float) -> None:
+        """세션 쿠키용 시작 페이지는 세션마다 한 번만 (대시보드 실시간은 같은 객체로 1분마다 받음 → 베트맨 요청 수 줄임)"""
+        if url not in self._visited:
+            self.opener.open(urllib.request.Request(url, headers={"User-Agent": DEFAULT_USER_AGENT}), timeout=timeout)
+            self._visited.add(url)
 
     def find_current_round(self) -> str:
         """
@@ -59,8 +66,7 @@ class BetmanScraper:
         print(f"🔍 베트맨 현재 판매 회차 자동 조회 중({self.gm_id})...")
         init_url = f"{BASE_URL}/main/mainPage/gamebuy/buyableGameList.do"
         try:
-            req_init = urllib.request.Request(init_url, headers={"User-Agent": DEFAULT_USER_AGENT})
-            self.opener.open(req_init, timeout=8)
+            self._visit_once(init_url, 8)
         except Exception as e:
             print(f"  ⚠ 세션 쿠키 초기화 경고: {e}")
 
@@ -99,6 +105,7 @@ class BetmanScraper:
                 pass
 
         print("  ⚠ 현재 판매 회차 자동 조회 실패")
+        self._visited.discard(init_url)   # 세션이 끊겼을 수 있음 → 다음에는 시작 페이지부터 다시
         return None
 
     def fetch_current_round_matches(self, gm_ts: str = None) -> list:
@@ -114,8 +121,7 @@ class BetmanScraper:
         try:
             # 1. 세션 쿠키 획득
             ifr_url = f"{BASE_URL}/main/mainPage/gamebuy/gameScheduleDetlIFR.do?gmId={self.gm_id}&gmTs={gm_ts}"
-            req_init = urllib.request.Request(ifr_url, headers={"User-Agent": DEFAULT_USER_AGENT})
-            self.opener.open(req_init, timeout=10)
+            self._visit_once(ifr_url, 10)
 
             # 2. 공식 비동기 스케줄 API 호출
             api_url = f"{BASE_URL}/buyPsblGame/detailSchedule.do"
@@ -207,6 +213,7 @@ class BetmanScraper:
 
         except Exception as e:
             print(f"  ⚠ 베트맨 실시간 API 호출 중 오류 발생: {e}")
+            self._visited.clear()   # 세션이 끊겼을 수 있음 → 다음에는 시작 페이지부터 다시
             matches = []
 
         return matches

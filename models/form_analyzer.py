@@ -9,6 +9,8 @@ models/form_analyzer.py
 - 맞대결(H2H) 최근 전적, 승/무/패 횟수, 평균 골수 분석
 """
 
+import copy
+import functools
 import json
 import re
 from pathlib import Path
@@ -77,6 +79,28 @@ def parse_date_value(date_val: Any) -> Optional[pd.Timestamp]:
     return res if pd.notnull(res) else None
 
 
+RESULT_CACHE_MAX = 5000   # 학습처럼 날짜가 전부 다른 대량 호출에서 메모리가 끝없이 늘지 않게
+
+
+def _memoized(method):
+    """같은 팀·같은 기준일로 다시 부르면 저장해 둔 결과의 복사본을 돌려준다.
+    한 회차에 같은 경기가 승무패·핸디캡·언더오버로 여러 번 나오고, 대시보드는 같은 경기를 1분마다 다시 계산한다.
+    데이터는 처음 읽은 뒤 바뀌지 않으므로 결과도 같다. 복사본이라 받은 쪽이 고쳐도(standing 붙이기) 저장값은 그대로"""
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        key = (method.__name__, args, tuple(sorted(kwargs.items())))
+        try:
+            hit = key in self._result_cache
+        except TypeError:   # 해시할 수 없는 인자면 그냥 계산
+            return method(self, *args, **kwargs)
+        if not hit:
+            if len(self._result_cache) >= RESULT_CACHE_MAX:
+                self._result_cache.clear()
+            self._result_cache[key] = method(self, *args, **kwargs)
+        return copy.deepcopy(self._result_cache[key])
+    return wrapper
+
+
 class FormAnalyzer:
     def __init__(
         self,
@@ -89,6 +113,8 @@ class FormAnalyzer:
         self.betman_matches = []
         self.betman_by_team = {}
         self._table_cache = {}   # (리그, 시즌, 기준일) → 순위표
+        self._norm_cache = {}    # 팀 이름 → 정규화 이름 (경기마다 수십 번씩 불려서 한 번만 계산)
+        self._result_cache = {}  # 폼·순위·맞대결 결과 (_memoized)
         self._load_data()
 
     def _load_data(self):
@@ -101,6 +127,18 @@ class FormAnalyzer:
             except Exception:
                 self.df = None
         self._csv_teams = set(self.df["HomeTeam"]).union(set(self.df["AwayTeam"])) if self.df is not None else set()
+        # 팀·리그별 행 위치 (최신순 그대로) — 경기마다 전체 표를 훑지 않고 그 팀·리그 행만 본다
+        self._pos_by_team: Dict[str, List[int]] = {}
+        self._pos_by_league: Dict[Any, List[int]] = {}
+        if self.df is not None:
+            for pos, (h, a) in enumerate(zip(self.df["HomeTeam"], self.df["AwayTeam"])):
+                for t in {h, a}:
+                    if isinstance(t, str):
+                        self._pos_by_team.setdefault(t, []).append(pos)
+            if "League" in self.df.columns:
+                for pos, lg in enumerate(self.df["League"]):
+                    if pd.notnull(lg):
+                        self._pos_by_league.setdefault(lg, []).append(pos)
 
         # 2. 베트맨 최근 회차 실제 결과 로드 (중복 제거된 고유 경기 목록 및 인덱싱)
         self.betman_by_team = {}
@@ -148,7 +186,16 @@ class FormAnalyzer:
                 self.betman_matches = []
                 self.betman_by_team = {}
 
+    def _rows(self, index: Dict[Any, List[int]], key: Any) -> pd.DataFrame:
+        """미리 만든 위치 목록으로 고른 행 (전체 표에서 조건으로 거른 것과 같은 행 · 같은 순서, 없으면 빈 표)"""
+        return self.df.iloc[index.get(key, [])]
+
     def normalize_name(self, name: str) -> str:
+        if name not in self._norm_cache:
+            self._norm_cache[name] = self._normalize_name(name)
+        return self._norm_cache[name]
+
+    def _normalize_name(self, name: str) -> str:
         clean = name.strip()
         if clean in TEAM_NAME_MAP:
             return TEAM_NAME_MAP[clean]
@@ -229,7 +276,8 @@ class FormAnalyzer:
         key = (league, season, before)
         if key in self._table_cache:
             return self._table_cache[key]
-        d = self.df[(self.df["League"] == league) & (self.df["Season"] == season) & (self.df["ParsedDate"] < before)]
+        lg_df = self._rows(self._pos_by_league, league)
+        d = lg_df[(lg_df["Season"] == season) & (lg_df["ParsedDate"] < before)]
         stats: Dict[str, Dict[str, Any]] = {}
         for h, a, hg, ag in zip(d["HomeTeam"], d["AwayTeam"], d["FTHG"], d["FTAG"]):
             for team, gf, ga in ((h, hg, ag), (a, ag, hg)):
@@ -252,6 +300,7 @@ class FormAnalyzer:
             return None
         return self._league_table(league, season, before).get(team_norm, {}).get("pos")
 
+    @_memoized
     def get_standing(self, team_name: str, as_of: Optional[Any] = None) -> Optional[Dict[str, Any]]:
         """
         현재(as_of 하루 전까지 경기 기준) 리그 순위 · 승점 · 시즌 경기당 득실.
@@ -265,11 +314,13 @@ class FormAnalyzer:
             return None
         as_of_dt = parse_date_value(as_of)
         cutoff = (as_of_dt - pd.Timedelta(days=1)) if as_of_dt is not None else self.df["ParsedDate"].max() + pd.Timedelta(days=1)
-        team_df = self.df[((self.df["HomeTeam"] == norm) | (self.df["AwayTeam"] == norm)) & (self.df["ParsedDate"] < cutoff)]
+        team_df = self._rows(self._pos_by_team, norm)
+        team_df = team_df[team_df["ParsedDate"] < cutoff]
         if team_df.empty:
             return None
         league, season = team_df.iloc[0]["League"], team_df.iloc[0]["Season"]
-        league_df = self.df[(self.df["League"] == league) & (self.df["ParsedDate"] < cutoff)]
+        league_df = self._rows(self._pos_by_league, league)
+        league_df = league_df[league_df["ParsedDate"] < cutoff]
         if season != league_df["Season"].max():
             return None   # 이번 시즌 이 리그에 없음 (강등 등)
         table = self._league_table(league, season, cutoff)
@@ -296,6 +347,7 @@ class FormAnalyzer:
             return False
         return abs((a["dt"] - b["dt"]).days) <= SAME_MATCH_DAYS
 
+    @_memoized
     def get_team_recent_form(
         self,
         team_name: str,
@@ -336,7 +388,7 @@ class FormAnalyzer:
         if self.df is not None:
             norm_name = self.normalize_name(team_name)
             if norm_name in self._csv_teams:
-                team_df = self.df[(self.df["HomeTeam"] == norm_name) | (self.df["AwayTeam"] == norm_name)]
+                team_df = self._rows(self._pos_by_team, norm_name)
                 if as_of_dt is not None and "ParsedDate" in team_df.columns:
                     team_df = team_df[team_df["ParsedDate"] < as_of_dt]
                 for _, row in team_df.head(n_matches + len(rows)).iterrows():
@@ -394,6 +446,7 @@ class FormAnalyzer:
             } for r, res in zip(recent, results)],
         }
 
+    @_memoized
     def get_head_to_head(
         self,
         home_team: str,
@@ -430,9 +483,10 @@ class FormAnalyzer:
         # [2차 소스] 유럽 5대 리그 과거 데이터
         if self.df is not None:
             h_norm, a_norm = self.normalize_name(home_team), self.normalize_name(away_team)
-            h2h_df = self.df[
-                ((self.df["HomeTeam"] == h_norm) & (self.df["AwayTeam"] == a_norm)) |
-                ((self.df["HomeTeam"] == a_norm) & (self.df["AwayTeam"] == h_norm))
+            pair = self._rows(self._pos_by_team, h_norm)   # 홈팀이 나온 경기 중에서 두 팀 맞대결만
+            h2h_df = pair[
+                ((pair["HomeTeam"] == h_norm) & (pair["AwayTeam"] == a_norm)) |
+                ((pair["HomeTeam"] == a_norm) & (pair["AwayTeam"] == h_norm))
             ]
             if as_of_dt is not None and "ParsedDate" in h2h_df.columns:
                 h2h_df = h2h_df[h2h_df["ParsedDate"] < as_of_dt]

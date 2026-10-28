@@ -35,16 +35,19 @@ class BetmanResultsScraper:
             "Content-Type": "application/json; charset=UTF-8",
             "X-Requested-With": "XMLHttpRequest"
         }
+        self._visited = set()   # 이 세션에서 이미 연 쿠키용 시작 페이지 (대시보드는 같은 객체로 1분마다 조회 → 또 열지 않음)
 
     def fetch_round_results(self, gm_ts: int) -> List[Dict[str, Any]]:
         """특정 회차의 경기 결과 및 실제 스코어 목록 수집"""
-        # 세션 쿠키 갱신
+        # 세션 쿠키 갱신 (같은 회차는 세션마다 한 번만)
         init_url = f"{BASE_URL}/main/mainPage/gamebuy/winrstDetl.do?gmId={self.gm_id}&gmTs={gm_ts}"
-        try:
-            req_init = urllib.request.Request(init_url, headers={"User-Agent": USER_AGENT})
-            self.opener.open(req_init, timeout=8)
-        except Exception:
-            pass
+        if init_url not in self._visited:
+            try:
+                req_init = urllib.request.Request(init_url, headers={"User-Agent": USER_AGENT})
+                self.opener.open(req_init, timeout=8)
+                self._visited.add(init_url)
+            except Exception:
+                pass
 
         api_url = f"{BASE_URL}/gamebuy/winrst/inqWinrstDetlBody.do"
         payload = {
@@ -65,6 +68,7 @@ class BetmanResultsScraper:
             raw_items = data.get("detlBody", [])
         except Exception as e:
             print(f"⚠️ {gm_ts}회차 결과 수집 실패: {e}")
+            self._visited.discard(init_url)   # 세션이 끊겼을 수 있음 → 다음에는 시작 페이지부터 다시
             return []
 
         results = []
