@@ -615,7 +615,8 @@ def render_calibration(card) -> None:
 
 @st.cache_data(ttl=60)
 def load_results_index():
-    """(회차, 경기번호) → 결과 목록. 같은 번호에 기준선이 여러 개인 경우가 있어 리스트로 보관"""
+    """(회차, 경기번호) → 저장된(GitHub) 결과 목록. 같은 번호에 기준선이 여러 개인 경우가 있어 리스트로 보관.
+    화면에서는 이것 대신 results_index()를 쓴다 (실시간 결과까지 합친 것)"""
     path = project_root / "data" / "history" / "betman_recent_results.json"
     idx = {}
     if path.exists():
@@ -626,6 +627,23 @@ def load_results_index():
 
 
 @st.cache_data(ttl=60)
+def results_index():
+    """(회차, 경기번호) → 결과 줄들 — 모든 탭이 이것만 쓴다 (tests/test_prob_view.py가 막음).
+    저장된 결과(GitHub · 결과 갱신이 4~5시간씩 밀림) + 실시간이 켜져 있고 지금 회차에 시작했는데 결과가 아직 없는
+    경기가 있으면 베트맨에서 1분마다 바로 받은 결과를 합친다.
+    (2026-10-29: ① 탭만 실시간 결과를 붙여서 ④ 내 베팅 기록·② 탭·사이드바는 몇 시간 늦게 채점됐음)"""
+    idx = load_results_index()   # results-rule-ok
+    live_ts = str(detect_current_gm_ts(predictions)) if predictions else ""
+    if LIVE and live_ts and started_without_result(predictions, idx, live_ts):
+        rows = fetch_live_round_results(live_ts)
+        if rows:
+            fresh = {}
+            for r in rows:
+                fresh.setdefault((live_ts, str(r.get("match_seq"))), []).append(r)
+            idx = {**idx, **fresh}
+    return idx
+
+
 def load_prediction_log(gm_ts: str):
     """경기 시작 전에 고정 저장된 AI 예측 (사후 정보가 섞이지 않은 채점용 기록)"""
     path = project_root / "data" / "history" / "prediction_log" / f"{gm_ts}.json"
@@ -643,7 +661,7 @@ def load_past_round_matches(gm_ts: str) -> list:
     """
     from models.odds_normalizer import remove_margin
     out = []
-    for rows in load_results_index().values():
+    for rows in load_results_index().values():   # results-rule-ok: 지난 회차 카드 (저장된 결과가 전부)
         for r in rows:
             if str(r.get("gm_ts")) != str(gm_ts):
                 continue
@@ -1220,7 +1238,7 @@ with tab1:
 
         with st.container(border=True):
             # 회차 선택: 현재 판매 회차 + 결과가 있는 과거 회차 (과거는 조회 전용)
-            past_rounds = sorted({ts for ts, _ in load_results_index().keys() if ts and ts != str(current_gm_ts)}, reverse=True)
+            past_rounds = sorted({ts for ts, _ in results_index().keys() if ts and ts != str(current_gm_ts)}, reverse=True)
             round_labels = {"ALL": f"전체 회차 (현재 + 지난 {len(past_rounds)}개)"}
             if current_gm_ts:
                 round_labels[str(current_gm_ts)] = f"{current_gm_ts}회차 (현재 판매)"
@@ -1294,16 +1312,7 @@ with tab1:
             filtered_matches.append(m)
 
         # 경기 카드 목록: 배당 버튼을 눌러 바로 선택 (가로 스크롤 없이 휴대폰에서도 사용)
-        results_idx = load_results_index()
-        live_ts = str(current_gm_ts)
-        if live_on and current_gm_ts and sel_round in (live_ts, "ALL") and started_without_result(predictions, results_idx, live_ts):
-            live_rows = fetch_live_round_results(live_ts)
-            if live_rows:
-                results_idx = dict(results_idx)
-                fresh = {}
-                for r in live_rows:
-                    fresh.setdefault((live_ts, str(r.get("match_seq"))), []).append(r)
-                results_idx.update(fresh)
+        results_idx = results_index()   # 저장된 결과 + 실시간 결과 (모든 탭 공용)
         # 경기마다 자기 회차 기준으로 결과·경기 전 AI 기록을 찾는다 (전체 회차 보기 지원)
         def _ts(m):
             return str(m.get("gm_ts") or current_gm_ts)
@@ -1695,7 +1704,7 @@ with tab1:
             @st.fragment(run_every="60s")
             def _live_tick():
                 rows_ = fetch_live_round_results(str(current_gm_ts)) if started_without_result(
-                    predictions, load_results_index(), str(current_gm_ts)) else []
+                    predictions, load_results_index(), str(current_gm_ts)) else []   # results-rule-ok: 받을지 판단은 저장분 기준
                 n = len(rows_)
                 prev = st.session_state.get("live_result_count")
                 st.session_state["live_result_count"] = n
@@ -2087,7 +2096,7 @@ with tab2:
         t2_now = datetime.now().timestamp() * 1000
 
         T2_STATES = ["발매 중", "마감", "경기 중", "종료"]
-        t2_results = load_results_index()
+        t2_results = results_index()
         t2_by_match = {}   # 예측 파일에 회차(gm_ts)가 비어 있을 때를 위해 (경기번호, 홈, 원정)으로도 결과를 찾는다
         for _rows in t2_results.values():
             for _r in _rows:
@@ -3113,7 +3122,7 @@ with tab4:
         st.info("아직 저장한 기록이 없어요. ① 탭에서 경기를 고른 뒤 사이드바의 '💾 저장하기'를 누르세요. "
                 "실제로 산 조합은 '실제 구매', 연습은 '가상 구매'로 나눠 저장할 수 있어요.")
     else:
-        res_idx4 = load_results_index()
+        res_idx4 = results_index()
         cur_round4 = str(detect_current_gm_ts(predictions))
         recs = [{"slip": s, "kind": slip_kind(s), "grade": grade_slip(s, _slip_result_of(s, res_idx4))} for s in my_all]
 
@@ -3467,7 +3476,7 @@ with st.sidebar:
     # 📂 저장한 기록: 사이드바는 최근 3건만 짧게 — 전체 · 경기별 결과 · 불러오기 · 삭제는 📒 ④ 탭
     my_slips = load_slips(MY_SLIPS_PATH)
     if my_slips:
-        res_idx_s = load_results_index()
+        res_idx_s = results_index()
         st.markdown("<div style='padding:14px 0 4px;font-size:13px;font-weight:700'>"
                     f"📂 저장한 기록 {len(my_slips)}건 <span style='font-weight:400;opacity:.7'>(최근 3건 · 누르면 ④ 탭)</span></div>",
                     unsafe_allow_html=True)

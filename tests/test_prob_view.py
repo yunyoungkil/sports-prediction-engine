@@ -34,3 +34,12 @@ def test_dashboard_reads_probabilities_only_through_prob_view():
            if re.search(r"market_probs|model_probs|blended_probabilities|market_implied_probs", line)
            and "prob-rule-ok" not in line]
     assert not bad, "tracker/prob_view.shown_probs/current_probs를 쓰세요:\n" + "\n".join(bad)
+
+
+def test_dashboard_reads_results_only_through_results_index():
+    """결과도 한 곳에서 (저장된 결과 + 실시간 결과) — 화면이 저장된 결과만 직접 읽으면 그 탭만 몇 시간 늦게 채점됨
+    (2026-10-29: ④ 내 베팅 기록이 그랬음). results_index()를 쓰거나 '# results-rule-ok: 이유'를 달아야 함"""
+    src = Path(__file__).resolve().parent.parent / "dashboard" / "app.py"
+    bad = [f"{i}: {line.strip()}" for i, line in enumerate(src.read_text(encoding="utf-8").splitlines(), 1)
+           if "load_results_index(" in line and not line.lstrip().startswith("def ") and "results-rule-ok" not in line]
+    assert not bad, "results_index()를 쓰세요:\n" + "\n".join(bad)
