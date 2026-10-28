@@ -734,6 +734,11 @@ def render_tiles(tiles):
         unsafe_allow_html=True)
 
 
+def _set_section(sec):
+    """① 탭 위 숫자 칸: 아래 목록을 그 구간(open/wait/done)만 · None이면 전체"""
+    st.session_state["t1_section"] = sec
+
+
 def keep_valid(key, options):
     """목록이 바뀌어(회차·종목 변경) 예전 선택값이 없어졌으면 '전체'로 되돌림 (위젯을 그리기 전에만 호출)"""
     if st.session_state.get(key) not in options:
@@ -1333,12 +1338,14 @@ with tab1:
         open_ms = _ordered([m for m in filtered_matches if _section(m) == "open"])
         wait_ms = _ordered([m for m in filtered_matches if _section(m) == "wait"])
         done_ms = _ordered([m for m in filtered_matches if _section(m) == "done"], newest_first=True)
-        filtered_matches = open_ms + wait_ms + done_ms
+        # 위 숫자 칸을 누르면 그 구간만 (open / wait / done · 다시 누르면 전체)
+        sec_only = st.session_state.get("t1_section")
+        filtered_matches = {"open": open_ms, "wait": wait_ms, "done": done_ms}.get(sec_only, open_ms + wait_ms + done_ms)
 
         LOAD_STEP = 25
         # 필터가 바뀌면 처음 25경기부터 (회차·날짜·검색·필터·결과 수가 같을 때만 지금까지 불러온 만큼 유지)
         list_sig = (sel_round, sel_day, search_kw, sel_league, tuple(sel_types), tuple(sel_sports), only_open,
-                    only_single_opt, only_rec_opt, only_picked, len(filtered_matches))
+                    only_single_opt, only_rec_opt, only_picked, sec_only, len(filtered_matches))
         if st.session_state.get("step1_list_sig") != list_sig:
             st.session_state["step1_list_sig"] = list_sig
             st.session_state["step1_shown"] = LOAD_STEP
@@ -1389,7 +1396,7 @@ with tab1:
 
         # 회차 채점 요약 (현재 필터 기준). 배당 1순위는 모든 종료 경기, AI 1순위는 경기 전 기록이 있는 경기만
         mk_hits, ai_pairs = [], []
-        for m in filtered_matches:
+        for m in done_ms:
             res = _res(m)
             actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
             if not actual:
@@ -1402,7 +1409,7 @@ with tab1:
             if log and log.get("model_probs"):
                 ai_k, _ = top_pick(log["model_probs"], opts)
                 ai_pairs.append((ai_k == actual, mk_k == actual))
-        if filtered_matches:
+        if open_ms or wait_ms or done_ms:
             n_mk, n_ai = len(mk_hits), len(ai_pairs)
             mk_hit, ai_hit, ai_mk_hit = sum(mk_hits), sum(a for a, _ in ai_pairs), sum(b for _, b in ai_pairs)
             tiles = [
@@ -1415,7 +1422,19 @@ with tab1:
                  f"{ai_hit / n_ai * 100:.0f}% · 같은 경기 배당 1순위 {ai_mk_hit}/{n_ai}" if n_ai
                  else ("결과 나온 경기에 경기 전 AI 기록 없음" if n_mk else "결과가 나오면 표시")),
             ]
-            render_tiles(tiles)
+            # 누르면 아래 목록을 그 구간만 (적중률 두 칸은 '결과 나온 경기'로) · 보고 있는 칸은 ✔ · 다시 누르면 전체
+            tile_sec = ["open", "wait", "done", "done", "done"]
+            sec_n = {"open": len(open_ms), "wait": len(wait_ms), "done": len(done_ms)}
+            for i, (col, (label, value, sub), sec) in enumerate(zip(st.columns(len(tiles)), tiles, tile_sec)):
+                on = sec_only == sec and i < 3   # ✔ · '전체 보기'는 구간 칸에만 (적중률 칸은 늘 '결과 나온 경기 보기')
+                with col.container(border=True):
+                    st.markdown(f"<div style='font-size:12px;opacity:.75'>{'✔ ' if on else ''}{label}</div>"
+                                f"<div style='font-size:20px;font-weight:700;line-height:1.4'>{value}</div>"
+                                f"<div style='font-size:12px;opacity:.65;min-height:36px'>{sub}</div>",
+                                unsafe_allow_html=True)
+                    st.button("✕ 전체 보기" if on else ("결과 나온 경기 보기 ›" if label.startswith(("📈", "🧠")) else "이것만 보기 ›"),
+                              key=f"t1_tile_{label[:2]}", type="tertiary", on_click=_set_section, args=(None if on else sec,),
+                              disabled=not on and not sec_n[sec])   # 0경기 구간은 눌러도 빈 목록이라 막음
             if n_mk:
                 st.caption("💡 적중률은 참고용이에요. 배당 1순위만 찍어도 꽤 맞으므로 AI는 '같은 경기'의 배당 1순위와 비교하세요. "
                            "AI 실력의 공식 지표는 ③ 성과 검증 탭의 성적표(Log loss)입니다.")
