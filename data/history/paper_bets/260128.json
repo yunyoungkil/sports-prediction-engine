@@ -1,0 +1,601 @@
+{
+  "gm_ts": "260128",
+  "bets": [
+    {
+      "strategy": "B_fav_double",
+      "legs": [
+        {
+          "seq": "1088",
+          "key": "away_win",
+          "odds": 1.29,
+          "match_time": "26.10.29 (목) 02:30",
+          "home_team": "베네치아",
+          "away_team": "인테르나치오날레 밀라노",
+          "league": "이탈리아 세리에A"
+        },
+        {
+          "seq": "1009",
+          "key": "home_win",
+          "odds": 1.21,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "포항 스틸러스",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "ev_ai": -0.1178,
+      "combined_odds": 1.6,
+      "stake": 1000,
+      "bet_id": "B_fav_double:1088a+1009h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "C_finder_top",
+      "legs": [
+        {
+          "seq": "1088",
+          "key": "away_win",
+          "odds": 1.29,
+          "match_time": "26.10.29 (목) 02:30",
+          "home_team": "베네치아",
+          "away_team": "인테르나치오날레 밀라노",
+          "league": "이탈리아 세리에A"
+        },
+        {
+          "seq": "1009",
+          "key": "home_win",
+          "odds": 1.21,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "포항 스틸러스",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "ev_ai": -0.1178,
+      "combined_odds": 1.6,
+      "stake": 1000,
+      "bet_id": "C_finder_top:1088a+1009h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "1009",
+          "key": "home_win",
+          "odds": 1.21,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "포항 스틸러스",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "1088",
+          "key": "away_win",
+          "odds": 1.29,
+          "match_time": "26.10.29 (목) 02:30",
+          "home_team": "베네치아",
+          "away_team": "인테르나치오날레 밀라노",
+          "league": "이탈리아 세리에A"
+        },
+        {
+          "seq": "1021",
+          "key": "home_win",
+          "odds": 2.33,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "나고야 그램퍼스",
+          "away_team": "우라와 레드",
+          "league": "일본 리그컵"
+        }
+      ],
+      "combined_odds": 3.7,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:1009h+1088a+1021h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "1009",
+          "key": "home_win",
+          "odds": 1.21,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "포항 스틸러스",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "1088",
+          "key": "away_win",
+          "odds": 1.29,
+          "match_time": "26.10.29 (목) 02:30",
+          "home_team": "베네치아",
+          "away_team": "인테르나치오날레 밀라노",
+          "league": "이탈리아 세리에A"
+        },
+        {
+          "seq": "1021",
+          "key": "draw",
+          "odds": 3.2,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "나고야 그램퍼스",
+          "away_team": "우라와 레드",
+          "league": "일본 리그컵"
+        }
+      ],
+      "combined_odds": 5.0,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:1009h+1088a+1021d",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "1009",
+          "key": "home_win",
+          "odds": 1.21,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "포항 스틸러스",
+          "league": "AFC 챔피언스리그 엘리트"
+        },
+        {
+          "seq": "1088",
+          "key": "away_win",
+          "odds": 1.29,
+          "match_time": "26.10.29 (목) 02:30",
+          "home_team": "베네치아",
+          "away_team": "인테르나치오날레 밀라노",
+          "league": "이탈리아 세리에A"
+        },
+        {
+          "seq": "1021",
+          "key": "away_win",
+          "odds": 2.45,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "나고야 그램퍼스",
+          "away_team": "우라와 레드",
+          "league": "일본 리그컵"
+        }
+      ],
+      "combined_odds": 3.9,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:1009h+1088a+1021a",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1005",
+          "key": "home_win",
+          "odds": 1.57,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "감바 오사카",
+          "away_team": "부리람 유나이티드",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "combined_odds": 1.57,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1005h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1009",
+          "key": "home_win",
+          "odds": 1.21,
+          "match_time": "26.10.28 (수) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "포항 스틸러스",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "combined_odds": 1.21,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1009h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1078",
+          "key": "home_win",
+          "odds": 1.58,
+          "match_time": "26.10.29 (목) 02:30",
+          "home_team": "AC밀란",
+          "away_team": "볼로냐",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.58,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1078h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1083",
+          "key": "away_win",
+          "odds": 2.31,
+          "match_time": "26.10.29 (목) 02:30",
+          "home_team": "파르마",
+          "away_team": "우디네세",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 2.31,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1083a",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1088",
+          "key": "away_win",
+          "odds": 1.29,
+          "match_time": "26.10.29 (목) 02:30",
+          "home_team": "베네치아",
+          "away_team": "인테르나치오날레 밀라노",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.29,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1088a",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1110",
+          "key": "away_win",
+          "odds": 1.59,
+          "match_time": "26.10.29 (목) 04:45",
+          "home_team": "제노아",
+          "away_team": "유벤투스",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.59,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1110a",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1115",
+          "key": "away_win",
+          "odds": 1.64,
+          "match_time": "26.10.29 (목) 04:45",
+          "home_team": "AC몬차",
+          "away_team": "SSC나폴리",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.64,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1115a",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1152",
+          "key": "home_win",
+          "odds": 1.41,
+          "match_time": "26.10.29 (목) 08:30",
+          "home_team": "샬럿FC",
+          "away_team": "CF몽레알",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.41,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1152h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1156",
+          "key": "home_win",
+          "odds": 1.38,
+          "match_time": "26.10.29 (목) 08:30",
+          "home_team": "인터 마이애미CF",
+          "away_team": "FC신시내티",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.38,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1156h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1160",
+          "key": "home_win",
+          "odds": 1.86,
+          "match_time": "26.10.29 (목) 08:30",
+          "home_team": "뉴잉글랜드 레벌루션",
+          "away_team": "뉴욕 레드불스",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.86,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1160h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1164",
+          "key": "home_win",
+          "odds": 1.66,
+          "match_time": "26.10.29 (목) 08:30",
+          "home_team": "뉴욕 시티FC",
+          "away_team": "애틀랜타 유나이티드FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.66,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1164h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1168",
+          "key": "home_win",
+          "odds": 1.85,
+          "match_time": "26.10.29 (목) 08:30",
+          "home_team": "토론토FC",
+          "away_team": "DC유나이티드",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.85,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1168h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1192",
+          "key": "away_win",
+          "odds": 2.24,
+          "match_time": "26.10.29 (목) 09:30",
+          "home_team": "오스틴FC",
+          "away_team": "레알 솔트레이크",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 2.24,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1192a",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1196",
+          "key": "home_win",
+          "odds": 1.45,
+          "match_time": "26.10.29 (목) 09:30",
+          "home_team": "시카고 파이어FC",
+          "away_team": "올랜도 시티SC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.45,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1196h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1200",
+          "key": "home_win",
+          "odds": 1.95,
+          "match_time": "26.10.29 (목) 09:30",
+          "home_team": "FC댈러스",
+          "away_team": "콜럼버스 크루",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.95,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1200h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1204",
+          "key": "home_win",
+          "odds": 1.36,
+          "match_time": "26.10.29 (목) 09:30",
+          "home_team": "미네소타 유나이티드FC",
+          "away_team": "스포팅 캔자스시티",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.36,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1204h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1208",
+          "key": "home_win",
+          "odds": 1.72,
+          "match_time": "26.10.29 (목) 09:30",
+          "home_team": "내슈빌SC",
+          "away_team": "필라델피아 유니언",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.72,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1208h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1212",
+          "key": "home_win",
+          "odds": 1.71,
+          "match_time": "26.10.29 (목) 09:30",
+          "home_team": "세인트루이스 시티SC",
+          "away_team": "포틀랜드 팀버스",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.71,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1212h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1224",
+          "key": "home_win",
+          "odds": 2.02,
+          "match_time": "26.10.29 (목) 11:30",
+          "home_team": "새너제이 어스퀘이크스",
+          "away_team": "콜로라도 래피즈",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 2.02,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1224h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1228",
+          "key": "home_win",
+          "odds": 1.72,
+          "match_time": "26.10.29 (목) 11:30",
+          "home_team": "시애틀 사운더스FC",
+          "away_team": "휴스턴 다이너모FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.72,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1228h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1232",
+          "key": "home_win",
+          "odds": 1.36,
+          "match_time": "26.10.29 (목) 11:30",
+          "home_team": "밴쿠버 화이트캡스FC",
+          "away_team": "샌디에이고FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.36,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1232h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1282",
+          "key": "home_win",
+          "odds": 1.58,
+          "match_time": "26.10.30 (금) 02:30",
+          "home_team": "프로시노네",
+          "away_team": "US레체",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.58,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1282h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1287",
+          "key": "home_win",
+          "odds": 2.05,
+          "match_time": "26.10.30 (금) 04:45",
+          "home_team": "ACF피오렌티나",
+          "away_team": "아탈란타BC",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 2.05,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1287h",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1308",
+          "key": "away_win",
+          "odds": 2.15,
+          "match_time": "26.10.30 (금) 18:00",
+          "home_team": "브리즈번 로어",
+          "away_team": "오클랜드FC",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 2.15,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1308a",
+      "created_at": "2026-10-28T05:35:25+00:00"
+    }
+  ]
+}
