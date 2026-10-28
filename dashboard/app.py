@@ -111,7 +111,7 @@ st.markdown("""
     [class*="st-key-t1tile_"] { position: absolute !important; inset: 0; z-index: 2; margin: 0 !important; }
     [class*="st-key-t1tile_"] button { width: 100%; height: 100%; opacity: 0; cursor: pointer; }
     [class*="st-key-t1tile_"] button:disabled { cursor: default; }
-    .st-key-t1card_on { outline: 2px solid #3987e5; border-radius: .5rem; }
+    .st-key-t1card_on { outline: 2px solid #3987e5; border-radius: .5rem; background: rgba(57, 135, 229, .12); }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1429,18 +1429,16 @@ with tab1:
                  f"{ai_hit / n_ai * 100:.0f}% · 같은 경기 배당 1순위 {ai_mk_hit}/{n_ai}" if n_ai
                  else ("결과 나온 경기에 경기 전 AI 기록 없음" if n_mk else "결과가 나오면 표시")),
             ]
-            # 카드를 누르면 아래 목록을 그 구간만 (적중률 두 칸은 '결과 나온 경기') · 보고 있는 카드는 파란 테두리 · 다시 누르면 전체
+            # 카드 = 필터 버튼: 누르면 아래 목록을 그 구간만 (적중률 두 칸은 '결과 나온 경기') · 켜진 카드는 파란 테두리 ·
+            # 다시 누르면 전체 (안내 글자는 넣지 않음 — 카드가 지저분해짐)
             tile_sec = ["open", "wait", "done", "done", "done"]
             sec_n = {"open": len(open_ms), "wait": len(wait_ms), "done": len(done_ms)}
             for i, (col, (label, value, sub), sec) in enumerate(zip(st.columns(len(tiles)), tiles, tile_sec)):
                 on = sec_only == sec and i < 3   # 표시는 구간 카드에만 (적중률 카드는 늘 '결과 나온 경기 보기')
-                hint = ("✔ 보는 중 · 누르면 전체" if on else "0경기" if not sec_n[sec]
-                        else "› 눌러서 결과 나온 경기 보기" if i >= 3 else "› 눌러서 이것만 보기")
                 with col.container(border=True, key=f"t1card_on_{i}" if on else f"t1card_{i}"):
                     st.markdown(f"<div style='font-size:12px;opacity:.75'>{label}</div>"
                                 f"<div style='font-size:20px;font-weight:700;line-height:1.4'>{value}</div>"
-                                f"<div style='font-size:12px;opacity:.65;min-height:36px'>{sub}</div>"
-                                f"<div style='font-size:11px;color:{'#3987e5' if on else '#94a3b8'};margin-top:4px'>{hint}</div>",
+                                f"<div style='font-size:12px;opacity:.65;min-height:36px'>{sub}</div>",
                                 unsafe_allow_html=True)
                     # 카드 전체를 덮는 투명 버튼 (위 CSS) · 0경기 구간은 눌러도 빈 목록이라 막음
                     st.button(label, key=f"t1tile_{i}", on_click=_set_section, args=(None if on else sec,),
