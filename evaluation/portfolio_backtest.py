@@ -46,8 +46,11 @@ def _roi(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     paid = sum(r["payout"] for r in rows)
     if not rows:
         return {"bets": 0}
-    roi, lo, hi = cluster_roi_confidence_interval([(r["payout"] - r["stake"]) / r["stake"] for r in rows],
-                                                  [r["gm_ts"] for r in rows])
+    roi, lo, hi = cluster_roi_confidence_interval(
+        [(r["payout"] - r["stake"]) / r["stake"] for r in rows],
+        [r["gm_ts"] for r in rows],
+        weights=[r["stake"] for r in rows],
+    )
     return {"bets": len(rows), "hits": sum(1 for r in rows if r["payout"] > 0), "staked": staked, "returned": paid,
             "profit": paid - staked, "roi_pct": round((paid / staked - 1) * 100, 2) if staked else 0.0, "roi_ci": [lo, hi]}
 

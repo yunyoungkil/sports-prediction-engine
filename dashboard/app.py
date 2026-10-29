@@ -3196,7 +3196,7 @@ with tab3:
         # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교
         # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용 1~5번, 대시보드 배경에서 검사 통과)
         import altair as alt
-        STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181"}
+        STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181", "F": "#a855f7"}
 
         def _roi_chart(data_, title, min_bets=3):
             unit = (data_ or {}).get("stake_unit", 1000)
@@ -3205,11 +3205,12 @@ with tab3:
                 cp = v.get("cum_profit") or []
                 if len(cp) < min_bets:
                     continue
+                cs = v.get("cum_staked") or [(i + 1) * unit for i in range(len(cp))]
                 lab = v["label"].split(" (")[0]
                 dom.append(lab)
                 rng_.append(STRAT_COLOR.get(key[:1], "#94a3b8"))
                 skip = 10 if len(cp) > 50 else 0   # 처음 몇 건은 ±100%로 크게 흔들려 나머지가 납작해짐
-                rows_ += [{"전략": lab, "끝난 베팅 수": i + 1, "누적 수익률": cp[i] / ((i + 1) * unit) * 100,
+                rows_ += [{"전략": lab, "끝난 베팅 수": i + 1, "누적 수익률": (cp[i] / cs[i] * 100) if cs[i] else 0.0,
                            "누적 손익(원)": cp[i]} for i in range(skip, len(cp))]
             if not rows_:
                 return False
@@ -3526,7 +3527,9 @@ with tab4:
             kr = sum(r["grade"]["payout"] for r in kd)
             actual_roi = (kr - ki) / ki * 100.0 if ki else 0.0
             rets = [(r["grade"]["payout"] - r["grade"]["stake"]) / r["grade"]["stake"] for r in kd]
-            _, lo_k, hi_k = cluster_roi_confidence_interval(rets, [r["slip"].get("gm_ts") for r in kd])
+            _, lo_k, hi_k = cluster_roi_confidence_interval(
+                rets, [r["slip"].get("gm_ts") for r in kd], weights=[r["grade"]["stake"] for r in kd]
+            )
             base_rows.append({"구분": f"내 기록 — {lab}", "끝난 건수": f"{len(kd):,}", "수익률": f"{actual_roi:+.1f}%",
                               "95% 범위": roi_range_text(len(kd), lo_k, hi_k, "%")})
             if e_live.get("bets"):

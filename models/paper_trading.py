@@ -223,14 +223,17 @@ def _summarize(per: Dict[str, List[Dict[str, Any]]], pending: Dict[str, int], la
         staked = sum(r["stake"] for r in rows)
         returned = sum(r["payout"] for r in rows)
         rets = [(r["payout"] - r["stake"]) / r["stake"] for r in rows]
-        # [6.5] 회차 단위 신뢰구간 (같은 회차의 조합끼리는 경기를 공유해 독립이 아님)
-        roi, lo, hi = cluster_roi_confidence_interval(rets, [r["gm_ts"] for r in rows]) if rets else (0.0, 0.0, 0.0)
+        stakes = [r["stake"] for r in rows]
+        # [6.5] 회차 단위 신뢰구간 (같은 회차의 조합끼리는 경기를 공유해 독립이 아님 · F처럼 금액이 다르면 투자금 가중)
+        roi, lo, hi = cluster_roi_confidence_interval(rets, [r["gm_ts"] for r in rows], weights=stakes) if rets else (0.0, 0.0, 0.0)
         cum = np.cumsum([r["payout"] - r["stake"] for r in rows]).tolist()
+        cum_s = np.cumsum(stakes).tolist()
         out[s] = {
             "label": labels.get(s, s), "bets": len(rows), "hits": sum(r["hit"] for r in rows), "pending": pending.get(s, 0),
             "staked": staked, "returned": returned, "profit": returned - staked,
             "roi_pct": round((returned / staked - 1) * 100, 2) if staked else 0.0, "roi_ci_low": lo, "roi_ci_high": hi,
             "cum_profit": [int(x) for x in cum],
+            "cum_staked": [int(x) for x in cum_s],
             "verdict": "판단 보류 (표본 부족)" if len(rows) < MIN_FOR_VERDICT else ("수익 입증" if lo > 0 else "수익 미입증"),
         }
     return out

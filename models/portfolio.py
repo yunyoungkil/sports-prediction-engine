@@ -112,6 +112,15 @@ def kelly_fractions(probs: np.ndarray, R: np.ndarray, cap: float = ROUND_CAP) ->
     return f
 
 
+def stake_fractions(probs: np.ndarray, R: np.ndarray) -> np.ndarray:
+    """실제로 걸 비율: 켈리의 1/4 → 회차 합계 ROUND_CAP 이내. 상한은 1/4 한 '뒤'에 건다
+    (켈리 단계에서 ROUND_CAP로 묶으면 1/4 뒤 최대 2.5%로 줄어듦)"""
+    f = kelly_fractions(probs, R, cap=min(0.99, ROUND_CAP / KELLY_FRACTION)) * KELLY_FRACTION
+    if f.sum() > ROUND_CAP:
+        f *= ROUND_CAP / f.sum()
+    return f
+
+
 def plan(predictions: List[Dict[str, Any]], bankroll: float) -> Dict[str, Any]:
     """이번 회차 F 베팅 계획: {"bets": [{legs: [(경기, 선택지)], combined_odds, stake, ev_ai}], "games": n, "candidates": n}"""
     games = candidate_games(predictions)
@@ -123,9 +132,7 @@ def plan(predictions: List[Dict[str, Any]], bankroll: float) -> Dict[str, Any]:
     if not combos:
         return out
     probs, R = scenario_matrix(games, combos)
-    f = kelly_fractions(probs, R) * KELLY_FRACTION
-    if f.sum() > ROUND_CAP:
-        f *= ROUND_CAP / f.sum()
+    f = stake_fractions(probs, R)
     for c, frac in enumerate(f):
         stake = int(bankroll * frac // UNIT * UNIT)
         if stake < UNIT:

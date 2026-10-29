@@ -165,10 +165,11 @@ def cluster_bootstrap_ci(
     clusters: List[Any],
     n_bootstrap: int = 2000,
     alpha: float = 0.05,
-    random_seed: int = 42
+    random_seed: int = 42,
+    weights: Optional[List[float]] = None,
 ) -> Tuple[float, float]:
     """
-    [Phase 6.5] 회차(클러스터) 단위 부트스트랩 — 평균의 95% 신뢰구간.
+    [Phase 6.5] 회차(클러스터) 단위 부트스트랩 — 평균(weights가 있으면 가중평균)의 95% 신뢰구간.
     같은 회차의 경기·베팅은 독립이 아닐 수 있어서(같은 날·같은 리그, 조합끼리 경기 공유) 회차를 통째로 다시 뽑는다.
     회차가 적으면 회차 단위 범위가 오히려 너무 좁게 나올 수 있어(회차 2개면 조합이 3가지뿐)
     경기 단위 범위와 비교해 넓은 쪽을 쓴다 → 항상 둘 중 더 보수적인 범위.
@@ -179,13 +180,21 @@ def cluster_bootstrap_ci(
         return 0.0, 0.0
     q = [100.0 * alpha / 2.0, 100.0 * (1.0 - alpha / 2.0)]
     rng = np.random.default_rng(random_seed)
-    low, high = np.percentile(arr[rng.integers(0, len(arr), size=(n_bootstrap, len(arr)))].mean(axis=1), q)
+    idx = rng.integers(0, len(arr), size=(n_bootstrap, len(arr)))
+    if weights is None:
+        w = np.ones(len(arr), dtype=float)
+        low, high = np.percentile(arr[idx].mean(axis=1), q)
+    else:
+        w = np.maximum(np.asarray(weights, dtype=float), 0.0)
+        if w.sum() <= 0:
+            w = np.ones(len(arr), dtype=float)
+        low, high = np.percentile((arr[idx] * w[idx]).sum(axis=1) / np.maximum(w[idx].sum(axis=1), 1e-12), q)
     keys, inv = np.unique(np.asarray([str(c) for c in clusters]), return_inverse=True)
     if len(keys) >= 2:
-        sums = np.bincount(inv, weights=arr)
-        cnts = np.bincount(inv).astype(float)
+        sums = np.bincount(inv, weights=arr * w)
+        cnts = np.bincount(inv, weights=w).astype(float)
         pick = rng.integers(0, len(keys), size=(n_bootstrap, len(keys)))
-        c_low, c_high = np.percentile(sums[pick].sum(axis=1) / cnts[pick].sum(axis=1), q)
+        c_low, c_high = np.percentile(sums[pick].sum(axis=1) / np.maximum(cnts[pick].sum(axis=1), 1e-12), q)
         low, high = min(low, c_low), max(high, c_high)
     return float(low), float(high)
 
@@ -195,13 +204,20 @@ def cluster_roi_confidence_interval(
     clusters: List[Any],
     n_bootstrap: int = 2000,
     alpha: float = 0.05,
-    random_seed: int = 42
+    random_seed: int = 42,
+    weights: Optional[List[float]] = None,
 ) -> Tuple[float, float, float]:
-    """bootstrap_roi_confidence_interval과 같은 형식 (평균 ROI %, 하한 %, 상한 %), 단 회차 단위로 다시 뽑음"""
+    """bootstrap_roi_confidence_interval과 같은 형식 (평균 ROI %, 하한 %, 상한 %), 단 회차 단위로 다시 뽑음.
+    weights(베팅별 금액)가 주어지면 투자금 가중 평균 ROI와 가중 부트스트랩 범위를 반환한다."""
     if not returns:
         return 0.0, 0.0, 0.0
-    point_est = float(np.mean(returns)) * 100.0
+    arr = np.asarray(returns, dtype=float)
+    if weights is None:
+        point_est = float(arr.mean()) * 100.0
+    else:
+        w = np.maximum(np.asarray(weights, dtype=float), 0.0)
+        point_est = float((arr @ w) / w.sum() if w.sum() > 0 else arr.mean()) * 100.0
     if len(returns) < 5:
         return round(point_est, 2), round(point_est, 2), round(point_est, 2)
-    low, high = cluster_bootstrap_ci(returns, clusters, n_bootstrap, alpha, random_seed)
+    low, high = cluster_bootstrap_ci(returns, clusters, n_bootstrap, alpha, random_seed, weights=weights)
     return round(point_est, 2), round(low * 100.0, 2), round(high * 100.0, 2)
