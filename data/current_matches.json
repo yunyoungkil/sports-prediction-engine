@@ -10654,7 +10654,7 @@
     "kickoff_ts": 1793259900000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "애들레이드 유나이티드",
     "away_team": "라이언시티 세일러스",
@@ -10699,7 +10699,7 @@
     "kickoff_ts": 1793259900000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "애들레이드 유나이티드",
     "away_team": "라이언시티 세일러스",
@@ -10744,7 +10744,7 @@
     "kickoff_ts": 1793259900000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "애들레이드 유나이티드",
     "away_team": "라이언시티 세일러스",
@@ -10789,7 +10789,7 @@
     "kickoff_ts": 1793259900000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "애들레이드 유나이티드",
     "away_team": "라이언시티 세일러스",
@@ -11164,12 +11164,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 17:02:59",
+        "from": {
+          "home_win": 1.4,
+          "draw": 3.75,
+          "away_win": 5.9
+        },
+        "to": {
+          "home_win": 1.35,
+          "draw": 4.0,
+          "away_win": 6.3
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.4,
-      "draw": 3.75,
-      "away_win": 5.9
+      "home_win": 1.35,
+      "draw": 4.0,
+      "away_win": 6.3
     },
     "gm_ts": 260128
   },
@@ -11209,12 +11224,27 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-10-29 17:02:59",
+        "from": {
+          "home_win": 2.27,
+          "draw": 3.15,
+          "away_win": 2.55
+        },
+        "to": {
+          "home_win": 2.19,
+          "draw": 3.1,
+          "away_win": 2.7
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "odds": {
-      "home_win": 2.27,
-      "draw": 3.15,
-      "away_win": 2.55
+      "home_win": 2.19,
+      "draw": 3.1,
+      "away_win": 2.7
     },
     "gm_ts": 260128
   },
@@ -11239,11 +11269,27 @@
     "match_state": "2",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 17:02:59",
+        "from": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "to": {
+          "home_win": 1.89,
+          "draw": 0.0,
+          "away_win": 1.61
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.79,
+      "home_win": 1.89,
       "draw": 0.0,
-      "away_win": 1.69
+      "away_win": 1.61
     },
     "gm_ts": 260128
   },
