@@ -83,7 +83,19 @@ from tracker.my_slips import (BASIS_LABEL, KIND_LABEL, MAX_SAVED_COMBOS, REASON_
                               pick_basis, save_json, slip_kind, update_combos, update_slip)
 
 # 내 선택 저장 위치 (개인 기록이라 저장소에 올리지 않음 · .gitignore). 테스트는 SPE_USER_DATA_DIR 로 다른 폴더를 씀
-MY_DATA_DIR = Path(os.environ.get("SPE_USER_DATA_DIR") or (project_root / "user_data"))
+def _user_data_dir() -> Path:
+    env = os.environ.get("SPE_USER_DATA_DIR")
+    if not env and sys.platform.startswith("win"):
+        try:
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment") as k:
+                env, _ = winreg.QueryValueEx(k, "SPE_USER_DATA_DIR")
+        except Exception:
+            env = None
+    return Path(env) if env else (project_root / "user_data")
+
+
+MY_DATA_DIR = _user_data_dir()
 MY_CURRENT_PATH = MY_DATA_DIR / "current_selections.json"
 MY_SLIPS_PATH = MY_DATA_DIR / "my_slips.json"
 
