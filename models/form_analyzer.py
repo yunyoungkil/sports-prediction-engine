@@ -102,20 +102,52 @@ def _memoized(method):
 
 
 class FormAnalyzer:
+    LEAGUE_ALIASES = {
+        "A리그": "호주 A리그",
+        "호주A리그": "호주 A리그",
+        "EFL챔": "잉글랜드 챔피언십",
+        "J1 백년구상리그": "일본 J1리그",
+    }
+    CUP_KEYWORDS = ("컵", "챔피언스", "유로파", "컨퍼런스", "친선", "네이션스", "예선", "올림픽", "아시안", "천황배", "FA", "슈퍼컵", "선수권", "토너먼트")
+
     def __init__(
         self,
         history_csv_path: str = "data/history/all_historical_matches.csv",
-        betman_results_path: str = "data/history/betman_recent_results.json"
+        betman_results_path: str = "data/history/betman_recent_results.json",
+        betman_archive_path: Optional[str] = None,
     ):
         self.history_path = Path(history_csv_path)
         self.betman_results_path = Path(betman_results_path)
+        if betman_archive_path is not None:
+            self.betman_archive_path = Path(betman_archive_path) if betman_archive_path else None
+        elif betman_results_path == "data/history/betman_recent_results.json":
+            self.betman_archive_path = Path("data/history/betman_soccer_1x2.csv")
+        else:
+            self.betman_archive_path = None
         self.df = None
+        self.betman_archive_df = None
         self.betman_matches = []
         self.betman_by_team = {}
         self._table_cache = {}   # (리그, 시즌, 기준일) → 순위표
+        self._bm_table_cache = {}
         self._norm_cache = {}    # 팀 이름 → 정규화 이름 (경기마다 수십 번씩 불려서 한 번만 계산)
         self._result_cache = {}  # 폼·순위·맞대결 결과 (_memoized)
         self._load_data()
+
+    @staticmethod
+    def _compact_key(name: str) -> str:
+        return re.sub(r"\s+", "", str(name or "").strip())
+
+    def _index_betman_match(self, m: Dict[str, Any]) -> None:
+        self.betman_matches.append(m)
+        for raw in (m.get("home_team", ""), m.get("away_team", "")):
+            t = str(raw or "").strip()
+            if not t:
+                continue
+            keys = {t, self._compact_key(t), self.normalize_name(t), self._compact_key(self.normalize_name(t))}
+            for k in keys:
+                if k:
+                    self.betman_by_team.setdefault(k, []).append(m)
 
     def _load_data(self):
         # 1. 유럽 5대 리그 과거 CSV 로드
@@ -140,51 +172,73 @@ class FormAnalyzer:
                     if pd.notnull(lg):
                         self._pos_by_league.setdefault(lg, []).append(pos)
 
-        # 2. 베트맨 최근 회차 실제 결과 로드 (중복 제거된 고유 경기 목록 및 인덱싱)
+        # 2. 베트맨 최근 회차 실제 결과 및 축구 아카이브 로드 (중복 제거된 고유 경기 목록 및 인덱싱)
         self.betman_by_team = {}
+        seen = set()
         if self.betman_results_path.exists():
             try:
                 with open(self.betman_results_path, "r", encoding="utf-8") as f:
                     raw_bm = json.load(f)
-                    seen = set()
                     for m in raw_bm:
-                        # 핸디캡 줄은 점수에 핸디캡이 더해져 있고, 전반 줄은 전반 점수라 실제 최종 점수가 아님
+                        # 핸디캡·언더오버·SUM(홀짝)·전반 줄은 실제 최종 득실 점수가 아님 (언더오버·SUM은 합계 점수가 home_score에 들어감)
                         gt = str(m.get("game_type", ""))
-                        if "핸디캡" in gt or "전반" in gt:
+                        if any(x in gt for x in ("핸디캡", "전반", "언더오버", "SUM", "홀짝")):
                             continue
-                        k = (m.get("gm_ts"), m.get("home_team"), m.get("away_team"))
-                        if k not in seen and m.get("home_score") is not None:
+                        if m.get("home_score") is None or m.get("away_score") is None:
+                            continue
+                        m["_parsed_dt"] = parse_date_value(m.get("match_time"))
+                        dt_key = m["_parsed_dt"].strftime("%Y-%m-%d") if m.get("_parsed_dt") is not None else str(m.get("gm_ts"))
+                        k = (dt_key, self._compact_key(m.get("home_team", "")), self._compact_key(m.get("away_team", "")))
+                        if k not in seen:
                             seen.add(k)
-                            m["_parsed_dt"] = parse_date_value(m.get("match_time"))
-                            self.betman_matches.append(m)
-                            
-                            # 팀별 빠른 검색 인덱스 구축
-                            ht = m.get("home_team", "").strip()
-                            at = m.get("away_team", "").strip()
-                            if ht:
-                                self.betman_by_team.setdefault(ht, []).append(m)
-                                nh = self.normalize_name(ht)
-                                if nh != ht:
-                                    self.betman_by_team.setdefault(nh, []).append(m)
-                            if at:
-                                self.betman_by_team.setdefault(at, []).append(m)
-                                na = self.normalize_name(at)
-                                if na != at:
-                                    self.betman_by_team.setdefault(na, []).append(m)
-                
-                # 최신 경기 순 정렬 유지
-                self.betman_matches.sort(
-                    key=lambda x: x["_parsed_dt"] if x.get("_parsed_dt") is not None else pd.Timestamp.min,
-                    reverse=True
-                )
-                for t_list in self.betman_by_team.values():
-                    t_list.sort(
-                        key=lambda x: x["_parsed_dt"] if x.get("_parsed_dt") is not None else pd.Timestamp.min,
-                        reverse=True
-                    )
+                            self._index_betman_match(m)
             except Exception:
                 self.betman_matches = []
                 self.betman_by_team = {}
+
+        # 3. 베트맨 과거 축구 승무패 아카이브 (2.3만 경기 — 비유럽 리그 폼·맞대결·순위 보강)
+        if self.betman_archive_path and self.betman_archive_path.exists():
+            try:
+                adf = pd.read_csv(self.betman_archive_path)
+                adf = adf.dropna(subset=["home_score", "away_score", "home_team", "away_team"]).copy()
+                adf["ParsedDate"] = pd.to_datetime(adf["match_time"].astype(str).str.slice(0, 8), format="%y.%m.%d", errors="coerce")
+                adf = adf.dropna(subset=["ParsedDate"]).sort_values("ParsedDate", ascending=False)
+                adf["NormLeague"] = adf["league"].astype(str).map(lambda x: self.LEAGUE_ALIASES.get(x.strip(), x.strip()))
+                adf["HomeKey"] = adf["home_team"].astype(str).str.replace(r"\s+", "", regex=True)
+                adf["AwayKey"] = adf["away_team"].astype(str).str.replace(r"\s+", "", regex=True)
+                adf = adf.drop_duplicates(subset=["ParsedDate", "HomeKey", "AwayKey"])
+                self.betman_archive_df = adf
+                for row in adf.to_dict("records"):
+                    dt_val = row["ParsedDate"]
+                    k = (dt_val.strftime("%Y-%m-%d"), row["HomeKey"], row["AwayKey"])
+                    if k in seen:
+                        continue
+                    seen.add(k)
+                    m = {
+                        "gm_ts": row.get("gm_ts"),
+                        "match_time": str(row.get("match_time", "")),
+                        "league": row.get("NormLeague", ""),
+                        "home_team": str(row.get("home_team", "")).strip(),
+                        "away_team": str(row.get("away_team", "")).strip(),
+                        "home_score": int(row["home_score"]),
+                        "away_score": int(row["away_score"]),
+                        "game_type": "축구 승무패",
+                        "_parsed_dt": dt_val,
+                    }
+                    self._index_betman_match(m)
+            except Exception:
+                self.betman_archive_df = None
+
+        # 최신 경기 순 정렬 유지
+        self.betman_matches.sort(
+            key=lambda x: x["_parsed_dt"] if x.get("_parsed_dt") is not None else pd.Timestamp.min,
+            reverse=True
+        )
+        for t_list in self.betman_by_team.values():
+            t_list.sort(
+                key=lambda x: x["_parsed_dt"] if x.get("_parsed_dt") is not None else pd.Timestamp.min,
+                reverse=True
+            )
 
     def _rows(self, index: Dict[Any, List[int]], key: Any) -> pd.DataFrame:
         """미리 만든 위치 목록으로 고른 행 (전체 표에서 조건으로 거른 것과 같은 행 · 같은 순서, 없으면 빈 표)"""
@@ -206,32 +260,24 @@ class FormAnalyzer:
                 t = t[len(p):].strip()
                 break
                 
-        t_no_suffix = re.sub(r'(CF|FC|05|RCD|SC)$', '', t).strip()
+        t_no_suffix = re.sub(r'(CF|FC|05|RCD|SC|BC|AC|OSC|SCO|TC|SK)$', '', t).strip()
         
         if t in TEAM_NAME_MAP:
             return TEAM_NAME_MAP[t]
         if t_no_suffix in TEAM_NAME_MAP:
             return TEAM_NAME_MAP[t_no_suffix]
             
-        for k, v in TEAM_NAME_MAP.items():
-            if k in clean or clean in k or k in t or t in k:
-                return v
-                
         return clean
 
     def _team_matches(self, t1: str, t2: str) -> bool:
-        """팀 이름 일치 여부 판별 (직접 일치 또는 정규화/포함 관계)"""
+        """팀 이름 일치 여부 판별 (정확 일치, 공백 무시 일치, 또는 정규화 일치 — 부분 문자열 오매칭 차단)"""
         if not t1 or not t2:
             return False
-        if t1 == t2:
+        if t1 == t2 or self._compact_key(t1) == self._compact_key(t2):
             return True
         c1 = self.normalize_name(t1)
         c2 = self.normalize_name(t2)
-        if c1 == c2:
-            return True
-        if c1 in c2 or c2 in c1:
-            return True
-        return False
+        return c1 == c2 or self._compact_key(c1) == self._compact_key(c2)
 
     @staticmethod
     def _short_date(dt: Optional[pd.Timestamp], with_year: bool = False) -> str:
@@ -300,46 +346,97 @@ class FormAnalyzer:
             return None
         return self._league_table(league, season, before).get(team_norm, {}).get("pos")
 
+    def _betman_standing(self, team_name: str, as_of_dt: Optional[pd.Timestamp]) -> Optional[Dict[str, Any]]:
+        """베트맨 축구 승무패 아카이브 기반 비유럽 정규 리그 순위·성적 (K리그·J리그·호주A리그·MLS·에레디비시 등)"""
+        if self.betman_archive_df is None or self.betman_archive_df.empty:
+            return None
+        t_key = self._compact_key(team_name)
+        if not t_key:
+            return None
+        adf = self.betman_archive_df
+        cutoff = (as_of_dt - pd.Timedelta(days=1)) if as_of_dt is not None else adf["ParsedDate"].max() + pd.Timedelta(days=1)
+        sub = adf[adf["ParsedDate"] < cutoff]
+        t_rows = sub[(sub["HomeKey"] == t_key) | (sub["AwayKey"] == t_key)]
+        if t_rows.empty:
+            return None
+        # 컵 대회·친선·대표팀 경기를 제외한 가장 최근 정규 리그 선택
+        dom = t_rows[~t_rows["NormLeague"].apply(lambda lg: any(kw in str(lg) for kw in self.CUP_KEYWORDS))]
+        if dom.empty:
+            return None
+        lg = str(dom.iloc[0]["NormLeague"])
+        lg_df = sub[sub["NormLeague"] == lg].sort_values("ParsedDate")
+        if lg_df.empty:
+            return None
+        # 휴식기(65일 이상 공백) 기준으로 현재 시즌 시작일 자동 탐지
+        gaps = lg_df["ParsedDate"].diff().dt.days
+        season_start = lg_df.loc[gaps >= 65, "ParsedDate"].iloc[-1] if (gaps >= 65).any() else lg_df["ParsedDate"].min()
+        cur_df = lg_df[lg_df["ParsedDate"] >= season_start]
+        if (cutoff - cur_df["ParsedDate"].max()).days > 120:
+            return None   # 오래전 종료된 시즌이면 표시하지 않음
+        stats: Dict[str, Dict[str, Any]] = {}
+        for h, a, hg, ag in zip(cur_df["HomeKey"], cur_df["AwayKey"], cur_df["home_score"], cur_df["away_score"]):
+            for tk, gf, ga in ((h, int(hg), int(ag)), (a, int(ag), int(hg))):
+                s = stats.setdefault(tk, {"played": 0, "w": 0, "d": 0, "l": 0, "gf": 0, "ga": 0})
+                s["played"] += 1
+                s["gf"] += gf
+                s["ga"] += ga
+                s["w" if gf > ga else ("d" if gf == ga else "l")] += 1
+        if t_key not in stats or len(stats) < 3:
+            return None
+        for s in stats.values():
+            s["pts"] = 3 * s["w"] + s["d"]
+        order = sorted(stats, key=lambda t: (-stats[t]["pts"], -(stats[t]["gf"] - stats[t]["ga"]), -stats[t]["gf"], t))
+        for i, t in enumerate(order):
+            stats[t]["pos"] = i + 1
+        s = stats[t_key]
+        y_start, y_end = season_start.year, cur_df["ParsedDate"].max().year
+        season_str = f"{y_start % 100:02d}/{y_end % 100:02d}" if y_start != y_end else str(y_start)
+        return {
+            "league": lg,
+            "season": season_str,
+            "pos": s["pos"],
+            "teams": len(stats),
+            "played": s["played"], "pts": s["pts"], "w": s["w"], "d": s["d"], "l": s["l"],
+            "gf_pg": round(s["gf"] / s["played"], 2), "ga_pg": round(s["ga"] / s["played"], 2),
+            "data_until": self._short_date(cur_df["ParsedDate"].max()),
+            "source": "betman",
+        }
+
     @_memoized
     def get_standing(self, team_name: str, as_of: Optional[Any] = None) -> Optional[Dict[str, Any]]:
         """
         현재(as_of 하루 전까지 경기 기준) 리그 순위 · 승점 · 시즌 경기당 득실.
-        유럽 5대 리그 1부 팀만 가능하며, 그 팀이 이번 시즌 그 리그에 없으면(강등 등) None.
+        유럽 5대 리그 1부 팀은 공식 CSV로, 그 외 리그(K리그·J리그·호주A리그·MLS 등)는 베트맨 아카이브로 계산.
         as_of 하루 전까지로 자르는 이유: 한국 시각 경기일과 현지 날짜가 하루 다를 수 있어 그 경기 자체가 섞이지 않게.
         """
-        if self.df is None or "League" not in self.df.columns or "Season" not in self.df.columns:
-            return None
-        norm = self.normalize_name(team_name)
-        if norm not in self._csv_teams:
-            return None
         as_of_dt = parse_date_value(as_of)
-        cutoff = (as_of_dt - pd.Timedelta(days=1)) if as_of_dt is not None else self.df["ParsedDate"].max() + pd.Timedelta(days=1)
-        team_df = self._rows(self._pos_by_team, norm)
-        team_df = team_df[team_df["ParsedDate"] < cutoff]
-        if team_df.empty:
-            return None
-        league, season = team_df.iloc[0]["League"], team_df.iloc[0]["Season"]
-        league_df = self._rows(self._pos_by_league, league)
-        league_df = league_df[league_df["ParsedDate"] < cutoff]
-        if season != league_df["Season"].max():
-            return None   # 이번 시즌 이 리그에 없음 (강등 등)
-        table = self._league_table(league, season, cutoff)
-        s = table.get(norm)
-        if not s:
-            return None
-        lg = str(league)
-        short = re.search(r"\(([^)]*)\)", lg)
-        season_s = str(int(season)).zfill(4)
-        return {
-            "league": short.group(1).split()[-1] if short else lg,
-            "season": f"{season_s[:2]}/{season_s[2:]}",
-            "pos": s["pos"],
-            "teams": len(set(league_df[league_df["Season"] == season]["HomeTeam"]) |
-                         set(league_df[league_df["Season"] == season]["AwayTeam"])),
-            "played": s["played"], "pts": s["pts"], "w": s["w"], "d": s["d"], "l": s["l"],
-            "gf_pg": round(s["gf"] / s["played"], 2), "ga_pg": round(s["ga"] / s["played"], 2),
-            "data_until": self._short_date(league_df[league_df["Season"] == season]["ParsedDate"].max()),
-        }
+        norm = self.normalize_name(team_name)
+        if self.df is not None and "League" in self.df.columns and "Season" in self.df.columns and norm in self._csv_teams:
+            cutoff = (as_of_dt - pd.Timedelta(days=1)) if as_of_dt is not None else self.df["ParsedDate"].max() + pd.Timedelta(days=1)
+            team_df = self._rows(self._pos_by_team, norm)
+            team_df = team_df[team_df["ParsedDate"] < cutoff]
+            if not team_df.empty:
+                league, season = team_df.iloc[0]["League"], team_df.iloc[0]["Season"]
+                league_df = self._rows(self._pos_by_league, league)
+                league_df = league_df[league_df["ParsedDate"] < cutoff]
+                if season == league_df["Season"].max():
+                    table = self._league_table(league, season, cutoff)
+                    s = table.get(norm)
+                    if s:
+                        lg = str(league)
+                        short = re.search(r"\(([^)]*)\)", lg)
+                        season_s = str(int(season)).zfill(4)
+                        return {
+                            "league": short.group(1).split()[-1] if short else lg,
+                            "season": f"{season_s[:2]}/{season_s[2:]}",
+                            "pos": s["pos"],
+                            "teams": len(set(league_df[league_df["Season"] == season]["HomeTeam"]) |
+                                         set(league_df[league_df["Season"] == season]["AwayTeam"])),
+                            "played": s["played"], "pts": s["pts"], "w": s["w"], "d": s["d"], "l": s["l"],
+                            "gf_pg": round(s["gf"] / s["played"], 2), "ga_pg": round(s["ga"] / s["played"], 2),
+                            "data_until": self._short_date(league_df[league_df["Season"] == season]["ParsedDate"].max()),
+                        }
+        return self._betman_standing(team_name, as_of_dt)
 
     @staticmethod
     def _close_dates(a: Dict[str, Any], b: Dict[str, Any]) -> bool:
@@ -364,8 +461,10 @@ class FormAnalyzer:
         clean_name = team_name.strip()
         rows: List[Dict[str, Any]] = []
 
-        # [1차 소스] 베트맨 최근 공식 결과
-        bm_candidates = self.betman_by_team.get(clean_name) or self.betman_by_team.get(self.normalize_name(clean_name)) or []
+        # [1차 소스] 베트맨 최근 공식 결과 + 아카이브
+        bm_candidates = (self.betman_by_team.get(self._compact_key(clean_name))
+                         or self.betman_by_team.get(clean_name)
+                         or self.betman_by_team.get(self.normalize_name(clean_name)) or [])
         for m in bm_candidates:
             if len(rows) >= n_matches * 2:
                 break
@@ -403,7 +502,7 @@ class FormAnalyzer:
                                  "is_home": is_home, "opponent": opponent, "opp_norm": self.normalize_name(opponent),
                                  "gf": hg if is_home else ag, "ga": ag if is_home else hg, "sot": sot})
 
-        same = lambda a, b: a["opp_norm"] == b["opp_norm"] and self._close_dates(a, b)
+        same = lambda a, b: self._compact_key(a["opp_norm"]) == self._compact_key(b["opp_norm"]) and self._close_dates(a, b)
         recent = self._dedup_by_date(rows, same)[:n_matches]
 
         if not recent:
@@ -464,8 +563,11 @@ class FormAnalyzer:
         clean_h, clean_a = home_team.strip(), away_team.strip()
         rows: List[Dict[str, Any]] = []
 
-        # [1차 소스] 베트맨 최근 공식 결과
-        for m in (self.betman_by_team.get(clean_h) or self.betman_by_team.get(self.normalize_name(clean_h)) or []):
+        # [1차 소스] 베트맨 최근 공식 결과 + 아카이브
+        h_cands = (self.betman_by_team.get(self._compact_key(clean_h))
+                   or self.betman_by_team.get(clean_h)
+                   or self.betman_by_team.get(self.normalize_name(clean_h)) or [])
+        for m in h_cands:
             if len(rows) >= max_matches * 2:
                 break
             m_dt = m.get("_parsed_dt")

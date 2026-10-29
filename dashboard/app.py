@@ -246,10 +246,12 @@ def wake_pipeline(live_ts: int, n_behind: int) -> str:
         r = subprocess.run([gh, "workflow", "run", "pipeline.yml", "--ref", "master"],
                            cwd=project_root, capture_output=True, text=True, timeout=30)
         if r.returncode != 0:
+            save_json(marker, {"at": datetime.now().isoformat(timespec="seconds"), "round": live_ts, "behind": n_behind, "status": "failed"})
             return "failed"
-        save_json(marker, {"at": datetime.now().isoformat(timespec="seconds"), "round": live_ts, "behind": n_behind})
+        save_json(marker, {"at": datetime.now().isoformat(timespec="seconds"), "round": live_ts, "behind": n_behind, "status": "triggered"})
         return "triggered"
     except FileNotFoundError:
+        save_json(marker, {"at": datetime.now().isoformat(timespec="seconds"), "round": live_ts, "behind": n_behind, "status": "no_gh"})
         return "no_gh"
     except Exception:
         return "failed"
@@ -955,7 +957,10 @@ def selection_status() -> dict:
         if not m:
             continue
         odds, labels = m.get("betman_odds", {}), pick_labels(m)
-        picks = [{"selection": k, "selection_name": labels[k], "odds": float(odds[k])}
+        _mk, _ai = current_probs(m)
+        probs = _ai or _mk or {}
+        picks = [{"selection": k, "selection_name": labels[k], "odds": float(odds[k]),
+                  "prob": float(probs.get(k, probs.get(k.replace("_win", ""), 0.0)) or 0.0)}
                  for k in PICK_KEYS if sel.get(SEL_KEY[k]) and float(odds.get(k) or 0.0) > 1.0]
         if picks:
             active[seq] = {"match": m, "match_key": m.get("match_key") or f"{m.get('home_team')}:{m.get('away_team')}",
@@ -1075,16 +1080,16 @@ with _h1:
               help="켜면 1분마다 베트맨에서 회차·경기·배당·마감·결과를 받아, 파이프라인과 같은 AI로 확률·기대가치를 바로 계산해요. "
                    "끄면 GitHub 파이프라인이 저장한 데이터만 보여요.")
 with _h2:
-    _wake_txt = {"triggered": "새 경기·배당 변화를 공식 기록하도록 GitHub 파이프라인을 실행했어요 (1~2분 뒤 자동 반영)",
-                 "running": "GitHub 파이프라인이 공식 기록 중이에요", "waiting": "GitHub 공식 기록 요청 대기 중 (30분에 한 번)",
-                 "failed": "GitHub 파이프라인 실행 요청 실패 (gh 로그인 확인)",
-                 "no_gh": "GitHub CLI(gh)가 설치돼 있지 않아요 (winget install GitHub.cli → gh auth login)"}
+    _wake_txt = {"triggered": "⏳ 새 경기·배당 변화를 공식 기록하도록 GitHub 파이프라인을 실행했어요 (1~2분 뒤 자동 반영)",
+                 "running": "⏳ GitHub 파이프라인이 공식 기록 중이에요", "waiting": "⏳ GitHub 공식 기록 대기 중 (스케줄러 자동 반영)",
+                 "failed": "💻 실시간 자체 계산 중 (GitHub 공식 기록은 스케줄러가 자동 갱신)",
+                 "no_gh": "💻 실시간 자체 계산 중 (GitHub 공식 기록은 스케줄러가 자동 갱신)"}
     _sync_txt = {"checking": "GitHub 데이터 확인 중", "latest": "GitHub 데이터 최신",
                  "pulled": f"GitHub 데이터 {SYNC.get('behind', 0)}개 받음",
                  "skipped": "고치던 파일이 있어 GitHub 자동 받기 건너뜀", "failed": "GitHub 자동 받기 실패"}.get(SYNC["status"], "")
     if LIVE:
         _parts = [f"🔴 베트맨 **{LIVE['ts']}회차** · {LIVE['at']} 확인 · AI 계산 {len(LIVE['preds'])}경기"]
-        _parts.append(f"공식 기록: ⏳ {_wake_txt.get(WAKE, '')} (마감 전 {len(BEHIND)}경기)" if BEHIND else "공식 기록: ✅ 최신")
+        _parts.append(f"공식 기록: {_wake_txt.get(WAKE, '')} (마감 전 {len(BEHIND)}경기)" if BEHIND else "공식 기록: ✅ 최신")
     elif st.session_state["live_mode"] and live_feed().failed_recently():
         _parts = ["⚠️ 베트맨 실시간 연결 실패 — 저장된 데이터를 보여 줘요"]
     elif st.session_state["live_mode"]:
@@ -2271,7 +2276,8 @@ with tab2:
 
         # D. 요약 칸
         render_tiles([
-            ("📋 경기", f"{len(t_rows):,}경기", f"이번 회차 전체 {len(rows_all):,}경기"),
+            ("📋 경기 (유형)", f"{len(t_rows):,}개 (대진 {n_fixtures([a['m'] for a in t_rows]):,}경기)",
+             f"이번 회차 전체 {len(rows_all):,}개 (대진 {n_fixtures([a['m'] for a in rows_all]):,}경기)"),
             ("🧠 AI 적용", f"{sum(1 for a in t_rows if a['ai']):,}경기", "나머지는 배당 기준"),
             ("⚠️ AI가 다르게 본 경기", f"{sum(1 for a in t_rows if a['differs']):,}경기",
              f"1순위가 다르거나 {DIFF_PP:.0f}%p 이상 차이"),
@@ -2362,7 +2368,8 @@ with tab2:
                 "AI 예상": _ai_text(a),
                 "결과": _result_hit_text(a),
             } for a in t_rows])
-            t2_sig = (tuple(t_sports), tuple(t_types), tuple(t_states), t_round, t_league, t_search, tuple(t_quick), t_sort)
+            t2_sig = (tuple(t_sports), tuple(t_types), tuple(t_states), t_round, t_league, t_search, tuple(t_quick), t_sort,
+                      st.session_state.get("t2_jump_ver", 0))
             event = st.dataframe(
                 df_t2, hide_index=True, width="stretch", height=min(38 + 35 * len(df_t2), 422),
                 on_select="rerun", selection_mode="single-row", key=f"tab2_table_{t2_sig}",
@@ -2383,18 +2390,33 @@ with tab2:
                                "결과": st.column_config.TextColumn(
                                    width="small", help="점수 · 결과. ⭕/❌ = 경기 전에 저장한 AI 1순위가 맞았는지")})
             picked_rows = list(event.selection.rows) if event is not None else []
+            if picked_rows and picked_rows[0] < len(t_rows):
+                st.session_state["t2_selected_seq"] = str(t_rows[picked_rows[0]]["m"].get("match_seq", ""))
             st.caption(("👆 줄을 누르면 아래 분석이 그 경기로 바뀌어요." if not picked_rows
                         else "다른 줄을 누르면 그 경기로 바뀌어요.")
                        + " · 배당 옆 ↑↓ = 베트맨 배당 변경(마지막 변경 기준) · AI 칸 ▲▼ = AI가 배당보다 높게·낮게 본 정도(%p)")
 
-            # F. 경기 분석 (선택한 줄, 없으면 목록 첫 경기)
-            a = t_rows[picked_rows[0] if picked_rows and picked_rows[0] < len(t_rows) else 0]
+            # F. 경기 분석 (선택한 줄 → 직전에 보던 경기 번호 → 없으면 목록 첫 경기)
+            _sel_seq = st.session_state.get("t2_selected_seq")
+            if picked_rows and picked_rows[0] < len(t_rows):
+                a = t_rows[picked_rows[0]]
+            elif _sel_seq and any(str(r["m"].get("match_seq", "")) == _sel_seq for r in t_rows):
+                a = next(r for r in t_rows if str(r["m"].get("match_seq", "")) == _sel_seq)
+            elif _sel_seq and any(str(r["m"].get("match_seq", "")) == _sel_seq for r in rows_all):
+                a = next(r for r in rows_all if str(r["m"].get("match_seq", "")) == _sel_seq)
+            else:
+                a = t_rows[0]
             m = a["m"]
             seq, lab, odds = str(m.get("match_seq", "")), a["labels"], m.get("betman_odds", {})
             closed = is_sale_closed(m, t2_now)
 
+            def _t2_select_seq(target_seq: str):
+                st.session_state["t2_selected_seq"] = str(target_seq)
+                st.session_state["t2_jump_ver"] = st.session_state.get("t2_jump_ver", 0) + 1
+
             def _t2_toggle(seq_, k_):
                 """선택지 하나를 담거나 빼기 (같은 경기의 다른 선택지는 그대로)"""
+                st.session_state["t2_selected_seq"] = str(seq_)
                 cur = dict(st.session_state["selections"].get(seq_, {}))
                 cur[SEL_KEY[k_]] = not cur.get(SEL_KEY[k_], False)
                 if any(cur.get(x) for x in ("home", "draw", "away")):
@@ -2499,6 +2521,37 @@ with tab2:
                 if m.get("top_scores"):
                     st.caption("🎯 예상 스코어: " + " · ".join(f"{s['score']} ({s['prob']}%)" for s in m["top_scores"]))
 
+                # 🔀 같은 대진의 다른 유형 비교 (승무패 · 핸디캡 · 언더오버 · 홀짝 한눈에 비교 & 바로 이동)
+                siblings = sorted([r for r in rows_all if fixture_key(r["m"]) == fixture_key(m)], key=_seq_n)
+                if len(siblings) > 1:
+                    st.markdown("<div style='font-size:14px;font-weight:700;margin:6px 0 4px'>🔀 같은 대진의 다른 유형 비교 "
+                                "<span style='font-size:12px;font-weight:400;opacity:.7'>같은 경기라도 유형별 마진·AI 보정이 달라요 · "
+                                "오른쪽 버튼을 누르면 그 유형 분석으로 전환</span></div>", unsafe_allow_html=True)
+                    for sb in siblings:
+                        sb_m = sb["m"]
+                        sb_seq = str(sb_m.get("match_seq", ""))
+                        is_cur = sb_seq == seq
+                        sb_odds = " · ".join(
+                            f"{sb['labels'][k]} <b>{float(sb_m.get('betman_odds', {}).get(k) or 0):.2f}</b>"
+                            + (" ⭐" if sb["ai"] and k == sb["ai_k"] else "")
+                            for k in sb["opts"]
+                        )
+                        sc1, sc2 = st.columns([4.8, 1.2], vertical_alignment="center")
+                        bg_sb = "rgba(59,130,246,.12)" if is_cur else "rgba(148,163,184,.06)"
+                        bd_sb = "rgba(59,130,246,.45)" if is_cur else "rgba(148,163,184,.18)"
+                        sc1.markdown(
+                            f"<div style='display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:6px 10px;"
+                            f"border-radius:6px;background:{bg_sb};border:1px solid {bd_sb};font-size:13px'>"
+                            f"<b style='min-width:38px'>#{sb_seq}</b>"
+                            f"<span style='min-width:96px;font-weight:600'>{_type_text(sb_m)}</span>"
+                            f"<span>{sb_odds}</span>"
+                            f"<span style='margin-left:auto;font-size:12px;opacity:.85'>AI: <b>{_ai_text(sb)}</b></span></div>",
+                            unsafe_allow_html=True,
+                        )
+                        sc2.button("현재 보기 중" if is_cur else f"#{sb_seq} 보기",
+                                   key=f"t2_sib_{seq}_{sb_seq}", disabled=is_cur, width="stretch",
+                                   on_click=_t2_select_seq, args=(sb_seq,))
+
                 # 최근 경기: 팀마다 카드 (전적 · 승무패 칸 · 경기별 한 줄) / 맞대결: 따로 한 카드 (홈팀 기준 결과)
                 hf, af, h2h = m.get("home_form") or {}, m.get("away_form") or {}, m.get("h2h") or {}
                 if hf.get("has_data") or af.get("has_data") or h2h.get("has_data"):
@@ -2532,14 +2585,16 @@ with tab2:
                                "border-top:1px solid rgba(148,163,184,.12)")
 
                     def _standing_line(sd):
-                        """현재 리그 순위 · 승점 · 시즌 경기당 득실 (유럽 5대 리그 1부 팀만 있음)"""
+                        """현재 리그 순위 · 승점 · 시즌 경기당 득실 (유럽 5대 리그 1부 및 베트맨 주요 리그)"""
                         if not sd:
                             return ""
+                        until_note = (f"베트맨 집계 · {sd['data_until']}까지"
+                                      if sd.get("source") == "betman" else f"{sd['data_until']}까지")
                         return (f"<div style='font-size:13px;margin:4px 0 2px;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap'>"
                                 f"{league_chip(sd['league'])}<b style='font-size:15px'>{sd['pos']}위</b>"
                                 f"<span style='opacity:.7'>/ {sd['teams']}팀 · 승점 {sd['pts']} ({sd['played']}경기 {sd['w']}승 "
                                 f"{sd['d']}무 {sd['l']}패) · 시즌 경기당 득 <b>{sd['gf_pg']:.1f}</b> · 실 <b>{sd['ga_pg']:.1f}</b> "
-                                f"<span style='font-size:11px'>({sd['data_until']}까지)</span></span></div>")
+                                f"<span style='font-size:11px'>({until_note})</span></span></div>")
 
                     def _team_card(icon, team, f):
                         head = (f"<div style='display:flex;justify-content:space-between;align-items:baseline;gap:8px'>"
@@ -2565,8 +2620,8 @@ with tab2:
                                 f"margin-bottom:14px'>{head}{body}</div>")
 
                     st.markdown("<div style='font-size:14px;font-weight:700;margin-top:6px'>📈 순위 · 최근 5경기 "
-                                "<span style='font-size:12px;font-weight:400;opacity:.7'>순위는 유럽 5대 리그 1부만 · 위쪽이 가장 최근 · "
-                                "이 경기 전 기록 · 점수는 그 팀 점수가 먼저</span></div>", unsafe_allow_html=True)
+                                "<span style='font-size:12px;font-weight:400;opacity:.7'>유럽 5대 리그 및 베트맨 주요 리그(K리그·J리그·호주A·MLS 등) · "
+                                "위쪽이 가장 최근 · 이 경기 전 기록 · 점수는 그 팀 점수가 먼저</span></div>", unsafe_allow_html=True)
                     fc1, fc2 = st.columns(2)
                     fc1.markdown(_team_card("🏠", m.get("home_team", ""), hf), unsafe_allow_html=True)
                     fc2.markdown(_team_card("✈️", m.get("away_team", ""), af), unsafe_allow_html=True)
@@ -3487,31 +3542,50 @@ with st.sidebar:
         stake = max(unit, (int(st.session_state.get("batch_stake", 1000)) // unit) * unit)
         slip_combos = []   # 저장용: 조합마다 [경기, 선택지, 배당] · 금액 · 체크
         if cart["combos"] <= MAX_SAVED_COMBOS:
-            picked = []   # (조합 배당, 금액) — 체크된 조합만
+            picked = []   # (조합 배당, 금액, 적중확률) — 체크된 조합만
             for combo in itertools.product(*[[(seq, p) for p in v["picks"]] for seq, v in sorted(cart["active"].items())]):
                 ck = combo_key((seq, p["selection"]) for seq, p in combo)
                 chk = bool(st.session_state.get(f"combo_chk_{ck}", True))
                 s_c = max(unit, (int(st.session_state.get(f"stake_{ck}", stake)) // unit) * unit)
                 o_c = calculate_combined_odds([p["odds"] for _, p in combo])
+                p_c = 1.0
+                for _, p in combo:
+                    p_c *= float(p.get("prob") or 0.0)
                 combo_state[ck] = {"stake": s_c, "picked": chk}
                 slip_combos.append({"key": ck, "legs": [[seq, p["selection"], float(p["odds"])] for seq, p in combo],
                                     "stake": s_c, "picked": chk})
                 if chk:
-                    picked.append((o_c, s_c))
+                    picked.append((o_c, s_c, p_c))
+            hit_any = sum(p_c for _, _, p_c in picked)
+            exp_return = sum(p_c * calculate_payout(o_c, s_c) for o_c, s_c, p_c in picked)
         else:   # 조합이 아주 많으면 모두 같은 금액·전부 선택으로 어림
-            picked = [(cart["odds_lo"], stake), (cart["odds_hi"], stake)]
+            picked = [(cart["odds_lo"], stake, 0.0), (cart["odds_hi"], stake, 0.0)]
+            hit_any = 1.0
+            for v in cart["active"].values():
+                hit_any *= sum(float(p.get("prob") or 0.0) for p in v["picks"])
+            exp_ret_factor = 1.0
+            for v in cart["active"].values():
+                exp_ret_factor *= sum(float(p.get("prob") or 0.0) * float(p["odds"]) for p in v["picks"])
+            exp_return = stake * exp_ret_factor
         n_pick = len(picked) if cart["combos"] <= MAX_SAVED_COMBOS else cart["combos"]
-        total = sum(s for _, s in picked) if cart["combos"] <= MAX_SAVED_COMBOS else stake * cart["combos"]
-        pays = [calculate_payout(o, s) for o, s in picked]
-        lo, hi = (min(o for o, _ in picked), max(o for o, _ in picked)) if picked else (0.0, 0.0)
+        total = sum(s for _, s, _ in picked) if cart["combos"] <= MAX_SAVED_COMBOS else stake * cart["combos"]
+        pays = [calculate_payout(o, s) for o, s, _ in picked]
+        lo, hi = (min(o for o, _, _ in picked), max(o for o, _, _ in picked)) if picked else (0.0, 0.0)
         odds_txt = "-" if not picked else (f"{lo:,.2f}배" if lo == hi else f"{lo:,.2f} ~ {hi:,.2f}배")
         pay_txt = "-" if not pays else (f"{min(pays):,}원" if min(pays) == max(pays) else f"{min(pays):,} ~ {max(pays):,}원")
-        stakes = {s for _, s in picked}
+        stakes = {s for _, s, _ in picked}
+        exp_pnl = exp_return - total
+        pnl_pct = (exp_pnl / total * 100) if total else 0.0
+        pnl_col = "#f87171" if exp_pnl < 0 else "#34d399"
+        hit_txt = f"{hit_any * 100:.1f}%" if (picked and hit_any > 0) else "-"
+        pnl_txt = (f"<span style='color:{pnl_col}'>{int(exp_pnl):+,}원 ({pnl_pct:+.1f}%)</span>"
+                   if (picked and total > 0 and hit_any > 0) else "-")
         rows = [("선택 경기수", f"{cart['n']} 경기"),
                 ("조합 수", f"{cart['combos']:,} 개" if n_pick == cart["combos"] else f"{n_pick:,} / {cart['combos']:,} 개 선택"),
                 ("예상 적중 배당", odds_txt),
                 ("조합당 금액", "-" if not stakes else (f"{next(iter(stakes)):,}원" if len(stakes) == 1 else "조합마다 다름")),
-                ("총 투표금액", f"{total:,}원"), ("적중 시 환급", pay_txt)]
+                ("총 투표금액", f"{total:,}원"), ("적중 시 환급", pay_txt),
+                ("적중 확률 (AI)", hit_txt), ("기대 손익 (AI)", pnl_txt)]
         st.markdown(
             "<div style='font-size:13px;line-height:1.9;margin:4px 0 6px'>" + "".join(
                 f"<div style='display:flex;justify-content:space-between'><span style='opacity:.75'>{k}</span><b>{val}</b></div>"
