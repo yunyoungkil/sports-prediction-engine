@@ -1054,7 +1054,11 @@ def render_saved_slip_sync(active: dict, unit: int, where: str) -> bool:
     else:
         msg = f"📒 저장한 기록({when})과 금액·선택이 달라요. 총 {int(slip.get('total_stake', 0)):,}원 → {new_total:,}원"
         # 사이드바는 좁고 STEP 02 본문에도 같은 안내가 있어 한 줄로
-        st.caption(msg) if where == "side" else st.info(msg)
+        # 한 줄 조건식(x() if c else y())으로 쓰면 Streamlit '매직'이 반환값을 화면에 찍음 (2026-10-29 사이드바에 내부 객체가 쏟아짐)
+        if where == "side":
+            st.caption(msg)
+        else:
+            st.info(msg)
         st.button("📒 저장한 기록에 반영", key=f"slip_sync_{where}", type="primary", width="stretch",
                   on_click=_sync_saved_slip, args=(slip["id"], changes))
     return True
