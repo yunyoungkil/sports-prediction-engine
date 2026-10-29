@@ -850,6 +850,34 @@ def render_tiles(tiles):
         unsafe_allow_html=True)
 
 
+def _on_pick(seq, key):
+    """배당 버튼을 누른 즉시(다시 그리기 전에) 내 선택에 반영 — 위쪽 요약·'내가 고른 경기만'이 한 번 늦게 바뀌던 문제.
+    같은 대진의 다른 유형(승무패·핸디캡·언더오버 …)은 한 조합에 함께 살 수 없어서(베트맨 규정) 자동으로 뺀다"""
+    picked = st.session_state.get(key) or []
+    sel = st.session_state["selections"]
+    if not picked:
+        sel.pop(seq, None)
+        return
+    m = pred_map.get(seq)
+    if m:
+        fk = fixture_key(m)
+        dropped = [s for s in list(sel) if s != seq and s in pred_map and fixture_key(pred_map[s]) == fk]
+        for s in dropped:
+            del sel[s]
+        if dropped:
+            st.session_state["editor_version"] += 1   # 뺀 줄의 버튼도 해제된 모습으로 다시 그림
+            st.session_state["pick_swap_toast"] = (f"{m.get('home_team', '')} vs {m.get('away_team', '')}: 같은 경기의 다른 유형은 "
+                                                   f"한 조합에 함께 살 수 없어 {', '.join(dropped)}번 선택을 {seq}번으로 바꿨어요")
+    sel[seq] = {SEL_KEY[k]: (k in picked) for k in PICK_KEYS}
+
+
+def _jump_t2(seq):
+    """① 탭 경기 머리줄 '🔎 상세 분석' → ② 탭을 열고 이 경기 분석 카드로 (표에서 고른 줄은 풀고 이 경기를 보여 줌)"""
+    st.session_state["t2_selected_seq"] = str(seq)
+    st.session_state["t2_jump_ver"] = st.session_state.get("t2_jump_ver", 0) + 1
+    st.session_state["main_tab"] = MAIN_TABS[1]
+
+
 def _set_section(sec):
     """① 탭 위 숫자 칸: 아래 목록을 그 구간(open/wait/done)만 · None이면 전체"""
     st.session_state["t1_section"] = sec
@@ -963,7 +991,8 @@ def selection_status() -> dict:
                   "prob": float(probs.get(k, probs.get(k.replace("_win", ""), 0.0)) or 0.0)}
                  for k in PICK_KEYS if sel.get(SEL_KEY[k]) and float(odds.get(k) or 0.0) > 1.0]
         if picks:
-            active[seq] = {"match": m, "match_key": m.get("match_key") or f"{m.get('home_team')}:{m.get('away_team')}",
+            # 같은 대진 = 회차·팀·시작 시각 (베트맨 gameKey는 날짜가 없어 야구·농구 시리즈 경기가 같은 경기로 묶였음)
+            active[seq] = {"match": m, "match_key": "|".join(fixture_key(m)),
                            "is_single": bool(m.get("is_single")), "picks": picks}
     n = len(active)
     combos = 0
@@ -1392,9 +1421,14 @@ with tab1:
         for m in filtered_matches:
             day_counts.setdefault(_match_day(m), set()).add(fixture_key(m))
         day_counts = {d: len(v) for d, v in day_counts.items()}
+        day_open = {}   # 날짜 → 지금 살 수 있는 경기 수 (대진 단위)
+        for m in filtered_matches:
+            if _res(m) is None and not _past(m) and not is_sale_closed(m, now_ts):
+                day_open.setdefault(_match_day(m), set()).add(fixture_key(m))
+        day_open = {d: len(v) for d, v in day_open.items()}
         day_opts = ["전체 날짜"] + sorted(day_counts)
-        # 기본값: 아직 결과가 안 나온 경기가 있는 첫 날짜 (바로 고를 수 있는 경기부터 보이도록)
-        open_days = sorted({_match_day(m) for m in filtered_matches if _res(m) is None})
+        # 기본값: 지금 살 수 있는 경기가 있는 첫 날짜 (없으면 결과가 안 나온 경기가 있는 첫 날짜)
+        open_days = sorted(day_open) or sorted({_match_day(m) for m in filtered_matches if _res(m) is None})
         day_default = open_days[0] if (open_days and not is_all) else "전체 날짜"
         day_buttons = len(day_opts) <= 6
         day_key = f"step1_day_{sel_round}_{'seg' if day_buttons else 'sel'}"
@@ -1402,7 +1436,9 @@ with tab1:
             st.session_state.pop(day_key, None)
 
         def _day_fmt(d):
-            return d if d == "전체 날짜" else f"{d} · {day_counts[d]}경기"
+            if d == "전체 날짜":
+                return d
+            return f"{d} · 🟢{day_open[d]} / {day_counts[d]}경기" if day_open.get(d) else f"{d} · {day_counts[d]}경기"
 
         with r2:
             if day_buttons:
@@ -1453,7 +1489,9 @@ with tab1:
         wait_ms = _ordered([m for m in filtered_matches if _section(m) == "wait"])
         done_ms = _ordered([m for m in filtered_matches if _section(m) == "done"], newest_first=True)
         # 위 숫자 칸을 누르면 그 구간만 (open / wait / done · 다시 누르면 전체)
-        sec_only = st.session_state.get("t1_section")
+        # 처음엔 지금 고를 수 있는 경기만 그림 (끝난 경기 수백 줄까지 그리면 스크롤·클릭이 느려짐). 카드를 누르면 다른 구간,
+        # 켜진 카드를 다시 누르면 전체 (_set_section(None) → 값이 None으로 저장되어 기본값을 쓰지 않음)
+        sec_only = st.session_state.get("t1_section", "open" if open_ms else None)
         filtered_matches = {"open": open_ms, "wait": wait_ms, "done": done_ms}.get(sec_only, open_ms + wait_ms + done_ms)
 
         LOAD_STEP = 25
@@ -1628,7 +1666,8 @@ with tab1:
             if section not in section_shown:
                 section_shown.add(section)
                 title, n_sec, hint = {
-                    "open": ("🟢 지금 고를 수 있는 경기", n_fixtures(open_ms), "배당 버튼을 눌러 고르세요 · 시간순"),
+                    "open": ("🟢 지금 고를 수 있는 경기", n_fixtures(open_ms), "배당 버튼을 눌러 고르세요 · 시간순"
+                             + (" · 마감·결과 경기는 위 카드를 누르면 보여요" if sec_only == "open" and (wait_ms or done_ms) else "")),
                     "wait": ("⏳ 발매 마감 · 결과 전", n_fixtures(wait_ms),
                              f"{wait_phase_counts(wait_ms, now_ts)} · 결과가 나오면 적중 여부 표시"),
                     "done": ("🏁 결과 나온 경기", n_fixtures(done_ms), "최근 경기부터 · ✅❌ = 적중 여부"),
@@ -1655,7 +1694,11 @@ with tab1:
             if (section, _fixture(m)) != cur_fx:
                 cur_fx = (section, _fixture(m))
                 fx_box = st.container(border=True)
-                fx_box.markdown(_fixture_header(m, section), unsafe_allow_html=True)
+                # 머리줄 + 🔎 상세 분석 (② 탭의 이 경기 분석 카드로 바로 이동)
+                hc1, hc2 = fx_box.columns([10, 1.5], vertical_alignment="top")
+                hc1.markdown(_fixture_header(m, section), unsafe_allow_html=True)
+                hc2.button("🔎 상세 분석", key=f"jump_t2_{_ts(m)}_{seq}", type="tertiary", on_click=_jump_t2,
+                           args=(seq,), help="② AI 경기 분석 탭에서 이 경기 열기")
                 fx_rows = 0
 
             with fx_box:
@@ -1682,7 +1725,8 @@ with tab1:
                 with c2:
                     picked = st.pills(
                         f"선택 #{seq}", options=opts, format_func=lambda k, d=disp: d[k], selection_mode="multi",
-                        default=default, key=f"pick_{_ts(m)}_{m.get('_key', seq)}_{st.session_state['editor_version']}",
+                        default=default, key=(pk := f"pick_{_ts(m)}_{m.get('_key', seq)}_{st.session_state['editor_version']}"),
+                        on_change=_on_pick, args=(seq, pk),
                         label_visibility="collapsed", disabled=(res is not None or _past(m) or closed))
                     ev = m.get("evaluation", {})
                     if res is None and GEM_ON and ev.get("is_recommended"):
@@ -1774,7 +1818,7 @@ with tab1:
             if picks:
                 active_selections[seq] = {
                     "match_seq": seq,
-                    "match_key": m.get("match_key") or f"{m.get('home_team')}:{m.get('away_team')}",
+                    "match_key": "|".join(fixture_key(m)),   # 시리즈 경기 구분 (selection_status와 같은 기준)
                     "home_team": m.get("home_team", ""),
                     "away_team": m.get("away_team", ""),
                     "league": m.get("league", ""),
@@ -3507,6 +3551,8 @@ with st.sidebar:
     st.markdown(f"### 🛒 내 선택 <span style='font-size:15px;opacity:.7'>{cart['n']}경기</span>", unsafe_allow_html=True)
     if st.session_state.pop("slip_saved_toast", False):
         st.toast("💾 저장했어요. 아래 '저장한 선택'에서 볼 수 있어요.")
+    if st.session_state.get("pick_swap_toast"):
+        st.toast("🔁 " + st.session_state.pop("pick_swap_toast"))
     if st.session_state.pop("slip_edit_refused", False):
         st.toast("⚠️ 산 조합이 하나는 있어야 해요. 기록을 지우려면 ④ 탭의 🗑️ 삭제를 누르세요.")
     if st.session_state.pop("slip_synced_toast", False):
@@ -3623,7 +3669,9 @@ with st.sidebar:
                       "배당 1순위·AI 1순위였는지는 누르지 않아도 자동으로 기록돼요.")
         st.text_input("메모", key="slip_memo", placeholder="메모 (선택) 예: 소액 테스트", label_visibility="collapsed")
         st.button("💾 새 기록으로 저장" if already_saved else "💾 저장하기", width="stretch", key="slip_save", on_click=_save_slip,
-                  args=(games_payload, slip_combos, slip_round), disabled=not slip_combos)
+                  args=(games_payload, slip_combos, slip_round), disabled=not slip_combos or not cart["valid"])
+        if not cart["valid"] and slip_combos:
+            st.caption("베트맨에서 살 수 없는 구성이라 저장할 수 없어요 (위 안내 참고).")
         if already_saved:
             st.caption("같은 선택을 새로 저장하면 기록이 2건이 돼요. 금액·선택만 바꿨다면 위 '저장한 기록에 반영'을 누르세요.")
         if not slip_combos:
