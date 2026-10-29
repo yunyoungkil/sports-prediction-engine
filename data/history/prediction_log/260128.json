@@ -3719,9 +3719,16 @@
         "draw": 0.2296,
         "away_win": 0.1997
       },
+      "shadow_probs": {
+        "shin_mkt": {
+          "home_win": 0.5658,
+          "draw": 0.2305,
+          "away_win": 0.2038
+        }
+      },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.58,
         "draw": 3.85,
@@ -3748,22 +3755,23 @@
       "away_team": "US레체",
       "betman_odds": {
         "home_win": 2.65,
-        "draw": 3.5,
-        "away_win": 2.05
+        "draw": 3.4,
+        "away_win": 2.09
       },
       "market_probs": {
-        "home": 0.3279,
-        "draw": 0.2483,
-        "away": 0.4239
+        "home": 0.3282,
+        "draw": 0.2558,
+        "away": 0.4161
       },
       "model_probs": {
-        "home_win": 0.3131,
-        "draw": 0.2482,
-        "away_win": 0.4387
+        "home_win": 0.3135,
+        "draw": 0.2571,
+        "away_win": 0.4294
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 2.55,
         "draw": 3.6,
@@ -3789,23 +3797,24 @@
       "home_team": "프로시노네",
       "away_team": "US레체",
       "betman_odds": {
-        "home_win": 4.55,
-        "draw": 4.55,
-        "away_win": 1.41
+        "home_win": 4.45,
+        "draw": 4.25,
+        "away_win": 1.45
       },
       "market_probs": {
-        "home": 0.1913,
-        "draw": 0.1913,
-        "away": 0.6174
+        "home": 0.1955,
+        "draw": 0.2047,
+        "away": 0.5999
       },
       "model_probs": {
-        "home_win": 0.1609,
-        "draw": 0.177,
-        "away_win": 0.6621
+        "home_win": 0.1656,
+        "draw": 0.1923,
+        "away_win": 0.6421
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 4.65,
         "draw": 4.65,
@@ -3831,23 +3840,30 @@
       "home_team": "ACF피오렌티나",
       "away_team": "아탈란타BC",
       "betman_odds": {
-        "home_win": 2.11,
-        "draw": 3.2,
+        "home_win": 2.16,
+        "draw": 3.1,
         "away_win": 2.75
       },
       "market_probs": {
-        "home": 0.4121,
-        "draw": 0.2717,
-        "away": 0.3162
+        "home": 0.4029,
+        "draw": 0.2807,
+        "away": 0.3164
       },
       "model_probs": {
-        "home_win": 0.4147,
-        "draw": 0.2807,
-        "away_win": 0.3046
+        "home_win": 0.4034,
+        "draw": 0.2919,
+        "away_win": 0.3048
+      },
+      "shadow_probs": {
+        "shin_mkt": {
+          "home_win": 0.4028,
+          "draw": 0.2901,
+          "away_win": 0.3071
+        }
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 2.05,
         "draw": 3.35,
@@ -3887,9 +3903,10 @@
         "draw": 0.2245,
         "away_win": 0.5891
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 3.8,
         "draw": 3.75,
@@ -3929,9 +3946,10 @@
         "draw": 0.1229,
         "away_win": 0.8009
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 8.3,
         "draw": 6.0,
@@ -3957,23 +3975,30 @@
       "home_team": "에버턴",
       "away_team": "뉴캐슬 유나이티드",
       "betman_odds": {
-        "home_win": 2.17,
-        "draw": 3.15,
+        "home_win": 2.22,
+        "draw": 3.05,
         "away_win": 2.7
       },
       "market_probs": {
-        "home": 0.4012,
-        "draw": 0.2764,
+        "home": 0.3921,
+        "draw": 0.2854,
         "away": 0.3224
       },
       "model_probs": {
-        "home_win": 0.3975,
-        "draw": 0.2989,
-        "away_win": 0.3036
+        "home_win": 0.3862,
+        "draw": 0.3104,
+        "away_win": 0.3033
+      },
+      "shadow_probs": {
+        "shin_mkt": {
+          "home_win": 0.3861,
+          "draw": 0.3085,
+          "away_win": 0.3054
+        }
       },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 2.06,
         "draw": 3.25,
@@ -4013,9 +4038,10 @@
         "draw": 0.2473,
         "away_win": 0.5839
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 4.0,
         "draw": 3.65,
@@ -4055,9 +4081,16 @@
         "draw": 0.3154,
         "away_win": 0.4018
       },
+      "shadow_probs": {
+        "shin_mkt": {
+          "home_win": 0.2854,
+          "draw": 0.314,
+          "away_win": 0.4006
+        }
+      },
       "prob_source": "betman_corrector",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 2.8,
         "draw": 3.05,
@@ -4097,9 +4130,10 @@
         "draw": 0.2267,
         "away_win": 0.1577
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.55,
         "draw": 3.6,
@@ -5021,9 +5055,10 @@
         "draw": 0.0,
         "away_win": 0.498
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.73,
         "draw": 0.0,
@@ -5063,9 +5098,10 @@
         "draw": 0.0,
         "away_win": 0.3455
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.33,
         "draw": 0.0,
@@ -5105,9 +5141,10 @@
         "draw": 0.0,
         "away_win": 0.2625
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.18,
         "draw": 0.0,
@@ -5217,23 +5254,24 @@
       "home_team": "프로시노네",
       "away_team": "US레체",
       "betman_odds": {
-        "home_win": 1.59,
+        "home_win": 1.64,
         "draw": 0.0,
-        "away_win": 1.92
+        "away_win": 1.85
       },
       "market_probs": {
-        "home": 0.547,
+        "home": 0.5301,
         "draw": 0.0,
-        "away": 0.453
+        "away": 0.4699
       },
       "model_probs": {
-        "home_win": 0.5534,
+        "home_win": 0.5344,
         "draw": 0.0,
-        "away_win": 0.4466
+        "away_win": 0.4656
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.59,
         "draw": 0.0,
@@ -5273,9 +5311,10 @@
         "draw": 0.0,
         "away_win": 0.6165
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 2.2,
         "draw": 0.0,
@@ -5315,9 +5354,10 @@
         "draw": 0.0,
         "away_win": 0.5647
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.89,
         "draw": 0.0,
@@ -5357,9 +5397,10 @@
         "draw": 0.0,
         "away_win": 0.4948
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.75,
         "draw": 0.0,
@@ -5399,9 +5440,10 @@
         "draw": 0.0,
         "away_win": 0.491
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.8,
         "draw": 0.0,
@@ -5441,9 +5483,10 @@
         "draw": 0.0,
         "away_win": 0.4948
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.75,
         "draw": 0.0,
@@ -5483,9 +5526,10 @@
         "draw": 0.0,
         "away_win": 0.491
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.8,
         "draw": 0.0,
@@ -5525,9 +5569,10 @@
         "draw": 0.0,
         "away_win": 0.4948
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.75,
         "draw": 0.0,
@@ -5567,9 +5612,10 @@
         "draw": 0.0,
         "away_win": 0.491
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.8,
         "draw": 0.0,
@@ -5609,9 +5655,10 @@
         "draw": 0.0,
         "away_win": 0.4833
       },
+      "shadow_probs": null,
       "prob_source": "betman_markets",
       "model_version": "betman:2026-10-29T10:47:22+00:00",
-      "logged_at": "2026-10-29T13:40:08+00:00",
+      "logged_at": "2026-10-29T14:00:50+00:00",
       "first_odds": {
         "home_win": 1.69,
         "draw": 0.0,

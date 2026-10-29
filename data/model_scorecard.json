@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-29T13:40:06+00:00",
+  "updated_at": "2026-10-29T14:00:47+00:00",
   "graded_matches": 202,
   "rounds": [
     260126,
@@ -25,8 +25,8 @@
   "gem_roi_ci_low": 0.0,
   "gem_roi_ci_high": 0.0,
   "prob_sources": {
-    "betman_corrector": 94,
-    "betman_markets": 108
+    "betman_markets": 108,
+    "betman_corrector": 94
   },
   "by_game_type": {
     "농구 승패": {
@@ -82,6 +82,7 @@
       "verdict": "진행 중 (0/300경기)"
     }
   ],
+  "shadow": {},
   "calibration": {
     "ai": [
       {
