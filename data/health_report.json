@@ -1,9 +1,14 @@
 {
-  "checked_at": "2026-10-29T01:00:34+00:00",
-  "source": "results",
-  "ok": true,
-  "warnings": [],
-  "matches": 290,
+  "checked_at": "2026-10-29T05:57:32+00:00",
+  "source": "pipeline",
+  "ok": false,
+  "warnings": [
+    {
+      "code": "graded_decrease",
+      "message": "성적표 채점 경기 수가 직전 157 → 이번 27으로 줄었어요"
+    }
+  ],
+  "matches": 323,
   "round": "260128",
-  "graded": 157
+  "graded": 27
 }

@@ -514,6 +514,130 @@
           }
         }
       }
+    },
+    {
+      "captured_at": "2026-10-29T05:56:11.730201+00:00",
+      "credits_remaining": 463,
+      "targets": 3,
+      "matches": {
+        "1282": {
+          "event_id": "667cf69986b200753742c90cb9c5126c",
+          "home_team": "Frosinone",
+          "away_team": "Lecce",
+          "commence_time": "2026-10-29T17:30:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.72,
+            "draw": 4.24,
+            "away_win": 4.56
+          },
+          "sharp_probs": {
+            "home_win": 0.5609,
+            "draw": 0.2275,
+            "away_win": 0.2116
+          },
+          "consensus_probs": {
+            "home_win": 0.5619666666666666,
+            "draw": 0.2295,
+            "away_win": 0.20852222222222222
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0231,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 1.58,
+            "draw": 3.85,
+            "away_win": 3.9
+          },
+          "betman_home": "프로시노네",
+          "betman_away": "US레체",
+          "match_time": "26.10.30 (금) 02:30",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1138,
+            "draw": -0.1241,
+            "away_win": -0.1748
+          }
+        },
+        "1287": {
+          "event_id": "da159a6b84dbb548b4d7b94c722caac5",
+          "home_team": "Fiorentina",
+          "away_team": "Atalanta BC",
+          "commence_time": "2026-10-29T19:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.39,
+            "draw": 3.6,
+            "away_win": 2.97
+          },
+          "sharp_probs": {
+            "home_win": 0.4051,
+            "draw": 0.2689,
+            "away_win": 0.326
+          },
+          "consensus_probs": {
+            "home_win": 0.41392222222222225,
+            "draw": 0.2660888888888888,
+            "away_win": 0.32
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0382,
+          "sport_key": "soccer_italy_serie_a",
+          "betman_odds": {
+            "home_win": 2.05,
+            "draw": 3.35,
+            "away_win": 2.75
+          },
+          "betman_home": "ACF피오렌티나",
+          "betman_away": "아탈란타BC",
+          "match_time": "26.10.30 (금) 04:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1695,
+            "draw": -0.0992,
+            "away_win": -0.1035
+          }
+        },
+        "1308": {
+          "event_id": "716ddf40807b2e733c6cc43fa101bc7b",
+          "home_team": "Brisbane Roar",
+          "away_team": "Auckland FC",
+          "commence_time": "2026-10-30T09:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.73,
+            "draw": 3.44,
+            "away_win": 2.55
+          },
+          "sharp_probs": {
+            "home_win": 0.3491,
+            "draw": 0.2771,
+            "away_win": 0.3738
+          },
+          "consensus_probs": {
+            "home_win": 0.3450625,
+            "draw": 0.280925,
+            "away_win": 0.3740125
+          },
+          "n_bookmakers": 8,
+          "match_method": "time_single",
+          "prob_distance": 0.0288,
+          "sport_key": "soccer_australia_aleague",
+          "betman_odds": {
+            "home_win": 2.6,
+            "draw": 3.05,
+            "away_win": 2.29
+          },
+          "betman_home": "브리즈번 로어",
+          "betman_away": "오클랜드FC",
+          "match_time": "26.10.30 (금) 18:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0923,
+            "draw": -0.1548,
+            "away_win": -0.144
+          }
+        }
+      }
     }
   ]
 }
