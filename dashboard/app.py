@@ -75,10 +75,10 @@ from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
 from tracker.prob_view import current_probs, shown_probs
 from evaluation.gates import roi_range_text
-from tracker.my_slips import (BASIS_LABEL, KIND_LABEL, MAX_SAVED_COMBOS, REASON_LABEL, add_slip, apply_combo_changes,
-                              build_slip, combo_changes, combo_results, delete_slip, display_score, draw_is_void, find_slip,
-                              grade_slip, line_row, load_json, load_slips, outcome_from_rows, pick_basis, save_json, slip_kind,
-                              update_combos, update_slip)
+from tracker.my_slips import (BASIS_LABEL, KIND_LABEL, MAX_SAVED_COMBOS, REASON_LABEL, active_pick_keys, add_slip,
+                              apply_combo_changes, build_slip, combo_changes, combo_results, delete_slip, display_score,
+                              draw_is_void, find_slip, grade_slip, line_row, load_json, load_slips, outcome_from_rows,
+                              pick_basis, save_json, slip_kind, update_combos, update_slip)
 
 # 내 선택 저장 위치 (개인 기록이라 저장소에 올리지 않음 · .gitignore). 테스트는 SPE_USER_DATA_DIR 로 다른 폴더를 씀
 MY_DATA_DIR = Path(os.environ.get("SPE_USER_DATA_DIR") or (project_root / "user_data"))
@@ -655,22 +655,30 @@ def load_results_index():
     return idx
 
 
-@st.cache_data(ttl=60)
 def results_index():
     """(회차, 경기번호) → 결과 줄들 — 모든 탭이 이것만 쓴다 (tests/test_prob_view.py가 막음).
-    저장된 결과(GitHub · 결과 갱신이 4~5시간씩 밀림) + 실시간이 켜져 있고 지금 회차에 시작했는데 결과가 아직 없는
-    경기가 있으면 베트맨에서 1분마다 바로 받은 결과를 합친다.
-    (2026-10-29: ① 탭만 실시간 결과를 붙여서 ④ 내 베팅 기록·② 탭·사이드바는 몇 시간 늦게 채점됐음)"""
+    저장된 결과(GitHub · 결과 갱신이 4~5시간씩 밀림) + 실시간이 켜져 있고 시작했는데 결과가 아직 없는
+    경기가 있으면(현재 회차 + 내 베팅 기록의 미채점 회차) 베트맨에서 1분마다 바로 받은 결과를 합친다.
+    저장된 결과 조회(60초)와 실시간 결과 조회(55초)가 각각 캐시되므로, 여기서는 LIVE 전환 시
+    옛 캐시에 갇히지 않게 직접 합친다."""
     idx = load_results_index()   # results-rule-ok
+    if not st.session_state.get("live_mode"):
+        return idx
     live_ts = str(detect_current_gm_ts(predictions)) if predictions else ""
-    if LIVE and live_ts and started_without_result(predictions, idx, live_ts):
-        rows = fetch_live_round_results(live_ts)
-        if rows:
-            fresh = {}
-            for r in rows:
-                fresh.setdefault((live_ts, str(r.get("match_seq"))), []).append(r)
-            idx = {**idx, **fresh}
-    return idx
+    rounds_to_check = {}
+    if live_ts and predictions:
+        rounds_to_check[live_ts] = predictions
+    for s in load_slips(MY_SLIPS_PATH):
+        ts = str(s.get("gm_ts") or "")
+        if ts and ts.isdigit() and ts not in rounds_to_check:
+            rounds_to_check.setdefault(ts, []).extend(
+                {"match_seq": g.get("seq"), "match_time": g.get("match_time", "")} for g in s.get("games", []))
+    fresh = {}
+    for ts, ms in rounds_to_check.items():
+        if started_without_result(ms, idx, ts):
+            for r in fetch_live_round_results(ts):
+                fresh.setdefault((ts, str(r.get("match_seq"))), []).append(r)
+    return {**idx, **fresh} if fresh else idx
 
 
 def load_prediction_log(gm_ts: str):
@@ -3145,14 +3153,22 @@ def _save_slip(games_, combos_, gm_ts_):
     st.session_state["slip_saved_toast"] = True
 
 
-def _load_slip(slip):
-    """저장한 선택을 다시 담기 (이번 회차 경기만) — 조합별 금액·체크도 함께"""
+def _load_slip(slip, open_seqs=None):
+    """저장한 선택을 다시 담기 (이번 회차의 마감 전 경기만) — 조합별 금액·체크도 함께"""
+    open_set = set(open_seqs) if open_seqs is not None else {str(g["seq"]) for g in slip.get("games", []) if str(g["seq"]) in pred_map}
     st.session_state["selections"] = {
-        g["seq"]: {SEL_KEY[p["key"]]: True for p in g["picks"]} for g in slip["games"] if g["seq"] in pred_map}
-    for c in slip.get("combos", []):
-        st.session_state[f"stake_{c['key']}"] = int(c["stake"])
-        st.session_state[f"combo_chk_{c['key']}"] = bool(c.get("picked", True))
+        str(g["seq"]): {SEL_KEY[k]: any(p["key"] == k for p in g["picks"]) for k in PICK_KEYS}
+        for g in slip.get("games", []) if str(g["seq"]) in open_set}
+    if len(open_set) == len(slip.get("games", [])):
+        for c in slip.get("combos", []):
+            st.session_state[f"stake_{c['key']}"] = int(c["stake"])
+            st.session_state[f"combo_chk_{c['key']}"] = bool(c.get("picked", True))
     st.session_state["editor_version"] += 1
+    total_g = len(slip.get("games", []))
+    st.session_state["slip_loaded_toast"] = (
+        f"🛒 내 선택에 {len(open_set)}경기를 다시 담았어요."
+        if len(open_set) == total_g
+        else f"🛒 마감·종료된 경기를 빼고 아직 살 수 있는 {len(open_set)}경기({total_g}경기 중)만 담았어요.")
 
 
 def _delete_slip(slip_id):
@@ -3196,7 +3212,10 @@ def _open_record(slip_id):
 
 
 def _save_memo(slip_id):
-    update_slip(slip_id, MY_SLIPS_PATH, memo=str(st.session_state.get(f"memo_edit_{slip_id}", "")).strip())
+    memo = str(st.session_state.get(f"memo_edit_{slip_id}", "")).strip()
+    reason = st.session_state.get(f"reason_edit_{slip_id}") or ""
+    update_slip(slip_id, MY_SLIPS_PATH, memo=memo, reason=reason if reason in REASON_LABEL else "")
+    st.session_state["slip_synced_toast"] = True
 
 
 def _save_stake_edit(slip_id, key, combo_keys, unit_):
@@ -3211,11 +3230,15 @@ def _save_stake_edit(slip_id, key, combo_keys, unit_):
         if ch.get("샀음") is not None:
             changes.setdefault(ck, {})["picked"] = bool(ch["샀음"])
     slip = next((x for x in load_slips(MY_SLIPS_PATH) if x.get("id") == slip_id), None)
-    if changes and slip and not apply_combo_changes(slip, changes)["total_stake"]:
-        st.session_state["slip_edit_refused"] = True   # 산 조합이 하나도 없는 기록은 만들지 않음 (지우려면 🗑️ 삭제)
-    elif changes:
-        update_combos(slip_id, changes, MY_SLIPS_PATH)
-        st.session_state["slip_synced_toast"] = True
+    if changes and slip:
+        updated = apply_combo_changes(slip, changes)
+        if not updated["total_stake"]:
+            st.session_state["slip_edit_refused"] = True   # 산 조합이 하나도 없는 기록은 만들지 않음 (지우려면 🗑️ 삭제)
+        elif updated["total_stake"] > 100_000:
+            st.session_state["slip_limit_refused"] = True  # 베트맨 1회차 구매 한도(10만 원) 초과 방지
+        else:
+            update_combos(slip_id, changes, MY_SLIPS_PATH)
+            st.session_state["slip_synced_toast"] = True
     st.session_state["my_stake_ver"] = st.session_state.get("my_stake_ver", 0) + 1   # 표를 저장한 금액으로 새로 그림
 
 
@@ -3237,15 +3260,29 @@ def _pick_basis_of(slip, g, p):
     return pick_basis(basis_fields(mk, ai, [k for k in PICK_KEYS if float(odds_.get(k) or 0) > 1.0], p["key"]))
 
 
-def _hit_payout(c) -> int:
-    """이 조합이 맞으면 돌려받는 돈 (저장 때 배당 × 금액, 베트맨 조합 배당 규칙)"""
-    return calculate_payout(calculate_combined_odds([float(o) for _, _, o in c["legs"]]), int(c["stake"]))
+def _pick_probs_of(slip, g, p):
+    """저장 시점의 (배당 확률, AI 확률) — 기록에 없으면 경기 전 로그에서 복원"""
+    if p.get("p_mk") is not None:
+        return p.get("p_mk"), p.get("p_ai")
+    lg = load_prediction_log(str(slip.get("gm_ts"))).get(str(g["seq"])) or {}
+    mk = lg.get("first_market_probs") or lg.get("market_probs")   # prob-rule-ok
+    if not mk:
+        return None, None
+    ai = (lg.get("first_model_probs") or lg.get("model_probs")) if lg.get("prob_source") in AI_SOURCES else None   # prob-rule-ok
+    return prob_of(mk, p["key"]), (prob_of(ai, p["key"]) if ai else None)
 
 
 def _best_if_hit(slip, res_of) -> int:
-    """결과 대기 중인 기록이 앞으로 맞으면 받을 수 있는 최대 환급 (아직 살아 있는 조합 중 가장 큰 것 —
-    같은 경기들의 다른 선택지 조합이라 보통 하나만 맞음)"""
-    return max((_hit_payout(c) for c in combo_results(slip, res_of) if c["state"] == "pending"), default=0)
+    """결과 대기 중인 기록이 앞으로 맞으면 받을 수 있는 최대 환급 (무효 1.0배 반영 + 이미 적중한 조합 환급 포함)"""
+    rows = combo_results(slip, res_of)
+    already_hit = sum(c["payout"] for c in rows if c["state"] == "hit")
+    best_pend = max((c["expected_payout"] for c in rows if c["state"] == "pending"), default=0)
+    return already_hit + best_pend
+
+
+def _slip_sort_key(r) -> tuple:
+    """저장 시각(분)이 같을 때도 초·마이크로초가 들어 있는 id 순으로 정확히 정렬"""
+    return (str(r["slip"].get("saved_at", "")), str(r["slip"].get("id", "")))
 
 
 def _slip_chip(gr, best=0):
@@ -3262,7 +3299,7 @@ def _slip_chip(gr, best=0):
 
 with tab4:
     st.subheader("📒 내 베팅 기록")
-    st.caption("사이드바 '💾 저장하기'로 남긴 기록이에요. 경기 결과가 나오면 적중·환급금이 자동으로 채워져요 (결과는 1시간마다 갱신). "
+    st.caption("사이드바 '💾 저장하기'로 남긴 기록이에요. 경기 결과가 나오면 적중·환급금이 자동으로 채워져요 (실시간 모드가 켜져 있으면 1분마다 바로 반영). "
                "이 컴퓨터의 user_data 폴더에만 저장되고 GitHub에는 올라가지 않아요.")
     st.caption("✏️ 조합 표의 '샀음' 체크와 금액 칸을 고치면 바로 저장돼요. 실제로 사지 않은 조합은 체크를 끄면 손익에서 빠져요.")
     my_all = load_slips(MY_SLIPS_PATH)
@@ -3272,6 +3309,7 @@ with tab4:
     else:
         res_idx4 = results_index()
         cur_round4 = str(detect_current_gm_ts(predictions))
+        now_ms4 = datetime.now().timestamp() * 1000
         recs = [{"slip": s, "kind": slip_kind(s), "grade": grade_slip(s, _slip_result_of(s, res_idx4))} for s in my_all]
 
         # 필터: 구분 · 상태 · 회차 · 검색
@@ -3331,9 +3369,12 @@ with tab4:
             kd = [r for r in done if r["kind"] == k and r["grade"]["stake"]]
             if not kd:
                 continue
+            ki = sum(r["grade"]["stake"] for r in kd)
+            kr = sum(r["grade"]["payout"] for r in kd)
+            actual_roi = (kr - ki) / ki * 100.0 if ki else 0.0
             rets = [(r["grade"]["payout"] - r["grade"]["stake"]) / r["grade"]["stake"] for r in kd]
-            roi_k, lo_k, hi_k = cluster_roi_confidence_interval(rets, [r["slip"].get("gm_ts") for r in kd])
-            base_rows.append({"구분": f"내 기록 — {lab}", "끝난 건수": f"{len(kd):,}", "수익률": f"{roi_k:+.1f}%",
+            _, lo_k, hi_k = cluster_roi_confidence_interval(rets, [r["slip"].get("gm_ts") for r in kd])
+            base_rows.append({"구분": f"내 기록 — {lab}", "끝난 건수": f"{len(kd):,}", "수익률": f"{actual_roi:+.1f}%",
                               "95% 범위": roi_range_text(len(kd), lo_k, hi_k, "%")})
             if e_live.get("bets"):
                 if len(kd) < 30:
@@ -3341,8 +3382,8 @@ with tab4:
                 elif lo_k <= e_live["roi_pct"] <= hi_k:
                     cmp_notes.append(f"{lab}는 기준선 E와 차이가 뚜렷하지 않아요 (E 수익률이 내 범위 안)")
                 else:
-                    cmp_notes.append(f"{lab}는 기준선 E보다 뚜렷하게 {'높아요' if roi_k > e_live['roi_pct'] else '낮아요'} (범위 밖)"
-                                     + (" — 같은 경기를 보고 고른 규칙이 아닌지 조심하세요" if roi_k > e_live["roi_pct"] else ""))
+                    cmp_notes.append(f"{lab}는 기준선 E보다 뚜렷하게 {'높아요' if actual_roi > e_live['roi_pct'] else '낮아요'} (범위 밖)"
+                                     + (" — 같은 경기를 보고 고른 규칙이 아닌지 조심하세요" if actual_roi > e_live["roi_pct"] else ""))
         if base_rows and (e_live.get("bets") or e_past.get("bets")):
             if e_live.get("bets"):
                 base_rows.append({"구분": "기준선 E — 배당 1순위 단일 (가상, 실시간)", "끝난 건수": f"{e_live['bets']:,}",
@@ -3359,70 +3400,130 @@ with tab4:
                 if cmp_notes:
                     st.markdown("<div style='font-size:14px;line-height:1.7'>💬 " + " · ".join(cmp_notes) + "</div>", unsafe_allow_html=True)
 
-        # 누적 손익 (결과 나온 기록 · 저장한 순서 · 구분별 선) — 점이 너무 적으면 그래프가 의미 없어 3건부터
-        if len(done) >= 3:
-            acc, pts = {k: 0 for k in KIND_LABEL}, []
-            kinds_in = [k for k in KIND_LABEL if any(x["kind"] == k for x in done)]
-            for i, r in enumerate(sorted(done, key=lambda r: r["slip"].get("saved_at", "")), start=1):
-                acc[r["kind"]] += r["grade"]["payout"] - r["grade"]["stake"]
-                pts.append({"결과 나온 순서": i, **{KIND_LABEL[k]: acc[k] for k in kinds_in}})
-            st.line_chart(pd.DataFrame(pts).set_index("결과 나온 순서"), height=200)
-            st.caption("가로: 결과 나온 기록 순서(저장한 순) · 세로: 누적 손익(원) — 위로 가면 벌고, 아래로 가면 잃고 있다는 뜻이에요.")
+        # 누적 손익 (결과 나온 기록 · 저장한 순서 · 구분별 선 + 0원 기준선 · 실제 베팅한 시점에만 점 표시)
+        if len(done) >= 2:
+            import altair as alt
+            acc_pnl, acc_inv, cnt_k, chart_rows = {k: 0 for k in KIND_LABEL}, {k: 0 for k in KIND_LABEL}, {k: 0 for k in KIND_LABEL}, []
+            for r in sorted(done, key=_slip_sort_key):
+                k = r["kind"]
+                s_pnl = r["grade"]["payout"] - r["grade"]["stake"]
+                acc_pnl[k] += s_pnl
+                acc_inv[k] += r["grade"]["stake"]
+                cnt_k[k] += 1
+                chart_rows.append({
+                    "구분": KIND_LABEL[k],
+                    "끝난 기록 순서": cnt_k[k],
+                    "저장 시각": r["slip"].get("saved_at", ""),
+                    "회차": str(r["slip"].get("gm_ts", "")),
+                    "메모": r["slip"].get("memo", "") or "-",
+                    "이번 손익(원)": s_pnl,
+                    "누적 손익(원)": acc_pnl[k],
+                    "누적 수익률(%)": (acc_pnl[k] / acc_inv[k] * 100.0) if acc_inv[k] else 0.0,
+                })
+            c_df = pd.DataFrame(chart_rows)
+            dom_k = [KIND_LABEL[k] for k in KIND_LABEL if cnt_k[k] > 0]
+            rng_k = [{"real": "#3b82f6", "paper": "#94a3b8"}[k] for k in KIND_LABEL if cnt_k[k] > 0]
+            tips = [alt.Tooltip("구분:N"), alt.Tooltip("끝난 기록 순서:Q", title="순번"),
+                    alt.Tooltip("저장 시각:N"), alt.Tooltip("회차:N"), alt.Tooltip("메모:N"),
+                    alt.Tooltip("이번 손익(원):Q", format="+,"), alt.Tooltip("누적 손익(원):Q", format="+,"),
+                    alt.Tooltip("누적 수익률(%):Q", format="+.1f")]
+            x_ax = alt.X("끝난 기록 순서:Q", title="끝난 기록 순서 (구분별)", axis=alt.Axis(grid=False, tickMinStep=1, format="d"))
+            y_ax = alt.Y("누적 손익(원):Q", title="누적 손익 (원)", axis=alt.Axis(format="+,", gridOpacity=0.15))
+            col_enc = alt.Color("구분:N", scale=alt.Scale(domain=dom_k, range=rng_k),
+                                legend=alt.Legend(orient="bottom", title=None))
+            line = alt.Chart(c_df).mark_line(strokeWidth=2, point=alt.OverlayMarkDef(size=70, filled=True)).encode(
+                x=x_ax, y=y_ax, color=col_enc, tooltip=tips)
+            zero = alt.Chart(pd.DataFrame({"y": [0]})).mark_rule(color="#94a3b8", strokeDash=[4, 4]).encode(y="y:Q")
+            st.markdown("**📈 내 누적 손익 추이**")
+            st.altair_chart((line + zero).properties(height=210), width="stretch")
+            st.caption("가로: 구분별 결과 나온 기록 순서(저장한 순) · 세로: 누적 손익(원) — 점선(0원)보다 위면 이익, 아래면 손실이에요. 점에 마우스를 올리면 상세 내역이 보여요.")
 
         # 엑셀(CSV)로 받기 — 기록 한 건 = 한 줄
         csv_rows = [{
             "저장 시각": r["slip"].get("saved_at", ""), "회차": r["slip"].get("gm_ts", ""), "구분": KIND_LABEL[r["kind"]],
+            "이유": REASON_LABEL.get(r["slip"].get("reason", ""), ""),
             "메모": r["slip"].get("memo", ""),
             "경기": " / ".join(f"{g['seq']} {g['home']} vs {g['away']} [{'·'.join(p['label'] for p in g['picks'])}]"
                              for g in r["slip"].get("games", [])),
             "조합 수": sum(1 for c in r["slip"].get("combos", []) if c.get("picked", True)),
             "투자(원)": r["grade"]["stake"], "상태": SLIP_STATE[r["grade"]["state"]][0], "환급(원)": r["grade"]["payout"],
             "손익(원)": (r["grade"]["payout"] - r["grade"]["stake"]) if r["grade"]["state"] != "pending" else "",
-        } for r in sorted(view, key=lambda r: r["slip"].get("saved_at", ""), reverse=True)]
+        } for r in sorted(view, key=_slip_sort_key, reverse=True)]
         st.download_button("⬇️ 엑셀(CSV)로 받기", data=pd.DataFrame(csv_rows).to_csv(index=False).encode("utf-8-sig"),
                            file_name=f"my_bets_{datetime.now().strftime('%Y%m%d')}.csv", mime="text/csv", key="my_csv")
 
-        # 🧭 무엇을 보고 고를 때 잘 맞았나 — 고른 선택지 단위(자동 기록) · 직접 고른 이유 단위(기록 손익)
-        basis_stat = {k: [0, 0] for k in BASIS_LABEL}   # 결과 나온 선택지 수, 맞은 수
+        # 🧭 무엇을 보고 고를 때 잘 맞았나 — 고유 경기 선택지 단위(중복·안 산 조합 제외) · 직접 고른 이유 단위 · 폴더 수 단위
+        basis_stat = {k: [0, 0] for k in BASIS_LABEL}   # 고유 선택지 수, 맞은 수
+        seen_picks = set()                              # (gm_ts, seq, line, pick_key) 중복 집계 방지
+        total_pick_uses = 0
         reason_stat = {k: [0, 0, 0] for k in REASON_LABEL}   # 기록 수, 투자, 환급 (결과 나온 기록만)
+        folder_stat = {"1경기 (단폴)": [0, 0, 0, 0], "2폴더": [0, 0, 0, 0], "3폴더 이상": [0, 0, 0, 0]}   # 건수, 적중, 투자, 환급
         for r in view:
             s_, res_of_ = r["slip"], _slip_result_of(r["slip"], res_idx4)
+            act_keys = active_pick_keys(s_)
             for g in s_.get("games", []):
                 out_ = res_of_(g)
                 if out_ in (None, "void"):
                     continue
                 for p in g["picks"]:
+                    if (str(g["seq"]), p["key"]) not in act_keys:
+                        continue   # 조합 표에서 '샀음' 체크를 끈 선택지는 통계에서 제외
                     b = _pick_basis_of(s_, g, p)
                     if b:
-                        basis_stat[b][0] += 1
-                        basis_stat[b][1] += int(out_ == p["key"])
-            if s_.get("reason") in REASON_LABEL and r["grade"]["state"] != "pending":
-                rs = reason_stat[s_["reason"]]
-                rs[0] += 1
-                rs[1] += r["grade"]["stake"]
-                rs[2] += r["grade"]["payout"]
-        if any(v[0] for v in basis_stat.values()) or any(v[0] for v in reason_stat.values()):
-            with st.expander("🧭 나는 무엇을 보고 고를 때 잘 맞았나", expanded=True):
+                        total_pick_uses += 1
+                        pk_id = (str(s_.get("gm_ts")), str(g["seq"]), float(g.get("line") or 0.0), p["key"])
+                        if pk_id not in seen_picks:
+                            seen_picks.add(pk_id)
+                            basis_stat[b][0] += 1
+                            basis_stat[b][1] += int(out_ == p["key"])
+            if r["grade"]["state"] != "pending":
+                if s_.get("reason") in REASON_LABEL:
+                    rs = reason_stat[s_["reason"]]
+                    rs[0] += 1
+                    rs[1] += r["grade"]["stake"]
+                    rs[2] += r["grade"]["payout"]
+                n_g_slip = len(s_.get("games", []))
+                f_bucket = "1경기 (단폴)" if n_g_slip <= 1 else ("2폴더" if n_g_slip == 2 else "3폴더 이상")
+                fs = folder_stat[f_bucket]
+                fs[0] += 1
+                fs[1] += int(r["grade"]["state"] == "hit")
+                fs[2] += r["grade"]["stake"]
+                fs[3] += r["grade"]["payout"]
+        if any(v[0] for v in basis_stat.values()) or any(v[0] for v in reason_stat.values()) or any(v[0] for v in folder_stat.values()):
+            with st.expander("🧭 나는 무엇을 보고 고를 때 잘 맞았나 · 폴더 수별 성적", expanded=True):
                 st.dataframe(pd.DataFrame([{
-                    "고른 선택지": BASIS_LABEL[k], "결과 나온 수": v[0], "맞은 수": v[1],
+                    "고른 선택지 (고유 경기 기준)": BASIS_LABEL[k], "결과 나온 수": v[0], "맞은 수": v[1],
                     "적중률": f"{v[1] / v[0] * 100:.0f}%" if v[0] else "-"} for k, v in basis_stat.items()]),
                     hide_index=True, width="stretch")
-                st.caption("저장한 순간 고른 선택지가 배당 1순위였는지, AI 1순위였는지 자동으로 기록해 둔 거예요 (예전 기록은 경기 전 AI 기록으로 "
-                           "계산). 1순위가 아닌 선택(💡)은 맞히기 어렵지만 배당이 높아요. 적중률만으로 잘한 건지는 알 수 없어서, "
-                           "아래 '직접 고른 이유'별 손익도 함께 보세요. 수십 건은 쌓여야 의미가 있어요.")
-                if any(v[0] for v in reason_stat.values()):
-                    st.dataframe(pd.DataFrame([{
-                        "직접 고른 이유": REASON_LABEL[k], "기록": v[0], "투자(원)": v[1], "손익(원)": v[2] - v[1],
-                        "수익률": f"{(v[2] - v[1]) / v[1] * 100:+.1f}%" if v[1] else "-"} for k, v in reason_stat.items() if v[0]]),
-                        hide_index=True, width="stretch",
-                        column_config={"투자(원)": st.column_config.NumberColumn(format="localized"),
-                                       "손익(원)": st.column_config.NumberColumn(format="%+d")})
-                else:
-                    st.caption("저장할 때 사이드바의 '왜 골랐어요?'를 누르면 이유별 손익도 여기에 나와요.")
+                dup_note = (f" (여러 슬립에 겹쳐 담은 선택지 총 {total_pick_uses}회 중 고유 경기 {len(seen_picks)}건만 집계했어요.)"
+                            if total_pick_uses > len(seen_picks) else "")
+                st.caption("저장한 순간 고른 선택지가 배당 1순위였는지, AI 1순위였는지 자동으로 기록해 둔 거예요 (안 산 조합은 제외, 같은 경기를 여러 기록에 나눠 담은 경우는 한 번만 집계)."
+                           + dup_note + " 적중률만으로 수익 여부를 알 수 없어서 아래 이유별·폴더별 손익도 함께 보세요.")
+                c_r1, c_r2 = st.columns(2)
+                with c_r1:
+                    if any(v[0] for v in reason_stat.values()):
+                        st.markdown("**📌 직접 고른 이유별 손익**")
+                        st.dataframe(pd.DataFrame([{
+                            "직접 고른 이유": REASON_LABEL[k], "기록": v[0], "투자(원)": v[1], "손익(원)": v[2] - v[1],
+                            "수익률": f"{(v[2] - v[1]) / v[1] * 100:+.1f}%" if v[1] else "-"} for k, v in reason_stat.items() if v[0]]),
+                            hide_index=True, width="stretch",
+                            column_config={"투자(원)": st.column_config.NumberColumn(format="localized"),
+                                           "손익(원)": st.column_config.NumberColumn(format="%+d")})
+                    else:
+                        st.caption("📌 저장할 때(또는 아래 카드의 '✏️ 메모·이유'에서) '왜 골랐어요?'를 선택하면 이유별 손익이 여기에 나와요.")
+                with c_r2:
+                    if any(v[0] for v in folder_stat.values()):
+                        st.markdown("**🧩 묶은 경기 수(폴더)별 손익**")
+                        st.dataframe(pd.DataFrame([{
+                            "폴더 수": k, "기록": v[0], "적중": f"{v[1]}/{v[0]}", "투자(원)": v[2], "손익(원)": v[3] - v[2],
+                            "수익률": f"{(v[3] - v[2]) / v[2] * 100:+.1f}%" if v[2] else "-"} for k, v in folder_stat.items() if v[0]]),
+                            hide_index=True, width="stretch",
+                            column_config={"투자(원)": st.column_config.NumberColumn(format="localized"),
+                                           "손익(원)": st.column_config.NumberColumn(format="%+d")})
 
         if not view:
             st.info("조건에 맞는 기록이 없어요. 필터를 바꿔 보세요.")
-        shown_v = sorted(view, key=lambda r: r["slip"].get("saved_at", ""), reverse=True)[:50]
+        shown_v = sorted(view, key=_slip_sort_key, reverse=True)[:50]
         focus = st.session_state.pop("my_focus", None)   # 사이드바에서 누른 기록 → 이번 한 번 맨 위
         shown_v.sort(key=lambda r: r["slip"]["id"] != focus)
         for r in shown_v:
@@ -3448,70 +3549,87 @@ with tab4:
                 st.markdown(f"<div style='padding-bottom:26px'>{head}</div>", unsafe_allow_html=True)
 
                 # 💰 조합별 결과 (돈은 조합 단위로 나가고 들어오므로 먼저) — 틀린 조합은 어느 경기 때문인지
-                lab_of = {(g["seq"], p["key"]): p["label"] for g in s.get("games", []) for p in g["picks"]}
+                lab_of = {(str(g["seq"]), p["key"]): p["label"] for g in s.get("games", []) for p in g["picks"]}
                 game_of = {str(g["seq"]): g for g in s.get("games", [])}
+
+                def _leg_label(seq, k):
+                    seq_s = str(seq)
+                    hm = game_of.get(seq_s, {}).get("home", "")
+                    return f"{seq_s} {hm} {lab_of.get((seq_s, k), k)}".strip()
 
                 def _combo_state(c):
                     if c["state"] == "hit":
-                        return "✅ 적중"
-                    if c["state"] == "pending":
-                        return "⏳ 대기"
-                    wrong = [f"{seq} {lab_of.get((seq, k), k)}" for seq, k, _ in c["legs"]
-                             if res_of(game_of.get(seq, {"seq": seq})) not in (None, "void", k)]
-                    return "❌ " + ", ".join(wrong) + " 틀림" if wrong else "❌"
+                        base_st = "✅ 적중"
+                    elif c["state"] == "pending":
+                        hl, tl = c.get("hit_legs", 0), c.get("total_legs", len(c["legs"]))
+                        base_st = f"⏳ 대기 ({hl}/{tl} 적중)" if hl > 0 else "⏳ 대기"
+                    else:
+                        wrong = [f"{seq} {lab_of.get((str(seq), k), k)}" for seq, k, _ in c["legs"]
+                                 if res_of(game_of.get(str(seq), {"seq": str(seq)})) not in (None, "void", k)]
+                        base_st = "❌ " + ", ".join(wrong) + " 틀림" if wrong else "❌"
+                    return base_st if c.get("picked", True) else f"— 안 삼 ({base_st})"
 
                 # 저장한 조합 전부 (산 것 먼저) — '샀음' 체크·금액을 고치면 바로 저장 (한경기 1,000원 · 조합 100원 단위)
-                graded = {c["key"]: c for c in combo_results(s, res_of)}
-                all_c = sorted(s.get("combos", []), key=lambda c: not c.get("picked", True))
-                c_rows = [graded.get(c.get("key")) or {"key": c.get("key"), "legs": c["legs"], "stake": int(c["stake"]),
-                                                       "state": "off", "payout": 0} for c in all_c]
+                c_rows = sorted(combo_results(s, res_of, include_unpicked=True), key=lambda c: not c.get("picked", True))
                 unit4 = 1000 if len(s.get("games", [])) == 1 else 100
                 ed_key = f"my_stake_ed_{sid}_{st.session_state.get('my_stake_ver', 0)}"
                 st.data_editor(pd.DataFrame([{
-                    "샀음": c["state"] != "off",
-                    "조합": " × ".join(f"{seq} {lab_of.get((str(seq), k), k)}" for seq, k, _ in c["legs"]),
-                    "배당": calculate_combined_odds([o for _, _, o in c["legs"]]),
+                    "샀음": bool(c.get("picked", True)),
+                    "조합": " × ".join(_leg_label(seq, k) for seq, k, _ in c["legs"]),
+                    "배당": c["eff_odds"],
                     "금액(원)": c["stake"],
-                    "적중 시(원)": _hit_payout(c) if c["state"] != "off" else None,
-                    "결과": "— 안 삼" if c["state"] == "off" else _combo_state(c),
-                    "환급(원)": c["payout"] if c["state"] == "hit" else 0,
-                    "손익(원)": f"{c['payout'] - c['stake']:+,}" if c["state"] not in ("pending", "off") else "-",
+                    "적중 시(원)": c["expected_payout"],
+                    "결과": _combo_state(c),
+                    "환급(원)": c["payout"] if c.get("picked", True) and c["state"] == "hit" else 0,
+                    "손익(원)": f"{c['payout'] - c['stake']:+,}" if c.get("picked", True) and c["state"] != "pending" else "-",
                 } for c in c_rows]), hide_index=True, width="stretch", height=min(38 + 35 * len(c_rows), 248),
                     key=ed_key, on_change=_save_stake_edit, args=(sid, ed_key, [c["key"] for c in c_rows], unit4),
                     disabled=["조합", "배당", "적중 시(원)", "결과", "환급(원)", "손익(원)"],
                     column_config={"샀음": st.column_config.CheckboxColumn("샀음 ✏️", width="small",
                                                                          help="실제로 산(또는 가상으로 건) 조합만 체크 — 손익은 체크한 조합으로 계산"),
-                                   "배당": st.column_config.NumberColumn(format="%.2f배"),
+                                   "배당": st.column_config.NumberColumn(
+                                       format="%.2f배", help="적중특례·무효(1.00배) 경기가 있으면 반영된 실제 적용 배당"),
                                    "금액(원)": st.column_config.NumberColumn(
                                        "금액(원) ✏️", min_value=unit4, max_value=100000, step=unit4, format="localized",
-                                       help=f"{unit4:,}원 단위로 고칠 수 있어요. 고치면 바로 저장돼요."),
+                                       help=f"{unit4:,}원 단위로 고칠 수 있어요 (슬립 총액 한도 100,000원). 고치면 바로 저장돼요."),
                                    "적중 시(원)": st.column_config.NumberColumn(
-                                       format="localized", help="이 조합이 맞으면 돌려받는 돈 (배당 × 금액)"),
+                                       format="localized", help="이 조합이 맞으면 돌려받는 돈 (적용 배당 × 금액)"),
                                    "환급(원)": st.column_config.NumberColumn(
                                        "실제 환급(원)", format="localized", help="결과가 나온 뒤 실제로 돌려받은 돈"),
                                    "손익(원)": st.column_config.TextColumn(help="실제 환급 − 금액"),
                                    "조합": st.column_config.TextColumn(width="medium")})
 
-                # 🎮 경기별: 번호 · 경기 · 고른 것(+ 고른 기준) · 실제 결과
+                # 🎮 경기별: 번호 · 경기(유형·기준선·시각) · 고른 것(+ 고른 기준·확률) · 실제 결과
+                act_keys_card = active_pick_keys(s)
                 g_rows = []
                 for g in s.get("games", []):
                     rows_g = _slip_rows(s, g, res_idx4)
                     out_g = outcome_from_rows(g, rows_g)
                     score_g = display_score(g, rows_g)
                     labels_g = pick_labels({"game_type": g.get("game_type", ""), "category": ""})
-                    # 고른 것마다 맞음·틀림 (한 경기에서 여러 개 골랐을 때 어느 것이 맞았는지)
-                    def _mark(p):
-                        if out_g in (None, "void"):
-                            return ""
-                        return " ✅" if out_g == p["key"] else " ❌"
-                    picks_txt = " / ".join(
-                        f"{p['label']} {p['odds']:.2f} {BASIS_ICON.get(_pick_basis_of(s, g, p), '')}".strip() + _mark(p)
-                        for p in g["picks"])
+
+                    def _fmt_pick(p):
+                        mark = "" if out_g in (None, "void") else (" ✅" if out_g == p["key"] else " ❌")
+                        p_mk, p_ai = _pick_probs_of(s, g, p)
+                        prob_tag = ""
+                        if p_mk is not None:
+                            prob_tag = (f" <span style='font-size:11px;opacity:.65'>(배당 {p_mk * 100:.0f}%"
+                                        + (f"·AI {p_ai * 100:.0f}%" if p_ai is not None else "") + ")</span>")
+                        txt = f"{p['label']} {p['odds']:.2f} {BASIS_ICON.get(_pick_basis_of(s, g, p), '')}".strip() + prob_tag + mark
+                        if (str(g["seq"]), p["key"]) not in act_keys_card:
+                            return f"<span style='opacity:.45;text-decoration:line-through'>{txt}</span> <span style='font-size:11px;opacity:.6'>(안 삼)</span>"
+                        return txt
+
+                    picks_txt = " / ".join(_fmt_pick(p) for p in g["picks"])
                     # 핸디캡·언더오버 기준값이 산 뒤에 바뀌어 같은 기준값 결과 줄이 없으면 실제 점수로 다시 채점한 것
                     regraded = bool(rows_g) and ("핸디캡" in str(g.get("game_type")) or "언더오버" in str(g.get("game_type"))) \
                         and line_row(g, rows_g) is None
                     if not rows_g:
-                        res_txt = "<span style='opacity:.6'>진행 전 · 결과 대기</span>"
+                        m_live = pred_map.get(str(g["seq"])) or {"match_time": g.get("match_time", "")}
+                        wp = wait_phase(m_live, now_ms4)
+                        wp_ico, wp_lab = WAIT_PHASE[wp]
+                        wp_col = "#38bdf8" if wp == "live" else ("#facc15" if wp == "late" else "inherit")
+                        res_txt = f"<span style='color:{wp_col};opacity:{'1' if wp == 'live' else '.75'}'>{wp_ico} {wp_lab}</span>"
                     elif out_g == "void":
                         why_void = "무승부" if any(str(r.get("game_result")) == "1" for r in rows_g) else "무효·적중특례"
                         res_txt = f"↩️ {why_void} → 배당 1.00 <span style='opacity:.7'>{score_g}</span>"
@@ -3521,27 +3639,42 @@ with tab4:
                         res_txt = (f"<b>{labels_g.get(out_g, '?')}</b> "
                                    f"<span style='opacity:.7'>{score_g}</span>"
                                    + (" <span style='font-size:11px;opacity:.6'>(산 기준값으로 채점)</span>" if regraded else ""))
+                    t_chip = line_chip({"game_type": g.get("game_type", ""), "line": g.get("line")})
+                    when_g = short_when({"match_time": g.get("match_time", "")})
+                    meta_g = " · ".join(x for x in [g.get("league", ""), when_g] if x)
                     g_rows.append(
-                        "<div style='display:grid;grid-template-columns:44px 1fr 190px 130px;gap:8px;align-items:center;"
-                        "padding:4px 0;font-size:13px;border-top:1px solid rgba(148,163,184,.12)'>"
+                        "<div style='display:grid;grid-template-columns:44px 1fr 230px 140px;gap:8px;align-items:center;"
+                        "padding:5px 0;font-size:13px;border-top:1px solid rgba(148,163,184,.12)'>"
                         f"<b>{g['seq']}</b><span style='word-break:keep-all'>{g['home']} <span style='opacity:.6'>vs</span> {g['away']}"
-                        f" <span style='opacity:.6;font-size:12px'>{type_name({'game_type': g.get('game_type', '')})}</span></span>"
-                        f"<span>{picks_txt}</span><span>{res_txt}</span></div>")
+                        f" <span style='opacity:.7;font-size:12px'>{type_name({'game_type': g.get('game_type', '')})}</span>"
+                        + (f" {t_chip}" if t_chip else "")
+                        + (f" <span style='opacity:.55;font-size:11px'>({meta_g})</span>" if meta_g else "")
+                        + f"</span><span>{picks_txt}</span><span>{res_txt}</span></div>")
                 st.markdown("<div style='padding-bottom:12px'>"
-                            + "<div style='display:grid;grid-template-columns:44px 1fr 190px 130px;gap:8px;font-size:11px;"
-                              "opacity:.6;margin-top:4px'><span>번호</span><span>경기</span><span>고른 것 (기준)</span><span>결과</span></div>"
+                            + "<div style='display:grid;grid-template-columns:44px 1fr 230px 140px;gap:8px;font-size:11px;"
+                              "opacity:.6;margin-top:4px'><span>번호</span><span>경기 (유형·기준선·일시)</span><span>고른 것 (기준·확률)</span><span>결과</span></div>"
                             + "".join(g_rows)
                             + "<div style='font-size:11px;opacity:.55;margin-top:4px'>✅ ❌ = 고른 것이 맞았는지 · 기준: 🎯 배당·AI 둘 다 1순위 · "
                               "📊 배당 1순위 · 🧠 AI 1순위 · 💡 1순위 아님 (저장한 순간 기준)</div></div>", unsafe_allow_html=True)
 
-                a1, a2, a3, a4, _ = st.columns([1, 1.3, 1, 1, 1.7])
-                a1.button("불러오기", key=f"my_load_{sid}", width="stretch", on_click=_load_slip, args=(s,),
-                          disabled=str(s.get("gm_ts")) != cur_round4)
+                open_seqs4 = [
+                    str(g["seq"]) for g in s.get("games", [])
+                    if str(s.get("gm_ts")) == cur_round4 and str(g["seq"]) in pred_map
+                    and not is_sale_closed(pred_map[str(g["seq"])], now_ms4) and not _slip_rows(s, g, res_idx4)
+                ]
+                load_label = ("불러오기" if len(open_seqs4) == len(s.get("games", [])) and open_seqs4
+                              else f"불러오기 ({len(open_seqs4)}경기 가능)" if open_seqs4
+                              else "불러오기 (마감)" if str(s.get("gm_ts")) == cur_round4 else "불러오기 (지난 회차)")
+                a1, a2, a3, a4, _ = st.columns([1.2, 1.3, 1.1, 1, 1.4])
+                a1.button(load_label, key=f"my_load_{sid}", width="stretch", on_click=_load_slip, args=(s, open_seqs4),
+                          disabled=not open_seqs4)
                 a2.button(f"{KIND_LABEL['paper' if kind == 'real' else 'real']}로 바꾸기", key=f"my_kind_{sid}", width="stretch",
                           on_click=_toggle_kind, args=(sid, kind))
-                with a3.popover("✏️ 메모", width="stretch"):
+                with a3.popover("✏️ 메모·이유", width="stretch"):
                     st.text_input("메모", value=s.get("memo", ""), key=f"memo_edit_{sid}")
-                    st.button("저장", key=f"my_memo_save_{sid}", on_click=_save_memo, args=(sid,))
+                    st.pills("왜 골랐어요? (선택)", list(REASON_LABEL), format_func=REASON_LABEL.get,
+                             default=s.get("reason") if s.get("reason") in REASON_LABEL else None, key=f"reason_edit_{sid}")
+                    st.button("저장", key=f"my_memo_save_{sid}", type="primary", on_click=_save_memo, args=(sid,))
                 with a4.popover("🗑️ 삭제", width="stretch"):
                     st.caption("이 기록을 지울까요? 되돌릴 수 없어요.")
                     st.button("삭제", key=f"my_del_{sid}", type="primary", on_click=_delete_slip, args=(sid,))
@@ -3555,10 +3688,14 @@ with st.sidebar:
     st.markdown(f"### 🛒 내 선택 <span style='font-size:15px;opacity:.7'>{cart['n']}경기</span>", unsafe_allow_html=True)
     if st.session_state.pop("slip_saved_toast", False):
         st.toast("💾 저장했어요. 아래 '저장한 선택'에서 볼 수 있어요.")
+    if st.session_state.get("slip_loaded_toast"):
+        st.toast(st.session_state.pop("slip_loaded_toast"))
     if st.session_state.get("pick_swap_toast"):
         st.toast("🔁 " + st.session_state.pop("pick_swap_toast"))
     if st.session_state.pop("slip_edit_refused", False):
         st.toast("⚠️ 산 조합이 하나는 있어야 해요. 기록을 지우려면 ④ 탭의 🗑️ 삭제를 누르세요.")
+    if st.session_state.pop("slip_limit_refused", False):
+        st.toast("⚠️ 베트맨 1회차 구매 한도(100,000원)를 넘을 수 없어요.")
     if st.session_state.pop("slip_synced_toast", False):
         st.toast("📒 저장한 기록을 고쳤어요. ④ 내 베팅 기록에 바로 반영돼요.")
     if not cart["active"]:

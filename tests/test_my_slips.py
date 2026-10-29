@@ -75,6 +75,8 @@ def test_line_change_graded_with_purchase_line():
     uo_rows = [{"handi_win": 158.5, "score": "166:0", "game_result": "2"}]
     assert outcome_from_rows(uo, uo_rows) == "home_win"          # 합계 166 < 170.5 → 언더(앞 선택지)
     assert display_score(uo, uo_rows) == "합계 166"
+    assert display_score({"game_type": "축구 SUM"}, [{"score": "6:0"}]) == "합계 6"
+    assert display_score({"game_type": "농구 SUM"}, [{"score": "184:0"}]) == "합계 184"
     assert outcome_from_rows({"game_type": "농구 승패"}, [{"game_result": "1"}]) == "void"   # 규정 1-(7)
     assert outcome_from_rows({"game_type": "축구 승무패"}, [{"game_result": "4"}]) == "void"
     assert outcome_from_rows({"game_type": "축구 승무패"}, []) is None
@@ -137,3 +139,25 @@ def test_update_combo_stakes(tmp_path):
     g = grade_slip(saved[s["id"]], lambda g: {"965": "home_win", "940": "draw"}[g["seq"]])
     assert (g["state"], g["stake"], g["hit_combos"]) == ("hit", 4000, 1)
     assert g["payout"] == calculate_payout(calculate_combined_odds([1.27, 3.45]), 4000)
+
+
+def test_active_pick_keys_and_unpicked_combo_grading():
+    """체크 해제한 조합의 선택지 구분(active_pick_keys) · 무효(void) 반영 예상 배당/환급 · 진행 중 맞은 경기 수(hit_legs)"""
+    from tracker.my_slips import active_pick_keys, apply_combo_changes
+    s = _slip()
+    assert active_pick_keys(s) == {("965", "home_win"), ("940", "draw"), ("940", "away_win")}
+    # 1번 조합(940 무) 체크 해제 → 실제로 산 선택지는 965 승, 940 패만 남음
+    s2 = apply_combo_changes(s, {s["combos"][0]["key"]: {"picked": False}})
+    assert active_pick_keys(s2) == {("965", "home_win"), ("940", "away_win")}
+
+    # include_unpicked=True: 안 산 1번 조합도 실제 결과(적중/미적중)는 알 수 있고 payout은 0원
+    all_rows = combo_results(s2, lambda g: {"965": "home_win", "940": "draw"}[g["seq"]], include_unpicked=True)
+    assert [(r["picked"], r["state"], r["payout"], r["expected_payout"]) for r in all_rows] == [
+        (False, "hit", 0, 4400),
+        (True, "miss", 0, 5400),
+    ]
+    # 940 경기가 아직 진행 전이고 965 경기가 적중(또는 void)했을 때 hit_legs / eff_odds 확인
+    pend_rows = combo_results(s, lambda g: {"965": "void", "940": None}[g["seq"]])
+    assert [r["hit_legs"] for r in pend_rows] == [1, 1]
+    assert [r["eff_odds"] for r in pend_rows] == [3.5, 2.1]   # 965 무효(1.0배) × 3.45 → 3.5배, 1.0 × 2.07 → 2.1배
+

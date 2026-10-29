@@ -168,16 +168,16 @@ def outcome_from_rows(game: Dict[str, Any], rows: List[Dict[str, Any]]) -> Optio
 
 
 def display_score(game: Dict[str, Any], rows: List[Dict[str, Any]]) -> str:
-    """화면용 실제 점수: 핸디캡 줄은 핸디캡을 뺀 진짜 점수, 언더오버 줄은 '합계 N'"""
+    """화면용 실제 점수: 핸디캡 줄은 핸디캡을 뺀 진짜 점수, 언더오버·홀짝(SUM) 줄은 '합계 N'"""
     if not rows:
         return ""
-    gt = str(game.get("game_type", ""))
+    gt = f"{game.get('game_type', '')} {game.get('category', '')}"
     row = (line_row(game, rows) if _is_line_type(gt) else None) or rows[0]
     sc = _scores(row)
     if sc is None:
         return str(row.get("score", ""))
     fmt = lambda x: str(int(x)) if float(x).is_integer() else f"{x:g}"
-    if "언더오버" in gt:
+    if "언더오버" in gt or "SUM" in gt or "홀" in gt:
         return f"합계 {fmt(sc[0])}"
     if "핸디캡" in gt:
         return f"{fmt(sc[0] - (_num(row.get('handi_win')) or 0.0))}:{fmt(sc[1])}"
@@ -212,6 +212,14 @@ def pick_basis(pick: Dict[str, Any]) -> Optional[str]:
     return "market" if mk else ("ai" if ai else "other")
 
 
+def active_pick_keys(slip: Dict[str, Any]) -> set:
+    """체크한(샀음) 조합에 실제로 포함된 (str(seq), pick_key) 집합 (조합 정보가 없으면 전체 선택지)"""
+    combos = [c for c in slip.get("combos", []) if c.get("picked", True)]
+    if not combos:
+        return {(str(g["seq"]), p["key"]) for g in slip.get("games", []) for p in g.get("picks", [])}
+    return {(str(s), k) for c in combos for s, k, _ in c.get("legs", [])}
+
+
 def build_slip(gm_ts: Any, games: List[Dict[str, Any]], combos: List[Dict[str, Any]], memo: str = "",
                now: Optional[datetime] = None, kind: str = "real", reason: str = "") -> Dict[str, Any]:
     """games: [{seq, home, away, game_type, line, picks: [{key, label, odds, is_mk_top, is_ai_top, p_mk, p_ai}]}]
@@ -232,26 +240,34 @@ def build_slip(gm_ts: Any, games: List[Dict[str, Any]], combos: List[Dict[str, A
     }
 
 
-def combo_results(slip: Dict[str, Any], result_of: Callable[[Dict[str, Any]], Optional[str]]) -> List[Dict[str, Any]]:
+def combo_results(slip: Dict[str, Any], result_of: Callable[[Dict[str, Any]], Optional[str]],
+                  include_unpicked: bool = False) -> List[Dict[str, Any]]:
     """
-    체크한 조합마다 결과. result_of(game) → 실제 결과 키(home_win/draw/away_win), 'void'(적중 특례·무효), None(아직)
+    체크한 조합마다 결과 (include_unpicked=True면 체크 해제한 조합도 함께 채점).
+    result_of(game) → 실제 결과 키(home_win/draw/away_win), 'void'(적중 특례·무효), None(아직)
     state: 'hit' 적중 · 'miss' 틀림(다른 경기 결과 전이어도 확정) · 'pending' 결과 대기
     무효 경기는 베트맨 규정처럼 그 경기를 배당 1.00으로 계산한다.
     """
     outcome = {str(g["seq"]): result_of(g) for g in slip.get("games", [])}
     out = []
     for c in slip.get("combos", []):
-        if not c.get("picked", True):
+        picked = bool(c.get("picked", True))
+        if not picked and not include_unpicked:
             continue
         legs = [(str(s), k, float(o)) for s, k, o in c["legs"]]
-        row = {"key": c.get("key"), "legs": legs, "stake": int(c["stake"]), "odds": None, "payout": 0}
+        eff_odds = calculate_combined_odds([1.0 if outcome.get(s) == "void" else o for s, _, o in legs])
+        expected_payout = calculate_payout(eff_odds, int(c["stake"]))
+        hit_legs = sum(1 for s, k, _ in legs if outcome.get(s) in ("void", k))
+        row = {"key": c.get("key"), "legs": legs, "stake": int(c["stake"]), "picked": picked,
+               "odds": None, "eff_odds": eff_odds, "expected_payout": expected_payout,
+               "hit_legs": hit_legs, "total_legs": len(legs), "payout": 0}
         if any(outcome.get(s) not in (None, "void", k) for s, k, _ in legs):
             row["state"] = "miss"
         elif any(outcome.get(s) is None for s, _, _ in legs):
             row["state"] = "pending"
         else:
-            row["odds"] = calculate_combined_odds([1.0 if outcome[s] == "void" else o for s, _, o in legs])
-            row["payout"] = calculate_payout(row["odds"], row["stake"])
+            row["odds"] = eff_odds
+            row["payout"] = expected_payout if picked else 0
             row["state"] = "hit"
         out.append(row)
     return out
@@ -264,5 +280,6 @@ def grade_slip(slip: Dict[str, Any], result_of: Callable[[Dict[str, Any]], Optio
     alive = sum(1 for r in rows if r["state"] == "pending")
     hits = [r for r in rows if r["state"] == "hit"]
     state = "pending" if alive else ("hit" if hits else "miss")
+    stake = sum(r["stake"] for r in rows) if rows else int(slip.get("total_stake", 0))
     return {"state": state, "done": done, "games": len(slip.get("games", [])), "hit_combos": len(hits),
-            "payout": sum(r["payout"] for r in hits), "stake": int(slip.get("total_stake", 0))}
+            "payout": sum(r["payout"] for r in hits), "stake": stake}
