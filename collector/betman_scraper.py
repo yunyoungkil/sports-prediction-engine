@@ -106,6 +106,7 @@ class BetmanScraper:
         }
         payload = json.dumps({"_sbmInfo": {"_sbmInfo": {"debugMode": "false"}}}).encode("utf-8")
 
+        saw_night_pause = False
         for endpoint in endpoints:
             try:
                 req = urllib.request.Request(endpoint, data=payload, headers=headers)
@@ -123,6 +124,30 @@ class BetmanScraper:
                     round_found = matched_rounds[0]
                     print(f"  ✓ 현재 판매 중인 최신 회차 발견: {round_found}")
                     return round_found
+                if (data.get("rsMsg") or {}).get("statusCode") == "S":
+                    saw_night_pause = True
+            except Exception:
+                pass
+
+        # 야간 발매 휴식 시간대(23:00~08:00, reserve='Y')에는 protoGames가 비어 오므로 detailSchedule(gmTs=0)로 현재/직전 회차를 확인
+        if saw_night_pause:
+            try:
+                sched_payload = json.dumps({
+                    "gmId": self.gm_id, "gmTs": 0, "yearMonth": "", "sportsCode": "", "betId": "",
+                    "league": "", "sglYn": "", "sortName": "gameDate", "sortOrder": "",
+                    "_sbmInfo": {"_sbmInfo": {"debugMode": "false"}}
+                }).encode("utf-8")
+                req_sched = urllib.request.Request(f"{BASE_URL}/buyPsblGame/detailSchedule.do", data=sched_payload, headers=headers)
+                with open_with_retry(self.opener, req_sched, timeout=8, label="야간 회차 조회") as resp:
+                    sdata = json.loads(resp.read().decode("utf-8"))
+                cl = sdata.get("currentLottery") or {}
+                ts_val = int(cl.get("gmTs") or 0)
+                if ts_val > 0:
+                    has_odds = any(float(x.get("winAllot") or 0) > 1.0 for x in (sdata.get("schedules") or []))
+                    if not has_odds and cl.get("saleStatus") == "SaleBefore" and ts_val % 1000 > 1:
+                        ts_val -= 1
+                    print(f"  ✓ 야간 발매 휴식 시간대 회차 확인: {ts_val}")
+                    return str(ts_val)
             except Exception:
                 pass
 
