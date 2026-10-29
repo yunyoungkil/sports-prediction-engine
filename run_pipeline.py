@@ -53,6 +53,9 @@ def load_models() -> dict:
     # [Phase 5.11] 전 종목·전 유형 보정 모델 (유형별 게이트를 통과한 세그먼트만)
     from models.betman_markets import MarketsLivePredictor
     markets_model = MarketsLivePredictor.load()
+    # [Phase 7.1] 그림자 모델 (shin_mkt): 같은 경기 확률을 경기 전 기록에만 남김 — 화면·추천·가상 베팅에 안 씀
+    from models.shadow_models import ShadowPredictor
+    shadow_model = ShadowPredictor.load()
     print(f"ℹ 전 종목 보정 모델: {', '.join(sorted(markets_model.models)) if markets_model else '적용 유형 없음'}")
     # [Phase 6.5] 추천 잠금 (섀도 모드): AI는 계산·기록·가상 베팅을 계속하고, 추천(등급·텔레그램 픽)은 검증 3단계 통과 후에만
     from evaluation.gates import recommendation_status
@@ -62,7 +65,7 @@ def load_models() -> dict:
           + " · ".join(f"{'✅' if s['ok'] else '⏳'} {s['name']}" for s in rec_status["stages"])
           + f" · {'✅' if rec_status['features']['gem']['profit']['ok'] else '⏳'} ③ 수익")
 
-    return {"form_analyzer": form_analyzer, "corrector": corrector, "betman_model": betman_model,
+    return {"form_analyzer": form_analyzer, "corrector": corrector, "betman_model": betman_model, "shadow_model": shadow_model,
             "markets_model": markets_model, "recommend_on": recommend_on}
 
 
@@ -131,6 +134,11 @@ def predict_matches(matches: list, gm_ts, models: dict, sharp_by_seq: dict = Non
             from collector.betman_sharp import parse_betman_kickoff
             bm_probs = betman_model.predict_proba(odds, home, away, m.get("league", ""),
                                                   kickoff=parse_betman_kickoff(m.get("match_time")))
+        shadow_probs = None   # [Phase 7.1] 그림자 모델 — 기록만 (실전 AI가 있는 축구 승무패에서만, 같은 경기 비교용)
+        if bm_probs and models.get("shadow_model"):
+            sp = models["shadow_model"].predict_proba(odds, home, away, m.get("league", ""),
+                                                      kickoff=parse_betman_kickoff(m.get("match_time")))
+            shadow_probs = {"shin_mkt": sp} if sp else None
         if bm_probs:
             blended_probs = bm_probs
             prob_source = "betman_corrector"
@@ -178,6 +186,7 @@ def predict_matches(matches: list, gm_ts, models: dict, sharp_by_seq: dict = Non
             "away_team": away,
             "betman_odds": odds,
             "odds_changes": m.get("odds_changes") or [],   # 베트맨 배당 변경 내역 (1차 → … → 지금)
+            "shadow_probs": shadow_probs,   # 그림자 모델 확률 (기록·비교 전용)
             "prediction_odds": odds,
             "closing_odds": None,
             "clv_pct": None,

@@ -248,6 +248,9 @@ def verdict_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json)
     v = stale.get("value") or {}
     out.append(f"   - 지연 배당 (베트맨이 해외 배당을 늦게 따라가나): {v.get('matches', 0)}/100경기 · "
                f"{stale.get('verdict', '아직 기록 없음')}")
+    for name, sh in (card.get("shadow") or {}).items():   # [Phase 7.1] 그림자 모델 — 300경기 뒤 교체 후보
+        out.append(f"   - 그림자 모델 {name} (지금 AI와 같은 경기 비교, 음수 = 그림자가 더 정확): {sh['n']}경기 · "
+                   f"LL 차이 {sh['ll_diff_vs_model']:+.5f} [{sh['ci'][0]:+.5f}, {sh['ci'][1]:+.5f}] · {sh['verdict']}")
     for h in card.get("hypotheses") or []:
         out.append(f"   - 사전 가설 {h['id']} {h['name']}: {h['n']}/300경기 · {h['verdict']}")
     st = status_from_data(reader("data/walk_forward.json"), card, reader("data/paper_trading.json"))

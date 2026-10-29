@@ -63,6 +63,7 @@ def save_prediction_log(
             "betman_odds": p.get("betman_odds"),
             "market_probs": p.get("market_implied_probs"),
             "model_probs": probs,
+            "shadow_probs": p.get("shadow_probs"),   # [Phase 7.1] 그림자 모델 (경기 전 마지막 값 · 성적표 'shadow' 비교 전용)
             "prob_source": p.get("prob_source"),
             "model_version": model_version,
             "logged_at": stamp,

@@ -44,6 +44,10 @@ jobs:
             python -m collector.betman_archive --years $(( $(date +%y) - 1 )) $(date +%y) && date -u +%F > data/last_archive_sync.txt               || echo "⚠️ 베트맨 과거 기록 갱신 실패 (다음 실행 때 다시)"
           fi
 
+      - name: 4-2. 그림자 모델 파일이 없으면 학습 (Phase 7.1 shin_mkt · 기록·비교 전용)
+        run: |
+          if [ ! -f data/shadow_shin_mkt.json ]; then python -m models.shadow_models || echo "⚠️ 그림자 모델 학습 실패"; fi
+
       - name: 4. 과거 데이터 동기화 · 주간 재학습 (마지막 재학습 뒤 6일 이상 지났으면, 또는 최초 실행)
         run: |
           # 날짜 기준 — 예전엔 '수요일 UTC 3시 전 실행'이었는데 GitHub 예약이 4~5시간씩 밀려 한 번도 조건을 못 맞췄음
@@ -58,6 +62,8 @@ jobs:
             # [Phase 5.6] 베트맨 과거 결과 아카이브 증분 수집(올해·작년 회차) → 베트맨 학습 보정 모델 재학습
             python -m collector.betman_archive --years $(( $(date +%y) - 1 )) $(date +%y)
             python -m models.betman_corrector
+            # [Phase 7.1] 그림자 모델(shin_mkt) — 같은 데이터로 재학습 (기록·비교 전용)
+            python -m models.shadow_models || echo "⚠️ 그림자 모델 학습 실패"
             # [Phase 5.11] 전 종목·전 유형 아카이브 증분 수집 → 유형별 보정 모델 재학습 (유형별 게이트)
             python -m collector.betman_markets_archive --years $(( $(date +%y) - 1 )) $(date +%y)
             python -m models.betman_markets

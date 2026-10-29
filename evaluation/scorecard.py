@@ -152,6 +152,31 @@ def build_hypotheses(rows: List[Dict[str, Any]], since: datetime = HYPOTHESES_SI
     return out
 
 
+SHADOW_MIN_N = 100   # 이만큼 쌓이기 전에는 '나쁨'으로 판단하지 않음 (models/shadow_models.py 교체 규칙)
+
+
+def shadow_compare(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """그림자 모델마다: 같은 경기에서 (그림자 − 지금 AI) Log loss 차이 · 회차 단위 범위. 음수면 그림자가 더 정확"""
+    out: Dict[str, Any] = {}
+    for name in sorted({k for r in rows for k in r.get("shadow", {})}):
+        sub = [r for r in rows if name in r.get("shadow", {})]
+        y = np.array([r["y"] for r in sub])
+        i = np.arange(len(y))
+        ps, pm = np.array([r["shadow"][name] for r in sub]), np.array([r["model"] for r in sub])
+        d = -np.log(np.clip(ps[i, y], 1e-15, None)) + np.log(np.clip(pm[i, y], 1e-15, None))
+        ci = _round_ci(d, sub, digits=5)
+        if len(sub) < SHADOW_MIN_N:
+            verdict = f"모으는 중 ({len(sub)}/{SHADOW_MIN_N}경기)"
+        elif ci[0] > 0:
+            verdict = "지금 AI보다 확실히 나쁨 → 교체하지 않음"
+        elif ci[1] < 0:
+            verdict = "지금 AI보다 확실히 좋음"
+        else:
+            verdict = "차이가 확실하지 않음 (과거 시험 결과대로 300경기 뒤 교체)"
+        out[name] = {"n": len(sub), "ll_diff_vs_model": round(float(d.mean()), 5), "ci": ci, "verdict": verdict}
+    return out
+
+
 def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> Dict[str, Any]:
     results = load_graded_results(results_path)
     rows: List[Dict[str, Any]] = []
@@ -165,7 +190,8 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
             rows.append({"gm_ts": gm_ts, "y": y, "model": _vec(e["model_probs"]), "market": _vec(e["market_probs"]),
                          "odds": np.array([float(e["betman_odds"][k]) for k in KEYS]),
                          "source": e.get("prob_source"), "game_type": e.get("game_type") or "축구 승무패",
-                         "league": e.get("league") or "", "kickoff": parse_betman_kickoff(e.get("match_time"))})
+                         "league": e.get("league") or "", "kickoff": parse_betman_kickoff(e.get("match_time")),
+                         "shadow": {k: _vec(v) for k, v in (e.get("shadow_probs") or {}).items() if v}})
 
     card: Dict[str, Any] = {"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                             "graded_matches": len(rows), "rounds": sorted({r["gm_ts"] for r in rows}),
@@ -203,6 +229,8 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
         "by_game_type": {gt: _ll_block([r for r in rows if r["game_type"] == gt])
                          for gt in sorted({r["game_type"] for r in rows})},
         "hypotheses": build_hypotheses(rows),
+        # [Phase 7.1] 그림자 모델 vs 지금 AI — 같은 실전 경기만 (판정에는 안 씀 · 300경기 뒤 교체 결정용)
+        "shadow": shadow_compare(rows),
         # [6.6] 보정 곡선 — AI와 배당이 각각 말한 확률 vs 실제로 일어난 비율
         "calibration": {"ai": calibration(rows, "model"), "market": calibration(rows, "market")},
     })
