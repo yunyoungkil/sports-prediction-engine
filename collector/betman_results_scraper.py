@@ -190,16 +190,26 @@ class BetmanResultsScraper:
         # 갱신 대상 회차 이외의 과거 누적 회차 보존
         target_round_set = set(target_rounds)
         existing_map = {}
+        old_by_round: Dict[int, List[Dict[str, Any]]] = {}   # 갱신 대상 회차의 기존 결과 (조회가 비었을 때 되살림)
         for item in existing_results:
             ts = int(item.get("gm_ts", 0)) if str(item.get("gm_ts", "")).isdigit() else 0
             if ts not in target_round_set:
                 key = self.make_match_key(item)
                 existing_map[key] = item
+            else:
+                old_by_round.setdefault(ts, []).append(item)
 
         initial_count = len(existing_map)
 
         for ts in target_rounds:
             r_list = self.fetch_round_results(ts)
+            if not r_list and old_by_round.get(ts):
+                # 조회 실패(시간 초과 등)나 빈 응답을 '경기가 없다'로 받아들이면 이미 받아 둔 결과가 통째로 지워진다 (2026-10-29 실제 발생:
+                # GitHub 실행기에서 5개 회차가 시간 초과 → 성적표 채점 157→27경기). 끝난 경기 결과는 사라지지 않으므로 기존 것을 유지한다.
+                print(f"  ⚠ {ts}회차: 조회 결과가 비어 기존 {len(old_by_round[ts])}건을 그대로 유지합니다")
+                for item in old_by_round[ts]:
+                    existing_map[self.make_match_key(item)] = item
+                continue
             print(f"  ✓ {ts}회차: 유효 종료 경기 {len(r_list)}건 조회 완료")
             for item in r_list:
                 key = self.make_match_key(item)

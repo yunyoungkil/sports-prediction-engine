@@ -93,3 +93,33 @@ def test_get_previous_rounds_year_boundary():
     # 25년도 회차 포함 여부 확인
     has_prev_year = any(r < 260000 for r in prev_rounds)
     assert has_prev_year is True
+
+
+def _row(ts, seq, score="1:0"):
+    return {"gm_ts": ts, "match_seq": seq, "bettyp_cd": "1", "handi_win": 0.0, "handi_lose": 0.0, "score": score}
+
+
+def test_sync_keeps_existing_rows_when_fetch_comes_back_empty(tmp_path, monkeypatch):
+    """조회 시간 초과(빈 목록)가 이미 저장된 회차 결과를 지우면 안 된다 (2026-10-29: 성적표 157→27경기로 줄어든 사고)"""
+    import json
+
+    path = tmp_path / "results.json"
+    path.write_text(json.dumps([_row(260127, 1), _row(260127, 2), _row(260126, 1, "2:2")]), encoding="utf-8")
+    scraper = BetmanResultsScraper()
+    fetched = {260128: [], 260127: [], 260126: [_row(260126, 1, "3:3")]}   # 260127은 시간 초과로 빈 목록
+    monkeypatch.setattr(scraper, "fetch_round_results", lambda ts: fetched.get(ts, []))
+    out = scraper.sync_recent_results(current_ts=260129, n_rounds=3, filepath=str(path))
+    by = {(r["gm_ts"], r["match_seq"]): r for r in out}
+    assert (260127, 1) in by and (260127, 2) in by           # 지워지지 않음
+    assert by[(260126, 1)]["score"] == "3:3"                 # 조회에 성공한 회차는 새 값으로 갱신(정정 반영)
+
+
+def test_sync_still_upserts_when_fetch_succeeds(tmp_path, monkeypatch):
+    import json
+
+    path = tmp_path / "results.json"
+    path.write_text(json.dumps([_row(260127, 1, "0:0")]), encoding="utf-8")
+    scraper = BetmanResultsScraper()
+    monkeypatch.setattr(scraper, "fetch_round_results", lambda ts: [_row(260127, 1, "2:1"), _row(260127, 3)] if ts == 260127 else [])
+    out = scraper.sync_recent_results(current_ts=260128, n_rounds=1, filepath=str(path))
+    assert sorted((r["match_seq"], r["score"]) for r in out) == [(1, "2:1"), (3, "1:0")]
