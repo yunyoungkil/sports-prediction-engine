@@ -29,6 +29,8 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 
+from evaluation.metrics import cluster_bootstrap_ci
+
 if sys.platform.startswith('win'):
     try:
         sys.stdout.reconfigure(encoding='utf-8')
@@ -85,13 +87,20 @@ def closing_odds_index(results_path: Path = RESULTS_PATH, hist_dir: Path = HIST_
     return idx
 
 
-def _mean_ci(x: List[float]) -> Dict[str, Any]:
+def _mean_ci(x: List[float], clusters: Optional[List[Any]] = None) -> Dict[str, Any]:
+    """평균과 95% 범위. clusters(같은 대진 등)를 주면 묶음째 다시 뽑는 범위와 경기 하나씩 뽑는 범위 중 넓은 쪽을 쓴다
+    (같은 대진의 승패·핸디캡·언더오버는 독립이 아니라서 경기 하나씩만 뽑으면 범위가 좁게 나온다). ci_iid = 경기 하나씩 뽑은 범위"""
     a = np.array(x, dtype=float)
     if len(a) == 0:
         return {"n": 0, "mean": None, "ci": None}
     boot = a[np.random.default_rng(7).integers(0, len(a), size=(2000, len(a)))].mean(axis=1)
-    return {"n": int(len(a)), "mean": round(float(a.mean()), 5),
-            "ci": [round(float(np.percentile(boot, 2.5)), 5), round(float(np.percentile(boot, 97.5)), 5)]}
+    ci_iid = [round(float(np.percentile(boot, 2.5)), 5), round(float(np.percentile(boot, 97.5)), 5)]
+    out = {"n": int(len(a)), "mean": round(float(a.mean()), 5), "ci": ci_iid}
+    if clusters is not None and len(clusters) == len(a):
+        lo, hi = cluster_bootstrap_ci(list(a), list(clusters))
+        out.update({"ci": [round(min(lo, ci_iid[0]), 5), round(max(hi, ci_iid[1]), 5)], "ci_iid": ci_iid,
+                    "clusters": int(len(set(map(str, clusters)))), "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"})
+    return out
 
 
 def ai_line_moves(log_dir: Path = LOG_DIR, closing: Optional[Dict[tuple, np.ndarray]] = None) -> List[Dict[str, Any]]:
@@ -117,6 +126,7 @@ def ai_line_moves(log_dir: Path = LOG_DIR, closing: Optional[Dict[tuple, np.ndar
             ev = float(p_ai[k] * o_open[k] - 1.0)
             rows.append({
                 "gm_ts": ts, "seq": str(seq), "game_type": e.get("game_type") or "축구 승무패",
+                "fixture": f"{ts}|{e.get('home_team')}|{e.get('away_team')}",   # 같은 대진의 여러 게임번호는 한 묶음
                 "ai_key": KEYS[k], "ai_edge": float(d[k]),
                 "move": float(p_close[k] - p_open[k]),            # + = 시장이 AI 쪽으로
                 "fav_move": float(p_close[fav] - p_open[fav]),    # 기준선: 배당 1순위 쪽 변화
@@ -134,7 +144,7 @@ def _summ_moves(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
         "toward_ai": toward, "away_from_ai": len(moved) - toward,
         "toward_ai_pct": round(100.0 * toward / len(moved), 1) if moved else None,
         "fav_toward_pct": round(100.0 * sum(1 for r in fav_moved if r["fav_move"] > 0) / len(fav_moved), 1) if fav_moved else None,
-        "mean_move_pp": _mean_ci([100.0 * r["move"] for r in rows]),
+        "mean_move_pp": _mean_ci([100.0 * r["move"] for r in rows], [r.get("fixture", r["seq"]) for r in rows]),
     }
 
 

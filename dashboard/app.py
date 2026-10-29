@@ -474,6 +474,13 @@ def lock_notice(feature: dict) -> None:
 # ------------------------------------------------------------------
 # [6.6] 쉬운 말 화면 조각 — 성과 탭에서 "그래서 어떻게 판단하나"
 # ------------------------------------------------------------------
+def commas(df: pd.DataFrame, *cols: str) -> pd.DataFrame:
+    """정수 열을 1,000 단위 쉼표 문자열로 (다른 표와 서식 통일). 빈 값은 '-'"""
+    for c in cols:
+        df[c] = df[c].map(lambda x: f"{int(x):,}" if pd.notna(x) else "-")
+    return df
+
+
 def won(pct: float) -> str:
     """환급률 % → 1만 원당 돌아오는 돈"""
     return f"{pct * 100:,.0f}원"
@@ -583,13 +590,25 @@ def render_margin_tables(scan) -> None:
         gt, k = r["segment"].split("|")
         m = r.get("margin_pct")
         seg_rows.append({
-            "유형": gt + (" (무 있음)" if k == "3" and "승무패" not in gt else ""),
+            "유형": gt.replace("SUM", "홀짝") + (" (무 있음)" if k == "3" and "승무패" not in gt else ""),
             "1만 원당 돌아오는 돈 (배당 기준)": won(100 / (1 + m / 100)) if m is not None else "-",
+            "베트맨이 떼어가는 몫": f"{100 - 100 / (1 + m / 100):.1f}%" if m is not None else "-",
             "AI가 배당보다 나은가": ("판단 불가 (경기 수 부족)" if str(r["verdict"]).startswith("판정 불가")
                                else plain.get(r["verdict"], r["verdict"])),
-            "2026년 시험 경기 수": r.get("n_test", 0)})
+            "2026년 시험 경기 수": r.get("n_test", 0), "_ret": (100 / (1 + m / 100)) if m is not None else -1.0})
+    seg_rows.sort(key=lambda r: -r["_ret"])   # 덜 떼는 유형이 위로
     with st.expander("유형별 표 (승무패 · 핸디캡 · 언더오버 · 홀짝 …)"):
-        st.dataframe(pd.DataFrame(seg_rows), hide_index=True, width="stretch")
+        ranked = [r for r in seg_rows if r["_ret"] > 0]
+        if ranked:
+            ai_better = [r["유형"] for r in ranked if r["AI가 배당보다 나은가"].startswith("조금 나음")]
+            st.markdown(
+                f"<div style='padding-bottom:10px;font-size:14px;line-height:1.7'>💬 <b>배당만 놓고 보면 가장 덜 떼는 유형</b>은 "
+                f"{ranked[0]['유형']}({ranked[0]['1만 원당 돌아오는 돈 (배당 기준)']})이고 가장 많이 떼는 유형은 "
+                f"{ranked[-1]['유형']}({ranked[-1]['1만 원당 돌아오는 돈 (배당 기준)']})이에요. "
+                + (f"AI가 배당보다 조금이라도 나았던 유형: <b>{', '.join(ai_better)}</b> — 그래도 떼어가는 몫이 더 커서 손해예요." if ai_better
+                   else "AI가 배당보다 나았던 유형은 아직 없어요.")
+                + "</div>", unsafe_allow_html=True)
+        st.dataframe(commas(pd.DataFrame(seg_rows).drop(columns="_ret"), "2026년 시험 경기 수"), hide_index=True, width="stretch")
         cands = scan.get("candidates") or []
         st.caption("'1만 원당 돌아오는 돈'은 배당에 들어 있는 베트맨 몫으로 계산한 평균이에요. "
                    "'AI가 배당보다 나은가'는 2026년 시험에서 AI 확률이 배당 확률보다 더 잘 맞았는지예요. "
@@ -2650,7 +2669,8 @@ with tab3:
             if m_.get("mean") is None or not m_.get("ci"):
                 return ""
             return (f" 판정은 비율이 아니라 AI ▲ 쪽 확률의 평균 변화로 해요: {m_['mean']:+.2f}%p "
-                    f"(95% 범위 {m_['ci'][0]:+.2f} ~ {m_['ci'][1]:+.2f}).")
+                    f"(95% 범위 {m_['ci'][0]:+.2f} ~ {m_['ci'][1]:+.2f}"
+                    + (f" · 같은 대진의 게임번호는 한 묶음으로 계산, 대진 {m_['clusters']:,}개" if m_.get("clusters") else "") + ").")
         sent = (f"배당이 바뀐 {moved}경기 중 <b>{clv.get('toward_ai', 0)}경기가 AI 쪽</b>으로 움직였어요"
                 + (f" ({clv['toward_ai_pct']:.0f}% · 비교 기준 {clv['fav_toward_pct']:.0f}%)."
                    if clv.get("toward_ai_pct") is not None and clv.get("fav_toward_pct") is not None else ".")
@@ -2775,10 +2795,10 @@ with tab3:
         render_calibration(card)   # [6.6] 보정 곡선 — AI가 말한 확률이 실제로 맞았나
         if len(card.get("by_game_type", {})) > 1:
             with st.expander("유형별 성적 (어느 유형에서 AI가 앞서는지)"):
-                st.dataframe(pd.DataFrame([
+                st.dataframe(commas(pd.DataFrame([
                     {"유형": gt, "채점한 경기": v["n"], "AI − 배당 (음수 = AI 우세)": f"{v['ll_diff']:+.4f}",
                      "95% 범위": f"[{v['ll_diff_ci'][0]:+.4f}, {v['ll_diff_ci'][1]:+.4f}]"}
-                    for gt, v in sorted(card["by_game_type"].items(), key=lambda x: -x[1]["n"])]),
+                    for gt, v in sorted(card["by_game_type"].items(), key=lambda x: -x[1]["n"])]), "채점한 경기"),
                     hide_index=True, width="stretch")
     else:
         st.info(f"⏳ 아직 채점할 경기가 없어요 (현재 {n_g}경기). 2026-10-25부터 경기 전 예측을 기록하기 시작했고, "
@@ -2795,7 +2815,7 @@ with tab3:
                     ci_b = s.get("ll_diff_ci", [None, None])
                     rows_bt.append({"시험": label, "경기 수": s["samples"], "AI 점수": s["model_ll"], "배당 점수": s["market_ll"],
                                     "AI − 배당": f"{s['ll_diff']:+.4f}", "95% 범위": f"[{ci_b[0]:+.4f}, {ci_b[1]:+.4f}]"})
-                st.dataframe(pd.DataFrame(rows_bt), width="stretch", hide_index=True)
+                st.dataframe(commas(pd.DataFrame(rows_bt), "경기 수"), width="stretch", hide_index=True)
             if mm and mm.get("segments"):
                 st.markdown("**전 종목 보정 AI** — 유형별 시험 (핸디캡·언더오버·홀짝·농구·야구·배구 …)")
                 st.caption("유형마다 '베트맨이 일관되게 잘못 매기는 쪽'을 2023~2025년 상반기로 학습하고, 2026년 시험·최근 실전에서 "
@@ -2816,7 +2836,7 @@ with tab3:
                         "강팀 저평가 정도 (β)": f"{v['eval_params']['beta']:.3f}" if v.get("eval_params") else "-",
                     })
                 seg_rows.sort(key=lambda r: (not r["AI 계산"].startswith("✅"), -r["2026 시험 경기"]))
-                st.dataframe(pd.DataFrame(seg_rows), hide_index=True, width="stretch")
+                st.dataframe(commas(pd.DataFrame(seg_rows), "2026 시험 경기", "최근 실전 경기"), hide_index=True, width="stretch")
                 st.caption("AI − 배당이 음수면 AI가 더 정확해요. β가 0보다 크면 베트맨이 강한 쪽(배당 1순위)을 낮게 잡는다는 뜻이에요.")
 
     # ------------------------------------------------------------------
@@ -3193,6 +3213,43 @@ with tab4:
         if len(kind_lines) > 1:
             st.markdown("<div style='padding-bottom:10px'><div style='font-size:14px'>💬 " + " · ".join(kind_lines) + "</div></div>",
                         unsafe_allow_html=True)
+
+        # 📏 기준선과 비교: 내 수익률이 '그냥 배당 1순위를 단일로 산 것'(가상 기준선 E)보다 나은가
+        from evaluation.metrics import cluster_roi_confidence_interval
+        e_live = ((load_paper_trading() or {}).get("strategies") or {}).get("E_market_fav") or {}
+        e_past = ((load_paper_backfill() or {}).get("strategies") or {}).get("E_market_fav") or {}
+        base_rows, cmp_notes = [], []
+        for k, lab in KIND_LABEL.items():
+            kd = [r for r in done if r["kind"] == k and r["grade"]["stake"]]
+            if not kd:
+                continue
+            rets = [(r["grade"]["payout"] - r["grade"]["stake"]) / r["grade"]["stake"] for r in kd]
+            roi_k, lo_k, hi_k = cluster_roi_confidence_interval(rets, [r["slip"].get("gm_ts") for r in kd])
+            base_rows.append({"구분": f"내 기록 — {lab}", "끝난 건수": f"{len(kd):,}", "수익률": f"{roi_k:+.1f}%",
+                              "95% 범위": roi_range_text(len(kd), lo_k, hi_k, "%")})
+            if e_live.get("bets"):
+                if len(kd) < 30:
+                    cmp_notes.append(f"{lab}는 {len(kd)}건뿐이라 기준선과의 차이가 운인지 구분할 수 없어요")
+                elif lo_k <= e_live["roi_pct"] <= hi_k:
+                    cmp_notes.append(f"{lab}는 기준선 E와 차이가 뚜렷하지 않아요 (E 수익률이 내 범위 안)")
+                else:
+                    cmp_notes.append(f"{lab}는 기준선 E보다 뚜렷하게 {'높아요' if roi_k > e_live['roi_pct'] else '낮아요'} (범위 밖)"
+                                     + (" — 같은 경기를 보고 고른 규칙이 아닌지 조심하세요" if roi_k > e_live["roi_pct"] else ""))
+        if base_rows and (e_live.get("bets") or e_past.get("bets")):
+            if e_live.get("bets"):
+                base_rows.append({"구분": "기준선 E — 배당 1순위 단일 (가상, 실시간)", "끝난 건수": f"{e_live['bets']:,}",
+                                  "수익률": f"{e_live['roi_pct']:+.1f}%",
+                                  "95% 범위": roi_range_text(e_live["bets"], e_live.get("roi_ci_low"), e_live.get("roi_ci_high"), "%")})
+            if e_past.get("bets"):
+                base_rows.append({"구분": "기준선 E — 배당 1순위 단일 (과거 재현)", "끝난 건수": f"{e_past['bets']:,}",
+                                  "수익률": f"{e_past['roi_pct']:+.1f}%",
+                                  "95% 범위": roi_range_text(e_past["bets"], e_past.get("roi_ci_low"), e_past.get("roi_ci_high"), "%")})
+            with st.expander("📏 내 수익률 vs 기준선 (그냥 배당 1순위를 샀다면?)", expanded=False):
+                st.dataframe(pd.DataFrame(base_rows), hide_index=True, width="stretch")
+                st.caption("기준선 E = 경기마다 배당이 가장 낮은 쪽을 1,000원씩 단일로 산 가상 기록이에요. 내 선택이 이보다 나아야 '고르는 실력'이 있다는 뜻이고, "
+                           "건수가 적으면 운이 커서 30건 미만은 범위를 보여주지 않아요. 조합은 단일보다 베트맨 마진이 겹쳐서 원래 더 불리해요.")
+                if cmp_notes:
+                    st.markdown("<div style='font-size:14px;line-height:1.7'>💬 " + " · ".join(cmp_notes) + "</div>", unsafe_allow_html=True)
 
         # 누적 손익 (결과 나온 기록 · 저장한 순서 · 구분별 선) — 점이 너무 적으면 그래프가 의미 없어 3건부터
         if len(done) >= 3:

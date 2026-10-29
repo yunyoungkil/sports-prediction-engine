@@ -73,3 +73,22 @@ def test_clv_detects_move_toward_ai(tmp_path):
     assert rows[0]["ai_key"] == "home_win" and rows[0]["move"] > 0
     rep = build_report(log_dir, tmp_path / "no_bets", closing)
     assert rep["toward_ai"] == 1 and rep["verdict"].startswith("검증 중")
+
+
+def test_mean_ci_clusters_widen_range_for_correlated_rows():
+    """같은 대진의 여러 게임번호처럼 묶음 안의 값이 같이 움직이면, 묶음째 뽑은 범위가 경기 하나씩 뽑은 범위보다 넓거나 같다"""
+    from evaluation.clv import _mean_ci
+    vals, groups = [], []
+    for g, v in enumerate([-3.0, 2.0, -1.0, 4.0, -2.0, 1.0, 3.0, -4.0]):
+        vals += [v] * 5                      # 한 대진에서 5개 게임번호가 똑같이 움직임
+        groups += [f"fx{g}"] * 5
+    plain, grouped = _mean_ci(vals), _mean_ci(vals, groups)
+    assert grouped["clusters"] == 8 and plain["mean"] == grouped["mean"]
+    assert grouped["ci"][0] <= plain["ci"][0] and grouped["ci"][1] >= plain["ci"][1]
+    assert grouped["ci_iid"] == plain["ci"]
+
+
+def test_mean_ci_without_clusters_is_unchanged():
+    from evaluation.clv import _mean_ci
+    out = _mean_ci([1.0, 2.0, 3.0])
+    assert set(out) == {"n", "mean", "ci"}
