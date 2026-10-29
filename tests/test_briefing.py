@@ -34,3 +34,59 @@ def test_paper_lines():
 
 def test_paper_lines_without_file():
     assert paper_lines(reader=lambda rel: None) == ["🧪 가상 베팅: 기록 없음"]
+
+
+def _fake_runner(times_by_wf):
+    """gh run list 결과를 흉내 (워크플로 이름 → createdAt 목록)"""
+    import json
+    from types import SimpleNamespace
+
+    def run(cmd, timeout=60):
+        wf = cmd[cmd.index("--workflow") + 1]
+        return SimpleNamespace(returncode=0, stdout=json.dumps([{"createdAt": t} for t in times_by_wf.get(wf, [])]))
+    return run
+
+
+def test_scheduler_lines_ok_late_and_missing():
+    from datetime import datetime, timezone
+
+    from evaluation.briefing import scheduler_lines
+    now = datetime(2026, 10, 29, 12, 0, tzinfo=timezone.utc)
+    ok = {"pipeline.yml": ["2026-10-29T09:30:00Z", "2026-10-28T18:30:00Z"],
+          "results.yml": [f"2026-10-29T{h:02d}:05:00Z" for h in range(0, 12, 1) if h % 2 == 0] + [f"2026-10-28T{h:02d}:05:00Z" for h in range(14, 24, 2)]}
+    text = "\n".join(scheduler_lines(now, _fake_runner(ok)))
+    assert "✅ 파이프라인: 24시간 2/2회" in text and "✅ 결과 갱신" in text
+    late = {"pipeline.yml": ["2026-10-27T09:30:00Z"], "results.yml": []}
+    text = "\n".join(scheduler_lines(now, _fake_runner(late)))
+    assert "⚠️ 파이프라인" in text and "넘게 호출이 없어요" in text
+    assert "⚠️ 결과 갱신: 호출 기록이 없어요" in text
+
+
+def test_token_expiry_line_warns_near_the_date():
+    from datetime import date
+
+    from evaluation.briefing import SCHEDULER_TOKEN_EXPIRES, token_expiry_line
+    from datetime import timedelta
+    assert token_expiry_line(SCHEDULER_TOKEN_EXPIRES - timedelta(days=200)).startswith("🔑")
+    assert token_expiry_line(SCHEDULER_TOKEN_EXPIRES - timedelta(days=30)).startswith("⚠️")
+    assert token_expiry_line(SCHEDULER_TOKEN_EXPIRES - timedelta(days=7)).startswith("🚨")
+    assert "만료됐어요" in token_expiry_line(SCHEDULER_TOKEN_EXPIRES + timedelta(days=1))
+    assert isinstance(SCHEDULER_TOKEN_EXPIRES, date)
+
+
+def test_data_intake_lines_flags_missing_round_empty_results_and_stale_data():
+    from evaluation.briefing import data_intake_lines
+    good_preds = [{"gm_ts": 260128, "betman_odds": {"home_win": 1.5, "draw": 3.0, "away_win": 2.5}}]
+    data = {"data/predictions.json": good_preds,
+            "data/history/betman_recent_results.json": [{"gm_ts": 260128}, {"gm_ts": 260127}],
+            "data/model_scorecard.json": {"rounds": [260127, 260128], "graded_matches": 197}}
+    ok = data_intake_lines(data.get, lambda rel: 1.0)
+    assert ok[0].startswith("📥 데이터 수집: ✅ 정상") and "경기 1건" in ok[0] and "채점 197경기" in ok[0]
+
+    bad_preds = [{"gm_ts": None, "betman_odds": {"home_win": 0, "away_win": 2.0}}]
+    bad = {"data/predictions.json": bad_preds, "data/history/betman_recent_results.json": [{"gm_ts": 260128}],
+           "data/model_scorecard.json": {"rounds": [260127, 260128]}}
+    text = "\n".join(data_intake_lines(bad.get, lambda rel: 30.0))
+    assert "⚠️" in text and "회차(gm_ts)가 빈 경기 1건" in text and "배당이 비었거나" in text
+    assert "260127의 결과가 비어" in text and "30시간째 갱신되지 않았어요" in text
+    assert "predictions.json" in "\n".join(data_intake_lines(lambda rel: None, lambda rel: None))

@@ -14,9 +14,10 @@ Claude Code 세션 시작 훅(.claude/settings.local.json)이 실행하고, 출�
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
@@ -25,6 +26,15 @@ KST = timezone(timedelta(hours=9))
 WORKFLOWS = [("pipeline.yml", "파이프라인 (하루 2번)"), ("results.yml", "결과 갱신 (1시간 예약, 실제 4~5시간)"),
              ("test.yml", "GitHub 테스트 (푸시 때)")]
 
+# 외부 스케줄러(cron-job.org, 2026-10-29 설정): GitHub 무료 예약 실행이 5~7시간 늦거나 빠지는 문제를 피하려고
+# 정해진 시각에 workflow_dispatch로 직접 깨운다. 작업: sports pipeline (매일 09:30·18:30 KST), sports results (2시간마다)
+# (워크플로, 이름, 하루 기대 횟수, 이 시간 넘게 호출이 없으면 경고)
+SCHEDULER_JOBS = [("pipeline.yml", "파이프라인", 2, 16.0), ("results.yml", "결과 갱신", 12, 3.5)]
+# cron-job.org가 GitHub를 부를 때 쓰는 fine-grained 토큰(sports-engine-scheduler, Actions 쓰기 전용)의 만료일.
+# 갱신하면 이 날짜도 같이 고칠 것: GitHub Settings → Personal access tokens → 해당 토큰 → Regenerate → cron-job.org 두 작업의 Authorization 헤더 교체
+SCHEDULER_TOKEN_EXPIRES = date(2027, 10, 28)
+TOKEN_WARN_DAYS = 30
+
 
 def _run(cmd: List[str], timeout: int = 60) -> Optional[subprocess.CompletedProcess]:
     try:
@@ -32,6 +42,15 @@ def _run(cmd: List[str], timeout: int = 60) -> Optional[subprocess.CompletedProc
                               errors="replace", timeout=timeout)
     except Exception:
         return None
+
+
+def _gh() -> str:
+    """gh 실행 파일 — PATH에 없으면(설치 직후 열려 있던 터미널 등) Windows 기본 설치 위치"""
+    found = shutil.which("gh")
+    if found:
+        return found
+    default = Path("C:/Program Files/GitHub CLI/gh.exe")
+    return str(default) if default.exists() else "gh"
 
 
 def run_tests() -> str:
@@ -82,7 +101,7 @@ def runs_status(now: Optional[datetime] = None) -> List[str]:
     now = now or datetime.now(timezone.utc)
     out = ["⚙️ 자동 실행 (GitHub, 가장 최근):"]
     for wf, label in WORKFLOWS:
-        r = _run(["gh", "run", "list", "--workflow", wf, "--limit", "5", "--json", "conclusion,status,createdAt"], timeout=30)
+        r = _run([_gh(), "run", "list", "--workflow", wf, "--limit", "5", "--json", "conclusion,status,createdAt"], timeout=30)
         if r is None or r.returncode != 0:
             out.append(f"   - ⚠️ {label}: 상태를 못 가져왔어요 (gh 로그인 확인)")
             continue
@@ -114,6 +133,98 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
         out.append(f"   - {s['label']}: {s['bets']}건 중 {s['hits']}건 적중{pend} · 손익 {s['profit']:+,}원 "
                    f"(수익률 {s['roi_pct']:+.1f}%) · {s.get('verdict', '')}")
     return out
+
+
+def scheduler_lines(now: Optional[datetime] = None,
+                    runner: Callable[..., Optional[subprocess.CompletedProcess]] = _run) -> List[str]:
+    """외부 스케줄러(cron-job.org)가 GitHub를 제때 깨우고 있는지 — workflow_dispatch 실행 기록으로 확인.
+    (사람이 수동으로 돌린 실행도 같은 방식으로 기록돼 구분되지 않는다. 늦거나 적으면 경고)"""
+    now = now or datetime.now(timezone.utc)
+    out = ["⏰ 외부 스케줄러 (cron-job.org → GitHub, 최근 24시간):"]
+    for wf, label, expected, late_h in SCHEDULER_JOBS:
+        r = runner([_gh(), "run", "list", "--workflow", wf, "--event", "workflow_dispatch", "--limit", "40",
+                    "--json", "createdAt"], timeout=30)
+        if r is None or r.returncode != 0:
+            out.append(f"   - ⚠️ {label}: 기록을 못 가져왔어요 (gh 로그인 확인)")
+            continue
+        times = sorted(datetime.fromisoformat(x["createdAt"].replace("Z", "+00:00")) for x in json.loads(r.stdout or "[]"))
+        recent = [x for x in times if (now - x).total_seconds() <= 24 * 3600]
+        if not times:
+            out.append(f"   - ⚠️ {label}: 호출 기록이 없어요 — cron-job.org 작업이 저장·활성화됐는지 확인")
+            continue
+        age_h = (now - times[-1]).total_seconds() / 3600
+        low = len(recent) < max(1, int(expected * 0.7))
+        mark = "✅" if age_h <= late_h and not low else "⚠️"
+        note = ""
+        if age_h > late_h:
+            note = f" · {late_h:g}시간 넘게 호출이 없어요 (cron-job.org 작업 상태·토큰 확인)"
+        elif low:
+            note = " · 평소보다 적어요"
+        out.append(f"   - {mark} {label}: 24시간 {len(recent)}/{expected}회 · 마지막 {times[-1].astimezone(KST):%m-%d %H:%M} "
+                   f"({age_h:.0f}시간 전){note}")
+    return out
+
+
+def token_expiry_line(today: Optional[date] = None) -> str:
+    """스케줄러 토큰 만료가 가까우면 알린다 (30일 전부터 경고, 7일 전부터 긴급)"""
+    today = today or datetime.now(KST).date()
+    left = (SCHEDULER_TOKEN_EXPIRES - today).days
+    how = "GitHub에서 토큰 Regenerate → cron-job.org 두 작업의 Authorization 값 교체 → 이 파일의 SCHEDULER_TOKEN_EXPIRES 수정"
+    if left < 0:
+        return f"🚨 스케줄러 토큰이 {-left}일 전에 만료됐어요 — cron-job.org 호출이 실패하고 있을 거예요 ({how})"
+    if left <= 7:
+        return f"🚨 스케줄러 토큰이 {left}일 뒤({SCHEDULER_TOKEN_EXPIRES}) 만료돼요 — 지금 갱신하세요 ({how})"
+    if left <= TOKEN_WARN_DAYS:
+        return f"⚠️ 스케줄러 토큰이 {left}일 뒤({SCHEDULER_TOKEN_EXPIRES}) 만료돼요 — 곧 갱신해야 해요 ({how})"
+    return f"🔑 스케줄러 토큰 만료까지 {left}일 ({SCHEDULER_TOKEN_EXPIRES})"
+
+
+def _commit_age_hours(rel: str, now: Optional[datetime] = None) -> Optional[float]:
+    """origin/master에서 그 파일을 마지막으로 바꾼 커밋이 몇 시간 전인지"""
+    r = _run(["git", "log", "-1", "--format=%ct", "origin/master", "--", rel])
+    if r is None or r.returncode != 0 or not r.stdout.strip().isdigit():
+        return None
+    now = now or datetime.now(timezone.utc)
+    return (now - datetime.fromtimestamp(int(r.stdout.strip()), timezone.utc)).total_seconds() / 3600
+
+
+def data_intake_lines(reader: Callable[[str], Optional[Any]] = read_json,
+                      age_hours: Callable[[str], Optional[float]] = _commit_age_hours) -> List[str]:
+    """데이터를 잘 가져오고 있는지: 경기 수 · 회차 · 배당 이상 · 갱신 시각 · 채점 회차 결과가 비지 않았는지 (봇이 올린 최신 파일 기준)"""
+    preds = reader("data/predictions.json")
+    results = reader("data/history/betman_recent_results.json") or []
+    card = reader("data/model_scorecard.json") or {}
+    if not isinstance(preds, list) or not preds:
+        return ["📥 데이터 수집: ⚠️ 예측 파일(predictions.json)이 없거나 비어 있어요"]
+    problems: List[str] = []
+    rounds = sorted({str(p.get("gm_ts")) for p in preds if p.get("gm_ts") is not None})
+    no_round = sum(1 for p in preds if p.get("gm_ts") is None)
+    if no_round:
+        problems.append(f"회차(gm_ts)가 빈 경기 {no_round}건 — 베트맨 회차 조회가 실패해 옛 캐시를 쓴 흔적")
+    bad_odds = sum(1 for p in preds if not float((p.get("betman_odds") or {}).get("home_win") or 0) > 1.0
+                   or not float((p.get("betman_odds") or {}).get("away_win") or 0) > 1.0)
+    if bad_odds:
+        problems.append(f"배당이 비었거나 1 이하인 경기 {bad_odds}건")
+    by_round: Dict[str, int] = {}
+    for r in results:
+        by_round[str(r.get("gm_ts"))] = by_round.get(str(r.get("gm_ts")), 0) + 1
+    empty = [str(x) for x in (card.get("rounds") or []) if by_round.get(str(x), 0) == 0]
+    if empty:
+        problems.append(f"채점에 쓰이는 회차 {', '.join(empty)}의 결과가 비어 있어요 (결과 수집 실패)")
+    ages = {"예측": age_hours("data/predictions.json"), "결과": age_hours("data/history/betman_recent_results.json")}
+    limits = {"예측": 20.0, "결과": 6.0}   # 예측은 하루 2번, 결과는 2시간마다 갱신 (지연 감안)
+    fresh = []
+    for k, a in ages.items():
+        if a is None:
+            continue
+        fresh.append(f"{k} 갱신 {a:.0f}시간 전")
+        if a > limits[k]:
+            problems.append(f"{k} 데이터가 {a:.0f}시간째 갱신되지 않았어요 (기준 {limits[k]:g}시간)")
+    head = (f"경기 {len(preds):,}건 · 회차 {', '.join(rounds) if rounds else '없음'} · 결과 {sum(by_round.values()):,}건 "
+            f"· 채점 {card.get('graded_matches', 0)}경기" + (" · " + " · ".join(fresh) if fresh else ""))
+    if problems:
+        return ["📥 데이터 수집: ⚠️ " + head] + [f"   - {p}" for p in problems]
+    return [f"📥 데이터 수집: ✅ 정상 — {head}"]
 
 
 def verdict_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -> List[str]:
@@ -155,6 +266,9 @@ def main(argv: Optional[List[str]] = None) -> None:
     if not args.no_tests:
         print(run_tests())
     print("\n".join(runs_status()))
+    print("\n".join(scheduler_lines()))
+    print(token_expiry_line())
+    print("\n".join(data_intake_lines()))
     print("\n".join(verdict_lines()))
 
 

@@ -71,3 +71,12 @@
 - 코드·문서는 GitHub에서 `git pull --rebase origin master`로 맞춘다. 내 선택·저장한 슬립(`user_data/`)은 `.gitignore`라 **PC마다 따로**다.
 - `user_data/`를 PC 간에 공유하려면 OneDrive 같은 동기화 폴더에 두고 환경변수 `SPE_USER_DATA_DIR`로 가리킨다 (`dashboard/app.py`가 지원). 두 PC에서 동시에 저장하면 덮어쓸 수 있으니 한 번에 한 PC에서만 쓴다.
 - 새 PC에서는 `pip install -r requirements.txt` 후 `ODDS_API_KEY`(필요할 때만)를 환경변수로 등록한다. 키는 코드·커밋에 쓰지 않는다.
+
+## 7. 외부 스케줄러 (cron-job.org) — GitHub 예약 실행이 늦거나 빠지는 문제 대응
+
+- GitHub 무료 예약(`schedule`)은 5~7시간 늦거나 빠진다 (2026-10-29 확인: 결과 갱신 24번 예약 중 3~4번만 실행). 그래서 **cron-job.org가 정해진 시각에 `workflow_dispatch`로 GitHub를 직접 깨운다.** GitHub 자체 예약은 보험으로 그대로 둔다 (`concurrency` 그룹이 겹침을 막고, 해외 배당 API는 회차당 20시간에 한 번만 호출).
+- cron-job.org 작업 2개 (시간대 Asia/Seoul): `sports pipeline` = `pipeline.yml` 매일 09:30·18:30 (`30 9,18 * * *`), `sports results` = `results.yml` 2시간마다 (`0 */2 * * *`). 둘 다 `POST https://api.github.com/repos/yunyoungkil/sports-prediction-engine/actions/workflows/<파일>/dispatches`, 본문 `{"ref":"master"}`.
+- 인증: GitHub fine-grained 토큰 `sports-engine-scheduler` (이 저장소 하나, Actions 읽기·쓰기만). **토큰 값은 cron-job.org 헤더에만 있고 저장소·채팅·로그에 쓰지 않는다.**
+- **토큰 만료일: 2027-10-28.** 브리핑(`evaluation/briefing.py`의 `SCHEDULER_TOKEN_EXPIRES`)이 30일 전부터 경고, 7일 전부터 긴급으로 알린다. 갱신: GitHub Settings → Personal access tokens → `sports-engine-scheduler` → Regenerate token(만료 1년) → cron-job.org 두 작업의 `Authorization: Bearer <새 토큰>` 교체 → `SCHEDULER_TOKEN_EXPIRES` 날짜 수정.
+- **대화 시작 브리핑이 매번 확인하는 것** (`python -m evaluation.briefing`): ① 외부 스케줄러가 제때 호출하고 있는지(24시간 횟수·마지막 호출 시각, 늦으면 ⚠️) ② 토큰 만료까지 남은 일수 ③ **데이터 수집 점검**(경기 수·회차·빈 회차·배당 이상·예측/결과 갱신 시각·채점 회차의 결과가 비지 않았는지). ⚠️가 있으면 사용자에게 먼저 알린다.
+- `gh`가 없는 PC에서는 "못 가져옴"으로 나온다. `winget install GitHub.cli` 후 `gh auth login`.
