@@ -1,0 +1,1779 @@
+{
+  "gm_ts": "260129",
+  "bets": [
+    {
+      "strategy": "B_fav_double",
+      "legs": [
+        {
+          "seq": "1362",
+          "key": "away_win",
+          "odds": 1.2,
+          "match_time": "26.10.31 (토) 03:00",
+          "home_team": "르아브르AC",
+          "away_team": "파리 생제르맹",
+          "league": "프랑스 리그1"
+        },
+        {
+          "seq": "1721",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.11.01 (일) 02:30",
+          "home_team": "바이에른 뮌헨",
+          "away_team": "도르트문트",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "ev_ai": -0.0843,
+      "combined_odds": 1.6,
+      "stake": 1000,
+      "bet_id": "B_fav_double:1362a+1721h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "C_finder_top",
+      "legs": [
+        {
+          "seq": "1433",
+          "key": "away_win",
+          "odds": 1.38,
+          "match_time": "26.10.31 (토) 14:00",
+          "home_team": "미토 홀리호크",
+          "away_team": "산프레체 히로시마",
+          "league": "일본 J1리그"
+        },
+        {
+          "seq": "1696",
+          "key": "home_win",
+          "odds": 1.1,
+          "match_time": "26.11.01 (일) 00:30",
+          "home_team": "페예노르트",
+          "away_team": "포르튀나 시타르트",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "ev_ai": -0.0775,
+      "combined_odds": 1.6,
+      "stake": 1000,
+      "bet_id": "C_finder_top:1433a+1696h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "1731",
+          "key": "home_win",
+          "odds": 1.02,
+          "match_time": "26.11.01 (일) 02:45",
+          "home_team": "PSV에인트호번",
+          "away_team": "빌럼II",
+          "league": "네덜란드 에레디비시"
+        },
+        {
+          "seq": "1782",
+          "key": "home_win",
+          "odds": 1.04,
+          "match_time": "26.11.01 (일) 05:00",
+          "home_team": "바르셀로나",
+          "away_team": "알라베스",
+          "league": "스페인 라리가"
+        },
+        {
+          "seq": "1531",
+          "key": "home_win",
+          "odds": 2.42,
+          "match_time": "26.10.31 (토) 16:30",
+          "home_team": "충남아산 프로축구단",
+          "away_team": "김포FC",
+          "league": "K리그2"
+        }
+      ],
+      "combined_odds": 2.6,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:1731h+1782h+1531h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "1731",
+          "key": "home_win",
+          "odds": 1.02,
+          "match_time": "26.11.01 (일) 02:45",
+          "home_team": "PSV에인트호번",
+          "away_team": "빌럼II",
+          "league": "네덜란드 에레디비시"
+        },
+        {
+          "seq": "1782",
+          "key": "home_win",
+          "odds": 1.04,
+          "match_time": "26.11.01 (일) 05:00",
+          "home_team": "바르셀로나",
+          "away_team": "알라베스",
+          "league": "스페인 라리가"
+        },
+        {
+          "seq": "1531",
+          "key": "draw",
+          "odds": 3.05,
+          "match_time": "26.10.31 (토) 16:30",
+          "home_team": "충남아산 프로축구단",
+          "away_team": "김포FC",
+          "league": "K리그2"
+        }
+      ],
+      "combined_odds": 3.3,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:1731h+1782h+1531d",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "1731",
+          "key": "home_win",
+          "odds": 1.02,
+          "match_time": "26.11.01 (일) 02:45",
+          "home_team": "PSV에인트호번",
+          "away_team": "빌럼II",
+          "league": "네덜란드 에레디비시"
+        },
+        {
+          "seq": "1782",
+          "key": "home_win",
+          "odds": 1.04,
+          "match_time": "26.11.01 (일) 05:00",
+          "home_team": "바르셀로나",
+          "away_team": "알라베스",
+          "league": "스페인 라리가"
+        },
+        {
+          "seq": "1531",
+          "key": "away_win",
+          "odds": 2.45,
+          "match_time": "26.10.31 (토) 16:30",
+          "home_team": "충남아산 프로축구단",
+          "away_team": "김포FC",
+          "league": "K리그2"
+        }
+      ],
+      "combined_odds": 2.6,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:1731h+1782h+1531a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1308",
+          "key": "away_win",
+          "odds": 2.29,
+          "match_time": "26.10.30 (금) 18:00",
+          "home_team": "브리즈번 로어",
+          "away_team": "오클랜드FC",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 2.29,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1308a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1362",
+          "key": "away_win",
+          "odds": 1.2,
+          "match_time": "26.10.31 (토) 03:00",
+          "home_team": "르아브르AC",
+          "away_team": "파리 생제르맹",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 1.2,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1362a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1700",
+          "key": "away_win",
+          "odds": 2.24,
+          "match_time": "26.10.31 (토) 03:00",
+          "home_team": "OGC니스",
+          "away_team": "스타드 렌",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 2.24,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1700a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1368",
+          "key": "away_win",
+          "odds": 2.01,
+          "match_time": "26.10.31 (토) 04:30",
+          "home_team": "엘버스베르크",
+          "away_team": "FSV마인츠05",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 2.01,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1368a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1377",
+          "key": "home_win",
+          "odds": 1.36,
+          "match_time": "26.10.31 (토) 05:00",
+          "home_team": "비야레알",
+          "away_team": "RCD에스파뇰",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.36,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1377h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1381",
+          "key": "home_win",
+          "odds": 2.29,
+          "match_time": "26.10.31 (토) 05:05",
+          "home_team": "릴OSC",
+          "away_team": "RC랑스",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 2.29,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1381h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1425",
+          "key": "home_win",
+          "odds": 1.89,
+          "match_time": "26.10.31 (토) 13:00",
+          "home_team": "뉴캐슬 제츠",
+          "away_team": "웰링턴 피닉스",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 1.89,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1425h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1330",
+          "key": "home_win",
+          "odds": 2.31,
+          "match_time": "26.10.31 (토) 14:00",
+          "home_team": "전북 현대모터스",
+          "away_team": "대전 하나시티즌",
+          "league": "K리그1"
+        }
+      ],
+      "combined_odds": 2.31,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1330h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1433",
+          "key": "away_win",
+          "odds": 1.38,
+          "match_time": "26.10.31 (토) 14:00",
+          "home_team": "미토 홀리호크",
+          "away_team": "산프레체 히로시마",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 1.38,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1433a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1437",
+          "key": "home_win",
+          "odds": 2.37,
+          "match_time": "26.10.31 (토) 14:00",
+          "home_team": "교토 상가FC",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 2.37,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1437h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1441",
+          "key": "away_win",
+          "odds": 1.84,
+          "match_time": "26.10.31 (토) 14:00",
+          "home_team": "파지아노 오카야마",
+          "away_team": "FC도쿄",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 1.84,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1441a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1511",
+          "key": "home_win",
+          "odds": 1.98,
+          "match_time": "26.10.31 (토) 15:00",
+          "home_team": "멜버른 시티",
+          "away_team": "시드니FC",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 1.98,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1511h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1515",
+          "key": "home_win",
+          "odds": 1.63,
+          "match_time": "26.10.31 (토) 15:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "세레소 오사카",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 1.63,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1515h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1519",
+          "key": "home_win",
+          "odds": 1.89,
+          "match_time": "26.10.31 (토) 15:00",
+          "home_team": "비셀 고베",
+          "away_team": "나고야 그램퍼스",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 1.89,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1519h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1523",
+          "key": "home_win",
+          "odds": 1.98,
+          "match_time": "26.10.31 (토) 16:00",
+          "home_team": "가시와 레이솔",
+          "away_team": "우라와 레드",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 1.98,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1523h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1338",
+          "key": "away_win",
+          "odds": 2.12,
+          "match_time": "26.10.31 (토) 16:30",
+          "home_team": "광주FC",
+          "away_team": "김천상무 프로축구단",
+          "league": "K리그1"
+        }
+      ],
+      "combined_odds": 2.12,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1338a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1544",
+          "key": "away_win",
+          "odds": 2.3,
+          "match_time": "26.10.31 (토) 17:40",
+          "home_team": "맥아서FC",
+          "away_team": "웨스턴시드니 원더러스",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 2.3,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1544a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1565",
+          "key": "home_win",
+          "odds": 1.71,
+          "match_time": "26.10.31 (토) 21:30",
+          "home_team": "첼시",
+          "away_team": "맨체스터 유나이티드",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 1.71,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1565h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1570",
+          "key": "away_win",
+          "odds": 1.48,
+          "match_time": "26.10.31 (토) 22:00",
+          "home_team": "레반테",
+          "away_team": "아틀레티코 마드리드",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.48,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1570a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1574",
+          "key": "home_win",
+          "odds": 1.62,
+          "match_time": "26.10.31 (토) 23:00",
+          "home_team": "볼로냐",
+          "away_team": "AC몬차",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.62,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1574h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1578",
+          "key": "home_win",
+          "odds": 1.66,
+          "match_time": "26.10.31 (토) 23:30",
+          "home_team": "바이어04 레버쿠젠",
+          "away_team": "VfB슈투트가르트",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 1.66,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1578h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1583",
+          "key": "away_win",
+          "odds": 2.01,
+          "match_time": "26.10.31 (토) 23:30",
+          "home_team": "아우크스부르크",
+          "away_team": "SC프라이부르크",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 2.01,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1583a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1588",
+          "key": "home_win",
+          "odds": 1.87,
+          "match_time": "26.10.31 (토) 23:30",
+          "home_team": "묀헨글라트바흐",
+          "away_team": "파더보른07",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 1.87,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1588h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1593",
+          "key": "away_win",
+          "odds": 2.05,
+          "match_time": "26.10.31 (토) 23:30",
+          "home_team": "베르더 브레멘",
+          "away_team": "TSG1899 호펜하임",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 2.05,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1593a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1598",
+          "key": "away_win",
+          "odds": 1.71,
+          "match_time": "26.10.31 (토) 23:30",
+          "home_team": "샬케04",
+          "away_team": "RB라이프치히",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 1.71,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1598a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1667",
+          "key": "home_win",
+          "odds": 1.94,
+          "match_time": "26.11.01 (일) 00:00",
+          "home_team": "AFC본머스",
+          "away_team": "리즈 유나이티드",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 1.94,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1667h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1672",
+          "key": "home_win",
+          "odds": 1.91,
+          "match_time": "26.11.01 (일) 00:00",
+          "home_team": "브렌트퍼드",
+          "away_team": "노팅엄 포리스트",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 1.91,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1672h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1677",
+          "key": "away_win",
+          "odds": 2.18,
+          "match_time": "26.11.01 (일) 00:00",
+          "home_team": "코번트리 시티",
+          "away_team": "선덜랜드",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 2.18,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1677a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1682",
+          "key": "home_win",
+          "odds": 2.36,
+          "match_time": "26.11.01 (일) 00:00",
+          "home_team": "헐 시티",
+          "away_team": "입스위치 타운",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 2.36,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1682h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1687",
+          "key": "home_win",
+          "odds": 1.53,
+          "match_time": "26.11.01 (일) 00:00",
+          "home_team": "맨체스터 시티",
+          "away_team": "브라이턴&호브 앨비언",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 1.53,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1687h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1692",
+          "key": "home_win",
+          "odds": 2.21,
+          "match_time": "26.11.01 (일) 00:15",
+          "home_team": "라요 바예카노",
+          "away_team": "RC셀타데비고",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 2.21,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1692h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1696",
+          "key": "home_win",
+          "odds": 1.1,
+          "match_time": "26.11.01 (일) 00:30",
+          "home_team": "페예노르트",
+          "away_team": "포르튀나 시타르트",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 1.1,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1696h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1704",
+          "key": "home_win",
+          "odds": 1.75,
+          "match_time": "26.11.01 (일) 02:00",
+          "home_team": "샬럿FC",
+          "away_team": "올랜도 시티SC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.75,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1704h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1708",
+          "key": "away_win",
+          "odds": 1.45,
+          "match_time": "26.11.01 (일) 02:00",
+          "home_team": "우디네세",
+          "away_team": "AS로마",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.45,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1708a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1712",
+          "key": "home_win",
+          "odds": 1.46,
+          "match_time": "26.11.01 (일) 02:30",
+          "home_team": "토트넘 홋스퍼",
+          "away_team": "크리스털 팰리스",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 1.46,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1712h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1717",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.11.01 (일) 02:30",
+          "home_team": "레알 베티스",
+          "away_team": "말라가",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.27,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1717h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1721",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.11.01 (일) 02:30",
+          "home_team": "바이에른 뮌헨",
+          "away_team": "도르트문트",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 1.27,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1721h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1727",
+          "key": "home_win",
+          "odds": 1.94,
+          "match_time": "26.11.01 (일) 02:45",
+          "home_team": "SC헤이렌베인",
+          "away_team": "NEC네이메헌",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 1.94,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1727h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1731",
+          "key": "home_win",
+          "odds": 1.02,
+          "match_time": "26.11.01 (일) 02:45",
+          "home_team": "PSV에인트호번",
+          "away_team": "빌럼II",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 1.02,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1731h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1737",
+          "key": "away_win",
+          "odds": 2.11,
+          "match_time": "26.11.01 (일) 03:00",
+          "home_team": "FC신시내티",
+          "away_team": "필라델피아 유니언",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 2.11,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1737a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1741",
+          "key": "home_win",
+          "odds": 1.29,
+          "match_time": "26.11.01 (일) 03:00",
+          "home_team": "콜럼버스 크루",
+          "away_team": "DC유나이티드",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.29,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1741h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1745",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.01 (일) 03:00",
+          "home_team": "뉴욕 시티FC",
+          "away_team": "CF몽레알",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.34,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1745h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1749",
+          "key": "away_win",
+          "odds": 1.7,
+          "match_time": "26.11.01 (일) 04:00",
+          "home_team": "스포팅 캔자스시티",
+          "away_team": "FC댈러스",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.7,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1749a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1753",
+          "key": "home_win",
+          "odds": 1.77,
+          "match_time": "26.11.01 (일) 04:00",
+          "home_team": "세인트루이스 시티SC",
+          "away_team": "샌디에이고FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.77,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1753h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1761",
+          "key": "away_win",
+          "odds": 1.86,
+          "match_time": "26.11.01 (일) 04:45",
+          "home_team": "AC밀란",
+          "away_team": "인테르나치오날레 밀라노",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.86,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1761a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1773",
+          "key": "home_win",
+          "odds": 2.17,
+          "match_time": "26.11.01 (일) 04:45",
+          "home_team": "트루아AC",
+          "away_team": "르망FC",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 2.17,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1773h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1777",
+          "key": "home_win",
+          "odds": 1.81,
+          "match_time": "26.11.01 (일) 05:00",
+          "home_team": "애스턴 빌라",
+          "away_team": "풀럼",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 1.81,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1777h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1782",
+          "key": "home_win",
+          "odds": 1.04,
+          "match_time": "26.11.01 (일) 05:00",
+          "home_team": "바르셀로나",
+          "away_team": "알라베스",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.04,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1782h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1788",
+          "key": "home_win",
+          "odds": 1.67,
+          "match_time": "26.11.01 (일) 05:00",
+          "home_team": "AFC아약스",
+          "away_team": "AZ알크마르",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 1.67,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1788h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1792",
+          "key": "away_win",
+          "odds": 2.07,
+          "match_time": "26.11.01 (일) 05:00",
+          "home_team": "SC캄뷔르",
+          "away_team": "고어헤드 이글스",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 2.07,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1792a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1796",
+          "key": "home_win",
+          "odds": 1.43,
+          "match_time": "26.11.01 (일) 06:00",
+          "home_team": "LA 갤럭시",
+          "away_team": "오스틴FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.43,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1796h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1800",
+          "key": "home_win",
+          "odds": 2.26,
+          "match_time": "26.11.01 (일) 06:00",
+          "home_team": "새너제이 어스퀘이크스",
+          "away_team": "레알 솔트레이크",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 2.26,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1800h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1828",
+          "key": "home_win",
+          "odds": 2.1,
+          "match_time": "26.11.01 (일) 10:30",
+          "home_team": "콜로라도 래피즈",
+          "away_team": "시카고 파이어FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 2.1,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1828h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1832",
+          "key": "home_win",
+          "odds": 1.38,
+          "match_time": "26.11.01 (일) 13:00",
+          "home_team": "멜버른 빅토리",
+          "away_team": "센트럴코스트 매리너스",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 1.38,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1832h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1836",
+          "key": "away_win",
+          "odds": 1.99,
+          "match_time": "26.11.01 (일) 13:00",
+          "home_team": "요코하마 F마리노스",
+          "away_team": "가와사키 프론탈레",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 1.99,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1836a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1346",
+          "key": "home_win",
+          "odds": 2.42,
+          "match_time": "26.11.01 (일) 14:00",
+          "home_team": "포항 스틸러스",
+          "away_team": "제주 SKFC",
+          "league": "K리그1"
+        }
+      ],
+      "combined_odds": 2.42,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1346h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1603",
+          "key": "home_win",
+          "odds": 2.08,
+          "match_time": "26.11.01 (일) 14:00",
+          "home_team": "울산 HDFC",
+          "away_team": "강원FC",
+          "league": "K리그1"
+        }
+      ],
+      "combined_odds": 2.08,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1603h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1840",
+          "key": "away_win",
+          "odds": 2.18,
+          "match_time": "26.11.01 (일) 14:00",
+          "home_team": "제프 유나이티드",
+          "away_team": "아비스파 후쿠오카",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 2.18,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1840a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1844",
+          "key": "home_win",
+          "odds": 2.24,
+          "match_time": "26.11.01 (일) 14:00",
+          "home_team": "V바렌 나가사키",
+          "away_team": "도쿄 베르디",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 2.24,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1844h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1878",
+          "key": "home_win",
+          "odds": 1.67,
+          "match_time": "26.11.01 (일) 16:00",
+          "home_team": "FC마치다 젤비아",
+          "away_team": "감바 오사카",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 1.67,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1878h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1611",
+          "key": "home_win",
+          "odds": 1.7,
+          "match_time": "26.11.01 (일) 16:30",
+          "home_team": "FC서울",
+          "away_team": "인천 유나이티드",
+          "league": "K리그1"
+        }
+      ],
+      "combined_odds": 1.7,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1611h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1619",
+          "key": "home_win",
+          "odds": 1.8,
+          "match_time": "26.11.01 (일) 16:30",
+          "home_team": "FC안양",
+          "away_team": "부천FC 1995",
+          "league": "K리그1"
+        }
+      ],
+      "combined_odds": 1.8,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1619h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1904",
+          "key": "away_win",
+          "odds": 2.2,
+          "match_time": "26.11.01 (일) 17:00",
+          "home_team": "퍼스 글로리",
+          "away_team": "애들레이드 유나이티드",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 2.2,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1904a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1913",
+          "key": "home_win",
+          "odds": 2.05,
+          "match_time": "26.11.01 (일) 20:15",
+          "home_team": "PEC즈볼러",
+          "away_team": "ADO덴하흐",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 2.05,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1913h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1917",
+          "key": "home_win",
+          "odds": 1.23,
+          "match_time": "26.11.01 (일) 20:30",
+          "home_team": "코모1907",
+          "away_team": "베네치아",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.23,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1917h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1921",
+          "key": "away_win",
+          "odds": 2.3,
+          "match_time": "26.11.01 (일) 22:00",
+          "home_team": "헤타페",
+          "away_team": "세비야",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 2.3,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1921a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1925",
+          "key": "away_win",
+          "odds": 2.18,
+          "match_time": "26.11.01 (일) 22:30",
+          "home_team": "텔스타",
+          "away_team": "위트레흐트",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 2.18,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1925a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1929",
+          "key": "away_win",
+          "odds": 1.5,
+          "match_time": "26.11.01 (일) 22:30",
+          "home_team": "엑셀시오르 로테르담",
+          "away_team": "트벤테",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 1.5,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1929a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1933",
+          "key": "home_win",
+          "odds": 2.02,
+          "match_time": "26.11.01 (일) 23:00",
+          "home_team": "프로시노네",
+          "away_team": "토리노",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 2.02,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1933h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1937",
+          "key": "home_win",
+          "odds": 1.37,
+          "match_time": "26.11.01 (일) 23:00",
+          "home_team": "SS라치오",
+          "away_team": "칼리아리",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 1.37,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1937h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1941",
+          "key": "home_win",
+          "odds": 1.71,
+          "match_time": "26.11.01 (일) 23:00",
+          "home_team": "RC스트라스부르",
+          "away_team": "AJ오세르",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 1.71,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1941h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1945",
+          "key": "home_win",
+          "odds": 2.33,
+          "match_time": "26.11.01 (일) 23:30",
+          "home_team": "우니온 베를린",
+          "away_team": "쾰른",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 2.33,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1945h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1958",
+          "key": "away_win",
+          "odds": 1.15,
+          "match_time": "26.11.02 (월) 00:15",
+          "home_team": "라싱 산탄데르",
+          "away_team": "레알 마드리드",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.15,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1958a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1964",
+          "key": "home_win",
+          "odds": 1.64,
+          "match_time": "26.11.02 (월) 00:45",
+          "home_team": "흐로닝언",
+          "away_team": "스파르타 로테르담",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 1.64,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1964h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1769",
+          "key": "home_win",
+          "odds": 1.31,
+          "match_time": "26.11.02 (월) 01:15",
+          "home_team": "올랭피크 리옹",
+          "away_team": "앙제SCO",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 1.31,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1769h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1968",
+          "key": "home_win",
+          "odds": 2.08,
+          "match_time": "26.11.02 (월) 01:15",
+          "home_team": "파리FC",
+          "away_team": "AS모나코",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 2.08,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1968h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1972",
+          "key": "away_win",
+          "odds": 2.2,
+          "match_time": "26.11.02 (월) 01:30",
+          "home_team": "리버풀",
+          "away_team": "아스널",
+          "league": "잉글랜드 프리미어리그"
+        }
+      ],
+      "combined_odds": 2.2,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1972a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1977",
+          "key": "home_win",
+          "odds": 1.49,
+          "match_time": "26.11.02 (월) 01:30",
+          "home_team": "프랑크푸르트",
+          "away_team": "함부르크",
+          "league": "독일 분데스리가"
+        }
+      ],
+      "combined_odds": 1.49,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1977h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1982",
+          "key": "away_win",
+          "odds": 2.2,
+          "match_time": "26.11.02 (월) 02:00",
+          "home_team": "US레체",
+          "away_team": "제노아",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 2.2,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1982a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1986",
+          "key": "home_win",
+          "odds": 2.19,
+          "match_time": "26.11.02 (월) 02:30",
+          "home_team": "엘체",
+          "away_team": "발렌시아",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 2.19,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1986h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1990",
+          "key": "home_win",
+          "odds": 2.1,
+          "match_time": "26.11.02 (월) 04:45",
+          "home_team": "유벤투스",
+          "away_team": "SSC나폴리",
+          "league": "이탈리아 세리에A"
+        }
+      ],
+      "combined_odds": 2.1,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1990h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1994",
+          "key": "home_win",
+          "odds": 1.77,
+          "match_time": "26.11.02 (월) 04:45",
+          "home_team": "올랭피크드 마르세유",
+          "away_team": "툴루즈",
+          "league": "프랑스 리그1"
+        }
+      ],
+      "combined_odds": 1.77,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1994h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "1998",
+          "key": "home_win",
+          "odds": 1.99,
+          "match_time": "26.11.02 (월) 05:00",
+          "home_team": "아틀레틱 빌바오",
+          "away_team": "레알 소시에다드",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.99,
+      "stake": 1000,
+      "bet_id": "E_market_fav:1998h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "2010",
+          "key": "home_win",
+          "odds": 1.52,
+          "match_time": "26.11.02 (월) 05:30",
+          "home_team": "밴쿠버 화이트캡스FC",
+          "away_team": "시애틀 사운더스FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.52,
+      "stake": 1000,
+      "bet_id": "E_market_fav:2010h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "2006",
+          "key": "home_win",
+          "odds": 1.45,
+          "match_time": "26.11.02 (월) 06:30",
+          "home_team": "내슈빌SC",
+          "away_team": "뉴욕 레드불스",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.45,
+      "stake": 1000,
+      "bet_id": "E_market_fav:2006h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "2014",
+          "key": "home_win",
+          "odds": 2.07,
+          "match_time": "26.11.02 (월) 06:30",
+          "home_team": "애틀랜타 유나이티드FC",
+          "away_team": "토론토FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 2.07,
+      "stake": 1000,
+      "bet_id": "E_market_fav:2014h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "2022",
+          "key": "away_win",
+          "odds": 2.09,
+          "match_time": "26.11.02 (월) 09:00",
+          "home_team": "뉴잉글랜드 레벌루션",
+          "away_team": "인터 마이애미CF",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 2.09,
+      "stake": 1000,
+      "bet_id": "E_market_fav:2022a",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "2026",
+          "key": "home_win",
+          "odds": 1.62,
+          "match_time": "26.11.02 (월) 10:30",
+          "home_team": "LAFC",
+          "away_team": "미네소타 유나이티드FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.62,
+      "stake": 1000,
+      "bet_id": "E_market_fav:2026h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "2039",
+          "key": "home_win",
+          "odds": 1.76,
+          "match_time": "26.11.02 (월) 11:45",
+          "home_team": "포틀랜드 팀버스",
+          "away_team": "휴스턴 다이너모FC",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 1.76,
+      "stake": 1000,
+      "bet_id": "E_market_fav:2039h",
+      "created_at": "2026-10-29T23:03:30+00:00"
+    }
+  ],
+  "f_plan": {
+    "games": 5,
+    "candidates": 128,
+    "bets": 0,
+    "bankroll": 100000,
+    "staked": 0,
+    "at": "2026-10-29T23:03:30+00:00"
+  }
+}
