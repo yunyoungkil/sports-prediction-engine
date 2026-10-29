@@ -89,6 +89,9 @@ Open items are tracked in `REVIEW.md`:
   3. **7.3 xG / SOT overperformance ("Luck Index") correction:** refine the home-form overvaluation penalty using `actual goals - expected goals (xG/SOT)`.
   4. **7.4 Sport/market-specific features in `models/betman_markets.py`:** test handicap line value (`handi_val`) + league group + form for 3-way soccer handicap, back-to-back/rest features for basketball, and pre-game starting pitcher / lineup odds-lag checks for daytime KBO/K-League/J-League matches.
   - Every Phase 7 experiment MUST use strict chronological walk-forward (`models/betman_experiments.py` style) with cluster bootstrap CI, and only ship if it beats the current production baseline across most walk-forward windows.
+- **Multi-PC sync & Future Launch (Feature B in `TODO.md`):**
+  - Currently, personal selections/slips (`current_selections.json`, `my_slips.json`) are synced across the user's PCs via OneDrive using the `SPE_USER_DATA_DIR` environment variable (`C:\Users\<user>\OneDrive\spe_user_data`).
+  - For future public/multi-user release (**Feature B** in `TODO.md`), add Supabase Auth + PostgreSQL (`user_id`-isolated RLS) behind `tracker/my_slips.py` and keep unauthenticated guests strictly in `st.session_state` so server disk files are never shared across users.
 - When picking up work: take the **first unchecked item in `TODO.md`**, do one item at a time, mark it `[x]`, and add before/after evaluation numbers to the progress table at the bottom.
 - Respect the decision checkpoints in `TODO.md`. The Phase 3 checkpoint fired (b = 0), and that led to Phase 5.
 - Collaboration: Gemini implements, Claude verifies and logs findings in `REVIEW.md` (R-numbers). Read `GEMINI.md` at the repo root for git, secret, and API-credit rules.

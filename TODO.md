@@ -541,6 +541,23 @@
 
 ---
 
+## Feature B. 출시 대비 다중 사용자 로그인 & 클라우드 DB 연동 (추후 서비스 배포 시)
+
+> 현재 1인 다중 PC 환경은 OneDrive 폴더(`SPE_USER_DATA_DIR`)로 동기화하며, 추후 외부 사용자 대상 웹/모바일 출시 단계에서 아래 항목을 순서대로 구현한다.
+
+- [ ] **B.1 클라우드 DB(Supabase PostgreSQL) 스키마 및 저장소 어댑터 구성**
+  - 파일: `tracker/my_slips.py`, `tracker/cloud_storage.py` (새 파일)
+  - 테이블 구성: `user_selections`(`user_id`, `gm_ts`, `selections_json`, `updated_at`) 및 `user_slips`(`id`, `user_id`, `gm_ts`, `slip_json`, `created_at`) + Row Level Security(RLS)로 본인(`auth.uid() = user_id`) 데이터만 조회·수정 허용
+  - `SUPABASE_URL`, `SUPABASE_KEY`가 설정되어 있고 로그인된 상태면 DB를 쓰고, 없으면 기존 파일(`SPE_USER_DATA_DIR` / `user_data/`) 또는 세션 메모리(`st.session_state`)로 동작하도록 하위 호환 유지
+- [ ] **B.2 사용자 로그인 UI 및 게스트 모드 분리**
+  - 파일: `dashboard/app.py`
+  - 비로그인 방문자(게스트): 서버 로컬 파일을 건드리지 않고 브라우저 세션(`st.session_state`) 안에서만 선택·조합 계산 체험 가능 (사용자 간 데이터 섞임 원천 차단)
+  - 로그인 사용자(이메일/소셜 로그인): 기기(PC ↔ 모바일) 간 실시간 선택(`current_selections`) 및 저장 슬립(`my_slips`) 동기화
+- [ ] **B.3 기존 로컬/OneDrive 슬립 데이터 마이그레이션 도구**
+  - 로컬(`user_data/` 또는 `SPE_USER_DATA_DIR`)에 쌓인 `my_slips.json`을 로그인 계정의 클라우드 DB로 1회 업로드하는 가져오기 기능 및 단위 테스트 추가
+
+---
+
 ## 📊 진행 현황 기록
 
 | 날짜 | 완료 항목 | 검증 Log loss (모델 / 시장) | 실전 ROI (95% CI) | 메모 |
