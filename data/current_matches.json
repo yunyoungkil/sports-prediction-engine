@@ -11191,7 +11191,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
@@ -11296,7 +11296,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
@@ -11401,7 +11401,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
@@ -11476,7 +11476,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
@@ -11505,7 +11505,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "1",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11595,7 +11595,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11655,7 +11655,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "1",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11728,9 +11728,9 @@
     "match_time": "26.10.29 (목) 19:00",
     "close_time": 1793268000000,
     "kickoff_ts": 1793268000000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11759,7 +11759,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "50",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11807,12 +11807,42 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 20:51:32",
+        "from": {
+          "home_win": 5.0,
+          "draw": 4.15,
+          "away_win": 1.41
+        },
+        "to": {
+          "home_win": 4.4,
+          "draw": 4.0,
+          "away_win": 1.49
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 21:08:15",
+        "from": {
+          "home_win": 4.4,
+          "draw": 4.0,
+          "away_win": 1.49
+        },
+        "to": {
+          "home_win": 4.0,
+          "draw": 3.85,
+          "away_win": 1.56
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 5.0,
-      "draw": 4.15,
-      "away_win": 1.41
+      "home_win": 4.0,
+      "draw": 3.85,
+      "away_win": 1.56
     },
     "gm_ts": 260128
   },
@@ -11867,12 +11897,42 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-10-29 20:54:29",
+        "from": {
+          "home_win": 2.32,
+          "draw": 3.15,
+          "away_win": 2.5
+        },
+        "to": {
+          "home_win": 2.11,
+          "draw": 3.15,
+          "away_win": 2.8
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      },
+      {
+        "at": "2026-10-29 21:03:45",
+        "from": {
+          "home_win": 2.11,
+          "draw": 3.15,
+          "away_win": 2.8
+        },
+        "to": {
+          "home_win": 2.03,
+          "draw": 3.15,
+          "away_win": 2.95
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 2.32,
+      "home_win": 2.03,
       "draw": 3.15,
-      "away_win": 2.5
+      "away_win": 2.95
     },
     "gm_ts": 260128
   },
@@ -12015,11 +12075,41 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 20:54:17",
+        "from": {
+          "home_win": 4.8,
+          "draw": 3.7,
+          "away_win": 1.49
+        },
+        "to": {
+          "home_win": 4.45,
+          "draw": 3.95,
+          "away_win": 1.49
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 21:04:55",
+        "from": {
+          "home_win": 4.45,
+          "draw": 3.95,
+          "away_win": 1.49
+        },
+        "to": {
+          "home_win": 4.3,
+          "draw": 4.05,
+          "away_win": 1.49
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 4.8,
-      "draw": 3.7,
+      "home_win": 4.3,
+      "draw": 4.05,
       "away_win": 1.49
     },
     "gm_ts": 260128
@@ -12105,12 +12195,27 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-10-29 21:05:16",
+        "from": {
+          "home_win": 2.3,
+          "draw": 3.1,
+          "away_win": 2.55
+        },
+        "to": {
+          "home_win": 2.13,
+          "draw": 3.1,
+          "away_win": 2.8
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 2.3,
+      "home_win": 2.13,
       "draw": 3.1,
-      "away_win": 2.55
+      "away_win": 2.8
     },
     "gm_ts": 260128
   },
