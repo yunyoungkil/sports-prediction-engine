@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-29T14:24:40+00:00",
+  "updated_at": "2026-10-29T15:01:27+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -126,6 +126,24 @@
         -7810
       ],
       "verdict": "판단 보류 (표본 부족)"
+    },
+    "F_portfolio_kelly": {
+      "label": "F. AI 조합 묶음 + 켈리 금액 (지갑 10만 원)",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "verdict": "판단 보류 (표본 부족)",
+      "bankroll": 100000,
+      "start_bankroll": 100000,
+      "rounds_planned": 0,
+      "rounds_skipped": 0
     }
   },
   "details": [
