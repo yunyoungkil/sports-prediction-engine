@@ -1522,11 +1522,34 @@ with tab1:
         open_ms = _ordered([m for m in filtered_matches if _section(m) == "open"])
         wait_ms = _ordered([m for m in filtered_matches if _section(m) == "wait"])
         done_ms = _ordered([m for m in filtered_matches if _section(m) == "done"], newest_first=True)
-        # 위 숫자 칸을 누르면 그 구간만 (open / wait / done · 다시 누르면 전체)
+        # 회차 채점 요약 (현재 필터 기준). 배당 1순위는 모든 종료 경기, AI 1순위는 경기 전 기록이 있는 경기만
+        mk_hits, ai_pairs = [], []
+        mk_hit_ms, ai_hit_ms = [], []   # 📈·🧠 카드 필터: 배당 1순위 / AI 1순위가 맞은 게임번호
+        for m in done_ms:
+            res = _res(m)
+            actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
+            if not actual:
+                continue
+            opts = available_picks(m)
+            mk_g, ai_g = shown_probs(m, _log(m), finished=True)   # 채점: 경기 전 마지막 기록 (성적표와 같은 값)
+            mk_k, _ = top_pick(mk_g, opts)
+            if mk_k:
+                mk_hits.append(mk_k == actual)
+                if mk_k == actual:
+                    mk_hit_ms.append(m)
+            if ai_g:
+                ai_k, _ = top_pick(ai_g, opts)
+                ai_pairs.append((ai_k == actual, mk_k == actual))
+                if ai_k == actual:
+                    ai_hit_ms.append(m)
+        # 위 숫자 칸을 누르면 그 구간만 (open / wait / done / mk_hit / ai_hit · 다시 누르면 전체)
         # 처음엔 지금 고를 수 있는 경기만 그림 (끝난 경기 수백 줄까지 그리면 스크롤·클릭이 느려짐). 카드를 누르면 다른 구간,
         # 켜진 카드를 다시 누르면 전체 (_set_section(None) → 값이 None으로 저장되어 기본값을 쓰지 않음)
         sec_only = st.session_state.get("t1_section", "open" if open_ms else None)
-        filtered_matches = {"open": open_ms, "wait": wait_ms, "done": done_ms}.get(sec_only, open_ms + wait_ms + done_ms)
+        sec_lists = {"open": open_ms, "wait": wait_ms, "done": done_ms, "mk_hit": mk_hit_ms, "ai_hit": ai_hit_ms}
+        if sec_only and not sec_lists.get(sec_only):
+            sec_only = None   # 고른 구간이 (날짜·회차를 바꿔서) 비었으면 빈 목록 대신 전체
+        filtered_matches = sec_lists.get(sec_only, open_ms + wait_ms + done_ms)
 
         LOAD_STEP = 25
         # 필터가 바뀌면 처음 25경기부터 (회차·날짜·검색·필터·결과 수가 같을 때만 지금까지 불러온 만큼 유지)
@@ -1582,21 +1605,6 @@ with tab1:
 </script>
 """, height=0)
 
-        # 회차 채점 요약 (현재 필터 기준). 배당 1순위는 모든 종료 경기, AI 1순위는 경기 전 기록이 있는 경기만
-        mk_hits, ai_pairs = [], []
-        for m in done_ms:
-            res = _res(m)
-            actual = RESULT_CODE_TO_KEY.get(str(res.get("game_result"))) if res is not None else None
-            if not actual:
-                continue
-            opts = available_picks(m)
-            mk_g, ai_g = shown_probs(m, _log(m), finished=True)   # 채점: 경기 전 마지막 기록 (성적표와 같은 값)
-            mk_k, _ = top_pick(mk_g, opts)
-            if mk_k:
-                mk_hits.append(mk_k == actual)
-            if ai_g:
-                ai_k, _ = top_pick(ai_g, opts)
-                ai_pairs.append((ai_k == actual, mk_k == actual))
         if open_ms or wait_ms or done_ms:
             n_mk, n_ai = len(mk_hits), len(ai_pairs)
             mk_hit, ai_hit, ai_mk_hit = sum(mk_hits), sum(a for a, _ in ai_pairs), sum(b for _, b in ai_pairs)
@@ -1615,10 +1623,11 @@ with tab1:
             ]
             # 카드 = 필터 버튼: 누르면 아래 목록을 그 구간만 (적중률 두 칸은 '결과 나온 경기') · 켜진 카드는 파란 테두리 ·
             # 다시 누르면 전체 (안내 글자는 넣지 않음 — 카드가 지저분해짐)
-            tile_sec = ["open", "wait", "done", "done", "done"]
-            sec_n = {"open": len(open_ms), "wait": len(wait_ms), "done": len(done_ms)}
+            # 📈 = 배당 1순위가 맞은 경기만 · 🧠 = AI 1순위가 맞은 경기만 (2026-10-29: 둘 다 '결과 나옴'과 같은 필터라 안 되는 것처럼 보였음)
+            tile_sec = ["open", "wait", "done", "mk_hit", "ai_hit"]
+            sec_n = {k: len(v) for k, v in sec_lists.items()}
             for i, (col, (label, value, sub), sec) in enumerate(zip(st.columns(len(tiles)), tiles, tile_sec)):
-                on = sec_only == sec and i < 3   # 표시는 구간 카드에만 (적중률 카드는 늘 '결과 나온 경기 보기')
+                on = sec_only == sec
                 with col.container(border=True, key=f"t1card_on_{i}" if on else f"t1card_{i}"):
                     st.markdown(f"<div style='font-size:12px;opacity:.75'>{label}</div>"
                                 f"<div style='font-size:20px;font-weight:700;line-height:1.4'>{value}</div>"
@@ -1706,6 +1715,10 @@ with tab1:
                              f"{wait_phase_counts(wait_ms, now_ts)} · 결과가 나오면 적중 여부 표시"),
                     "done": ("🏁 결과 나온 경기", n_fixtures(done_ms), "최근 경기부터 · ✅❌ = 적중 여부"),
                 }[section]
+                if sec_only == "mk_hit":   # 📈 카드로 걸렀을 때는 제목도 그 기준으로
+                    title, n_sec, hint = "📈 배당 1순위가 맞은 경기", n_fixtures(mk_hit_ms), f"게임번호 {len(mk_hit_ms)}개 · 최근 경기부터"
+                elif sec_only == "ai_hit":
+                    title, n_sec, hint = "🧠 AI 1순위가 맞은 경기", n_fixtures(ai_hit_ms), f"게임번호 {len(ai_hit_ms)}개 · 최근 경기부터"
                 st.markdown(f"<div style='margin:14px 0 4px;font-size:15px'><b>{title}</b> "
                             f"<span style='opacity:.7'>{n_sec:,}경기 · {hint}</span></div>", unsafe_allow_html=True)
 
