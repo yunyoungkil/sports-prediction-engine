@@ -15,6 +15,9 @@ models/paper_trading.py
 - C_finder_top     : 조합 찾기 기본 설정 1순위 (회차당 1개)
 - D_banker_cover   : 최저 배당 정배 2경기(≤1.5) + 가장 팽팽한 경기 전배 (사용자 예전 방식, 비교용)
 - E_market_fav     : AI 없이 배당 1순위 단일 (기준선 — AI 전략은 이것보다 나아야 의미가 있음)
+- F_portfolio_kelly: AI가 조합 묶음(같은 경기를 여러 조합에 넣어도 됨)을 만들고, 모든 결과 경우의 수로 금액을 한꺼번에 정함
+                     (켈리 1/4 · 회차 합계 지갑 10% 이내 · 이득 없으면 쉼). 가상 지갑 10만 원에서 시작, 금액이 매번 다름.
+                     회차당 한 번 계획 (models/portfolio.py) · 과거 재현은 evaluation/portfolio_backtest.py
 """
 
 import json
@@ -41,7 +44,9 @@ STRATEGIES = {
     "C_finder_top": "C. 조합 찾기 1순위",
     "D_banker_cover": "D. 축 2 + 전배 (비교용)",
     "E_market_fav": "E. 배당 1순위 단일 (기준선)",
+    "F_portfolio_kelly": "F. AI 조합 묶음 + 켈리 금액 (지갑 10만 원)",
 }
+F_START_BANKROLL = 100_000
 MIN_FOR_VERDICT = 300
 
 
@@ -120,8 +125,42 @@ def propose_bets(predictions: List[Dict[str, Any]], now: Optional[datetime] = No
     return bets
 
 
-def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: Path = BETS_DIR) -> Dict[str, int]:
-    """새 베팅만 추가 (기존 베팅은 수정하지 않음). 조합 전략(B·C·D)은 회차당 한 번만 만든다."""
+def f_bankroll(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> float:
+    """F 가상 지갑: 시작 10만 원 + 결과 난 F 베팅 손익 − 결과 대기 중인 F 베팅에 묶인 돈"""
+    res = _results_index(results_path) if results_path.exists() else {}
+    bank = float(F_START_BANKROLL)
+    for f in sorted(bets_dir.glob("*.json")):
+        data = json.loads(f.read_text(encoding="utf-8"))
+        ts = str(data.get("gm_ts"))
+        for b in data.get("bets", []):
+            if b["strategy"] != "F_portfolio_kelly":
+                continue
+            outs = [res.get((ts, leg["seq"])) for leg in b["legs"]]
+            if any(o is None for o in outs):
+                bank -= b["stake"]
+            elif all(o == leg["key"] for o, leg in zip(outs, b["legs"])):
+                bank += calculate_payout(b["combined_odds"], b["stake"]) - b["stake"]
+            else:
+                bank -= b["stake"]
+    return bank
+
+
+def _f_bets(predictions, now, bankroll: float) -> Dict[str, Any]:
+    """F: 지금 살 수 있는 AI 축구 승무패로 조합 묶음 + 켈리 금액 (models/portfolio.py)"""
+    from models.portfolio import plan
+    p = plan(_open_soccer_1x2(predictions, now), bankroll)
+    bets = []
+    for b in p["bets"]:
+        legs = [_leg(m, k) for m, k in b["legs"]]
+        bets.append({"strategy": "F_portfolio_kelly", "legs": legs, "combined_odds": b["combined_odds"], "stake": b["stake"],
+                     "ev_ai": b["ev_ai"], "bet_id": "F_portfolio_kelly:" + "+".join(f"{x['seq']}{x['key'][0]}" for x in legs)})
+    return {"bets": bets, "plan": {"games": p["games"], "candidates": p["candidates"], "bets": len(bets),
+                                   "bankroll": round(bankroll), "staked": sum(b["stake"] for b in bets)}}
+
+
+def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: Path = BETS_DIR,
+                  results_path: Path = Path("data/history/betman_recent_results.json")) -> Dict[str, int]:
+    """새 베팅만 추가 (기존 베팅은 수정하지 않음). 조합 전략(B·C·D·F)은 회차당 한 번만 만든다."""
     now = now or datetime.now(timezone.utc)
     bets_dir.mkdir(parents=True, exist_ok=True)
     path = bets_dir / f"{gm_ts}.json"
@@ -142,6 +181,16 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
         data["bets"].append(bt)
         have_ids.add(bt["bet_id"])
         added[s] = added.get(s, 0) + 1
+    # F: 회차당 한 번 계획 (걸 게 없어 쉬어도 계획을 남겨 '쉰 회차'로 셈) — 후보 경기가 2개 이상 열려 있을 때만
+    if "f_plan" not in data and len([m for m in _open_soccer_1x2(predictions, now)
+                                     if m.get("prob_source") in AI_SOURCES]) >= 2:
+        f = _f_bets(predictions, now, f_bankroll(bets_dir, results_path))
+        for bt in f["bets"]:
+            bt["created_at"] = now.isoformat(timespec="seconds")
+            data["bets"].append(bt)
+        data["f_plan"] = {**f["plan"], "at": now.isoformat(timespec="seconds")}
+        if f["bets"]:
+            added["F_portfolio_kelly"] = len(f["bets"])
     # 조합 전략은 이번 실행에서 처음 생겼다면 이후 실행에서 다시 만들지 않음
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return added
@@ -212,8 +261,15 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
             details.append({**row, "status": "적중" if hit else "미적중", "payout": payout, "profit": payout - b["stake"]})
             per.setdefault(b["strategy"], []).append({"gm_ts": ts, "hit": hit, "stake": b["stake"], "payout": payout,
                                                        "settled_at": row["kickoff"]})
+    strategies = _summarize(per, pending, STRATEGIES)
+    plans = [json.loads(f.read_text(encoding="utf-8")).get("f_plan") for f in sorted(bets_dir.glob("*.json"))]
+    plans = [p for p in plans if p]
+    if "F_portfolio_kelly" in strategies:   # F는 금액이 매번 달라 지갑으로 봄 (결과 대기 금액 포함)
+        strategies["F_portfolio_kelly"].update({
+            "bankroll": round(f_bankroll(bets_dir, results_path)), "start_bankroll": F_START_BANKROLL,
+            "rounds_planned": len(plans), "rounds_skipped": sum(1 for p in plans if not p["bets"])})
     summary = {"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "stake_unit": STAKE,
-               "strategies": _summarize(per, pending, STRATEGIES),
+               "strategies": strategies,
                "details": sorted(details, key=lambda d: (d["gm_ts"], d["kickoff"]), reverse=True)}
     out_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     return summary

@@ -30,3 +30,34 @@ def test_bets_are_fixed_and_settled(tmp_path):
     assert (a["bets"], a["hits"], a["profit"]) == (1, 1, 2600)     # 3.6 × 1000 − 1000
     assert (e["bets"], e["hits"], e["profit"]) == (1, 0, -1000)
     assert a["verdict"].startswith("판단 보류")
+
+
+def test_f_portfolio_bets_sized_and_bankroll(tmp_path):
+    """F: AI 기준 이득인 조합 묶음에만 켈리 금액 (회차 합계 지갑 10% 이내 · 100원 단위) · 결과 나오면 지갑 갱신"""
+    from models.paper_trading import F_START_BANKROLL, f_bankroll
+    preds = [_m("1", (2.0, 3.4, 3.8), (0.60, 0.22, 0.18)), _m("2", (2.1, 3.3, 3.5), (0.58, 0.23, 0.19)),
+             _m("3", (1.9, 3.5, 4.0), (0.62, 0.21, 0.17))]                 # AI가 홈승을 배당보다 훨씬 높게 봄
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+    added = save_new_bets(7, preds, now=NOW, bets_dir=tmp_path, results_path=rpath)
+    data = json.loads((tmp_path / "7.json").read_text(encoding="utf-8"))
+    fb = [b for b in data["bets"] if b["strategy"] == "F_portfolio_kelly"]
+    assert added.get("F_portfolio_kelly") == len(fb) > 0 and data["f_plan"]["bets"] == len(fb)
+    assert all(b["stake"] % 100 == 0 and b["stake"] >= 100 for b in fb)
+    assert sum(b["stake"] for b in fb) <= F_START_BANKROLL * 0.10
+    assert f_bankroll(tmp_path, rpath) == F_START_BANKROLL - sum(b["stake"] for b in fb)   # 결과 대기 = 묶인 돈
+    assert save_new_bets(7, preds, now=NOW, bets_dir=tmp_path, results_path=rpath).get("F_portfolio_kelly") is None   # 회차당 한 번
+
+    # 세 경기 모두 홈승 → F 베팅 전부 적중 → 지갑 = 시작 + 손익
+    rpath.write_text(json.dumps([{"gm_ts": 7, "match_seq": s, "game_type": "축구 승무패", "game_result": "0"} for s in "123"]),
+                     encoding="utf-8")
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json")["strategies"]["F_portfolio_kelly"]
+    assert s["bankroll"] == F_START_BANKROLL + s["profit"] and s["rounds_planned"] == 1 and s["rounds_skipped"] == 0
+
+
+def test_f_skips_round_without_edge(tmp_path):
+    preds = [_m("1", (2.0, 3.2, 3.6), (0.45, 0.28, 0.27)), _m("2", (1.8, 3.4, 4.2), (0.50, 0.27, 0.23))]   # AI = 배당과 비슷 → 손해
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+    assert save_new_bets(8, preds, now=NOW, bets_dir=tmp_path, results_path=rpath).get("F_portfolio_kelly") is None
+    assert json.loads((tmp_path / "8.json").read_text(encoding="utf-8"))["f_plan"]["bets"] == 0   # 쉰 회차로 기록

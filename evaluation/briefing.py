@@ -122,8 +122,10 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
         if not s.get("bets"):
             out.append(f"   - {s['label']}: 채점된 베팅 없음{pend}")
             continue
+        wallet = (f" · 지갑 {s['bankroll']:,}원 (쉰 회차 {s.get('rounds_skipped', 0)}/{s.get('rounds_planned', 0)})"
+                  if "bankroll" in s else "")   # F: 금액이 매번 달라 지갑으로 봄
         out.append(f"   - {s['label']}: {s['bets']}건 중 {s['hits']}건 적중{pend} · 손익 {s['profit']:+,}원 "
-                   f"(수익률 {s['roi_pct']:+.1f}%) · {s.get('verdict', '')}")
+                   f"(수익률 {s['roi_pct']:+.1f}%){wallet} · {s.get('verdict', '')}")
     return out
 
 
