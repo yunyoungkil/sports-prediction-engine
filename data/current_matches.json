@@ -10818,7 +10818,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -10863,7 +10863,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -10923,7 +10923,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -10983,7 +10983,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -11043,7 +11043,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -11072,7 +11072,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -11117,7 +11117,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -11162,7 +11162,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -11255,12 +11255,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 18:21:31",
+        "from": {
+          "home_win": 1.22,
+          "draw": 4.7,
+          "away_win": 8.5
+        },
+        "to": {
+          "home_win": 1.16,
+          "draw": 5.4,
+          "away_win": 9.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.22,
-      "draw": 4.7,
-      "away_win": 8.5
+      "home_win": 1.16,
+      "draw": 5.4,
+      "away_win": 9.8
     },
     "gm_ts": 260128
   },
@@ -11345,12 +11360,27 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-10-29 18:21:31",
+        "from": {
+          "home_win": 1.77,
+          "draw": 3.45,
+          "away_win": 3.4
+        },
+        "to": {
+          "home_win": 1.67,
+          "draw": 3.55,
+          "away_win": 3.7
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "odds": {
-      "home_win": 1.77,
-      "draw": 3.45,
-      "away_win": 3.4
+      "home_win": 1.67,
+      "draw": 3.55,
+      "away_win": 3.7
     },
     "gm_ts": 260128
   },
@@ -11405,12 +11435,27 @@
         },
         "line_from": 2.5,
         "line_to": 2.5
+      },
+      {
+        "at": "2026-10-29 18:21:31",
+        "from": {
+          "home_win": 1.97,
+          "draw": 0.0,
+          "away_win": 1.56
+        },
+        "to": {
+          "home_win": 2.18,
+          "draw": 0.0,
+          "away_win": 1.45
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
       }
     ],
     "odds": {
-      "home_win": 1.97,
+      "home_win": 2.18,
       "draw": 0.0,
-      "away_win": 1.56
+      "away_win": 1.45
     },
     "gm_ts": 260128
   },
@@ -11458,7 +11503,7 @@
     "match_time": "26.10.29 (목) 19:00",
     "close_time": 1793268000000,
     "kickoff_ts": 1793268000000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -11494,12 +11539,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 18:22:48",
+        "from": {
+          "home_win": 2.41,
+          "draw": 0.0,
+          "away_win": 1.36
+        },
+        "to": {
+          "home_win": 2.67,
+          "draw": 0.0,
+          "away_win": 1.29
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.41,
+      "home_win": 2.67,
       "draw": 0.0,
-      "away_win": 1.36
+      "away_win": 1.29
     },
     "gm_ts": 260128
   },
@@ -11539,12 +11599,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 18:22:48",
+        "from": {
+          "home_win": 4.0,
+          "draw": 2.8,
+          "away_win": 1.84
+        },
+        "to": {
+          "home_win": 4.75,
+          "draw": 2.75,
+          "away_win": 1.74
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 4.0,
-      "draw": 2.8,
-      "away_win": 1.84
+      "home_win": 4.75,
+      "draw": 2.75,
+      "away_win": 1.74
     },
     "gm_ts": 260128
   },
@@ -11556,7 +11631,7 @@
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
     "is_single": true,
-    "line": 4.5,
+    "line": 5.5,
     "win_txt": "승",
     "draw_txt": "-",
     "lose_txt": "패",
@@ -11584,12 +11659,42 @@
         },
         "line_from": 3.5,
         "line_to": 4.5
+      },
+      {
+        "at": "2026-10-29 18:16:28",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 4.5,
+        "line_to": 4.5
+      },
+      {
+        "at": "2026-10-29 18:22:48",
+        "from": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "to": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "line_from": 4.5,
+        "line_to": 5.5
       }
     ],
     "odds": {
-      "home_win": 1.75,
+      "home_win": 1.74,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.74
     },
     "gm_ts": 260128
   },
@@ -11954,11 +12059,27 @@
     "match_state": "2",
     "home_team": "상하이 선화",
     "away_team": "FC마치다 젤비아",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 18:22:25",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.75,
+      "home_win": 1.8,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.68
     },
     "gm_ts": 260128
   },
@@ -12308,11 +12429,27 @@
     "match_state": "2",
     "home_team": "ACF피오렌티나",
     "away_team": "아탈란타BC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 18:22:03",
+        "from": {
+          "home_win": 2.11,
+          "draw": 0.0,
+          "away_win": 1.48
+        },
+        "to": {
+          "home_win": 2.2,
+          "draw": 0.0,
+          "away_win": 1.44
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 2.11,
+      "home_win": 2.2,
       "draw": 0.0,
-      "away_win": 1.48
+      "away_win": 1.44
     },
     "gm_ts": 260128
   },
@@ -12366,10 +12503,26 @@
     "match_state": "2",
     "home_team": "에버턴",
     "away_team": "뉴캐슬 유나이티드",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 18:21:42",
+        "from": {
+          "home_win": 2.06,
+          "draw": 3.25,
+          "away_win": 2.8
+        },
+        "to": {
+          "home_win": 2.11,
+          "draw": 3.15,
+          "away_win": 2.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.06,
-      "draw": 3.25,
+      "home_win": 2.11,
+      "draw": 3.15,
       "away_win": 2.8
     },
     "gm_ts": 260128

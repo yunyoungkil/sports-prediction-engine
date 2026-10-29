@@ -66015,7 +66015,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -66272,7 +66272,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -66544,7 +66544,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -66816,7 +66816,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -67088,7 +67088,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -67329,7 +67329,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -67586,7 +67586,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -67843,7 +67843,7 @@
     "kickoff_ts": 1793266200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -68089,9 +68089,9 @@
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
     "betman_odds": {
-      "home_win": 1.22,
-      "draw": 4.7,
-      "away_win": 8.5
+      "home_win": 1.16,
+      "draw": 5.4,
+      "away_win": 9.8
     },
     "odds_changes": [
       {
@@ -68153,44 +68153,59 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 18:21:31",
+        "from": {
+          "home_win": 1.22,
+          "draw": 4.7,
+          "away_win": 8.5
+        },
+        "to": {
+          "home_win": 1.16,
+          "draw": 5.4,
+          "away_win": 9.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "prediction_odds": {
-      "home_win": 1.22,
-      "draw": 4.7,
-      "away_win": 8.5
+      "home_win": 1.16,
+      "draw": 5.4,
+      "away_win": 9.8
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.7127,
-      "draw": 0.185,
-      "away": 0.1023
+      "home": 0.7501,
+      "draw": 0.1611,
+      "away": 0.0888
     },
     "model_probabilities": {
-      "home_win": 0.7127,
-      "draw": 0.185,
-      "away_win": 0.1023
+      "home_win": 0.7501,
+      "draw": 0.1611,
+      "away_win": 0.0888
     },
     "blended_probabilities": {
-      "home_win": 0.7543,
-      "draw": 0.174,
-      "away_win": 0.0717
+      "home_win": 0.7944,
+      "draw": 0.1457,
+      "away_win": 0.0599
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0798,
-        "draw": -0.1822,
-        "away_win": -0.3905
+        "home_win": -0.0785,
+        "draw": -0.2132,
+        "away_win": -0.413
       },
       "best_selection": "home_win",
       "best_selection_name": "강원FC 승",
       "raw_selection_name": "강원FC 승",
-      "best_ev": -0.0798,
-      "best_ev_pct": "-8.0%",
+      "best_ev": -0.0785,
+      "best_ev_pct": "-7.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -68332,9 +68347,9 @@
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
     "betman_odds": {
-      "home_win": 1.77,
-      "draw": 3.45,
-      "away_win": 3.4
+      "home_win": 1.67,
+      "draw": 3.55,
+      "away_win": 3.7
     },
     "odds_changes": [
       {
@@ -68396,44 +68411,59 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-10-29 18:21:31",
+        "from": {
+          "home_win": 1.77,
+          "draw": 3.45,
+          "away_win": 3.4
+        },
+        "to": {
+          "home_win": 1.67,
+          "draw": 3.55,
+          "away_win": 3.7
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "prediction_odds": {
-      "home_win": 1.77,
-      "draw": 3.45,
-      "away_win": 3.4
+      "home_win": 1.67,
+      "draw": 3.55,
+      "away_win": 3.7
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4917,
-      "draw": 0.2523,
-      "away": 0.256
+      "home": 0.5204,
+      "draw": 0.2448,
+      "away": 0.2349
     },
     "model_probabilities": {
-      "home_win": 0.4917,
-      "draw": 0.2523,
-      "away_win": 0.256
+      "home_win": 0.5204,
+      "draw": 0.2448,
+      "away_win": 0.2349
     },
     "blended_probabilities": {
-      "home_win": 0.5049,
-      "draw": 0.2531,
-      "away_win": 0.242
+      "home_win": 0.5383,
+      "draw": 0.2436,
+      "away_win": 0.2181
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1063,
-        "draw": -0.1268,
-        "away_win": -0.1772
+        "home_win": -0.101,
+        "draw": -0.1352,
+        "away_win": -0.193
       },
       "best_selection": "home_win",
       "best_selection_name": "강원FC (-1.0) 승",
       "raw_selection_name": "강원FC (-1.0) 승",
-      "best_ev": -0.1063,
-      "best_ev_pct": "-10.6%",
+      "best_ev": -0.101,
+      "best_ev_pct": "-10.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -68575,9 +68605,9 @@
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
     "betman_odds": {
-      "home_win": 1.97,
+      "home_win": 2.18,
       "draw": 0.0,
-      "away_win": 1.56
+      "away_win": 1.45
     },
     "odds_changes": [
       {
@@ -68609,43 +68639,58 @@
         },
         "line_from": 2.5,
         "line_to": 2.5
+      },
+      {
+        "at": "2026-10-29 18:21:31",
+        "from": {
+          "home_win": 1.97,
+          "draw": 0.0,
+          "away_win": 1.56
+        },
+        "to": {
+          "home_win": 2.18,
+          "draw": 0.0,
+          "away_win": 1.45
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
       }
     ],
     "prediction_odds": {
-      "home_win": 1.97,
+      "home_win": 2.18,
       "draw": 0.0,
-      "away_win": 1.56
+      "away_win": 1.45
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4419,
+      "home": 0.3994,
       "draw": 0.0,
-      "away": 0.5581
+      "away": 0.6006
     },
     "model_probabilities": {
-      "home_win": 0.4419,
+      "home_win": 0.3994,
       "draw": 0.0,
-      "away_win": 0.5581
+      "away_win": 0.6006
     },
     "blended_probabilities": {
-      "home_win": 0.4419,
+      "home_win": 0.3994,
       "draw": 0.0,
-      "away_win": 0.5581
+      "away_win": 0.6006
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1295,
+        "home_win": -0.1293,
         "draw": -1.0,
-        "away_win": -0.1294
+        "away_win": -0.1291
       },
       "best_selection": "away_win",
       "best_selection_name": "오버 (> 2.5)",
       "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.1294,
+      "best_ev": -0.1291,
       "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -68963,16 +69008,16 @@
     "match_time": "26.10.29 (목) 19:00",
     "close_time": 1793268000000,
     "kickoff_ts": 1793268000000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
     "betman_odds": {
-      "home_win": 2.41,
+      "home_win": 2.67,
       "draw": 0.0,
-      "away_win": 1.36
+      "away_win": 1.29
     },
     "odds_changes": [
       {
@@ -69004,29 +69049,44 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 18:22:48",
+        "from": {
+          "home_win": 2.41,
+          "draw": 0.0,
+          "away_win": 1.36
+        },
+        "to": {
+          "home_win": 2.67,
+          "draw": 0.0,
+          "away_win": 1.29
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "prediction_odds": {
-      "home_win": 2.41,
+      "home_win": 2.67,
       "draw": 0.0,
-      "away_win": 1.36
+      "away_win": 1.29
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3607,
+      "home": 0.3258,
       "draw": 0.0,
-      "away": 0.6393
+      "away": 0.6742
     },
     "model_probabilities": {
-      "home_win": 0.3607,
+      "home_win": 0.3258,
       "draw": 0.0,
-      "away_win": 0.6393
+      "away_win": 0.6742
     },
     "blended_probabilities": {
-      "home_win": 0.3593,
+      "home_win": 0.3243,
       "draw": 0.0,
-      "away_win": 0.6407
+      "away_win": 0.6757
     },
     "prob_source": "betman_markets",
     "sharp": null,
@@ -69035,13 +69095,13 @@
       "expected_values": {
         "home_win": -0.1341,
         "draw": -1.0,
-        "away_win": -0.1286
+        "away_win": -0.1283
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 부산KCC 이지스 승",
       "raw_selection_name": "부산KCC 이지스 승",
-      "best_ev": -0.1286,
-      "best_ev_pct": "-12.9%",
+      "best_ev": -0.1283,
+      "best_ev_pct": "-12.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -69220,9 +69280,9 @@
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
     "betman_odds": {
-      "home_win": 4.0,
-      "draw": 2.8,
-      "away_win": 1.84
+      "home_win": 4.75,
+      "draw": 2.75,
+      "away_win": 1.74
     },
     "odds_changes": [
       {
@@ -69239,44 +69299,59 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 18:22:48",
+        "from": {
+          "home_win": 4.0,
+          "draw": 2.8,
+          "away_win": 1.84
+        },
+        "to": {
+          "home_win": 4.75,
+          "draw": 2.75,
+          "away_win": 1.74
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "prediction_odds": {
-      "home_win": 4.0,
-      "draw": 2.8,
-      "away_win": 1.84
+      "home_win": 4.75,
+      "draw": 2.75,
+      "away_win": 1.74
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2173,
-      "draw": 0.3104,
-      "away": 0.4723
+      "home": 0.1832,
+      "draw": 0.3165,
+      "away": 0.5002
     },
     "model_probabilities": {
-      "home_win": 0.2173,
-      "draw": 0.3104,
-      "away_win": 0.4723
+      "home_win": 0.1832,
+      "draw": 0.3165,
+      "away_win": 0.5002
     },
     "blended_probabilities": {
-      "home_win": 0.2173,
-      "draw": 0.3104,
-      "away_win": 0.4723
+      "home_win": 0.1832,
+      "draw": 0.3165,
+      "away_win": 0.5002
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1308,
-        "draw": -0.1309,
-        "away_win": -0.131
+        "home_win": -0.1298,
+        "draw": -0.1296,
+        "away_win": -0.1297
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 울산현대모비스 피버스 승",
-      "raw_selection_name": "울산현대모비스 피버스 승",
-      "best_ev": -0.1308,
-      "best_ev_pct": "-13.1%",
+      "best_selection": "draw",
+      "best_selection_name": "[단통 ⚡] 무승부",
+      "raw_selection_name": "무승부",
+      "best_ev": -0.1296,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -69437,14 +69512,14 @@
     "league": "KBL",
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
-    "category_label": "핸디캡 (+4.5)",
+    "category_label": "핸디캡 (+5.5)",
     "selection_labels": {
-      "home_win": "울산현대모비스 피버스 (+4.5) 승",
+      "home_win": "울산현대모비스 피버스 (+5.5) 승",
       "draw": "-",
       "away_win": "부산KCC 이지스 반대승"
     },
     "is_single": true,
-    "line": 4.5,
+    "line": 5.5,
     "match_time": "26.10.29 (목) 19:00",
     "close_time": 1793268000000,
     "kickoff_ts": 1793268000000,
@@ -69455,9 +69530,9 @@
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
     "betman_odds": {
-      "home_win": 1.75,
+      "home_win": 1.74,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.74
     },
     "odds_changes": [
       {
@@ -69474,42 +69549,72 @@
         },
         "line_from": 3.5,
         "line_to": 4.5
+      },
+      {
+        "at": "2026-10-29 18:16:28",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 4.5,
+        "line_to": 4.5
+      },
+      {
+        "at": "2026-10-29 18:22:48",
+        "from": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "to": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "line_from": 4.5,
+        "line_to": 5.5
       }
     ],
     "prediction_odds": {
-      "home_win": 1.75,
+      "home_win": 1.74,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.74
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4971,
+      "home": 0.5,
       "draw": 0.0,
-      "away": 0.5029
+      "away": 0.5
     },
     "model_probabilities": {
-      "home_win": 0.4971,
+      "home_win": 0.5,
       "draw": 0.0,
-      "away_win": 0.5029
+      "away_win": 0.5
     },
     "blended_probabilities": {
-      "home_win": 0.4971,
+      "home_win": 0.5,
       "draw": 0.0,
-      "away_win": 0.5029
+      "away_win": 0.5
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1301,
+        "home_win": -0.13,
         "draw": -1.0,
         "away_win": -0.13
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 부산KCC 이지스 반대승",
-      "raw_selection_name": "부산KCC 이지스 반대승",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 울산현대모비스 피버스 (+5.5) 승",
+      "raw_selection_name": "울산현대모비스 피버스 (+5.5) 승",
       "best_ev": -0.13,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
@@ -71550,47 +71655,63 @@
     "home_team": "상하이 선화",
     "away_team": "FC마치다 젤비아",
     "betman_odds": {
-      "home_win": 1.75,
+      "home_win": 1.8,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.68
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 18:22:25",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "prediction_odds": {
-      "home_win": 1.75,
+      "home_win": 1.8,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.68
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4971,
+      "home": 0.4828,
       "draw": 0.0,
-      "away": 0.5029
+      "away": 0.5172
     },
     "model_probabilities": {
-      "home_win": 0.4971,
+      "home_win": 0.4828,
       "draw": 0.0,
-      "away_win": 0.5029
+      "away_win": 0.5172
     },
     "blended_probabilities": {
-      "home_win": 0.4971,
+      "home_win": 0.4828,
       "draw": 0.0,
-      "away_win": 0.5029
+      "away_win": 0.5172
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1301,
+        "home_win": -0.131,
         "draw": -1.0,
-        "away_win": -0.13
+        "away_win": -0.1311
       },
-      "best_selection": "away_win",
-      "best_selection_name": "오버 (> 2.5)",
-      "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.13,
-      "best_ev_pct": "-13.0%",
+      "best_selection": "home_win",
+      "best_selection_name": "언더 (< 2.5)",
+      "raw_selection_name": "언더 (< 2.5)",
+      "best_ev": -0.131,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -74351,46 +74472,62 @@
     "home_team": "ACF피오렌티나",
     "away_team": "아탈란타BC",
     "betman_odds": {
-      "home_win": 2.11,
+      "home_win": 2.2,
       "draw": 0.0,
-      "away_win": 1.48
+      "away_win": 1.44
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 18:22:03",
+        "from": {
+          "home_win": 2.11,
+          "draw": 0.0,
+          "away_win": 1.48
+        },
+        "to": {
+          "home_win": 2.2,
+          "draw": 0.0,
+          "away_win": 1.44
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "prediction_odds": {
-      "home_win": 2.11,
+      "home_win": 2.2,
       "draw": 0.0,
-      "away_win": 1.48
+      "away_win": 1.44
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4123,
+      "home": 0.3956,
       "draw": 0.0,
-      "away": 0.5877
+      "away": 0.6044
     },
     "model_probabilities": {
-      "home_win": 0.4123,
+      "home_win": 0.3956,
       "draw": 0.0,
-      "away_win": 0.5877
+      "away_win": 0.6044
     },
     "blended_probabilities": {
-      "home_win": 0.4123,
+      "home_win": 0.3956,
       "draw": 0.0,
-      "away_win": 0.5877
+      "away_win": 0.6044
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.13,
+        "home_win": -0.1297,
         "draw": -1.0,
-        "away_win": -0.1302
+        "away_win": -0.1297
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
       "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.13,
+      "best_ev": -0.1297,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -74933,47 +75070,63 @@
     "home_team": "에버턴",
     "away_team": "뉴캐슬 유나이티드",
     "betman_odds": {
-      "home_win": 2.06,
-      "draw": 3.25,
+      "home_win": 2.11,
+      "draw": 3.15,
       "away_win": 2.8
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 18:21:42",
+        "from": {
+          "home_win": 2.06,
+          "draw": 3.25,
+          "away_win": 2.8
+        },
+        "to": {
+          "home_win": 2.11,
+          "draw": 3.15,
+          "away_win": 2.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "prediction_odds": {
-      "home_win": 2.06,
-      "draw": 3.25,
+      "home_win": 2.11,
+      "draw": 3.15,
       "away_win": 2.8
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.422,
-      "draw": 0.2675,
-      "away": 0.3105
+      "home": 0.4126,
+      "draw": 0.2764,
+      "away": 0.311
     },
     "model_probabilities": {
-      "home_win": 0.422,
-      "draw": 0.2675,
-      "away_win": 0.3105
+      "home_win": 0.4126,
+      "draw": 0.2764,
+      "away_win": 0.311
     },
     "blended_probabilities": {
-      "home_win": 0.424,
-      "draw": 0.2866,
-      "away_win": 0.2894
+      "home_win": 0.4123,
+      "draw": 0.298,
+      "away_win": 0.2897
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1266,
-        "draw": -0.0685,
-        "away_win": -0.1897
+        "home_win": -0.13,
+        "draw": -0.0613,
+        "away_win": -0.1888
       },
       "best_selection": "draw",
       "best_selection_name": "무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0685,
-      "best_ev_pct": "-6.9%",
+      "best_ev": -0.0613,
+      "best_ev_pct": "-6.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
