@@ -74,6 +74,7 @@ from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS 
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
 from tracker.prob_view import current_probs, shown_probs
+from evaluation.gates import roi_range_text
 from tracker.my_slips import (BASIS_LABEL, KIND_LABEL, MAX_SAVED_COMBOS, REASON_LABEL, add_slip, apply_combo_changes,
                               build_slip, combo_changes, combo_results, delete_slip, display_score, draw_is_void, find_slip,
                               grade_slip, line_row, load_json, load_slips, outcome_from_rows, pick_basis, save_json, slip_kind,
@@ -97,6 +98,9 @@ st.markdown("""
 <meta name="google" content="notranslate">
 <style>
     .notranslate { translate: no !important; }
+    /* 📉 배당 변경 버튼 = 이모지만 (tertiary 팝오버): 펼침 화살표를 숨기고 여백을 줄임 */
+    button[data-testid="stPopoverButton"][kind="tertiary"] > div > div[aria-hidden="true"] { display: none; }
+    button[data-testid="stPopoverButton"][kind="tertiary"] { padding-left: 0.25rem; padding-right: 0.25rem; min-width: 0; }
     .step-banner {
         background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
         border-left: 4px solid #3b82f6;
@@ -2607,7 +2611,7 @@ with tab3:
             f"<div style='font-size:14px;line-height:1.6;margin:8px 0'>{sentence}</div>"
             f"<div style='height:6px;border-radius:3px;background:rgba(148,163,184,.2)'>"
             f"<div style='width:{pct * 100:.0f}%;height:100%;border-radius:3px;background:{fg}'></div></div>"
-            f"<div style='font-size:12px;opacity:.7;margin-top:4px'>판정까지: {unit} {n:,} / {target:,}</div></div>")
+            f"<div style='font-size:12px;opacity:.7;margin-top:4px'>{('판정까지' if n < target else '기준 도달')}: {unit} {n:,} / {target:,}</div></div>")
 
     summary = []
     # (1) AI가 배당보다 정확한가? — 공식 성적표
@@ -2640,9 +2644,17 @@ with tab3:
             kind, chip_txt = "bad", "AI 반대쪽으로"
         else:
             kind, chip_txt = "neutral", "뚜렷한 방향 없음"
+        def _clv_basis(c):
+            """판정 근거: 판정은 '비율'이 아니라 AI ▲ 쪽 확률의 평균 변화와 그 95% 범위로 해요 (사전에 정한 기준)"""
+            m_ = c.get("mean_move_pp") or {}
+            if m_.get("mean") is None or not m_.get("ci"):
+                return ""
+            return (f" 판정은 비율이 아니라 AI ▲ 쪽 확률의 평균 변화로 해요: {m_['mean']:+.2f}%p "
+                    f"(95% 범위 {m_['ci'][0]:+.2f} ~ {m_['ci'][1]:+.2f}).")
         sent = (f"배당이 바뀐 {moved}경기 중 <b>{clv.get('toward_ai', 0)}경기가 AI 쪽</b>으로 움직였어요"
                 + (f" ({clv['toward_ai_pct']:.0f}% · 비교 기준 {clv['fav_toward_pct']:.0f}%)."
-                   if clv.get("toward_ai_pct") is not None and clv.get("fav_toward_pct") is not None else "."))
+                   if clv.get("toward_ai_pct") is not None and clv.get("fav_toward_pct") is not None else ".")
+                + (_clv_basis(clv) if moved >= CLV_MIN else ""))
     else:
         kind, chip_txt, sent = "wait", "검증 중", "아직 비교할 경기가 없어요. AI 기록이 있는 경기가 마감되면 쌓여요."
     summary.append(_summary_card("📈 시장이 나중에 AI 쪽으로 움직였나?", kind, chip_txt, sent, moved, CLV_MIN, "배당이 바뀐 경기"))
@@ -2660,7 +2672,10 @@ with tab3:
     else:
         kind, chip_txt = "bad", "수익 미입증"
     past_txt = " · ".join(f"{v['label'].split(' (')[0]} <b>{v['roi_pct']:+.0f}%</b>" for v in past.values() if v["bets"])
-    sent = (f"실시간 가상 베팅: 끝난 {sum(v['bets'] for v in live.values()):,}건 · 결과 대기 {live_wait:,}건."
+    # 전략 B·C는 후보가 겹쳐 같은 베팅이 나올 수 있으므로, 같은 경기 조합은 한 번만 센다
+    _uniq = {(d["gm_ts"], d["legs"]): d["status"] != "대기" for d in (pt or {}).get("details", [])}
+    uniq_done, uniq_wait = sum(1 for x in _uniq.values() if x), sum(1 for x in _uniq.values() if not x)
+    sent = (f"실시간 가상 베팅: 끝난 {uniq_done:,}건 · 결과 대기 {uniq_wait:,}건."
             + (f"<br>과거 재현: {past_txt}" + (" → 배당만 보는 전략은 모두 손실이에요." if all(v["roi_pct"] < 0 for v in past.values() if v["bets"]) else "")
                if past_txt else ""))
     summary.append(_summary_card("🧪 돈을 버는 전략이 있나?", kind, chip_txt, sent, live_done, PAPER_MIN, "전략별 끝난 베팅(최다)"))
@@ -2725,8 +2740,10 @@ with tab3:
         gb = card.get("gem_bets")
         if gb:
             says += (f"<br>💎 AI 기준 기대가치 플러스 선택지에 1,000원씩 걸었다면: {gb:,}건 · 적중 {card.get('gem_hits', 0):,}건 · "
-                     f"수익률 <b>{card.get('gem_roi_pct', 0):+.1f}%</b> (95% 범위 [{card.get('gem_roi_ci_low', 0):+.1f}%, "
-                     f"{card.get('gem_roi_ci_high', 0):+.1f}%])" + (" — 아직 판단하기엔 적어요." if gb < SCORE_MIN else ""))
+                     f"수익률 <b>{card.get('gem_roi_pct', 0):+.1f}%</b>"
+                     + (lambda r: "" if r == "-" else f" (95% 범위 {r})")(
+                         roi_range_text(gb, card.get('gem_roi_ci_low'), card.get('gem_roi_ci_high'), "%"))
+                     + (" — 아직 판단하기엔 적어요." if gb < SCORE_MIN else ""))
         elif gb is not None:
             says += "<br>💎 AI 추천(기대가치 플러스) 선택지는 아직 0건이에요. AI가 고치는 폭이 베트맨 마진보다 작아서 드물게 나와요."
         st.markdown(f"<div style='padding-bottom:18px'><div style='font-size:14px;line-height:1.7'>{says}</div></div>",
@@ -2796,7 +2813,7 @@ with tab3:
                         "95% 범위": f"[{t['ll_diff_ci'][0]:+.4f}, {t['ll_diff_ci'][1]:+.4f}]" if t else "-",
                         "최근 실전 경기": h["n"] if h else 0,
                         "최근 실전 AI − 배당": f"{h['ll_diff']:+.4f}" if h else "-",
-                        "강팀 저평가 정도 (β)": round(v["eval_params"]["beta"], 3) if v.get("eval_params") else None,
+                        "강팀 저평가 정도 (β)": f"{v['eval_params']['beta']:.3f}" if v.get("eval_params") else "-",
                     })
                 seg_rows.sort(key=lambda r: (not r["AI 계산"].startswith("✅"), -r["2026 시험 경기"]))
                 st.dataframe(pd.DataFrame(seg_rows), hide_index=True, width="stretch")
@@ -2821,7 +2838,7 @@ with tab3:
              f"95% 범위 [{mv['ci'][0]:+.2f}, {mv['ci'][1]:+.2f}]" if mv.get("ci") else ""),
         ])
         says = (f"💬 배당이 바뀐 {moved}경기 중 {clv.get('toward_ai', 0)}경기가 AI 쪽으로 움직였어요. "
-                + (f"{CLV_MIN}경기가 모이면 판정해요." if moved < CLV_MIN else f"판정: {clv.get('verdict', '-')}"))
+                + (f"{CLV_MIN}경기가 모이면 판정해요." if moved < CLV_MIN else f"판정: {clv.get('verdict', '-')}.{_clv_basis(clv)}"))
         g = clv.get("gem_clv_pct") or {}
         if g.get("n"):
             says += f"<br>💎 선택지 {g['n']}건은 처음 배당이 마감 배당보다 평균 {g['mean']:+.2f}% 좋았어요 (플러스 = 마감보다 좋은 배당에 산 셈)."
@@ -2849,7 +2866,7 @@ with tab3:
                 "구분": source, "전략": v["label"], "끝난 베팅": v["bets"], "결과 대기": v["pending"],
                 "적중률": f"{v['hits'] / v['bets'] * 100:.0f}%" if v["bets"] else "-",
                 "수익률": f"{v['roi_pct']:+.1f}%" if v["bets"] else "-",
-                "수익률 95% 범위": f"[{v['roi_ci_low']:+.1f}%, {v['roi_ci_high']:+.1f}%]" if v["bets"] else "-",
+                "수익률 95% 범위": roi_range_text(v["bets"], v["roi_ci_low"], v["roi_ci_high"], "%"),
                 "누적 손익(원)": v["profit"], "판정": VERDICT_MARK.get(v["verdict"], v["verdict"]) if v["bets"] else "-",
                 "마감 대비 배당": f"{cv['mean']:+.2f}% ({cv['n']})" if cv.get("n") else "-",
             })
@@ -2874,7 +2891,8 @@ with tab3:
                                         help="산 배당 ÷ 마감 배당 − 1 의 경기 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것")})
         st.caption("실시간: 경기 시작 전에 고정 저장한 베팅 (2026-10-26, 260127회차부터). "
                    "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당과 실제 결과로 재현 — "
-                   "AI 전략(A·B·C)은 지금 AI가 그 결과까지 학습했기 때문에 재현하지 않아요.")
+                   "AI 전략(A·B·C)은 지금 AI가 그 결과까지 학습했기 때문에 재현하지 않아요. "
+                   "B와 C는 후보가 겹쳐 같은 베팅이 나올 수 있어요 (위쪽 '끝난 베팅' 합계는 같은 베팅을 한 번만 세요).")
         # 누적 수익률(%) 그래프 — 과거 재현과 실시간을 따로 (베팅 수가 수십 배 달라 한 축에 그리면 실시간 선이 묻힘)
         # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교
         # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용 1~5번, 대시보드 배경에서 검사 통과)
@@ -2902,7 +2920,7 @@ with tab3:
             tips = [alt.Tooltip("전략:N"), alt.Tooltip("끝난 베팅 수:Q", format=","),
                     alt.Tooltip("누적 수익률:Q", format="+.1f", title="누적 수익률 (%)"),
                     alt.Tooltip("누적 손익(원):Q", format="+,")]
-            x = alt.X("끝난 베팅 수:Q", title="끝난 베팅 수", axis=alt.Axis(grid=False, format=","))
+            x = alt.X("끝난 베팅 수:Q", title="끝난 베팅 수", axis=alt.Axis(grid=False, format=",.0f"))
             line = alt.Chart(df_).mark_line(strokeWidth=2).encode(
                 x=x, y=alt.Y("누적 수익률:Q", title="누적 수익률 (%)", axis=alt.Axis(format="+.0f", gridOpacity=0.15)),
                 color=color, tooltip=tips)
@@ -2936,7 +2954,8 @@ with tab3:
             else:
                 ddf = pd.DataFrame(det)
                 h1, h2, h3, h4 = st.columns(4)
-                src_sel = h1.selectbox("구분", ["전체"] + sorted(ddf["구분"].unique()), key="pt_src")
+                src_opts = ["전체"] + sorted(ddf["구분"].unique())
+                src_sel = h1.selectbox("구분", src_opts, index=src_opts.index("실시간") if "실시간" in src_opts else 0, key="pt_src")
                 if src_sel != "전체":
                     ddf = ddf[ddf["구분"] == src_sel]
                 rnd_sel = h2.selectbox("회차", ["전체"] + sorted(ddf["gm_ts"].unique(), reverse=True), key="pt_round")
@@ -2951,21 +2970,22 @@ with tab3:
                 settled = ddf[ddf["status"] != "대기"]
                 if len(settled):
                     st.caption(f"표시 {len(ddf):,}건 · 끝난 베팅 {len(settled):,}건 · 적중 {int((settled['status'] == '적중').sum()):,}건 · "
-                               f"손익 {int(settled['profit'].sum()):+,}원 (수익률 {settled['profit'].sum() / settled['stake'].sum() * 100:+.1f}%)")
+                               f"손익 {int(settled['profit'].sum()):+,}원 (수익률 {settled['profit'].sum() / settled['stake'].sum() * 100:+.1f}%)"
+                               + (" — '전체'는 실시간과 과거 재현을 합친 값이라 따로 보는 게 정확해요." if src_sel == "전체" and ddf["구분"].nunique() > 1 else ""))
                 mark = {"적중": "✅ 적중", "미적중": "❌ 미적중", "대기": "⏳ 대기"}
                 done_mask = ddf["status"] != "대기"
                 # 환급 = 돌려받은 돈(적중 시 배당 × 금액, 미적중 0), 손익 = 환급 − 건 돈 (적중 1.62배 × 1,000원 → 환급 1,620 · 손익 +620)
                 view = pd.DataFrame({
                     "구분": ddf["구분"], "회차": ddf["gm_ts"], "전략": ddf["전략명"], "베팅 내용": ddf["legs"],
                     "배당": ddf["odds"], "건 돈(원)": ddf["stake"], "결과": ddf["status"].map(mark),
-                    "환급(원)": ddf["payout"].where(done_mask), "손익(원)": ddf["profit"].where(done_mask),
+                    "환급(원)": [f"{int(p):,}" if d else "-" for p, d in zip(ddf["payout"], done_mask)],
+                    "손익(원)": [f"{int(p):+,}" if d else "-" for p, d in zip(ddf["profit"], done_mask)],
                 })
                 st.dataframe(view.head(500), hide_index=True, width="stretch",
                              column_config={"배당": st.column_config.NumberColumn(format="%.2f배"),
                                             "건 돈(원)": st.column_config.NumberColumn(format="localized"),
-                                            "환급(원)": st.column_config.NumberColumn(format="localized",
-                                                                                   help="돌려받은 돈 (적중 시 배당 × 건 돈, 미적중 0)"),
-                                            "손익(원)": st.column_config.NumberColumn(format="%+d", help="환급 − 건 돈"),
+                                            "환급(원)": st.column_config.TextColumn(help="돌려받은 돈 (적중 시 배당 × 건 돈, 미적중 0)"),
+                                            "손익(원)": st.column_config.TextColumn(help="환급 − 건 돈"),
                                             "베팅 내용": st.column_config.TextColumn(width="large")})
                 st.caption("환급 = 돌려받은 돈, 손익 = 환급 − 건 돈이에요. 예) 1.62배에 1,000원 → 적중 시 환급 1,620원 · 손익 +620원, "
                            "미적중 시 환급 0원 · 손익 −1,000원")

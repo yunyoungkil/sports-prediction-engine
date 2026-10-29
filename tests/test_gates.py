@@ -73,3 +73,18 @@ def test_feature_unlocks_only_when_all_three_stages_pass(tmp_path):
     for broken in ({"wf_hi": 0.0001}, {"n_card": MIN_N - 1}, {"card_hi": 0.0002}, {"method": None},
                    {"gem_n": MIN_N - 1}, {"gem_lo": -0.5}):
         assert recommendation_status(*_files(tmp_path, **broken))["features"]["gem"]["on"] is False, broken
+
+
+def test_roi_range_text_hides_degenerate_or_small_ranges():
+    from evaluation.gates import CI_MIN_BETS, roi_range_text
+    assert roi_range_text(2, 65.0, 65.0, "%") == "-"                        # 2건: 범위가 한 점으로 무너짐
+    assert roi_range_text(CI_MIN_BETS - 1, -5.0, 9.0) == "-"                # 표본 부족
+    assert roi_range_text(CI_MIN_BETS, 10.0, 10.0) == "-"                   # 표본은 충분해도 범위가 한 점이면 표시하지 않음
+    assert roi_range_text(100, None, 3.0) == "-"
+    assert roi_range_text(100, -14.9, -9.5, "%") == "[-14.9%, -9.5%]"
+
+
+def test_stage_profit_detail_has_no_fake_range_for_tiny_samples():
+    from evaluation.gates import stage_profit
+    d = stage_profit("가상 베팅 C", 2, 65.0, 65.0, 65.0)["detail"]
+    assert "수익률 +65.0%" in d and "[" not in d

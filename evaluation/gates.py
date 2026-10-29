@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 MIN_N = 300
+CI_MIN_BETS = 30   # 이보다 적으면 수익률 95% 범위를 보여주지 않는다 (몇 건뿐이면 범위가 한 점으로 무너져 정밀해 보임)
 WF_PATH = Path("data/walk_forward.json")
 CARD_PATH = Path("data/model_scorecard.json")
 PAPER_PATH = Path("data/paper_trading.json")
@@ -56,6 +57,13 @@ def stage_history(wf: Optional[Dict[str, Any]]) -> Dict[str, Any]:
             "detail": f"워크포워드 {n:,}경기 · LL 차이 {s['ll_diff']:+.4f} [{ci[0]:+.4f}, {ci[1]:+.4f}]"}
 
 
+def roi_range_text(n: int, lo: Optional[float], hi: Optional[float], unit: str = "") -> str:
+    """수익률 95% 범위 문구. 표본이 CI_MIN_BETS 미만이거나 범위가 한 점이면 '-' (아직 구할 수 없음)"""
+    if lo is None or hi is None or n < CI_MIN_BETS or abs(hi - lo) < 1e-9:
+        return "-"
+    return f"[{lo:+.1f}{unit}, {hi:+.1f}{unit}]"
+
+
 def stage_live(card: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """② 실전 확률 시험: 경기 전 고정 예측 300경기 이상 & LL 차이 회차 단위 CI 상한 < 0"""
     card = card or {}
@@ -76,7 +84,8 @@ def stage_live(card: Optional[Dict[str, Any]]) -> Dict[str, Any]:
 def stage_profit(label: str, n: int, roi: Optional[float], lo: Optional[float], hi: Optional[float]) -> Dict[str, Any]:
     """③ 실제 돈 시험: 실제 베팅 기록 300건 이상 & 수익률 회차 단위 CI 하한 > 0"""
     ok = n >= MIN_N and lo is not None and lo > 0
-    detail = f"{label} {n:,}/{MIN_N}건" + (f" · 수익률 {roi:+.1f}% [{lo:+.1f}, {hi:+.1f}]" if n and roi is not None else "")
+    rng = roi_range_text(n, lo, hi)
+    detail = f"{label} {n:,}/{MIN_N}건" + (f" · 수익률 {roi:+.1f}%" + ("" if rng == "-" else f" {rng}") if n and roi is not None else "")
     if n < MIN_N:
         plain = f"실제 배당으로 걸었다고 치고 기록 중이에요: **{n:,} / {MIN_N}건**. {MIN_N}건이 모여야 판정해요."
     elif ok:
