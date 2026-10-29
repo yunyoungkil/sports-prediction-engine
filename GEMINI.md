@@ -3,6 +3,13 @@
 > 상세 설계·평가 규칙: [.agents/skills/sports-prediction-engine/SKILL.md](./.agents/skills/sports-prediction-engine/SKILL.md)
 > 할 일: [TODO.md](./TODO.md) · 검증 리뷰: [REVIEW.md](./REVIEW.md)
 
+## 0. 대화를 시작하면 먼저 브리핑한다 (PC와 상관없이)
+
+- 새 대화의 **첫 응답 전에 `python -m evaluation.briefing`을 실행**하고 결과를 짧게 요약해 보여준다 (저장소 동기화, 테스트, 판정 진행, 운영 점검).
+- 다른 PC에서는 `.claude/settings.local.json`의 SessionStart 훅이 자동 실행하지만 그 파일은 개인 설정이라 저장소에 없다. **훅이 없는 PC에서는 이 규칙대로 직접 실행한다.**
+- `gh`가 없으면 GitHub 자동 실행 상태는 "못 가져옴"으로 나온다(정상). 필요하면 `gh auth login` 후 다시 실행하고, 급하면 Actions 탭을 직접 본다.
+- 로컬이 GitHub보다 뒤처졌다고 나오면 작업 전에 `git pull --rebase origin master`를 한다 (아래 1번).
+
 ## 1. Git: GitHub Actions 봇이 저장소에 직접 커밋한다
 
 `pipeline.yml`이 **매일 09:30·18:30(KST)**, `results.yml`이 **1시간마다**(결과·채점만) 실행되고, 갱신된 `data/`를 `master`에 **자동 커밋·푸시**한다 (`🤖 [자동 갱신] ...`).

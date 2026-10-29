@@ -78,6 +78,7 @@ Open items are tracked in `REVIEW.md`:
 
 ## Roadmap & Workflow
 
+- **Session start:** run `python -m evaluation.briefing` before the first reply and summarize it (repo sync, tests, verdict progress, health check). A SessionStart hook in the untracked `.claude/settings.local.json` does this on some PCs; where it is missing, run it manually. See `GEMINI.md` section 0.
 - **v1 (ROADMAP.md Phase 1~5):** built, except Streamlit Cloud deployment.
 - **v2 upgrade plan:** summarized in `README.md` (🚀 고도화 계획) and broken into checkboxes in **`TODO.md`**:
   - Step 0 무인 자동화 복구 → Phase 1 측정 기반 → Phase 2 모델 기본기 보강 → Phase 3 시장과 결합 → Phase 4 자금 관리와 제품 → **Phase 5 AI 정확도 향상** (market corrector, live sharp odds, weekly retraining, xG/lineups, more Betman leagues) → **Phase 6 우위 검증과 운영 안정화** (health check, stale-odds measurement, walk-forward backtest, per-market margin/edge table)
