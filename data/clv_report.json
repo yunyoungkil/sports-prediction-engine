@@ -1,70 +1,70 @@
 {
-  "updated_at": "2026-10-28T21:08:02+00:00",
+  "updated_at": "2026-10-29T01:00:34+00:00",
   "rounds": [
     260126,
     260127,
     260128
   ],
-  "matches": 157,
-  "moved": 105,
-  "toward_ai": 46,
-  "away_from_ai": 59,
-  "toward_ai_pct": 43.8,
-  "fav_toward_pct": 44.8,
+  "matches": 189,
+  "moved": 110,
+  "toward_ai": 47,
+  "away_from_ai": 63,
+  "toward_ai_pct": 42.7,
+  "fav_toward_pct": 43.6,
   "mean_move_pp": {
-    "n": 157,
-    "mean": -0.9043,
+    "n": 189,
+    "mean": -0.77504,
     "ci": [
-      -1.71251,
-      -0.2393
+      -1.44585,
+      -0.23509
     ]
   },
   "by_game_type": {
     "농구 승패": {
-      "matches": 18,
-      "moved": 8,
+      "matches": 28,
+      "moved": 9,
       "toward_ai": 2,
-      "away_from_ai": 6,
-      "toward_ai_pct": 25.0,
-      "fav_toward_pct": 12.5,
+      "away_from_ai": 7,
+      "toward_ai_pct": 22.2,
+      "fav_toward_pct": 11.1,
       "mean_move_pp": {
-        "n": 18,
-        "mean": -2.0301,
+        "n": 28,
+        "mean": -1.38012,
         "ci": [
-          -4.90089,
-          -0.1076
+          -3.29049,
+          -0.12992
         ]
       }
     },
     "축구 승무패": {
-      "matches": 78,
-      "moved": 49,
-      "toward_ai": 26,
-      "away_from_ai": 23,
-      "toward_ai_pct": 53.1,
-      "fav_toward_pct": 53.1,
+      "matches": 89,
+      "moved": 51,
+      "toward_ai": 27,
+      "away_from_ai": 24,
+      "toward_ai_pct": 52.9,
+      "fav_toward_pct": 52.9,
       "mean_move_pp": {
-        "n": 78,
-        "mean": -0.03332,
+        "n": 89,
+        "mean": -0.08765,
         "ci": [
-          -0.59349,
-          0.55421
+          -0.69343,
+          0.4708
         ]
       }
     },
     "축구 핸디캡": {
-      "matches": 61,
-      "moved": 48,
+      "matches": 72,
+      "moved": 50,
       "toward_ai": 18,
-      "away_from_ai": 30,
-      "toward_ai_pct": 37.5,
-      "fav_toward_pct": 41.7,
+      "away_from_ai": 32,
+      "toward_ai_pct": 36.0,
+      "fav_toward_pct": 40.0,
       "mean_move_pp": {
-        "n": 61,
-        "mean": -1.68582,
+        "n": 72,
+        "mean": -1.38943,
         "ci": [
-          -3.25811,
-          -0.37411
+          -2.80027,
+          -0.26204
         ]
       }
     }
@@ -100,11 +100,11 @@
       ]
     },
     "E_market_fav": {
-      "n": 27,
-      "mean": 0.90998,
+      "n": 38,
+      "mean": 0.7054,
       "ci": [
-        -1.151,
-        3.0927
+        -0.84559,
+        2.27582
       ]
     }
   },
