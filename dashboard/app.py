@@ -135,6 +135,11 @@ st.markdown("""
     [class*="st-key-t1tile_"] button:disabled { cursor: default; }
     [class*="st-key-t1card_on_"] { border-color: #3987e5 !important; box-shadow: 0 0 0 1px #3987e5 !important;
                          background: rgba(57, 135, 229, .14) !important; }   /* 테두리는 이 칸 자체가 그림 */
+    /* 대진 카드 머리줄 🔎 상세 분석 버튼: 머리줄 텍스트 높이에 맞춘 알약형 소형 버튼 */
+    [class*="st-key-jump_t2_"] { display: flex; justify-content: flex-end; margin: 0 !important; }
+    [class*="st-key-jump_t2_"] button { min-height: 1.65rem !important; height: 1.65rem !important; padding: 0 8px !important;
+                                        font-size: 12px !important; border: 1px solid rgba(148,163,184,.28) !important;
+                                        border-radius: 6px !important; white-space: nowrap !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1694,15 +1699,13 @@ with tab1:
                 status = f"{icon} 발매 마감 · {txt}"
             else:
                 status = f"🏁 최종 {fx_score[_fixture(m)]}" if _fixture(m) in fx_score else "🏁 종료"
-            # 바깥 padding: Streamlit 글 블록은 아래 여백을 -1rem 당겨서, 여백이 없으면 첫 줄 배당 버튼이 머리줄 선에 붙는다
-            return ("<div style='padding-bottom:14px'>"
-                    "<div style='display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:6px;"
-                    "border-bottom:1px solid rgba(148,163,184,.25)'>"
+            # 머리줄 내용 (아래 구분선은 카드 전체 폭에 걸치도록 hc1·hc2 바깥 fx_box에서 그린다)
+            return ("<div style='display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:2px 0'>"
                     f"<span style='font-size:12px;opacity:.75'>{SPORT_ICONS.get(m.get('sport'), '')} {rnd}{when}</span>"
                     + league_chip(m.get("league", "")) +
                     f"<span style='font-size:16px'><b>{m.get('home_team', '')}</b> <span style='opacity:.6'>vs</span> "
                     f"<b>{m.get('away_team', '')}</b></span>"
-                    f"<span style='margin-left:auto;font-size:12px;opacity:.85'>{status}</span></div></div>")
+                    f"<span style='margin-left:auto;font-size:12px;opacity:.85'>{status}</span></div>")
 
         cur_fx, fx_box, fx_rows = None, None, 0
 
@@ -1753,11 +1756,13 @@ with tab1:
             if (section, _fixture(m)) != cur_fx:
                 cur_fx = (section, _fixture(m))
                 fx_box = st.container(border=True)
-                # 머리줄 + 🔎 상세 분석 (② 탭의 이 경기 분석 카드로 바로 이동)
-                hc1, hc2 = fx_box.columns([10, 1.5], vertical_alignment="top")
+                # 머리줄 + 🔎 상세 분석 (② 탭의 이 경기 분석 카드로 바로 이동) + 카드 전체 폭 구분선
+                hc1, hc2 = fx_box.columns([8.8, 1.2], vertical_alignment="center")
                 hc1.markdown(_fixture_header(m, section), unsafe_allow_html=True)
                 hc2.button("🔎 상세 분석", key=f"jump_t2_{_ts(m)}_{seq}", type="tertiary", on_click=_jump_t2,
                            args=(seq,), help="② AI 경기 분석 탭에서 이 경기 열기")
+                fx_box.markdown("<div style='border-top:1px solid rgba(148,163,184,.25);margin:-8px 0 8px 0'></div>",
+                                unsafe_allow_html=True)
                 fx_rows = 0
 
             with fx_box:
