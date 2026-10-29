@@ -10748,11 +10748,27 @@
     "match_state": "2",
     "home_team": "애들레이드 유나이티드",
     "away_team": "라이언시티 세일러스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 16:14:20",
+        "from": {
+          "home_win": 1.97,
+          "draw": 0.0,
+          "away_win": 1.56
+        },
+        "to": {
+          "home_win": 2.05,
+          "draw": 0.0,
+          "away_win": 1.51
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.97,
+      "home_win": 2.05,
       "draw": 0.0,
-      "away_win": 1.56
+      "away_win": 1.51
     },
     "gm_ts": 260128
   },
@@ -10866,12 +10882,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 16:20:20",
+        "from": {
+          "home_win": 2.26,
+          "draw": 3.35,
+          "away_win": 2.45
+        },
+        "to": {
+          "home_win": 2.18,
+          "draw": 3.45,
+          "away_win": 2.5
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.26,
-      "draw": 3.35,
-      "away_win": 2.45
+      "home_win": 2.18,
+      "draw": 3.45,
+      "away_win": 2.5
     },
     "gm_ts": 260128
   },
@@ -11605,12 +11636,42 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 16:14:52",
+        "from": {
+          "home_win": 3.45,
+          "draw": 3.35,
+          "away_win": 1.78
+        },
+        "to": {
+          "home_win": 4.05,
+          "draw": 3.3,
+          "away_win": 1.67
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 16:23:25",
+        "from": {
+          "home_win": 4.05,
+          "draw": 3.3,
+          "away_win": 1.67
+        },
+        "to": {
+          "home_win": 4.35,
+          "draw": 3.45,
+          "away_win": 1.59
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 3.45,
-      "draw": 3.35,
-      "away_win": 1.78
+      "home_win": 4.35,
+      "draw": 3.45,
+      "away_win": 1.59
     },
     "gm_ts": 260128
   },
@@ -11650,12 +11711,42 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-10-29 16:14:52",
+        "from": {
+          "home_win": 1.84,
+          "draw": 3.35,
+          "away_win": 3.25
+        },
+        "to": {
+          "home_win": 1.95,
+          "draw": 3.3,
+          "away_win": 3.0
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      },
+      {
+        "at": "2026-10-29 16:23:25",
+        "from": {
+          "home_win": 1.95,
+          "draw": 3.3,
+          "away_win": 3.0
+        },
+        "to": {
+          "home_win": 2.06,
+          "draw": 3.2,
+          "away_win": 2.85
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 1.84,
-      "draw": 3.35,
-      "away_win": 3.25
+      "home_win": 2.06,
+      "draw": 3.2,
+      "away_win": 2.85
     },
     "gm_ts": 260128
   },
