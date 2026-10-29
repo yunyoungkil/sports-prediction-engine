@@ -232,21 +232,25 @@ def records_behind(live, file_preds) -> list:
 def wake_pipeline(live_ts: int, n_behind: int) -> str:
     """공식 기록이 밀렸으면 GitHub 파이프라인 실행 요청 (기록은 한 곳에서만 · 30분에 한 번까지 · 이미 돌고 있으면 안 함)"""
     import subprocess
+    from evaluation.gh_cli import gh_path
+    gh = gh_path()   # 대시보드를 켠 뒤에 gh를 설치했어도(PATH 미갱신) 기본 설치 위치에서 찾는다
     marker = MY_DATA_DIR / "pipeline_wake.json"
     last = load_json(marker, {}).get("at")
     if last and (datetime.now() - datetime.fromisoformat(last)).total_seconds() < 1800:
         return "waiting"
     try:
-        r = subprocess.run(["gh", "run", "list", "--workflow", "pipeline.yml", "--limit", "1", "--json", "status"],
+        r = subprocess.run([gh, "run", "list", "--workflow", "pipeline.yml", "--limit", "1", "--json", "status"],
                            cwd=project_root, capture_output=True, text=True, timeout=30)
         if r.returncode == 0 and any(x.get("status") in ("queued", "in_progress") for x in json.loads(r.stdout or "[]")):
             return "running"
-        r = subprocess.run(["gh", "workflow", "run", "pipeline.yml", "--ref", "master"],
+        r = subprocess.run([gh, "workflow", "run", "pipeline.yml", "--ref", "master"],
                            cwd=project_root, capture_output=True, text=True, timeout=30)
         if r.returncode != 0:
             return "failed"
         save_json(marker, {"at": datetime.now().isoformat(timespec="seconds"), "round": live_ts, "behind": n_behind})
         return "triggered"
+    except FileNotFoundError:
+        return "no_gh"
     except Exception:
         return "failed"
 
@@ -1073,7 +1077,8 @@ with _h1:
 with _h2:
     _wake_txt = {"triggered": "새 경기·배당 변화를 공식 기록하도록 GitHub 파이프라인을 실행했어요 (1~2분 뒤 자동 반영)",
                  "running": "GitHub 파이프라인이 공식 기록 중이에요", "waiting": "GitHub 공식 기록 요청 대기 중 (30분에 한 번)",
-                 "failed": "GitHub 파이프라인 실행 요청 실패 (gh 로그인 확인)"}
+                 "failed": "GitHub 파이프라인 실행 요청 실패 (gh 로그인 확인)",
+                 "no_gh": "GitHub CLI(gh)가 설치돼 있지 않아요 (winget install GitHub.cli → gh auth login)"}
     _sync_txt = {"checking": "GitHub 데이터 확인 중", "latest": "GitHub 데이터 최신",
                  "pulled": f"GitHub 데이터 {SYNC.get('behind', 0)}개 받음",
                  "skipped": "고치던 파일이 있어 GitHub 자동 받기 건너뜀", "failed": "GitHub 자동 받기 실패"}.get(SYNC["status"], "")

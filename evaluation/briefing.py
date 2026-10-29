@@ -14,12 +14,13 @@ Claude Code 세션 시작 훅(.claude/settings.local.json)이 실행하고, 출�
 
 import argparse
 import json
-import shutil
 import subprocess
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
+
+from evaluation.gh_cli import gh_path as _gh
 
 ROOT = Path(__file__).resolve().parent.parent
 KST = timezone(timedelta(hours=9))
@@ -42,15 +43,6 @@ def _run(cmd: List[str], timeout: int = 60) -> Optional[subprocess.CompletedProc
                               errors="replace", timeout=timeout)
     except Exception:
         return None
-
-
-def _gh() -> str:
-    """gh 실행 파일 — PATH에 없으면(설치 직후 열려 있던 터미널 등) Windows 기본 설치 위치"""
-    found = shutil.which("gh")
-    if found:
-        return found
-    default = Path("C:/Program Files/GitHub CLI/gh.exe")
-    return str(default) if default.exists() else "gh"
 
 
 def run_tests() -> str:
