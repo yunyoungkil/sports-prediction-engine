@@ -99,6 +99,23 @@ def runs_status(now: Optional[datetime] = None) -> List[str]:
     return out
 
 
+def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -> List[str]:
+    """가상 베팅 리그 현황: 전략별 건수·적중·대기·손익·수익률과 판정 (표본이 적으면 판정 보류)"""
+    pt = reader("data/paper_trading.json")
+    if not pt or not pt.get("strategies"):
+        return ["🧪 가상 베팅: 기록 없음"]
+    unit = pt.get("stake_unit", 1000)
+    out = [f"🧪 가상 베팅 (1건 {unit:,}원, 갱신 {str(pt.get('updated_at', ''))[:16].replace('T', ' ')} UTC):"]
+    for s in pt["strategies"].values():
+        pend = f" · 결과 대기 {s['pending']}" if s.get("pending") else ""
+        if not s.get("bets"):
+            out.append(f"   - {s['label']}: 채점된 베팅 없음{pend}")
+            continue
+        out.append(f"   - {s['label']}: {s['bets']}건 중 {s['hits']}건 적중{pend} · 손익 {s['profit']:+,}원 "
+                   f"(수익률 {s['roi_pct']:+.1f}%) · {s.get('verdict', '')}")
+    return out
+
+
 def verdict_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -> List[str]:
     from evaluation.gates import status_from_data
     card = reader("data/model_scorecard.json") or {}
@@ -116,6 +133,7 @@ def verdict_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json)
     out.append(f"   - {'🔓 일부 추천 켜짐' if st['any_on'] else '🔒 추천 잠금 중'}: "
                + " · ".join(f"{'✅' if s['ok'] else '⏳'} {s['name']}" for s in st["stages"])
                + f" · 실제 돈 시험 💎 {feats['gem']['profit']['n']}/300건, 조합 찾기 {feats['finder']['profit']['n']}/300건")
+    out.extend(paper_lines(reader))
     warns = health.get("warnings") or []
     out.append("🩺 운영 점검 (마지막 실행 기준): "
                + ("이상 없음" if not warns else " / ".join(str(w.get("message", w)) for w in warns))
