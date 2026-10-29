@@ -13,7 +13,8 @@ from models.combo_builder import (
     calculate_payout,
     is_tax_free,
     validate_combo,
-    expand_combinations
+    expand_combinations,
+    allocate_equal_payout_stakes,
 )
 
 
@@ -151,3 +152,49 @@ def test_payout_rounds_up_to_won_without_float_error():
     assert calculate_payout(2.3, 700) == 1610
     assert calculate_payout(1.27, 1000) == 1270
     assert calculate_payout(1.333, 100) == 134   # 소수 원 단위는 올림
+
+
+def test_expand_combinations_numeric_order_and_prob_exact():
+    """클릭(삽입) 순서와 무관하게 경기 번호 숫자 오름차순으로 전개하고 prob_exact에 정밀 확률을 보존하는지 검증"""
+    selections = {
+        "100": {
+            "match_seq": "100",
+            "match_key": "m100",
+            "home_team": "팀100",
+            "away_team": "팀101",
+            "picks": [{"selection": "home_win", "odds": 2.0, "prob": 0.333333}],
+        },
+        "9": {
+            "match_seq": "9",
+            "match_key": "m9",
+            "home_team": "팀9",
+            "away_team": "팀10",
+            "picks": [{"selection": "home_win", "odds": 1.5, "prob": 0.333333}],
+        },
+    }
+    combos = expand_combinations(selections)
+    assert len(combos) == 1
+    # 문자열 정렬이면 '100'이 '9'보다 앞에 오지만, 숫자 정렬이므로 '9' -> '100' 순서여야 함
+    assert [p["match_seq"] for p in combos[0]["picks"]] == ["9", "100"]
+    assert abs(combos[0]["prob_exact"] - (0.333333 * 0.333333)) < 1e-12
+    assert combos[0]["prob_product"] == round(0.333333 * 0.333333, 4)
+
+
+def test_allocate_equal_payout_stakes():
+    """균등 환급 배분(더칭): 어느 조합이 적중하더라도 환급금이 비슷하고 총액·단위 조건을 지키는지 검증"""
+    # 실제 사례: 주력 4.38배 + 커버 3.20배에 총 6,000원 배분 (100원 단위)
+    stakes = allocate_equal_payout_stakes([4.38, 3.20], total_budget=6000, unit=100)
+    assert sum(stakes) == 6000
+    assert all(s % 100 == 0 and s >= 100 for s in stakes)
+    # 2,500원(환급 10,950원) + 3,500원(환급 11,200원) -> 어느 쪽이 맞아도 원금(6,000원) 이상 환급
+    assert stakes == [2500, 3500]
+    p1 = calculate_payout(4.38, stakes[0])
+    p2 = calculate_payout(3.20, stakes[1])
+    assert p1 > 6000 and p2 > 6000
+    assert abs(p1 - p2) <= 450
+
+    # 한경기 1,000원 단위 배분 검증
+    stakes_single = allocate_equal_payout_stakes([2.10, 3.40], total_budget=5000, unit=1000)
+    assert sum(stakes_single) == 5000
+    assert all(s % 1000 == 0 and s >= 1000 for s in stakes_single)
+    assert stakes_single == [3000, 2000]

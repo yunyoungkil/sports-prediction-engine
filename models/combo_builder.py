@@ -169,8 +169,13 @@ def expand_combinations(selections: Dict[str, Dict[str, Any]]) -> List[Dict[str,
     if not selections:
         return []
 
-    # 경기 목록 정렬
-    match_list = list(selections.values())
+    # 경기 목록 정렬 (경기 번호 숫자 오름차순 — 클릭 순서와 무관하게 항상 동일한 순서 보장)
+    def _seq_key(item):
+        k, m = item
+        s = str(m.get("match_seq", k))
+        return (int(s) if s.isdigit() else 0, s)
+
+    match_list = [m for _, m in sorted(selections.items(), key=_seq_key)]
     per_match_picks = []
 
     for m in match_list:
@@ -217,6 +222,7 @@ def expand_combinations(selections: Dict[str, Dict[str, Any]]) -> List[Dict[str,
             "picks": combo_picks,
             "combined_odds": c_odds,
             "prob_product": round(prob_product, 4),
+            "prob_exact": prob_product,
             "prob_pct": f"{prob_product * 100:.2f}%",
             "ev": round(ev, 4),
             "ev_pct": f"{ev * 100:+.1f}%",
@@ -226,3 +232,37 @@ def expand_combinations(selections: Dict[str, Dict[str, Any]]) -> List[Dict[str,
         combo_idx += 1
 
     return all_combos
+
+
+def allocate_equal_payout_stakes(odds_list: List[float], total_budget: int, unit: int = 100) -> List[int]:
+    """
+    선택된 조합들의 배당률(odds_list)에 반비례하도록 총 예산(total_budget)을 unit 단위로 배분(더칭/균등 환급).
+    어느 조합이 적중하더라도 환급금이 최대한 비슷해지도록 최소 환급금을 그리디하게 끌어올린다.
+    """
+    n = len(odds_list)
+    if n == 0:
+        return []
+    unit = max(100, int(unit))
+    max_units_per_combo = 100_000 // unit
+    n_units = max(n, min(n * max_units_per_combo, int(total_budget) // unit))
+
+    weights = [1.0 / float(o) if float(o or 0) > 0 else 1.0 for o in odds_list]
+    sum_w = sum(weights) or float(n)
+    units = [max(1, min(max_units_per_combo, int(n_units * (w / sum_w)))) for w in weights]
+
+    while sum(units) < n_units:
+        candidates = [i for i in range(n) if units[i] < max_units_per_combo]
+        if not candidates:
+            break
+        best_i = min(candidates, key=lambda i: (calculate_payout(odds_list[i], units[i] * unit), -weights[i]))
+        units[best_i] += 1
+
+    while sum(units) > n_units:
+        candidates = [i for i in range(n) if units[i] > 1]
+        if not candidates:
+            break
+        worst_i = max(candidates, key=lambda i: (calculate_payout(odds_list[i], (units[i] - 1) * unit), -weights[i]))
+        units[worst_i] -= 1
+
+    return [u * unit for u in units]
+
