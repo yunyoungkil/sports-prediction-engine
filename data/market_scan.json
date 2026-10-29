@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-10-27T12:37:58+00:00",
+  "updated_at": "2026-10-29T10:52:46+00:00",
   "rows": [
     {
       "segment": "축구 소수핸디캡|2",
-      "n_total": 3122,
+      "n_total": 3125,
       "n_test": 402,
       "margin_pct": 14.3,
       "gate": false,
@@ -20,9 +20,9 @@
     },
     {
       "segment": "축구 승무패|3",
-      "n_total": 23124,
+      "n_total": 23188,
       "n_test": 4306,
-      "margin_pct": 15.4,
+      "margin_pct": 15.39,
       "gate": true,
       "ll_diff": -0.0021,
       "ll_diff_ci": [
@@ -41,9 +41,9 @@
     },
     {
       "segment": "축구 핸디캡|3",
-      "n_total": 26613,
+      "n_total": 26687,
       "n_test": 5672,
-      "margin_pct": 15.47,
+      "margin_pct": 15.46,
       "gate": true,
       "ll_diff": -0.00177,
       "ll_diff_ci": [
@@ -75,10 +75,10 @@
     },
     {
       "segment": "농구 SUM|2",
-      "n_total": 3785,
+      "n_total": 3815,
       "n_test": 1204,
-      "margin_pct": 14.18,
-      "gate": false,
+      "margin_pct": 14.11,
+      "gate": true,
       "ll_diff": -0.00022,
       "ll_diff_ci": [
         -0.00112,
@@ -92,7 +92,7 @@
     },
     {
       "segment": "야구 핸디캡|2",
-      "n_total": 15238,
+      "n_total": 15245,
       "n_test": 3748,
       "margin_pct": 14.06,
       "gate": false,
@@ -109,7 +109,7 @@
     },
     {
       "segment": "농구 승패|2",
-      "n_total": 6945,
+      "n_total": 6975,
       "n_test": 1251,
       "margin_pct": 14.77,
       "gate": true,
@@ -143,10 +143,10 @@
     },
     {
       "segment": "농구 언더오버|2",
-      "n_total": 7207,
+      "n_total": 7240,
       "n_test": 1356,
-      "margin_pct": 14.72,
-      "gate": false,
+      "margin_pct": 14.73,
+      "gate": true,
       "ll_diff": -3e-05,
       "ll_diff_ci": [
         -0.00096,
@@ -177,7 +177,7 @@
     },
     {
       "segment": "야구 SUM|2",
-      "n_total": 6987,
+      "n_total": 6994,
       "n_test": 3716,
       "margin_pct": 13.35,
       "gate": false,
@@ -194,10 +194,10 @@
     },
     {
       "segment": "축구 언더오버|2",
-      "n_total": 22896,
+      "n_total": 22960,
       "n_test": 4295,
-      "margin_pct": 14.29,
-      "gate": false,
+      "margin_pct": 14.3,
+      "gate": true,
       "ll_diff": -2e-05,
       "ll_diff_ci": [
         -0.00053,
@@ -211,7 +211,7 @@
     },
     {
       "segment": "야구 승패|2",
-      "n_total": 15877,
+      "n_total": 15884,
       "n_test": 3821,
       "margin_pct": 14.09,
       "gate": false,
@@ -228,7 +228,7 @@
     },
     {
       "segment": "야구 언더오버|2",
-      "n_total": 15768,
+      "n_total": 15775,
       "n_test": 3810,
       "margin_pct": 14.09,
       "gate": false,
@@ -245,9 +245,9 @@
     },
     {
       "segment": "축구 SUM|2",
-      "n_total": 10691,
+      "n_total": 10755,
       "n_test": 3880,
-      "margin_pct": 13.24,
+      "margin_pct": 13.21,
       "gate": false,
       "ll_diff": 0.0,
       "ll_diff_ci": [
@@ -262,9 +262,9 @@
     },
     {
       "segment": "농구 핸디캡|2",
-      "n_total": 7208,
+      "n_total": 7241,
       "n_test": 1358,
-      "margin_pct": 14.73,
+      "margin_pct": 14.74,
       "gate": false,
       "ll_diff": 0.00021,
       "ll_diff_ci": [
@@ -279,7 +279,7 @@
     },
     {
       "segment": "야구 승1패|3",
-      "n_total": 9828,
+      "n_total": 9835,
       "n_test": 3811,
       "margin_pct": 15.23,
       "gate": false,
@@ -296,9 +296,9 @@
     },
     {
       "segment": "농구 승5패|3",
-      "n_total": 1221,
+      "n_total": 1224,
       "n_test": 217,
-      "margin_pct": 16.07,
+      "margin_pct": 16.05,
       "gate": false,
       "ll_diff": null,
       "ll_diff_ci": null,
@@ -324,7 +324,7 @@
     },
     {
       "segment": "야구 전반 승무패|3",
-      "n_total": 1621,
+      "n_total": 1626,
       "n_test": 840,
       "margin_pct": 15.22,
       "gate": false,
@@ -338,7 +338,7 @@
     },
     {
       "segment": "야구 전반 언더오버|2",
-      "n_total": 946,
+      "n_total": 951,
       "n_test": 798,
       "margin_pct": 14.03,
       "gate": false,
@@ -352,7 +352,7 @@
     },
     {
       "segment": "야구 전반 핸디캡|2",
-      "n_total": 946,
+      "n_total": 951,
       "n_test": 799,
       "margin_pct": 14.03,
       "gate": false,
@@ -427,119 +427,119 @@
     "축구 승무패": [
       {
         "range": "1.15 이하",
-        "n": 654,
+        "n": 655,
         "hit_pct": 87.5,
         "return_pct": 94.8,
         "return_ci": [
-          91.9,
+          91.8,
           97.6
         ]
       },
       {
         "range": "1.15~1.30",
-        "n": 1118,
-        "hit_pct": 76.7,
-        "return_pct": 94.6,
+        "n": 1125,
+        "hit_pct": 76.8,
+        "return_pct": 94.8,
         "return_ci": [
-          91.5,
-          97.6
+          91.6,
+          97.8
         ]
       },
       {
         "range": "1.30~1.50",
-        "n": 2079,
-        "hit_pct": 64.7,
-        "return_pct": 91.1,
+        "n": 2092,
+        "hit_pct": 64.6,
+        "return_pct": 91.0,
         "return_ci": [
-          88.2,
-          93.8
+          88.0,
+          93.9
         ]
       },
       {
         "range": "1.50~1.80",
-        "n": 3654,
+        "n": 3677,
         "hit_pct": 52.4,
         "return_pct": 86.4,
         "return_ci": [
-          83.6,
+          83.8,
           89.1
         ]
       },
       {
         "range": "1.80~2.20",
-        "n": 4858,
+        "n": 4875,
         "hit_pct": 44.1,
         "return_pct": 88.0,
         "return_ci": [
-          85.3,
-          90.8
+          85.2,
+          90.9
         ]
       },
       {
         "range": "2.20~3.00",
-        "n": 9779,
-        "hit_pct": 33.0,
+        "n": 9799,
+        "hit_pct": 32.9,
         "return_pct": 86.7,
         "return_ci": [
-          84.3,
-          89.2
+          84.2,
+          89.1
         ]
       },
       {
         "range": "3.00~5.00",
-        "n": 17756,
+        "n": 17851,
         "hit_pct": 23.8,
-        "return_pct": 85.2,
+        "return_pct": 85.3,
         "return_ci": [
-          83.0,
-          87.7
+          83.1,
+          87.5
         ]
       },
       {
         "range": "5.0 이상",
-        "n": 4076,
+        "n": 4092,
         "hit_pct": 9.1,
         "return_pct": 59.2,
         "return_ci": [
-          53.1,
-          65.7
+          53.3,
+          65.5
         ]
       }
     ],
     "그 밖의 모든 유형": [
       {
         "range": "1.15 이하",
-        "n": 3438,
-        "hit_pct": 84.7,
-        "return_pct": 91.1,
+        "n": 3449,
+        "hit_pct": 84.8,
+        "return_pct": 91.2,
         "return_ci": [
-          89.8,
-          92.4
+          89.9,
+          92.5
         ]
       },
       {
         "range": "1.15~1.30",
-        "n": 7611,
+        "n": 7624,
         "hit_pct": 72.5,
-        "return_pct": 89.7,
+        "return_pct": 89.6,
         "return_ci": [
-          88.4,
+          88.3,
           90.9
         ]
       },
       {
         "range": "1.30~1.50",
-        "n": 17720,
+        "n": 17764,
         "hit_pct": 62.8,
         "return_pct": 89.5,
         "return_ci": [
-          88.5,
+          88.6,
           90.5
         ]
       },
       {
         "range": "1.50~1.80",
-        "n": 102176,
+        "n": 102584,
         "hit_pct": 51.8,
         "return_pct": 87.9,
         "return_ci": [
@@ -549,9 +549,9 @@
       },
       {
         "range": "1.80~2.20",
-        "n": 49026,
+        "n": 49189,
         "hit_pct": 44.4,
-        "return_pct": 87.5,
+        "return_pct": 87.4,
         "return_ci": [
           86.6,
           88.3
@@ -559,7 +559,7 @@
       },
       {
         "range": "2.20~3.00",
-        "n": 32006,
+        "n": 32078,
         "hit_pct": 33.5,
         "return_pct": 85.2,
         "return_ci": [
@@ -569,22 +569,22 @@
       },
       {
         "range": "3.00~5.00",
-        "n": 43004,
-        "hit_pct": 23.4,
+        "n": 43135,
+        "hit_pct": 23.3,
         "return_pct": 83.9,
         "return_ci": [
-          82.5,
-          85.4
+          82.4,
+          85.3
         ]
       },
       {
         "range": "5.0 이상",
-        "n": 6760,
+        "n": 6775,
         "hit_pct": 11.7,
         "return_pct": 73.2,
         "return_ci": [
-          68.1,
-          78.5
+          68.3,
+          78.3
         ]
       }
     ]

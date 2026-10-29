@@ -1,18 +1,18 @@
 {
-  "trained_at": "2026-10-26T07:55:25+00:00",
+  "trained_at": "2026-10-29T10:52:40+00:00",
   "segments": {
     "축구 핸디캡|3": {
       "sizes": {
         "train": 15795,
         "tune": 4317,
         "test": 5672,
-        "holdout": 829
+        "holdout": 903
       },
       "chosen_lambda": 0.0001,
       "eval_params": {
         "k": 3,
         "lam": 0.0001,
-        "beta": 0.18694,
+        "beta": 0.186941,
         "c": [
           0.0,
           0.12268,
@@ -30,40 +30,40 @@
         ]
       },
       "holdout": {
-        "n": 829,
-        "model_ll": 0.97397,
-        "market_ll": 0.97536,
-        "ll_diff": -0.00139,
+        "n": 903,
+        "model_ll": 0.97804,
+        "market_ll": 0.97913,
+        "ll_diff": -0.0011,
         "ll_diff_ci": [
-          -0.00568,
-          0.00327
+          -0.00549,
+          0.0034
         ]
       },
       "passes_gate": true,
       "params": {
         "k": 3,
         "lam": 0.0001,
-        "beta": 0.178127,
+        "beta": 0.177137,
         "c": [
           0.0,
-          0.095587,
-          0.033865
+          0.09529,
+          0.035315
         ]
       },
-      "production_rows": 26613
+      "production_rows": 26687
     },
     "축구 언더오버|2": {
       "sizes": {
         "train": 14730,
         "tune": 3240,
         "test": 4295,
-        "holdout": 631
+        "holdout": 695
       },
       "chosen_lambda": 0.001,
       "eval_params": {
         "k": 2,
         "lam": 0.001,
-        "beta": 0.137113,
+        "beta": 0.137104,
         "c": [
           0.0,
           -0.00608
@@ -80,32 +80,42 @@
         ]
       },
       "holdout": {
-        "n": 631,
-        "model_ll": 0.68757,
-        "market_ll": 0.68721,
-        "ll_diff": 0.00037,
+        "n": 695,
+        "model_ll": 0.68436,
+        "market_ll": 0.68439,
+        "ll_diff": -2e-05,
         "ll_diff_ci": [
-          -0.00098,
-          0.00173
+          -0.0013,
+          0.00123
         ]
       },
-      "passes_gate": false
+      "passes_gate": true,
+      "params": {
+        "k": 2,
+        "lam": 0.001,
+        "beta": 0.125577,
+        "c": [
+          0.0,
+          -0.002275
+        ]
+      },
+      "production_rows": 22960
     },
     "야구 승패|2": {
       "sizes": {
         "train": 10077,
         "tune": 1906,
         "test": 3821,
-        "holdout": 73
+        "holdout": 80
       },
       "chosen_lambda": 0.0,
       "eval_params": {
         "k": 2,
         "lam": 0.0,
-        "beta": -0.029122,
+        "beta": -0.029123,
         "c": [
           0.0,
-          -0.023213
+          -0.023214
         ]
       },
       "test": {
@@ -119,13 +129,13 @@
         ]
       },
       "holdout": {
-        "n": 73,
-        "model_ll": 0.65949,
-        "market_ll": 0.65701,
-        "ll_diff": 0.00248,
+        "n": 80,
+        "model_ll": 0.65509,
+        "market_ll": 0.65277,
+        "ll_diff": 0.00232,
         "ll_diff_ci": [
-          6e-05,
-          0.00475
+          3e-05,
+          0.00458
         ]
       },
       "passes_gate": false
@@ -135,7 +145,7 @@
         "train": 10021,
         "tune": 1864,
         "test": 3810,
-        "holdout": 73
+        "holdout": 80
       },
       "chosen_lambda": 1.0,
       "eval_params": {
@@ -158,13 +168,13 @@
         ]
       },
       "holdout": {
-        "n": 73,
-        "model_ll": 0.6858,
-        "market_ll": 0.68596,
-        "ll_diff": -0.00016,
+        "n": 80,
+        "model_ll": 0.6868,
+        "market_ll": 0.68697,
+        "ll_diff": -0.00017,
         "ll_diff_ci": [
-          -0.00062,
-          0.00031
+          -0.00061,
+          0.00028
         ]
       },
       "passes_gate": false
@@ -174,7 +184,7 @@
         "train": 9741,
         "tune": 1676,
         "test": 3748,
-        "holdout": 73
+        "holdout": 80
       },
       "chosen_lambda": 0.0,
       "eval_params": {
@@ -197,13 +207,13 @@
         ]
       },
       "holdout": {
-        "n": 73,
-        "model_ll": 0.6259,
-        "market_ll": 0.62514,
-        "ll_diff": 0.00076,
+        "n": 80,
+        "model_ll": 0.62161,
+        "market_ll": 0.62116,
+        "ll_diff": 0.00045,
         "ll_diff_ci": [
-          -0.00633,
-          0.00854
+          -0.00672,
+          0.00725
         ]
       },
       "passes_gate": false
@@ -213,7 +223,7 @@
         "train": 3809,
         "tune": 2371,
         "test": 3880,
-        "holdout": 631
+        "holdout": 695
       },
       "chosen_lambda": 0.1,
       "eval_params": {
@@ -222,7 +232,7 @@
         "beta": -0.000104,
         "c": [
           0.0,
-          -0.00414
+          -0.004141
         ]
       },
       "test": {
@@ -236,13 +246,13 @@
         ]
       },
       "holdout": {
-        "n": 631,
-        "model_ll": 0.6931,
-        "market_ll": 0.69306,
-        "ll_diff": 4e-05,
+        "n": 695,
+        "model_ll": 0.69309,
+        "market_ll": 0.69303,
+        "ll_diff": 6e-05,
         "ll_diff_ci": [
-          -0.00012,
-          0.0002
+          -9e-05,
+          0.00022
         ]
       },
       "passes_gate": false
@@ -252,13 +262,13 @@
         "train": 4019,
         "tune": 1925,
         "test": 3811,
-        "holdout": 73
+        "holdout": 80
       },
       "chosen_lambda": 0.0,
       "eval_params": {
         "k": 3,
         "lam": 0.0,
-        "beta": -0.023751,
+        "beta": -0.023752,
         "c": [
           0.0,
           0.100629,
@@ -276,13 +286,13 @@
         ]
       },
       "holdout": {
-        "n": 73,
-        "model_ll": 1.04252,
-        "market_ll": 1.03436,
-        "ll_diff": 0.00816,
+        "n": 80,
+        "model_ll": 1.04115,
+        "market_ll": 1.03335,
+        "ll_diff": 0.0078,
         "ll_diff_ci": [
-          -0.00472,
-          0.0211
+          -0.00492,
+          0.01953
         ]
       },
       "passes_gate": false
@@ -292,7 +302,7 @@
         "train": 4853,
         "tune": 906,
         "test": 1358,
-        "holdout": 91
+        "holdout": 124
       },
       "chosen_lambda": 0.01,
       "eval_params": {
@@ -315,13 +325,13 @@
         ]
       },
       "holdout": {
-        "n": 91,
-        "model_ll": 0.69028,
-        "market_ll": 0.69148,
-        "ll_diff": -0.0012,
+        "n": 124,
+        "model_ll": 0.69141,
+        "market_ll": 0.69237,
+        "ll_diff": -0.00097,
         "ll_diff_ci": [
-          -0.00402,
-          0.00164
+          -0.00327,
+          0.00133
         ]
       },
       "passes_gate": false
@@ -331,7 +341,7 @@
         "train": 4853,
         "tune": 906,
         "test": 1356,
-        "holdout": 92
+        "holdout": 125
       },
       "chosen_lambda": 0.01,
       "eval_params": {
@@ -354,23 +364,33 @@
         ]
       },
       "holdout": {
-        "n": 92,
-        "model_ll": 0.69174,
-        "market_ll": 0.6928,
-        "ll_diff": -0.00106,
+        "n": 125,
+        "model_ll": 0.69171,
+        "market_ll": 0.69257,
+        "ll_diff": -0.00086,
         "ll_diff_ci": [
-          -0.00476,
-          0.00231
+          -0.00391,
+          0.00189
         ]
       },
-      "passes_gate": false
+      "passes_gate": true,
+      "params": {
+        "k": 2,
+        "lam": 0.01,
+        "beta": -0.007902,
+        "c": [
+          0.0,
+          -0.032374
+        ]
+      },
+      "production_rows": 7240
     },
     "야구 SUM|2": {
       "sizes": {
         "train": 1769,
         "tune": 1429,
         "test": 3716,
-        "holdout": 73
+        "holdout": 80
       },
       "chosen_lambda": 1.0,
       "eval_params": {
@@ -393,13 +413,13 @@
         ]
       },
       "holdout": {
-        "n": 73,
-        "model_ll": 0.69316,
-        "market_ll": 0.6931,
-        "ll_diff": 6e-05,
+        "n": 80,
+        "model_ll": 0.68849,
+        "market_ll": 0.68847,
+        "ll_diff": 2e-05,
         "ll_diff_ci": [
-          -0.00019,
-          0.00032
+          -0.00021,
+          0.00026
         ]
       },
       "passes_gate": false
@@ -409,7 +429,7 @@
         "train": 4772,
         "tune": 832,
         "test": 1251,
-        "holdout": 90
+        "holdout": 120
       },
       "chosen_lambda": 1.0,
       "eval_params": {
@@ -432,33 +452,33 @@
         ]
       },
       "holdout": {
-        "n": 90,
-        "model_ll": 0.63822,
-        "market_ll": 0.63816,
-        "ll_diff": 6e-05,
+        "n": 120,
+        "model_ll": 0.62356,
+        "market_ll": 0.6236,
+        "ll_diff": -4e-05,
         "ll_diff_ci": [
-          -0.00031,
-          0.00045
+          -0.00035,
+          0.00034
         ]
       },
       "passes_gate": true,
       "params": {
         "k": 2,
         "lam": 1.0,
-        "beta": 0.00486,
+        "beta": 0.004918,
         "c": [
           0.0,
-          0.003265
+          0.003363
         ]
       },
-      "production_rows": 6945
+      "production_rows": 6975
     },
     "농구 SUM|2": {
       "sizes": {
         "train": 1624,
         "tune": 867,
         "test": 1204,
-        "holdout": 90
+        "holdout": 120
       },
       "chosen_lambda": 0.0,
       "eval_params": {
@@ -481,23 +501,33 @@
         ]
       },
       "holdout": {
-        "n": 90,
-        "model_ll": 0.69219,
+        "n": 120,
+        "model_ll": 0.69301,
         "market_ll": 0.69315,
-        "ll_diff": -0.00096,
+        "ll_diff": -0.00014,
         "ll_diff_ci": [
-          -0.00425,
-          0.00234
+          -0.00289,
+          0.00288
         ]
       },
-      "passes_gate": false
+      "passes_gate": true,
+      "params": {
+        "k": 2,
+        "lam": 0.0,
+        "beta": 0.0,
+        "c": [
+          0.0,
+          -0.036177
+        ]
+      },
+      "production_rows": 3815
     },
     "축구 소수핸디캡|2": {
       "sizes": {
         "train": 2373,
         "tune": 287,
         "test": 402,
-        "holdout": 60
+        "holdout": 63
       },
       "chosen_lambda": 0.0,
       "eval_params": {
@@ -520,13 +550,13 @@
         ]
       },
       "holdout": {
-        "n": 60,
-        "model_ll": 0.21418,
-        "market_ll": 0.26566,
-        "ll_diff": -0.05148,
+        "n": 63,
+        "model_ll": 0.21009,
+        "market_ll": 0.26211,
+        "ll_diff": -0.05202,
         "ll_diff_ci": [
-          -0.06197,
-          -0.03376
+          -0.06232,
+          -0.03567
         ]
       },
       "passes_gate": false
@@ -653,7 +683,7 @@
         "train": 378,
         "tune": 357,
         "test": 840,
-        "holdout": 46
+        "holdout": 51
       },
       "passes_gate": false,
       "reason": "표본 부족"
@@ -663,7 +693,7 @@
         "train": 799,
         "tune": 171,
         "test": 217,
-        "holdout": 34
+        "holdout": 37
       },
       "passes_gate": false,
       "reason": "표본 부족"
@@ -683,7 +713,7 @@
         "train": 0,
         "tune": 101,
         "test": 798,
-        "holdout": 47
+        "holdout": 52
       },
       "passes_gate": false,
       "reason": "표본 부족"
@@ -693,7 +723,7 @@
         "train": 0,
         "tune": 101,
         "test": 799,
-        "holdout": 46
+        "holdout": 51
       },
       "passes_gate": false,
       "reason": "표본 부족"
