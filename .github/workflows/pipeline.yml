@@ -37,10 +37,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 4. 과거 데이터 동기화 · 주간 재학습 (수요일 오전 실행 1회, 또는 최초 실행)
+      - name: 4-1. 베트맨 과거 기록 하루 1번 갱신 (AI가 쓰는 팀 최근 폼이 1주일씩 늦지 않게)
         run: |
-          # 파일이 없거나, 수요일(3) 오전(UTC 3시 이전) 실행일 때만 — 하루 2회 실행이라 재학습이 두 번 돌지 않게 함
-          if [ ! -f "data/history/all_historical_matches.csv" ] || { [ "$(date -u +%u)" -eq 3 ] && [ "$(date -u +%H)" -lt 3 ]; }; then
+          # 오늘(UTC) 아직 안 했으면만 — 파이프라인이 하루 여러 번 돌아도 베트맨 요청은 하루 한 번 (최근 회차 몇 개만 증분)
+          if [ "$(cat data/last_archive_sync.txt 2>/dev/null)" != "$(date -u +%F)" ]; then
+            python -m collector.betman_archive --years $(( $(date +%y) - 1 )) $(date +%y) && date -u +%F > data/last_archive_sync.txt               || echo "⚠️ 베트맨 과거 기록 갱신 실패 (다음 실행 때 다시)"
+          fi
+
+      - name: 4. 과거 데이터 동기화 · 주간 재학습 (마지막 재학습 뒤 6일 이상 지났으면, 또는 최초 실행)
+        run: |
+          # 날짜 기준 — 예전엔 '수요일 UTC 3시 전 실행'이었는데 GitHub 예약이 4~5시간씩 밀려 한 번도 조건을 못 맞췄음
+          # (2026-10-29 발견: 모델·아카이브가 10-25~26 수동 실행 그대로). 마지막 재학습 날짜는 data/last_retrain.txt
+          LAST=$(cat data/last_retrain.txt 2>/dev/null || echo 2000-01-01)
+          AGE=$(( ( $(date -u +%s) - $(date -u -d "$LAST" +%s) ) / 86400 ))
+          echo "마지막 재학습 $LAST ($AGE일 전)"
+          if [ ! -f "data/history/all_historical_matches.csv" ] || [ "$AGE" -ge 6 ]; then
             python collector/download_history.py
             # [Phase 5.3] 주 1회 시장 보정 모델 재학습 (게이트 미통과 시 파이프라인은 자동으로 시장 단독)
             python -m models.market_corrector
@@ -54,6 +65,7 @@ jobs:
             python -m evaluation.market_scan || echo "⚠️ 유형별 마진표 갱신 실패"
             # [Phase 5.9] 배당만 쓰는 전략(D·E)의 과거 회차 재현 갱신
             python -m models.paper_trading --backfill
+            date -u +%F > data/last_retrain.txt
           fi
 
       - name: 5. 파이프라인 실행 (베트맨 수집 -> AI 승률 예측 -> 기대가치 분석)

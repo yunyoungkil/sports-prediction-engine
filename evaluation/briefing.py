@@ -219,6 +219,25 @@ def data_intake_lines(reader: Callable[[str], Optional[Any]] = read_json,
     return [f"📥 데이터 수집: ✅ 정상 — {head}"]
 
 
+def data_audit_lines(reader: Callable[[str], Optional[Any]] = read_json, root: Path = ROOT) -> List[str]:
+    """🐞 데이터 점검 — 수집 · 사용 · 계산 · AI 모델 (evaluation/audit.py). 대화마다 버그 흔적을 먼저 찾는다"""
+    import csv
+    from evaluation.audit import audit_lines, run_audit
+    last_ko, last_round = None, None
+    try:
+        with open(root / "data/history/betman_soccer_1x2.csv", encoding="utf-8-sig") as f:
+            for r in csv.DictReader(f):
+                ko, ts = int(float(r["kickoff_ms"] or 0)), int(r["gm_ts"] or 0)
+                last_ko = ko if last_ko is None or ko > last_ko else last_ko
+                last_round = ts if last_round is None or ts > last_round else last_round
+    except Exception:
+        pass
+    rounds = sorted(p.stem for p in (root / "data/history/prediction_log").glob("*.json") if p.stem.isdigit())[-3:]
+    logs = {ts: reader(f"data/history/prediction_log/{ts}.json") or {} for ts in rounds}
+    ko_dt = datetime.fromtimestamp(last_ko / 1000, timezone.utc) if last_ko else None
+    return audit_lines(run_audit(reader, logs, ko_dt, last_round))
+
+
 def verdict_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -> List[str]:
     from evaluation.gates import status_from_data
     card = reader("data/model_scorecard.json") or {}
@@ -261,6 +280,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     print("\n".join(scheduler_lines()))
     print(token_expiry_line())
     print("\n".join(data_intake_lines()))
+    print("\n".join(data_audit_lines()))
     print("\n".join(verdict_lines()))
 
 

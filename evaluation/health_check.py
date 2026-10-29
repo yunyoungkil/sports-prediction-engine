@@ -140,6 +140,10 @@ def record(source: str, data_dir: Path = DATA_DIR, now: Optional[datetime] = Non
     scorecard = _load(data_dir / "model_scorecard.json", None)
     state = _load(data_dir / "health_state.json", {})
     warnings = run_checks(predictions, current, scorecard, state, now, source)
+    # AI 모델이 오래됨 (주간 재학습이 안 돎 — 2026-10-29: 실행 시각 조건 때문에 한 번도 자동으로 안 돌았던 버그) · evaluation/audit.py와 같은 기준
+    from evaluation.audit import check_models
+    reader = lambda rel: _load(data_dir / Path(rel).name, None)   # 모델 파일은 data/ 바로 아래
+    warnings += [_warn("model_stale", msg) for area, ok, msg in check_models(reader, now, missing_ok=True) if not ok]
     report = {"checked_at": now.isoformat(timespec="seconds"), "source": source, "ok": not warnings,
               "warnings": warnings, "matches": len(predictions), "round": _latest_round(predictions),
               "graded": (scorecard or {}).get("graded_matches")}
