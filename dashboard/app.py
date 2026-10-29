@@ -3008,6 +3008,15 @@ with tab3:
             "예상": f"{h['id']} {h['name']}", "모인 경기": f"{h['n']} / 300",
             "AI − 배당 (음수 = AI가 더 잘 맞힘)": f"{h['ll_diff']:+.4f}" if h.get("ll_diff") is not None else "-",
             "판정": h["verdict"]} for h in hyps]), hide_index=True, width="stretch")
+    shadows = (card or {}).get("shadow") or {}
+    if shadows:
+        st.markdown("**👥 차세대 AI 교체 후보 (그림자 비교, Phase 7.1)** — 정배·역배 마진 차이를 반영한 `shin_mkt` 모델을 실전 경기마다 뒤에서 같이 계산해 비교해요 "
+                    "(과거 5구간 시험 14,722경기 전승 · −0.00066). 공식 성적표 300경기 1차 판정 직후 자동 교체 예정이에요.")
+        st.dataframe(pd.DataFrame([{
+            "후보 모델": name, "같은 실전 경기": f"{sh['n']:,}경기",
+            "후보 − 지금 AI (음수 = 후보가 더 정확)": f"{sh['ll_diff_vs_model']:+.5f}" if sh.get("ll_diff_vs_model") is not None else "-",
+            "95% 범위": f"[{sh['ci'][0]:+.5f}, {sh['ci'][1]:+.5f}]" if sh.get("ci") else "-",
+            "상태": sh.get("verdict", "-")} for name, sh in shadows.items()]), hide_index=True, width="stretch")
 
     # [6.6] 💰 베트맨이 떼어가는 몫 — 유형별 · 배당대별 (덜 손해 보는 쪽 판단용)
     st.divider()
@@ -3151,7 +3160,8 @@ with tab3:
     # ------------------------------------------------------------------
     st.divider()
     st.subheader("🧪 가상 베팅 리그")
-    st.caption("전략마다 경기 시작 전에 1,000원씩 가상으로 걸어 두고, 결과가 나오면 자동으로 채점해요 (실제 구매 없음). "
+    st.caption("전략마다 경기 시작 전에 가상으로 걸어 두고 결과가 나오면 자동으로 채점해요 (실제 구매 없음 · A~E는 1,000원 고정, "
+               "F는 가상 지갑 10만 원에서 1/4 켈리로 최적 금액을 정하고 이득이 없으면 쉼). "
                f"AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있고, {PAPER_MIN}건 이상에서 수익률 95% 범위 아래 끝이 0보다 커야 '수익 입증'이에요.")
 
     clv_by_strategy = clv.get("paper_strategies", {})
@@ -3177,12 +3187,24 @@ with tab3:
     if not league_rows:
         st.info("⏳ 아직 가상 베팅 기록이 없어요. 다음 파이프라인 실행부터 쌓여요.")
     else:
-        if past_txt:
+        f_live = live.get("F_portfolio_kelly") or (pt or {}).get("f_state") or {}
+        f_wallet_txt = ""
+        if f_live:
+            f_wallet_txt = (
+                f"<br>💼 <b>F. 조합 묶음 + 최적 금액(켈리)</b>: 가상 지갑 <b>{int(f_live.get('bankroll', 100000)):,}원</b> "
+                f"(시작 100,000원 · 계획 {int(f_live.get('rounds_planned', f_live.get('rounds_bet', 0) + f_live.get('rounds_skipped', 0))):,}회차 중 "
+                f"베팅 {int(f_live.get('rounds_bet', 0)):,}회차 · 이득 없어 쉼 {int(f_live.get('rounds_skipped', 0)):,}회차). "
+                "과거 354회차 워크포워드 재현에서는 14회차만 걸고 340회차는 쉬어 15건 건 돈 4,200원 → +2,553원 "
+                "(+60.8%, 95% 범위 [−14.9%, +98.3%] · 표본 부족으로 운과 구분 안 됨)을 기록했어요."
+            )
+        if past_txt or f_wallet_txt:
             st.markdown(
                 "<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>"
-                f"💬 과거 회차로 재현해 보면 {past_txt}예요. 배당만 보고 고르는 방식은 베트맨 마진 때문에 오래 하면 손해예요. "
-                f"AI 전략(A·B·C)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
-                f"결과 대기 {live_wait:,}건).</div></div>", unsafe_allow_html=True)
+                + (f"💬 과거 회차로 재현해 보면 {past_txt}예요. 배당만 보고 고르는 방식은 베트맨 마진 때문에 오래 하면 손해예요. "
+                   f"AI 전략(A·B·C·F)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
+                   f"결과 대기 {live_wait:,}건)." if past_txt else "")
+                + f_wallet_txt
+                + "</div></div>", unsafe_allow_html=True)
         st.dataframe(pd.DataFrame(league_rows), hide_index=True, width="stretch",
                      column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized"),
                                     "판정": st.column_config.TextColumn(width="small", help="수익 입증 = 300건 이상 + 수익률 95% 범위 아래 끝 > 0"),
@@ -3190,7 +3212,7 @@ with tab3:
                                         help="산 배당 ÷ 마감 배당 − 1 의 경기 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것")})
         st.caption("실시간: 경기 시작 전에 고정 저장한 베팅 (2026-10-26, 260127회차부터). "
                    "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당과 실제 결과로 재현 — "
-                   "AI 전략(A·B·C)은 지금 AI가 그 결과까지 학습했기 때문에 재현하지 않아요. "
+                   "AI 전략(A·B·C·F)은 지금 AI가 그 결과까지 학습했기 때문에 여기서는 실시간으로만 채점해요. "
                    "B와 C는 후보가 겹쳐 같은 베팅이 나올 수 있어요 (위쪽 '끝난 베팅' 합계는 같은 베팅을 한 번만 세요).")
         # 누적 수익률(%) 그래프 — 과거 재현과 실시간을 따로 (베팅 수가 수십 배 달라 한 축에 그리면 실시간 선이 묻힘)
         # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교
