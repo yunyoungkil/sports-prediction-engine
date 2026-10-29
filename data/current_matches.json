@@ -11191,7 +11191,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
@@ -11296,7 +11296,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
@@ -11401,7 +11401,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
@@ -11476,7 +11476,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "강원FC",
     "away_team": "쿠칭시티",
@@ -11505,7 +11505,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "1",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11595,7 +11595,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11655,7 +11655,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "1",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11730,7 +11730,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "4",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11759,7 +11759,7 @@
     "kickoff_ts": 1793268000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "울산현대모비스 피버스",
     "away_team": "부산KCC 이지스",
@@ -11788,7 +11788,7 @@
     "kickoff_ts": 1793276100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타이포FC",
     "away_team": "BG빠툼 유나이티드",
@@ -11863,7 +11863,7 @@
     "kickoff_ts": 1793276100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타이포FC",
     "away_team": "BG빠툼 유나이티드",
@@ -11953,7 +11953,7 @@
     "kickoff_ts": 1793276100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타이포FC",
     "away_team": "BG빠툼 유나이티드",
@@ -11982,7 +11982,7 @@
     "kickoff_ts": 1793276100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "타이포FC",
     "away_team": "BG빠툼 유나이티드",
@@ -12011,7 +12011,7 @@
     "kickoff_ts": 1793276100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "상하이 선화",
     "away_team": "FC마치다 젤비아",
@@ -12105,12 +12105,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-29 21:13:12",
+        "from": {
+          "home_win": 4.3,
+          "draw": 4.05,
+          "away_win": 1.49
+        },
+        "to": {
+          "home_win": 4.1,
+          "draw": 4.05,
+          "away_win": 1.52
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 4.3,
+      "home_win": 4.1,
       "draw": 4.05,
-      "away_win": 1.49
+      "away_win": 1.52
     },
     "gm_ts": 260128
   },
@@ -12131,7 +12146,7 @@
     "kickoff_ts": 1793276100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "상하이 선화",
     "away_team": "FC마치다 젤비아",
@@ -12236,7 +12251,7 @@
     "kickoff_ts": 1793276100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "상하이 선화",
     "away_team": "FC마치다 젤비아",
@@ -12296,7 +12311,7 @@
     "kickoff_ts": 1793276100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "상하이 선화",
     "away_team": "FC마치다 젤비아",
@@ -12789,11 +12804,27 @@
     "match_state": "2",
     "home_team": "에버턴",
     "away_team": "뉴캐슬 유나이티드",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-29 21:57:41",
+        "from": {
+          "home_win": 1.89,
+          "draw": 0.0,
+          "away_win": 1.61
+        },
+        "to": {
+          "home_win": 1.97,
+          "draw": 0.0,
+          "away_win": 1.56
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.89,
+      "home_win": 1.97,
       "draw": 0.0,
-      "away_win": 1.61
+      "away_win": 1.56
     },
     "gm_ts": 260128
   },
