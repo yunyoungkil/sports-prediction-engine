@@ -1632,9 +1632,9 @@ with tab1:
                 # 한 줄 유지 (줄이 바뀌면 경기마다 높이가 달라져 목록이 흐트러짐) — 가장 긴 '1255 전반 핸디캡 H -1.5 한경기'
                 # (약 300px)가 들어가도록 왼쪽을 넓히고, 여유 있는 오른쪽 예상·점수·결과 칸에서 덜어 옴.
                 # 배당 칸은 화살표(↑↓)가 붙은 버튼 3개('핸패 10.50↓')도 한 줄에 들어가게 (2026-10-28: 두 줄로 넘어감)
-                c1, c1b, c2, c3 = st.columns([2.75, 0.65, 3.45, 2.95], vertical_alignment="center")   # c1b = 📉 버튼 칸 (그림+펼침 표시가 들어가는 폭)
+                c1, c1b, c2, c3 = st.columns([2.75, 0.4, 3.7, 2.95], vertical_alignment="center")   # c1b = 📉 이모지 버튼 칸
                 if m.get("odds_changes"):   # 배당이 바뀐 게임번호만 📉 → 누르면 베트맨 팝업 같은 변경표
-                    with c1b.popover("📉", help="배당 변경 내역"):
+                    with c1b.popover("", icon="📉", type="tertiary", help="배당 변경 내역"):   # 아이콘만 있는 tertiary = 테두리·펼침 화살표 없이 이모지만
                         st.markdown(odds_change_table_html(m, opts, labels), unsafe_allow_html=True)
                 with c1:
                     # 게임번호 · 유형 · 기준선 칩 · 한경기 (마우스를 올리면 리그·유형 전체 표시)
