@@ -128,6 +128,7 @@ sports-prediction-engine/
 | `data/health_report.json` · `data/health_state.json` | 운영 점검 결과 · 직전 상태 | pipeline·results |
 | `data/contract_report.json` | 데이터 계약 점검 결과 | pipeline (5-1) |
 | `data/calibration_experiment.json` | 사후 보정 실험 결과 (기록용) | 수동 |
+| `data/odds_moves_report.json` · `data/vote_bias_report.json` · `data/portfolio_backtest.json` | 배당 변경·구매 쏠림 시험(둘 다 효과 없음) · F 전략 과거 재현 결과 (이 PC에만, 커밋 안 함) | 수동 |
 | `data/last_archive_sync.txt` · `data/last_retrain.txt` | 아카이브 갱신·재학습 마지막 날짜 | pipeline |
 
 `data/history/`: `prediction_log/`(경기 전 고정 예측) · `odds_history/` · `paper_bets/` · `sharp_snapshots/` · `betman_markets/`(전 유형 아카이브) · `betman_recent_results.json`(최근 회차 결과) · `betman_soccer_1x2.csv`(학습·폼 아카이브) · `betman_archive_rounds.json` · `all_historical_matches.csv`와 `E0/D1/I1/SP1/F1_*.csv`(유럽 데이터).
