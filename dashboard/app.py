@@ -3725,7 +3725,7 @@ with tab4:
                     alt.Tooltip("이번 손익(원):Q", format="+,"), alt.Tooltip("누적 손익(원):Q", format="+,"),
                     alt.Tooltip("누적 수익률(%):Q", format="+.1f")]
             x_ax = alt.X("끝난 기록 순서:Q", title="끝난 기록 순서 (구분별)", axis=alt.Axis(grid=False, tickMinStep=1, format="d"))
-            y_ax = alt.Y("누적 손익(원):Q", title="누적 손익 (원)", axis=alt.Axis(format="+,", gridOpacity=0.15))
+            y_ax = alt.Y("누적 손익(원):Q", title="누적 손익 (원)", axis=alt.Axis(format="+,d", gridOpacity=0.15))   # '+,'만 쓰면 눈금이 '-2e+4'로 나옴
             col_enc = alt.Color("구분:N", scale=alt.Scale(domain=dom_k, range=rng_k),
                                 legend=alt.Legend(orient="bottom", title=None))
             line = alt.Chart(c_df).mark_line(strokeWidth=2, point=alt.OverlayMarkDef(size=70, filled=True)).encode(
@@ -3801,22 +3801,22 @@ with tab4:
                     if any(v[0] for v in reason_stat.values()):
                         st.markdown("**📌 직접 고른 이유별 손익**")
                         st.dataframe(pd.DataFrame([{
-                            "직접 고른 이유": REASON_LABEL[k], "기록": v[0], "투자(원)": v[1], "손익(원)": v[2] - v[1],
+                            "직접 고른 이유": REASON_LABEL[k], "기록": v[0], "투자(원)": v[1], "손익(원)": f"{v[2] - v[1]:+,}",
                             "수익률": f"{(v[2] - v[1]) / v[1] * 100:+.1f}%" if v[1] else "-"} for k, v in reason_stat.items() if v[0]]),
                             hide_index=True, width="stretch",
                             column_config={"투자(원)": st.column_config.NumberColumn(format="localized"),
-                                           "손익(원)": st.column_config.NumberColumn(format="%+d")})
+                                           "손익(원)": st.column_config.TextColumn()})
                     else:
                         st.caption("📌 저장할 때(또는 아래 카드의 '✏️ 메모·이유'에서) '왜 골랐어요?'를 선택하면 이유별 손익이 여기에 나와요.")
                 with c_r2:
                     if any(v[0] for v in folder_stat.values()):
                         st.markdown("**🧩 묶은 경기 수(폴더)별 손익**")
                         st.dataframe(pd.DataFrame([{
-                            "폴더 수": k, "기록": v[0], "적중": f"{v[1]}/{v[0]}", "투자(원)": v[2], "손익(원)": v[3] - v[2],
+                            "폴더 수": k, "기록": v[0], "적중": f"{v[1]}/{v[0]}", "투자(원)": v[2], "손익(원)": f"{v[3] - v[2]:+,}",
                             "수익률": f"{(v[3] - v[2]) / v[2] * 100:+.1f}%" if v[2] else "-"} for k, v in folder_stat.items() if v[0]]),
                             hide_index=True, width="stretch",
                             column_config={"투자(원)": st.column_config.NumberColumn(format="localized"),
-                                           "손익(원)": st.column_config.NumberColumn(format="%+d")})
+                                           "손익(원)": st.column_config.TextColumn()})
 
         if not view:
             st.info("조건에 맞는 기록이 없어요. 필터를 바꿔 보세요.")
@@ -3850,9 +3850,9 @@ with tab4:
                 game_of = {str(g["seq"]): g for g in s.get("games", [])}
 
                 def _leg_label(seq, k):
+                    """조합 칸은 '825 승 × 940 무'처럼 번호 + 고른 것만 (팀 이름은 바로 아래 경기 표에 같은 번호로 있음)"""
                     seq_s = str(seq)
-                    hm = game_of.get(seq_s, {}).get("home", "")
-                    return f"{seq_s} {hm} {lab_of.get((seq_s, k), k)}".strip()
+                    return f"{seq_s} {lab_of.get((seq_s, k), k)}"
 
                 def _combo_state(c):
                     if c["state"] == "hit":
