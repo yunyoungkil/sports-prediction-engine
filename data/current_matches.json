@@ -678,9 +678,9 @@
     "match_time": "26.10.30 (금) 18:30",
     "close_time": 1793352600000,
     "kickoff_ts": 1793352600000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -723,9 +723,9 @@
     "match_time": "26.10.30 (금) 18:30",
     "close_time": 1793352600000,
     "kickoff_ts": 1793352600000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -785,7 +785,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -830,7 +830,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -890,7 +890,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -919,7 +919,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -994,7 +994,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -1039,7 +1039,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -1387,10 +1387,26 @@
     "match_state": "2",
     "home_team": "르아브르AC",
     "away_team": "파리 생제르맹",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 22:51:31",
+        "from": {
+          "home_win": 8.1,
+          "draw": 5.2,
+          "away_win": 1.2
+        },
+        "to": {
+          "home_win": 7.6,
+          "draw": 5.4,
+          "away_win": 1.2
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 8.1,
-      "draw": 5.2,
+      "home_win": 7.6,
+      "draw": 5.4,
       "away_win": 1.2
     },
     "gm_ts": 260129
@@ -1624,12 +1640,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-30 22:02:22",
+        "from": {
+          "home_win": 2.45,
+          "draw": 3.2,
+          "away_win": 2.33
+        },
+        "to": {
+          "home_win": 2.45,
+          "draw": 3.1,
+          "away_win": 2.39
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
       "home_win": 2.45,
-      "draw": 3.2,
-      "away_win": 2.33
+      "draw": 3.1,
+      "away_win": 2.39
     },
     "gm_ts": 260129
   },
@@ -2261,12 +2292,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-30 22:02:43",
+        "from": {
+          "home_win": 2.55,
+          "draw": 3.1,
+          "away_win": 2.3
+        },
+        "to": {
+          "home_win": 2.55,
+          "draw": 3.0,
+          "away_win": 2.36
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
       "home_win": 2.55,
-      "draw": 3.1,
-      "away_win": 2.3
+      "draw": 3.0,
+      "away_win": 2.36
     },
     "gm_ts": 260129
   },
