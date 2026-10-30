@@ -22,7 +22,7 @@
   `data/history/prediction_log/`, `data/model_scorecard.json`, `data/clv_report.json`,
   수요일 재학습 산출물 `data/market_corrector*.json`, `data/betman_corrector.json`, `data/betman_markets.json`,
   `data/history/betman_soccer_1x2.csv`, `data/history/betman_archive_rounds.json`, `data/history/betman_markets/`,
-  `data/history/paper_bets/`, `data/paper_trading.json`
+  `data/history/paper_bets/`, `data/paper_trading.json`, `data/contract_report.json`
   → 커밋 전 `git checkout -- <파일>`로 되돌리거나, 처음부터 저장소 밖 복사본에서 실행한다.
 - rebase 중 위 데이터 파일이 충돌하면 **원격(봇) 버전을 채택**한다.
 - 커밋에는 해당 TODO 항목과 관련된 파일만 스테이징한다 (`git add -A` 금지, REVIEW R9).

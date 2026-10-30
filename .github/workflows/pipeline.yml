@@ -82,6 +82,10 @@ jobs:
         run: |
           python run_pipeline.py
 
+      # 저장한 데이터가 '이래야 한다'는 모양(회차·배당·확률 합·결과 코드)을 지키는지 pandera로 점검. 어긋나면 7단계가 경고 → 실행 실패로 표시
+      - name: 5-1. 데이터 계약 점검 (pandera)
+        run: python -m evaluation.data_contracts --write || echo "⚠️ 데이터 계약 점검 실행 실패"
+
       - name: 6. 갱신된 예측 결과(JSON)를 깃허브 저장소에 자동 커밋 & 푸시
         run: |
           git config --local user.email "action@github.com"

@@ -240,6 +240,24 @@ def data_audit_lines(reader: Callable[[str], Optional[Any]] = read_json, root: P
     return audit_lines(run_audit(reader, logs, ko_dt, last_round))
 
 
+def contract_lines(reader: Callable[[str], Optional[Any]] = read_json, now: Optional[datetime] = None) -> List[str]:
+    """데이터 계약 점검(evaluation/data_contracts.py, 파이프라인이 실행마다 저장) 결과 — 봇이 올린 최신 보고서 기준"""
+    rep = reader("data/contract_report.json")
+    if not rep:
+        return ["📜 데이터 계약: 보고서 없음 (파이프라인이 아직 돌리지 않았어요)"]
+    now = now or datetime.now(timezone.utc)
+    try:
+        age = f"{(now - datetime.fromisoformat(rep['checked_at'])).total_seconds() / 3600:.0f}시간 전"
+    except Exception:
+        age = "시각 불명"
+    rows = " · ".join(f"{k} {v:,}행" for k, v in (rep.get("rows") or {}).items())
+    errs = rep.get("errors") or []
+    out = [("📜 데이터 계약: ✅ 이상 없음" if not errs else f"📜 데이터 계약: ⚠️ 오류 {len(errs)}종") + f" — {rows} (점검 {age})"]
+    out += [f"   - ⚠️ {e.get('message', e)}" for e in errs[:6]]
+    out += [f"   - ℹ️ {n}" for n in (rep.get("notes") or [])[:3]]
+    return out
+
+
 def verdict_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -> List[str]:
     from evaluation.gates import status_from_data
     card = reader("data/model_scorecard.json") or {}
@@ -289,6 +307,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     print("\n".join(scheduler_lines()))
     print(token_expiry_line())
     print("\n".join(data_intake_lines()))
+    print("\n".join(contract_lines()))
     print("\n".join(data_audit_lines()))
     print("\n".join(verdict_lines()))
 

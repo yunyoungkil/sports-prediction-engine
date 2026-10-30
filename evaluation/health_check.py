@@ -120,6 +120,16 @@ def run_checks(predictions: List[Dict[str, Any]], current_matches: Optional[List
     return w
 
 
+def contract_warnings(report: Optional[Dict[str, Any]], now: datetime, max_age_h: float = 3.0) -> List[Dict[str, str]]:
+    """데이터 계약 점검(evaluation/data_contracts.py, 파이프라인이 저장 직후 실행) 오류를 경고로. 오래된 보고서는 무시"""
+    if not report:
+        return []
+    checked = _parse_ts(report.get("checked_at"))
+    if checked is None or now - checked > timedelta(hours=max_age_h):
+        return []
+    return [_warn("contract_violation", e.get("message", str(e))) for e in report.get("errors") or []]
+
+
 def next_state(state: Dict[str, Any], predictions: List[Dict[str, Any]], scorecard: Optional[Dict[str, Any]],
                source: str, now: datetime) -> Dict[str, Any]:
     out = dict(state)
@@ -140,6 +150,8 @@ def record(source: str, data_dir: Path = DATA_DIR, now: Optional[datetime] = Non
     scorecard = _load(data_dir / "model_scorecard.json", None)
     state = _load(data_dir / "health_state.json", {})
     warnings = run_checks(predictions, current, scorecard, state, now, source)
+    if source == "pipeline":   # 계약 점검은 pandas가 있는 파이프라인에서만 돌아 그 보고서만 믿는다 (결과 갱신 때는 낡을 수 있음)
+        warnings += contract_warnings(_load(data_dir / "contract_report.json", None), now)
     # AI 모델이 오래됨 (주간 재학습이 안 돎 — 2026-10-29: 실행 시각 조건 때문에 한 번도 자동으로 안 돌았던 버그) · evaluation/audit.py와 같은 기준
     from evaluation.audit import check_models
     reader = lambda rel: _load(data_dir / Path(rel).name, None)   # 모델 파일은 data/ 바로 아래

@@ -16,3 +16,6 @@ pyarrow<18
 
 # Testing
 pytest>=8.0.0
+
+# Data contracts (스키마 검증, 2026-10-30)
+pandera>=0.24,<1
