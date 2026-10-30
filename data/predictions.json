@@ -2317,97 +2317,90 @@
     "kickoff_ts": 1793350800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "브리즈번 로어",
     "away_team": "오클랜드FC",
     "betman_odds": {
-      "home_win": 2.6,
-      "draw": 3.05,
-      "away_win": 2.29
+      "home_win": 2.27,
+      "draw": 3.15,
+      "away_win": 2.55
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 17:23:02",
+        "from": {
+          "home_win": 2.6,
+          "draw": 3.05,
+          "away_win": 2.29
+        },
+        "to": {
+          "home_win": 2.45,
+          "draw": 3.05,
+          "away_win": 2.42
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-10-30 17:36:56",
+        "from": {
+          "home_win": 2.45,
+          "draw": 3.05,
+          "away_win": 2.42
+        },
+        "to": {
+          "home_win": 2.27,
+          "draw": 3.15,
+          "away_win": 2.55
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.2854,
-        "draw": 0.314,
-        "away_win": 0.4006
+        "home_win": 0.338,
+        "draw": 0.3051,
+        "away_win": 0.3569
       }
     },
     "prediction_odds": {
-      "home_win": 2.6,
-      "draw": 3.05,
-      "away_win": 2.29
+      "home_win": 2.27,
+      "draw": 3.15,
+      "away_win": 2.55
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3347,
-      "draw": 0.2853,
-      "away": 0.38
+      "home": 0.383,
+      "draw": 0.276,
+      "away": 0.341
     },
     "model_probabilities": {
-      "home_win": 0.3347,
-      "draw": 0.2853,
-      "away_win": 0.38
+      "home_win": 0.383,
+      "draw": 0.276,
+      "away_win": 0.341
     },
     "blended_probabilities": {
-      "home_win": 0.2828,
-      "draw": 0.3154,
-      "away_win": 0.4018
+      "home_win": 0.3368,
+      "draw": 0.3065,
+      "away_win": 0.3567
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "716ddf40807b2e733c6cc43fa101bc7b",
-      "home_team": "Brisbane Roar",
-      "away_team": "Auckland FC",
-      "commence_time": "2026-10-30T09:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.87,
-        "draw": 3.52,
-        "away_win": 2.52
-      },
-      "sharp_probs": {
-        "home_win": 0.3385,
-        "draw": 0.276,
-        "away_win": 0.3855
-      },
-      "consensus_probs": {
-        "home_win": 0.3389,
-        "draw": 0.2799,
-        "away_win": 0.3812
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_single",
-      "prob_distance": 0.0186,
-      "sport_key": "soccer_australia_aleague",
-      "betman_odds": {
-        "home_win": 2.6,
-        "draw": 3.05,
-        "away_win": 2.29
-      },
-      "betman_home": "브리즈번 로어",
-      "betman_away": "오클랜드FC",
-      "match_time": "26.10.30 (금) 18:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1199,
-        "draw": -0.1582,
-        "away_win": -0.1172
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2647,
-        "draw": -0.038,
-        "away_win": -0.0799
+        "home_win": -0.2355,
+        "draw": -0.0345,
+        "away_win": -0.0904
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.038,
-      "best_ev_pct": "-3.8%",
+      "best_ev": -0.0345,
+      "best_ev_pct": "-3.5%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -2631,27 +2624,27 @@
     "league": "호주 A리그",
     "game_type": "축구 핸디캡",
     "category": "핸디캡",
-    "category_label": "핸디캡 (+1.0)",
+    "category_label": "핸디캡 (-1.0)",
     "selection_labels": {
-      "home_win": "브리즈번 로어 (+1.0) 승",
+      "home_win": "브리즈번 로어 (-1.0) 승",
       "draw": "핸디캡 무승부",
       "away_win": "오클랜드FC 반대승"
     },
     "is_single": true,
-    "line": 1.0,
+    "line": -1.0,
     "match_time": "26.10.30 (금) 18:00",
     "close_time": 1793350800000,
     "kickoff_ts": 1793350800000,
-    "buy_reject": "1",
+    "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "브리즈번 로어",
     "away_team": "오클랜드FC",
     "betman_odds": {
-      "home_win": 1.52,
-      "draw": 3.65,
-      "away_win": 4.6
+      "home_win": 4.55,
+      "draw": 3.8,
+      "away_win": 1.5
     },
     "odds_changes": [
       {
@@ -2668,45 +2661,75 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-10-30 17:25:30",
+        "from": {
+          "home_win": 1.52,
+          "draw": 3.65,
+          "away_win": 4.6
+        },
+        "to": {
+          "home_win": 1.48,
+          "draw": 3.8,
+          "away_win": 4.75
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      },
+      {
+        "at": "2026-10-30 17:36:56",
+        "from": {
+          "home_win": 1.48,
+          "draw": 3.8,
+          "away_win": 4.75
+        },
+        "to": {
+          "home_win": 4.55,
+          "draw": 3.8,
+          "away_win": 1.5
+        },
+        "line_from": 1.0,
+        "line_to": -1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.52,
-      "draw": 3.65,
-      "away_win": 4.6
+      "home_win": 4.55,
+      "draw": 3.8,
+      "away_win": 1.5
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5725,
-      "draw": 0.2384,
-      "away": 0.1892
+      "home": 0.1912,
+      "draw": 0.2289,
+      "away": 0.5799
     },
     "model_probabilities": {
-      "home_win": 0.5725,
-      "draw": 0.2384,
-      "away_win": 0.1892
+      "home_win": 0.1912,
+      "draw": 0.2289,
+      "away_win": 0.5799
     },
     "blended_probabilities": {
-      "home_win": 0.5975,
-      "draw": 0.2344,
-      "away_win": 0.1681
+      "home_win": 0.1617,
+      "draw": 0.2199,
+      "away_win": 0.6184
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0918,
-        "draw": -0.1444,
-        "away_win": -0.2267
+        "home_win": -0.2643,
+        "draw": -0.1644,
+        "away_win": -0.0724
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 브리즈번 로어 (+1.0) 승",
-      "raw_selection_name": "브리즈번 로어 (+1.0) 승",
-      "best_ev": -0.0918,
-      "best_ev_pct": "-9.2%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 오클랜드FC 반대승",
+      "raw_selection_name": "오클랜드FC 반대승",
+      "best_ev": -0.0724,
+      "best_ev_pct": "-7.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -2943,14 +2966,14 @@
     "kickoff_ts": 1793350800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "브리즈번 로어",
     "away_team": "오클랜드FC",
     "betman_odds": {
-      "home_win": 1.85,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.64
+      "away_win": 1.69
     },
     "odds_changes": [
       {
@@ -2982,45 +3005,60 @@
         },
         "line_from": 2.5,
         "line_to": 2.5
+      },
+      {
+        "at": "2026-10-30 17:36:56",
+        "from": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.85,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.64
+      "away_win": 1.69
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4699,
+      "home": 0.4856,
       "draw": 0.0,
-      "away": 0.5301
+      "away": 0.5144
     },
     "model_probabilities": {
-      "home_win": 0.4699,
+      "home_win": 0.4856,
       "draw": 0.0,
-      "away_win": 0.5301
+      "away_win": 0.5144
     },
     "blended_probabilities": {
-      "home_win": 0.4667,
+      "home_win": 0.4844,
       "draw": 0.0,
-      "away_win": 0.5333
+      "away_win": 0.5156
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1366,
+        "home_win": -0.1329,
         "draw": -1.0,
-        "away_win": -0.1254
+        "away_win": -0.1286
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 2.5)",
       "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.1254,
-      "best_ev_pct": "-12.5%",
+      "best_ev": -0.1286,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -3257,7 +3295,7 @@
     "kickoff_ts": 1793350800000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "브리즈번 로어",
     "away_team": "오클랜드FC",
@@ -3540,7 +3578,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -3809,7 +3847,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -4093,7 +4131,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -4362,7 +4400,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -4646,7 +4684,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -4899,14 +4937,14 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
     "betman_odds": {
-      "home_win": 1.9,
-      "draw": 4.65,
-      "away_win": 2.45
+      "home_win": 1.88,
+      "draw": 4.45,
+      "away_win": 2.55
     },
     "odds_changes": [
       {
@@ -4938,45 +4976,60 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-30 18:19:30",
+        "from": {
+          "home_win": 1.9,
+          "draw": 4.65,
+          "away_win": 2.45
+        },
+        "to": {
+          "home_win": 1.88,
+          "draw": 4.45,
+          "away_win": 2.55
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.9,
-      "draw": 4.65,
-      "away_win": 2.45
+      "home_win": 1.88,
+      "draw": 4.45,
+      "away_win": 2.55
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4579,
-      "draw": 0.1871,
-      "away": 0.3551
+      "home": 0.463,
+      "draw": 0.1956,
+      "away": 0.3414
     },
     "model_probabilities": {
-      "home_win": 0.4579,
-      "draw": 0.1871,
-      "away_win": 0.3551
+      "home_win": 0.463,
+      "draw": 0.1956,
+      "away_win": 0.3414
     },
     "blended_probabilities": {
-      "home_win": 0.4579,
-      "draw": 0.1871,
-      "away_win": 0.3551
+      "home_win": 0.463,
+      "draw": 0.1956,
+      "away_win": 0.3414
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.13,
-        "draw": -0.13,
-        "away_win": -0.13
+        "home_win": -0.1296,
+        "draw": -0.1296,
+        "away_win": -0.1294
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 전반 KIA 타이거즈 승",
-      "raw_selection_name": "전반 KIA 타이거즈 승",
-      "best_ev": -0.13,
-      "best_ev_pct": "-13.0%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 전반 삼성 라이온즈 승",
+      "raw_selection_name": "전반 삼성 라이온즈 승",
+      "best_ev": -0.1294,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -5183,7 +5236,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
@@ -5452,7 +5505,7 @@
     "kickoff_ts": 1793352600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KIA 타이거즈",
     "away_team": "삼성 라이온즈",
