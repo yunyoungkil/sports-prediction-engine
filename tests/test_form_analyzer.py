@@ -112,7 +112,7 @@ def test_betman_archive_standing_and_season_boundary(tmp_path):
     pd.DataFrame([], columns=["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG", "HST", "AST"]).to_csv(csv, index=False)
     arc = tmp_path / "arc.csv"
     pd.DataFrame([
-        # 이전 시즌 (오프시즌 65일 이상 공백 전)
+        # 이전 시즌 (오프시즌 58일 이상 공백 전)
         [250040, "25.05.01 (목) 18:00", "호주A리그", "브리즈번로어", "오클랜드FC", 0, 5],
         # 현 시즌 3경기
         [260100, "25.10.10 (금) 18:00", "호주A리그", "브리즈번로어", "웰링턴피닉스", 2, 0],
@@ -124,3 +124,28 @@ def test_betman_archive_standing_and_season_boundary(tmp_path):
     s = fa.get_standing("브리즈번 로어", as_of="25.10.30 (목) 18:00")
     assert s is not None
     assert (s["league"], s["pos"], s["teams"], s["pts"], s["played"], s["source"]) == ("호주 A리그", 1, 3, 6, 2, "betman")
+
+
+def test_betman_season_break_62_days_resets_but_53_day_mid_season_break_does_not(tmp_path):
+    """J리그 2026: 62일 쉬고 새 시즌 → 그 전 경기는 빼야 함 (예전 65일 기준이면 두 시즌이 합쳐져 68경기·승점 125)
+    MLS·K리그 2026 월드컵 휴식 53일은 시즌 중이라 합쳐야 함"""
+    bm = tmp_path / "bm.json"
+    bm.write_text("[]", encoding="utf-8")
+    csv = tmp_path / "hist.csv"
+    pd.DataFrame([], columns=["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG", "HST", "AST"]).to_csv(csv, index=False)
+    cols = ["gm_ts", "match_time", "league", "home_team", "away_team", "home_score", "away_score"]
+    arc = tmp_path / "arc.csv"
+    pd.DataFrame([
+        [260060, "26.06.06 (토) 18:00", "J1리그", "미토", "히로시마", 0, 3],     # 지난 시즌 마지막 (62일 전)
+        [260100, "26.08.07 (금) 18:00", "J1리그", "미토", "가시마", 1, 0],
+        [260102, "26.08.14 (금) 18:00", "J1리그", "히로시마", "가시마", 2, 2],
+        [260104, "26.08.21 (금) 18:00", "J1리그", "히로시마", "미토", 1, 0],
+        [260040, "26.05.30 (토) 18:00", "K리그1", "울산", "포항", 1, 0],      # 월드컵 휴식(53일) 전 — 같은 시즌
+        [260090, "26.07.22 (수) 18:00", "K리그1", "포항", "전북", 0, 0],
+        [260092, "26.07.26 (일) 18:00", "K리그1", "전북", "울산", 2, 1],
+    ], columns=cols).to_csv(arc, index=False)
+    fa = FormAnalyzer(history_csv_path=str(csv), betman_results_path=str(bm), betman_archive_path=str(arc))
+    s = fa.get_standing("히로시마", as_of="26.08.30 (일) 18:00")
+    assert (s["played"], s["w"], s["d"], s["teams"]) == (2, 1, 1, 3)       # 6월 3-0 승리는 지난 시즌이라 빠짐
+    k = fa.get_standing("울산", as_of="26.07.30 (목) 18:00")
+    assert (k["played"], k["w"], k["l"]) == (2, 1, 1)                       # 휴식 전 5월 경기도 같은 시즌

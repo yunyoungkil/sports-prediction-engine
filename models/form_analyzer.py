@@ -109,6 +109,9 @@ class FormAnalyzer:
         "J1 백년구상리그": "일본 J1리그",
     }
     CUP_KEYWORDS = ("컵", "챔피언스", "유로파", "컨퍼런스", "친선", "네이션스", "예선", "올림픽", "아시안", "천황배", "FA", "슈퍼컵", "선수권", "토너먼트")
+    # 이만큼 경기가 없었으면 새 시즌 (베트맨 아카이브 2023~2026 실측): 시즌 중 가장 긴 휴식 53일(MLS, 2026 월드컵 · K리그1 48일)
+    # < 58 < 시즌 사이 가장 짧은 휴식 62일(J리그 2026년 2월 백년구상리그·8월 추춘제 개막, 에레디비시 2023). 65일이면 J리그 두 시즌이 합쳐졌음
+    SEASON_GAP_DAYS = 58
 
     def __init__(
         self,
@@ -367,9 +370,10 @@ class FormAnalyzer:
         lg_df = sub[sub["NormLeague"] == lg].sort_values("ParsedDate")
         if lg_df.empty:
             return None
-        # 휴식기(65일 이상 공백) 기준으로 현재 시즌 시작일 자동 탐지
+        # 휴식기(SEASON_GAP_DAYS일 이상 공백) 기준으로 현재 시즌 시작일 자동 탐지
         gaps = lg_df["ParsedDate"].diff().dt.days
-        season_start = lg_df.loc[gaps >= 65, "ParsedDate"].iloc[-1] if (gaps >= 65).any() else lg_df["ParsedDate"].min()
+        new_season = gaps >= self.SEASON_GAP_DAYS
+        season_start = lg_df.loc[new_season, "ParsedDate"].iloc[-1] if new_season.any() else lg_df["ParsedDate"].min()
         cur_df = lg_df[lg_df["ParsedDate"] >= season_start]
         if (cutoff - cur_df["ParsedDate"].max()).days > 120:
             return None   # 오래전 종료된 시즌이면 표시하지 않음

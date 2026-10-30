@@ -2433,6 +2433,7 @@ with tab2:
                     "opts": opts, "labels": pick_labels(m), "mk": mk, "ai": ai,
                     "mk_k": mk_k, "mk_p": mk_p, "ai_k": ai_k, "ai_p": ai_p, "d": d, "gap": gap,
                     "up_k": max(d, key=d.get) if d else None,
+                    "up": max(d.values(), default=0.0),     # 가장 큰 ▲ (표 'AI 예상'에 보이는 숫자) — 'AI 차이 큰 순' 정렬 기준
                     "differs": bool(ai) and (ai_k != mk_k or gap >= DIFF_PP),
                     "ev": ev, "gems": {k: v for k, v in ev.items() if GEM_ON and ai and v > 0},
                     "best_ev": max(ev.values()) if ev else -1.0}
@@ -2514,8 +2515,8 @@ with tab2:
             s = str(a["m"].get("match_seq", ""))
             return int(s) if s.isdigit() else 0
 
-        if t_sort == "AI 차이 큰 순":   # AI 적용 경기 중 차이 큰 것 먼저, 나머지는 시간순
-            t_rows.sort(key=lambda a: (0 if a["ai"] else 1, -a["gap"], time_key(a["m"]), _seq_n(a)))
+        if t_sort == "AI 차이 큰 순":   # AI 적용 경기 중 가장 큰 ▲(표에 보이는 숫자)가 큰 것 먼저, 나머지는 시간순
+            t_rows.sort(key=lambda a: (0 if a["ai"] else 1, -round(a["up"]), time_key(a["m"]), _seq_n(a)))
         elif t_sort == "기대가치 높은 순":
             t_rows.sort(key=lambda a: -a["best_ev"])
         else:
@@ -2555,16 +2556,25 @@ with tab2:
                 line = f" U/O {lv:g}"
             return f"{type_name(m)}{line}{' ⚡' if m.get('is_single') else ''}"
 
-        def _close_text(m):
-            ct = m.get("close_time")
-            return datetime.fromtimestamp(float(ct) / 1000).strftime("%m.%d %H:%M") if ct else "-"
-
-        def _state_text(a):
-            """발매 중이면 언제 마감인지까지 (마감 시각은 그때만 의미가 있음)"""
-            s = a["state"]
-            if s == "발매 중" and a["m"].get("close_time"):
-                return f"🟢 {_close_text(a['m'])} 마감"
-            return f"{T2_STATE_ICON[s]} {s}" + (" (결과 대기)" if s == "종료" and a["res_key"] is None else "")
+        def _when_text(a):
+            """시간 칸 = 상태 아이콘 + 시작 시각. 발매 중인데 마감이 시작과 다르면(유럽 새벽 경기는 전날 23시) 마감 시각도"""
+            m_ = a["m"]
+            when = re.sub(r"\([^)]*\)\s*", " ", short_when(m_))
+            txt = f"{T2_STATE_ICON[a['state']]} {when}"
+            if a["state"] == "종료" and a["res_key"] is None:
+                return txt + " (결과 대기)"
+            ct = m_.get("close_time")
+            if a["state"] != "발매 중" or not ct:
+                return txt
+            close = datetime.fromtimestamp(float(ct) / 1000)
+            if close.strftime("%m.%d %H:%M") == when:
+                return txt
+            try:
+                days = (datetime(close.year, int(when[:2]), int(when[3:5])).date() - close.date()).days
+            except ValueError:
+                days = None
+            day_txt = "" if days == 0 else ("전날 " if days == 1 else f"{close:%m.%d} ")
+            return txt + f" · {day_txt}{close:%H:%M} 마감"
 
         def _result_text(a):
             if a["res_key"] is None:
@@ -2605,8 +2615,7 @@ with tab2:
         else:
             df_t2 = pd.DataFrame([{
                 "번호": str(a["m"].get("match_seq", "")),
-                "시간": re.sub(r"\([^)]*\)\s*", " ", short_when(a["m"])),
-                "상태": _state_text(a),
+                "시간": _when_text(a),
                 "경기": f"{a['m'].get('home_team', '')} vs {a['m'].get('away_team', '')}",
                 "유형": _type_text(a["m"]),
                 "승 (언더·홀)": _odd_cell(a, "home_win"),
@@ -2620,22 +2629,23 @@ with tab2:
             event = st.dataframe(
                 df_t2, hide_index=True, width="stretch", height=min(38 + 35 * len(df_t2), 422),
                 on_select="rerun", selection_mode="single-row", key=f"tab2_table_{t2_sig}",
-                column_config={"번호": st.column_config.TextColumn(width="small"),
-                               "시간": st.column_config.TextColumn(width="small"),
-                               "상태": st.column_config.TextColumn(width="small"),
-                               "경기": st.column_config.TextColumn(width="medium"),
-                               "유형": st.column_config.TextColumn(width="small"),
+                column_config={"번호": st.column_config.TextColumn(width=52),
+                               "시간": st.column_config.TextColumn(
+                                   width=185, help="🟢 발매 중 · 🔒 마감 · ▶ 경기 중 · ✅ 종료. "
+                                                   "'· 전날 23:00 마감' = 시작보다 일찍 마감하는 경기 (유럽 새벽 경기)"),
+                               "경기": st.column_config.TextColumn(width=192),
+                               "유형": st.column_config.TextColumn(width=104),
                                "승 (언더·홀)": st.column_config.TextColumn(
-                                   width="small", help="홈 승 배당 (언더오버는 언더, 홀짝은 홀, 핸디캡은 핸디 적용 승). "
+                                   width=70, help="홈 승 배당 (언더오버는 언더, 홀짝은 홀, 핸디캡은 핸디 적용 승). "
                                                        "⭐ = AI 1순위 · 🏁 = 실제 결과"),
-                               "무": st.column_config.TextColumn(width="small", help="무승부 배당 (무승부가 없는 유형은 -)"),
+                               "무": st.column_config.TextColumn(width=62, help="무승부 배당 (무승부가 없는 유형은 -)"),
                                "패 (오버·짝)": st.column_config.TextColumn(
-                                   width="small", help="원정 승 배당 (언더오버는 오버, 홀짝은 짝). ⭐ = AI 1순위 · 🏁 = 실제 결과"),
+                                   width=70, help="원정 승 배당 (언더오버는 오버, 홀짝은 짝). ⭐ = AI 1순위 · 🏁 = 실제 결과"),
                                "AI 예상": st.column_config.TextColumn(
-                                   width="medium", help="AI 1순위와 확률. ▲ = 배당보다 높게 본 정도(%p), "
+                                   width=128, help="AI 1순위와 확률. ▲ = 배당보다 높게 본 정도(%p), "
                                                         "⚠️ = AI와 배당의 1순위가 다름. '배당 기준' = AI가 적용되지 않는 유형"),
                                "결과": st.column_config.TextColumn(
-                                   width="small", help="점수 · 결과. ⭕/❌ = 경기 전에 저장한 AI 1순위가 맞았는지")})
+                                   width=78, help="점수 · 결과. ⭕/❌ = 경기 전에 저장한 AI 1순위가 맞았는지")})
             picked_rows = list(event.selection.rows) if event is not None else []
             if picked_rows and picked_rows[0] < len(t_rows):
                 st.session_state["t2_selected_seq"] = str(t_rows[picked_rows[0]]["m"].get("match_seq", ""))
