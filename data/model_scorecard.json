@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-30T02:42:50+00:00",
+  "updated_at": "2026-10-30T03:01:22+00:00",
   "graded_matches": 219,
   "rounds": [
     260126,
@@ -35,12 +35,22 @@
       "ll_diff_ci": [
         -0.0008,
         0.0005
+      ],
+      "fixtures": 31,
+      "ll_diff_ci_fixture": [
+        -0.0008,
+        0.0005
       ]
     },
     "축구 승무패": {
       "n": 99,
       "ll_diff": -0.0113,
       "ll_diff_ci": [
+        -0.0243,
+        0.0025
+      ],
+      "fixtures": 99,
+      "ll_diff_ci_fixture": [
         -0.0243,
         0.0025
       ]
@@ -51,6 +61,11 @@
       "ll_diff_ci": [
         -0.015,
         0.0053
+      ],
+      "fixtures": 5,
+      "ll_diff_ci_fixture": [
+        -0.015,
+        0.0053
       ]
     },
     "축구 핸디캡": {
@@ -59,9 +74,15 @@
       "ll_diff_ci": [
         -0.0085,
         0.0186
+      ],
+      "fixtures": 72,
+      "ll_diff_ci_fixture": [
+        -0.0101,
+        0.0194
       ]
     }
   },
+  "fixtures": 130,
   "hypotheses": [
     {
       "id": "H1",
