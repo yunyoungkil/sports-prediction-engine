@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-30T07:47:20+00:00",
+  "updated_at": "2026-10-30T08:21:03+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -211,7 +211,7 @@
       "rounds_skipped": 1
     },
     "G_ai_bettor": {
-      "label": "G. 자율 AI 베터 (월 10만 원 예산 · 사람형 실전 자금관리)",
+      "label": "G. 자율 AI 베터 (월 10만 원 · 주력 안정 + 소액 복권)",
       "bets": 0,
       "hits": 0,
       "pending": 0,
@@ -229,7 +229,31 @@
       "months_funded": 1,
       "pending_stakes": 0,
       "is_broke": false,
-      "current_month": "2026-10"
+      "can_bet": true,
+      "mode": "normal",
+      "mode_label": "정상",
+      "current_month": "2026-10",
+      "by_slip": {
+        "main": {
+          "label": "주력",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0
+        },
+        "lottery": {
+          "label": "복권",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0
+        }
+      },
+      "sizing": null
     }
   },
   "details": [
@@ -741,6 +765,17 @@
     },
     {
       "gm_ts": "260129",
+      "strategy": "G_v1",
+      "legs": "PSV에인트호번 승 1.02 × 바르셀로나 승 1.04",
+      "odds": 1.1,
+      "stake": 2900,
+      "kickoff": "2026-10-31T20:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260129",
       "strategy": "E_market_fav",
       "legs": "인테르나치오날레 밀라노 승(원정) 1.86",
       "odds": 1.86,
@@ -833,6 +868,17 @@
       "legs": "PSV에인트호번 승 1.02",
       "odds": 1.02,
       "stake": 1000,
+      "kickoff": "2026-10-31T17:45:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260129",
+      "strategy": "G_v1",
+      "legs": "PSV에인트호번 승 1.02 × 페예노르트 승 1.10",
+      "odds": 1.2,
+      "stake": 1200,
       "kickoff": "2026-10-31T17:45:00+00:00",
       "status": "대기",
       "payout": null,

@@ -1882,6 +1882,78 @@
       "ai_note": "포트폴리오 분산 (잔고 100,000원 중 1,200원 투입, AI EV -11.2%)",
       "gm_ts": "260129",
       "created_at": "2026-10-30T07:47:25+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "1433",
+          "key": "away_win",
+          "odds": 1.38,
+          "match_time": "26.10.31 (토) 14:00",
+          "home_team": "미토 홀리호크",
+          "away_team": "산프레체 히로시마",
+          "league": "일본 J1리그"
+        },
+        {
+          "seq": "1696",
+          "key": "home_win",
+          "odds": 1.1,
+          "match_time": "26.11.01 (일) 00:30",
+          "home_team": "페예노르트",
+          "away_team": "포르튀나 시타르트",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 1.6,
+      "stake": 3500,
+      "ev_ai": -0.0775,
+      "p_ai": 0.5766,
+      "edge": 0.0754,
+      "stake_mult": 1.76,
+      "wallet_before": 100000,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:1433a+1696h",
+      "ai_note": "주력 · 잔고 100,000원 중 3,500원(3.5%) · 경기당 AI 우위 +7.5% → 판돈 ×1.8 · AI 기대수익 -7.7% (정상 모드)",
+      "gm_ts": "260129",
+      "created_at": "2026-10-30T08:21:09+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "1561",
+          "key": "draw",
+          "odds": 3.35,
+          "match_time": "26.10.31 (토) 21:30",
+          "home_team": "스토크 시티",
+          "away_team": "프레스턴 노스엔드",
+          "league": "잉글랜드 챔피언십"
+        },
+        {
+          "seq": "1544",
+          "key": "draw",
+          "odds": 3.35,
+          "match_time": "26.10.31 (토) 17:40",
+          "home_team": "맥아서FC",
+          "away_team": "웨스턴시드니 원더러스",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 11.3,
+      "stake": 2000,
+      "ev_ai": -0.0598,
+      "p_ai": 0.0832,
+      "edge": 0.1113,
+      "stake_mult": 2.5,
+      "wallet_before": 100000,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:1561d+1544d",
+      "ai_note": "복권 · 잔고 100,000원 중 2,000원(2.0%) · 경기당 AI 우위 +11.1% → 판돈 ×2.5 · AI 기대수익 -6.0% (정상 모드)",
+      "gm_ts": "260129",
+      "created_at": "2026-10-30T08:21:09+00:00"
     }
   ],
   "f_plan": {
