@@ -302,3 +302,37 @@ def test_g_breakdown_splits_slips():
     assert (b["lottery"]["bets"], b["lottery"]["profit"], b["lottery"]["roi_pct"]) == (1, -1000, -100.0)
     empty = g_breakdown([], 1000, 300)
     assert empty["sizing"] is None and all(v["bets"] == 0 and v["roi_pct"] == 0.0 for v in empty["by_slip"].values())
+
+
+def test_instinct_options_keep_g_default_and_raise_stakes():
+    # 기본값은 실전 G 그대로 · boost는 판돈과 회차 상한을 함께 키움 · protect=False면 15만 원 넘은 몫도 전부 밑천
+    slips = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    base = decide_autonomous_stakes(slips, 100_000)
+    assert base == decide_autonomous_stakes(slips, 100_000, boost=1.0, protect=True)
+    boosted = decide_autonomous_stakes(slips, 100_000, boost=1.4)
+    assert sum(b["stake"] for b in boosted) > sum(b["stake"] for b in base)
+    assert risk_profile(300_000)["risk_capital"] == 225_000 and risk_profile(300_000, protect=False)["risk_capital"] == 300_000
+
+
+def test_chase_lottery_band_picks_higher_odds():
+    normal = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    chase = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW, lottery_band=(15.0, 50.0), lottery_fallback_min=15.0)
+    assert normal[0]["legs"] == chase[0]["legs"]                       # 주력은 같다
+    assert chase[1]["combined_odds"] >= 15.0 > normal[1]["combined_odds"]
+
+
+def test_g_instinct_backtest_boosts_after_a_winning_round():
+    from evaluation.g_instinct_backtest import WIN_BOOST, simulate
+    preds = []
+    for m in FAVS + DRAWS:
+        o = m["betman_odds"]
+        win = "draw" if m in DRAWS else min(KEYS, key=lambda k: o[k])     # 정배·무승부가 모두 맞는 회차 → 두 지갑 다 이김
+        preds.append({**m, "actual": win})
+    st = simulate([(1, NOW, preds), (2, NOW, preds)])
+    g, i = st["G"], st["G_instinct"]
+    assert g["deposited"] == i["deposited"] == 100_000
+    r1 = [b for b in g["bets"] if b["gm_ts"] == "1"]
+    assert r1 and sum(b["payout"] - b["stake"] for b in r1) > 0
+    r2_g = sum(b["stake"] for b in g["bets"] if b["gm_ts"] == "2")
+    r2_i = [b for b in i["bets"] if b["gm_ts"] == "2"]
+    assert all(b["boost"] == WIN_BOOST for b in r2_i) and sum(b["stake"] for b in r2_i) > r2_g

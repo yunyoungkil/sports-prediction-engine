@@ -104,13 +104,13 @@ def _all_months_between(start_month: str, end_month: str) -> List[str]:
     return months
 
 
-def risk_profile(cash: float) -> Dict[str, Any]:
-    """잔고 구간별 위험 한도: 모드 · 주력/복권 기본 비율 · 판돈 배율 상한 · 밑천(수익 보호 반영)"""
+def risk_profile(cash: float, protect: bool = True) -> Dict[str, Any]:
+    """잔고 구간별 위험 한도: 모드 · 주력/복권 기본 비율 · 판돈 배율 상한 · 밑천(수익 보호 반영, protect=False면 잔고 전부)"""
     cash = max(0.0, float(cash))
     for name, upper, main_rate, lottery_rate, max_mult in MODES:
         if cash < upper:
             break
-    capital = cash if cash <= PROTECT_ABOVE else PROTECT_ABOVE + PROTECT_REINVEST * (cash - PROTECT_ABOVE)
+    capital = cash if not protect or cash <= PROTECT_ABOVE else PROTECT_ABOVE + PROTECT_REINVEST * (cash - PROTECT_ABOVE)
     return {"mode": name, "label": MODE_LABEL[name], "main_rate": main_rate, "lottery_rate": lottery_rate,
             "max_mult": max_mult, "risk_capital": capital}
 
@@ -267,7 +267,8 @@ def _best_main(by_match: List[List[Dict[str, Any]]]) -> Optional[Dict[str, Any]]
     return None
 
 
-def _best_lottery(by_match: List[List[Dict[str, Any]]], used_seqs, used_keys) -> Optional[Dict[str, Any]]:
+def _best_lottery(by_match: List[List[Dict[str, Any]]], used_seqs, used_keys, band: Tuple[float, float] = LOTTERY_BAND,
+                  fallback_min: float = LOTTERY_FALLBACK_MIN_ODDS) -> Optional[Dict[str, Any]]:
     """복권: 주력과 경기가 겹치지 않는, AI가 시장보다 높게 본 고배당 선택지 조합 중 AI 기대수익이 가장 큰 조합"""
     pool = [x for legs in by_match for x in legs
             if x["seq"] not in used_seqs and x["match_key"] not in used_keys
@@ -278,14 +279,17 @@ def _best_lottery(by_match: List[List[Dict[str, Any]]], used_seqs, used_keys) ->
         for c in combinations(pool, n):
             if len({x["seq"] for x in c}) == n and len({x["match_key"] for x in c}) == n:    # 같은 경기 두 선택지 불가
                 combos.append(_combo(c))
-    lo, hi = LOTTERY_BAND
+    lo, hi = band
     cand = ([c for c in combos if lo <= c["combined_odds"] <= hi]
-            or [c for c in combos if c["combined_odds"] >= LOTTERY_FALLBACK_MIN_ODDS])
+            or [c for c in combos if c["combined_odds"] >= fallback_min])
     return max(cand, key=lambda c: (c["ev_ai"], c["p_ai"])) if cand else None
 
 
-def find_ai_autonomous_combos(predictions: List[Dict[str, Any]], now: Optional[datetime] = None) -> List[Dict[str, Any]]:
-    """이번 회차에 살 슬립: [주력] 또는 [주력, 복권]. 살 만한 경기가 2개 미만이면 빈 목록(쉼)."""
+def find_ai_autonomous_combos(predictions: List[Dict[str, Any]], now: Optional[datetime] = None,
+                              lottery_band: Tuple[float, float] = LOTTERY_BAND,
+                              lottery_fallback_min: float = LOTTERY_FALLBACK_MIN_ODDS) -> List[Dict[str, Any]]:
+    """이번 회차에 살 슬립: [주력] 또는 [주력, 복권]. 살 만한 경기가 2개 미만이면 빈 목록(쉼).
+    lottery_band: 복권 조합 배당 범위 (G-본능 과거 재현이 '진 다음 고배당'을 흉내 낼 때만 바꾼다)"""
     now = now or datetime.now(timezone.utc)
     by_match = [legs for legs in (_match_legs(m, now) for m in predictions) if legs]
     main = _best_main(by_match)
@@ -293,7 +297,8 @@ def find_ai_autonomous_combos(predictions: List[Dict[str, Any]], now: Optional[d
         return []
     main["slip"] = "main"
     slips = [main]
-    lottery = _best_lottery(by_match, {x["seq"] for x in main["legs"]}, {x["match_key"] for x in main["legs"]})
+    lottery = _best_lottery(by_match, {x["seq"] for x in main["legs"]}, {x["match_key"] for x in main["legs"]},
+                            lottery_band, lottery_fallback_min)
     if lottery is not None:
         lottery["slip"] = "lottery"
         slips.append(lottery)
@@ -316,18 +321,20 @@ def stake_multiplier(conviction: float, ev: float, max_mult: float) -> float:
     return max(MULT_MIN, min(float(max_mult), m))
 
 
-def decide_autonomous_stakes(slips: List[Dict[str, Any]], wallet_cash: int) -> List[Dict[str, Any]]:
+def decide_autonomous_stakes(slips: List[Dict[str, Any]], wallet_cash: int, boost: float = 1.0,
+                             protect: bool = True) -> List[Dict[str, Any]]:
     """
     지갑 잔고·AI 우위로 슬립별 판돈을 정한다 (100원 단위).
     - 잔고 100원 미만: 0건 (쉼).
     - 비상 절전(3만 원 미만): 주력만, 잔고의 1.5% 이하 (100~450원). 방어(7만 원 미만): 판돈 배율 1.5배까지. 정상: 2.5배까지.
     - 한 회차 합계는 밑천의 10% 이하 · 잔고 이하 · 10만 원 이하. 넘으면 비례 축소, 그래도 넘으면 복권부터 뺀다.
     - 모든 베팅은 `validate_combo`(2~10폴더, 같은 경기 중복 불가, 100원 단위, 회차 합계 한도)를 통과해야 한다.
+    - boost·protect는 G-본능 과거 재현용 (이긴 뒤 판돈·회차 상한 ×boost, protect=False면 수익 보호 없음). 실전 G는 기본값.
     """
     cash = int(wallet_cash)
     if cash < MIN_STAKE or not slips:
         return []
-    prof = risk_profile(cash)
+    prof = risk_profile(cash, protect)
     capital = prof["risk_capital"]
     wanted = []
     for s in slips:
@@ -336,11 +343,11 @@ def decide_autonomous_stakes(slips: List[Dict[str, Any]], wallet_cash: int) -> L
         if rate <= 0:
             continue
         mult = stake_multiplier(s.get("conviction", 0.0), s.get("ev_ai", 0.0), prof["max_mult"])
-        wanted.append((s, slip, mult, max(MIN_STAKE, int(capital * rate * mult // 100 * 100))))
+        wanted.append((s, slip, mult, max(MIN_STAKE, int(capital * rate * mult * boost // 100 * 100))))
     if not wanted:
         return []
 
-    limit = min(ROUND_LIMIT, max(MIN_STAKE, int(capital * ROUND_CAP) // 100 * 100), cash // 100 * 100)
+    limit = min(ROUND_LIMIT, max(MIN_STAKE, int(capital * ROUND_CAP * boost) // 100 * 100), cash // 100 * 100)
     stakes = [w[3] for w in wanted]
     if sum(stakes) > limit:
         f = limit / sum(stakes)
