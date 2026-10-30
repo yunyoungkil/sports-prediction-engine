@@ -508,6 +508,14 @@ def commas(df: pd.DataFrame, *cols: str) -> pd.DataFrame:
     return df
 
 
+def signed(x: float, nd: int = 4, plus: bool = True) -> str:
+    """부호 있는 소수 — 반올림하면 0인 값에 '-0.0000'처럼 부호가 붙지 않게 '0.0000'으로"""
+    v = round(float(x), nd)
+    if v == 0:
+        return f"{0:.{nd}f}"
+    return f"{v:+.{nd}f}" if plus else f"{v:.{nd}f}"
+
+
 def won(pct: float) -> str:
     """환급률 % → 1만 원당 돌아오는 돈"""
     return f"{pct * 100:,.0f}원"
@@ -558,8 +566,9 @@ def render_conclusion(card, scan, stale) -> None:
     a3 = (f"AI 실전 채점이 **{n:,} / 300경기**예요. " + ("300경기가 모이면 1차 판정이 나와요." + eta_text(card)
                                                     if n < 300 else "판정이 나왔어요 — 아래 🔒 표를 보세요."))
     if stale and stale.get("value"):
-        a3 += (f" '베트맨이 해외 배당을 늦게 따라가는지' 확인은 **{stale['value'].get('matches', 0)} / 100경기**예요"
-               f" (지금까지: {stale.get('verdict', '-')}).")
+        n_st = stale["value"].get("matches", 0)
+        a3 += (f" '베트맨이 해외 배당을 늦게 따라가는지' 확인은 **끝났어요** ({n_st:,}경기): {stale.get('verdict', '-')}." if n_st >= 100
+               else f" '베트맨이 해외 배당을 늦게 따라가는지' 확인은 **{n_st} / 100경기**예요 (지금까지: {stale.get('verdict', '-')}).")
     with st.container(border=True):
         st.markdown("#### 🧭 지금 결론 — 이것만 보면 돼요")
         st.markdown(f"**Q1. AI 추천대로 사도 되나요?**  \n{a1}")
@@ -595,7 +604,7 @@ def render_glossary() -> None:
 
 def render_margin_tables(scan) -> None:
     """💰 베트맨이 떼어가는 몫 — 배당대별 실제 환급률 + 유형별 표"""
-    st.subheader("💰 베트맨이 떼어가는 몫")
+    st.subheader("💰 베트맨이 떼어가는 몫", anchor="t3-margin")
     if not scan:
         st.info("아직 표가 없어요 (매주 재학습 때 만들어져요).")
         return
@@ -2358,7 +2367,7 @@ with tab2:
                 for label, s in status["evals"]:
                     ci = s.get("ll_diff_ci", [None, None])
                     st.markdown(f"- **{status['name']} · {label}** ({s['samples']:,}경기): AI `{s['model_ll']:.4f}` vs 배당 "
-                                f"`{s['market_ll']:.4f}` (차이 `{s['ll_diff']:+.4f}`, 95% 범위 `[{ci[0]:+.4f}, {ci[1]:+.4f}]`)")
+                                f"`{s['market_ll']:.4f}` (차이 `{signed(s['ll_diff'], 4)}`, 95% 범위 `[{signed(ci[0], 4)}, {signed(ci[1], 4)}]`)")
                 st.caption("Log loss는 낮을수록 정확하고, 차이가 음수면 AI가 배당보다 정확했다는 뜻이에요. "
                            "유형별 시험 결과와 실전 성적은 ③ 성과 검증 탭에서 확인하세요.")
 
@@ -2906,6 +2915,14 @@ with tab3:
     SCORE_MIN, CLV_MIN, PAPER_MIN = 300, 50, 300   # 판정에 필요한 표본 (scorecard · clv · paper_trading 과 같은 기준)
     scan = load_market_scan()
 
+    # 바로가기 — 이 탭은 아주 길어서 구역으로 바로 이동 (구역 제목의 anchor와 같은 이름)
+    T3_NAV = (("t3-ai-test", "🔒 AI 시험"), ("t3-margin", "💰 떼어가는 몫"), ("t3-scorecard", "🏅 AI 성적표"),
+              ("t3-clv", "📈 마감 배당"), ("t3-league", "🧪 가상 베팅"))
+    st.markdown("<div style='display:flex;flex-wrap:wrap;gap:6px;padding-bottom:10px'>" + "".join(
+        f"<a href='#{a}' target='_self' style='text-decoration:none;color:inherit;font-size:13px;padding:3px 10px;"
+        f"border:1px solid rgba(148,163,184,.35);border-radius:14px;white-space:nowrap'>{t}</a>" for a, t in T3_NAV)
+        + "</div>", unsafe_allow_html=True)
+
     # [6.6] 🧭 지금 결론 — 그래서 어떻게 판단하나 (쉬운 말)
     render_conclusion(card, scan, load_stale_odds())
     render_glossary()
@@ -2928,7 +2945,8 @@ with tab3:
             f"<div style='font-size:14px;line-height:1.6;margin:8px 0'>{sentence}</div>"
             f"<div style='height:6px;border-radius:3px;background:rgba(148,163,184,.2)'>"
             f"<div style='width:{pct * 100:.0f}%;height:100%;border-radius:3px;background:{fg}'></div></div>"
-            f"<div style='font-size:12px;opacity:.7;margin-top:4px'>{('판정까지' if n < target else '기준 도달')}: {unit} {n:,} / {target:,}</div></div>")
+            f"<div style='font-size:12px;opacity:.7;margin-top:4px'>"
+            + (f"판정까지: {unit} {n:,} / {target:,}" if n < target else f"✅ 기준({target:,}) 도달: {unit} {n:,}") + "</div></div>")
 
     summary = []
     # (1) AI가 배당보다 정확한가? — 공식 성적표
@@ -2962,16 +2980,18 @@ with tab3:
         else:
             kind, chip_txt = "neutral", "뚜렷한 방향 없음"
         def _clv_basis(c):
-            """판정 근거: 판정은 '비율'이 아니라 AI ▲ 쪽 확률의 평균 변화와 그 95% 범위로 해요 (사전에 정한 기준)"""
+            """판정 근거를 쉬운 말로 — 판정은 비율이 아니라 AI ▲ 쪽 확률의 평균 변화와 그 95% 범위로 해요 (사전에 정한 기준)"""
             m_ = c.get("mean_move_pp") or {}
             if m_.get("mean") is None or not m_.get("ci"):
                 return ""
-            return (f" 판정은 비율이 아니라 AI ▲ 쪽 확률의 평균 변화로 해요: {m_['mean']:+.2f}%p "
-                    f"(95% 범위 {m_['ci'][0]:+.2f} ~ {m_['ci'][1]:+.2f}"
-                    + (f" · 같은 대진의 게임번호는 한 묶음으로 계산, 대진 {m_['clusters']:,}개" if m_.get("clusters") else "") + ").")
+            lo_, hi_ = m_["ci"]
+            meaning = ("범위 전체가 0보다 아래 → 시장은 AI와 반대로 갔어요" if hi_ < 0
+                       else "범위 전체가 0보다 위 → 시장이 AI를 따라왔어요" if lo_ > 0
+                       else "범위가 0을 걸쳐 아직 방향을 말하기 어려워요")
+            return (f" AI가 '배당보다 높다'고 본 쪽의 확률은 마감 때 평균 <b>{m_['mean']:+.2f}%p</b> 움직였어요 "
+                    f"(운을 감안한 범위 {lo_:+.2f} ~ {hi_:+.2f}%p · {meaning}).")
         sent = (f"배당이 바뀐 {moved}경기 중 <b>{clv.get('toward_ai', 0)}경기가 AI 쪽</b>으로 움직였어요"
-                + (f" ({clv['toward_ai_pct']:.0f}% · 비교 기준 {clv['fav_toward_pct']:.0f}%)."
-                   if clv.get("toward_ai_pct") is not None and clv.get("fav_toward_pct") is not None else ".")
+                + (f" ({clv['toward_ai_pct']:.0f}%)." if clv.get("toward_ai_pct") is not None else ".")
                 + (_clv_basis(clv) if moved >= CLV_MIN else ""))
     else:
         kind, chip_txt, sent = "wait", "검증 중", "아직 비교할 경기가 없어요. AI 기록이 있는 경기가 마감되면 쌓여요."
@@ -2990,10 +3010,9 @@ with tab3:
     else:
         kind, chip_txt = "bad", "수익 미입증"
     past_txt = " · ".join(f"{v['label'].split(' (')[0]} <b>{v['roi_pct']:+.0f}%</b>" for v in past.values() if v["bets"])
-    # 전략 B·C는 후보가 겹쳐 같은 베팅이 나올 수 있으므로, 같은 경기 조합은 한 번만 센다
-    _uniq = {(d["gm_ts"], d["legs"]): d["status"] != "대기" for d in (pt or {}).get("details", [])}
-    uniq_done, uniq_wait = sum(1 for x in _uniq.values() if x), sum(1 for x in _uniq.values() if not x)
-    sent = (f"실시간 가상 베팅: 끝난 {uniq_done:,}건 · 결과 대기 {uniq_wait:,}건."
+    # 건수는 아래 리그 표와 같은 셈 — 전략별 합계 (폐기한 전략은 빠짐 · 표의 '끝난 베팅'·'결과 대기' 열을 더한 값)
+    live_sum = sum(v["bets"] for v in live.values())
+    sent = (f"실시간 가상 베팅: 끝난 {live_sum:,}건 · 결과 대기 {live_wait:,}건 (전략별 합계)."
             + (f"<br>과거 재현: {past_txt}" + (" → 배당만 보는 전략은 모두 손실이에요." if all(v["roi_pct"] < 0 for v in past.values() if v["bets"]) else "")
                if past_txt else ""))
     summary.append(_summary_card("🧪 돈을 버는 전략이 있나?", kind, chip_txt, sent, live_done, PAPER_MIN, "전략별 끝난 베팅(최다)"))
@@ -3004,7 +3023,7 @@ with tab3:
     # 🔒 추천 잠금 (섀도 모드) — 검증 3단계 · 사전 등록 가설 (Phase 6.5, 6.6 쉬운 말)
     # ------------------------------------------------------------------
     st.divider()
-    st.subheader("🔒 AI 시험 진행 상황")
+    st.subheader("🔒 AI 시험 진행 상황", anchor="t3-ai-test")
     st.caption("AI 추천(💎 · 추천 픽 · 조합 찾기)은 아래 시험 3개를 **모두** 통과해야 켜져요. 그동안에도 AI는 뒤에서 계속 예측하고 "
                "채점받아요(섀도 모드). 시험 기준은 2026-10-27에 미리 정했고, 결과를 보고 바꾸지 않아요.")
     for s in REC_STATUS["stages"]:
@@ -3025,7 +3044,7 @@ with tab3:
                     "2026-10-28 이후 경기만 세고, 300경기부터 판정, 600경기에서도 확인 안 되면 접어요.")
         st.dataframe(pd.DataFrame([{
             "예상": f"{h['id']} {h['name']}", "모인 경기": f"{h['n']} / 300",
-            "AI − 배당 (음수 = AI가 더 잘 맞힘)": f"{h['ll_diff']:+.4f}" if h.get("ll_diff") is not None else "-",
+            "AI − 배당 (음수 = AI가 더 잘 맞힘)": f"{signed(h['ll_diff'], 4)}" if h.get("ll_diff") is not None else "-",
             "판정": h["verdict"]} for h in hyps]), hide_index=True, width="stretch")
     shadows = (card or {}).get("shadow") or {}
     if shadows:
@@ -3033,8 +3052,8 @@ with tab3:
                     "(과거 5구간 시험 14,722경기 전승 · −0.00066). 공식 성적표 300경기 1차 판정 직후 자동 교체 예정이에요.")
         st.dataframe(pd.DataFrame([{
             "후보 모델": name, "같은 실전 경기": f"{sh['n']:,}경기",
-            "후보 − 지금 AI (음수 = 후보가 더 정확)": f"{sh['ll_diff_vs_model']:+.5f}" if sh.get("ll_diff_vs_model") is not None else "-",
-            "95% 범위": f"[{sh['ci'][0]:+.5f}, {sh['ci'][1]:+.5f}]" if sh.get("ci") else "-",
+            "후보 − 지금 AI (음수 = 후보가 더 정확)": f"{signed(sh['ll_diff_vs_model'], 5)}" if sh.get("ll_diff_vs_model") is not None else "-",
+            "95% 범위": f"[{signed(sh['ci'][0], 5)}, {signed(sh['ci'][1], 5)}]" if sh.get("ci") else "-",
             "상태": sh.get("verdict", "-")} for name, sh in shadows.items()]), hide_index=True, width="stretch")
 
     # [6.6] 💰 베트맨이 떼어가는 몫 — 유형별 · 배당대별 (덜 손해 보는 쪽 판단용)
@@ -3045,7 +3064,7 @@ with tab3:
     # A. 공식 AI 성적표 — 경기 시작 전에 고정 저장한 예측만 실제 결과로 채점 (사후 정보 없음)
     # ------------------------------------------------------------------
     st.divider()
-    st.subheader("🏅 공식 AI 성적표")
+    st.subheader("🏅 공식 AI 성적표", anchor="t3-scorecard")
     st.caption("경기 시작 전에 저장해 둔 AI 확률(data/history/prediction_log)만 실제 결과로 채점해요. "
                "학습에 쓰지 않은 진짜 실전 성적이라 AI 실력의 공식 지표예요.")
     if card and card.get("model_ll") is not None:
@@ -3056,7 +3075,7 @@ with tab3:
              (f"판정까지 {SCORE_MIN - n_g:,}경기 남음 · " if n_g < SCORE_MIN else "") + f"회차 {len(card.get('rounds', []))}개"
              + (f" · 서로 다른 대진 {card['fixtures']:,}개" if card.get("fixtures") else "")),
             ("🎯 정확도 점수 (낮을수록 좋음)", f"AI {card['model_ll']:.3f}", f"배당 {card['market_ll']:.3f}"),
-            ("⚖️ AI − 배당", f"<span style='color:{d_color}'>{card['ll_diff']:+.4f}</span>",
+            ("⚖️ AI − 배당", f"<span style='color:{d_color}'>{signed(card['ll_diff'], 4)}</span>",
              f"음수면 AI가 더 정확 · 95% 범위 [{ci[0]:+.3f}, {ci[1]:+.3f}]"),
             ("✅ AI 1순위 적중률", f"{card.get('hit_rate_top_pick', 0):.1f}%", "참고용 (배당 1순위도 비슷하게 맞아요)"),
         ])
@@ -3066,7 +3085,7 @@ with tab3:
             st.markdown(
                 "<div style='padding-bottom:10px;font-size:14px;line-height:1.7'>🎚️ <b>보정 지표</b> (확률의 크기가 맞는지) · "
                 f"Brier AI <b>{cm['brier_ai']:.3f}</b> vs 배당 {cm['brier_market']:.3f} "
-                f"(차이 <span style='color:{'#34d399' if cd < 0 else '#f87171'}'>{cd:+.4f}</span>, 95% 범위 [{cm['brier_diff_ci'][0]:+.4f}, {cm['brier_diff_ci'][1]:+.4f}])"
+                f"(차이 <span style='color:{'#34d399' if cd < 0 else '#f87171'}'>{signed(cd, 4)}</span>, 95% 범위 [{signed(cm['brier_diff_ci'][0], 4)}, {signed(cm['brier_diff_ci'][1], 4)}])"
                 + (f" · ECE AI <b>{cm['ece_ai']:.1f}%p</b> vs 배당 {cm['ece_market']:.1f}%p" if cm.get("ece_ai") is not None else "")
                 + "<br><span style='opacity:.7;font-size:12px'>둘 다 낮을수록 좋아요. Brier = 확률 예측의 평균 오차, ECE = AI가 말한 확률과 실제로 일어난 비율의 평균 차이. "
                 "정확도(위 점수)가 비슷해도 보정이 좋은 쪽이 베팅에는 유리하다는 연구가 있어 함께 봐요 (판정 기준은 정확도 그대로). 경기가 적을 때는 ECE가 구간당 선택지 수십 개로 계산돼 크게 흔들리니, Brier의 범위와 함께 참고만 하세요.</span></div>",
@@ -3116,8 +3135,8 @@ with tab3:
             with st.expander("유형별 성적 (어느 유형에서 AI가 앞서는지)"):
                 st.dataframe(commas(pd.DataFrame([
                     {"유형": gt, "채점한 경기": v["n"], "서로 다른 대진": v.get("fixtures", v["n"]),
-                     "AI − 배당 (음수 = AI 우세)": f"{v['ll_diff']:+.4f}",
-                     "95% 범위": f"[{v['ll_diff_ci'][0]:+.4f}, {v['ll_diff_ci'][1]:+.4f}]"}
+                     "AI − 배당 (음수 = AI 우세)": f"{signed(v['ll_diff'], 4)}",
+                     "95% 범위": f"[{signed(v['ll_diff_ci'][0], 4)}, {signed(v['ll_diff_ci'][1], 4)}]"}
                     for gt, v in sorted(card["by_game_type"].items(), key=lambda x: -x[1]["n"])]), "채점한 경기", "서로 다른 대진"),
                     hide_index=True, width="stretch")
                 st.caption("같은 경기의 승무패·핸디캡은 따로 세어져서 '채점한 경기'가 '서로 다른 대진'보다 많아요. 유형마다 AI 모델이 달라서 "
@@ -3136,7 +3155,7 @@ with tab3:
                 for label, s in status["evals"]:
                     ci_b = s.get("ll_diff_ci", [None, None])
                     rows_bt.append({"시험": label, "경기 수": s["samples"], "AI 점수": s["model_ll"], "배당 점수": s["market_ll"],
-                                    "AI − 배당": f"{s['ll_diff']:+.4f}", "95% 범위": f"[{ci_b[0]:+.4f}, {ci_b[1]:+.4f}]"})
+                                    "AI − 배당": f"{signed(s['ll_diff'], 4)}", "95% 범위": f"[{signed(ci_b[0], 4)}, {signed(ci_b[1], 4)}]"})
                 st.dataframe(commas(pd.DataFrame(rows_bt), "경기 수"), width="stretch", hide_index=True)
             if mm and mm.get("segments"):
                 st.markdown("**전 종목 보정 AI** — 유형별 시험 (핸디캡·언더오버·홀짝·농구·야구·배구 …)")
@@ -3151,11 +3170,11 @@ with tab3:
                         "유형": gt + (" (무 있음)" if k == "3" and "승무패" not in gt else ""),
                         "AI 계산": "✅ 계산(섀도)" if v.get("passes_gate") else ("⏳ 표본 부족" if v.get("reason") else "❌ 배당 기준"),
                         "2026 시험 경기": t["n"] if t else v["sizes"]["test"],
-                        "2026 시험 AI − 배당": f"{t['ll_diff']:+.4f}" if t else "-",
-                        "95% 범위": f"[{t['ll_diff_ci'][0]:+.4f}, {t['ll_diff_ci'][1]:+.4f}]" if t else "-",
+                        "2026 시험 AI − 배당": f"{signed(t['ll_diff'], 4)}" if t else "-",
+                        "95% 범위": f"[{signed(t['ll_diff_ci'][0], 4)}, {signed(t['ll_diff_ci'][1], 4)}]" if t else "-",
                         "최근 실전 경기": h["n"] if h else 0,
-                        "최근 실전 AI − 배당": f"{h['ll_diff']:+.4f}" if h else "-",
-                        "강팀 저평가 정도 (β)": f"{v['eval_params']['beta']:.3f}" if v.get("eval_params") else "-",
+                        "최근 실전 AI − 배당": f"{signed(h['ll_diff'], 4)}" if h else "-",
+                        "강팀 저평가 정도 (β)": signed(v['eval_params']['beta'], 3, plus=False) if v.get("eval_params") else "-",
                     })
                 seg_rows.sort(key=lambda r: (not r["AI 계산"].startswith("✅"), -r["2026 시험 경기"]))
                 st.dataframe(commas(pd.DataFrame(seg_rows), "2026 시험 경기", "최근 실전 경기"), hide_index=True, width="stretch")
@@ -3165,7 +3184,7 @@ with tab3:
     # B. 마감 배당 비교 (CLV) — 시장이 나중에 AI 쪽으로 움직였는가
     # ------------------------------------------------------------------
     st.divider()
-    st.subheader("📈 마감 배당 비교")
+    st.subheader("📈 마감 배당 비교", anchor="t3-clv")
     st.caption("AI가 '배당보다 높다(▲)'고 본 쪽으로, 마감 때까지 다른 배터들의 돈이 몰렸는지 봐요. 몰렸다면 AI가 시장보다 먼저 맞게 본 거예요. "
                "배당 변화는 1시간마다 기록해요.")
     if clv.get("matches"):
@@ -3179,7 +3198,8 @@ with tab3:
             ("📊 AI ▲ 쪽 평균 확률 변화", f"{mv['mean']:+.2f}%p" if mv.get("mean") is not None else "-",
              f"95% 범위 [{mv['ci'][0]:+.2f}, {mv['ci'][1]:+.2f}]" if mv.get("ci") else ""),
         ])
-        says = (f"💬 배당이 바뀐 {moved}경기 중 {clv.get('toward_ai', 0)}경기가 AI 쪽으로 움직였어요. "
+        says = (f"💬 배당이 바뀐 {moved}경기 중 {clv.get('toward_ai', 0)}경기"
+                + (f"({clv['toward_ai_pct']:.0f}%)" if clv.get("toward_ai_pct") is not None else "") + "가 AI 쪽으로 움직였어요. "
                 + (f"{CLV_MIN}경기가 모이면 판정해요." if moved < CLV_MIN else f"판정: {clv.get('verdict', '-')}.{_clv_basis(clv)}"))
         g = clv.get("gem_clv_pct") or {}
         if g.get("n"):
@@ -3193,7 +3213,7 @@ with tab3:
     # C. 가상 베팅 리그 — 전략별 자동 가상 베팅 (실제 구매 없음)
     # ------------------------------------------------------------------
     st.divider()
-    st.subheader("🧪 가상 베팅 리그")
+    st.subheader("🧪 가상 베팅 리그", anchor="t3-league")
     st.caption("전략마다 경기 시작 전에 가상으로 걸어 두고 결과가 나오면 자동으로 채점해요 (실제 구매 없음 · A~E는 1,000원 고정, "
                "F는 가상 지갑 10만 원에서 1/4 켈리로 최적 금액을 정하고 이득이 없으면 쉼, "
                "G는 월 10만 원 지갑으로 매 회차 안정 조합 1장 + 소액 복권 1장을 사람처럼 사고 금액은 AI가 정함, "
@@ -3219,7 +3239,7 @@ with tab3:
 
     league_rows = _league_rows(live, "실시간") if live else []
     if past:
-        league_rows += _league_rows(past, f"과거 재현 ({bf['rounds'][0]}~{bf['rounds'][1]})")
+        league_rows += _league_rows(past, "과거 재현")
     if not league_rows:
         st.info("⏳ 아직 가상 베팅 기록이 없어요. 다음 파이프라인 실행부터 쌓여요.")
     else:
@@ -3288,13 +3308,13 @@ with tab3:
                 + "</div></div>", unsafe_allow_html=True)
         st.dataframe(pd.DataFrame(league_rows), hide_index=True, width="stretch",
                      column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized"),
-                                    "판정": st.column_config.TextColumn(width="small", help="수익 입증 = 300건 이상 + 수익률 95% 범위 아래 끝 > 0"),
+                                    "판정": st.column_config.TextColumn(help="수익 입증 = 300건 이상 + 수익률 95% 범위 아래 끝 > 0"),
                                     "마감 대비 배당": st.column_config.TextColumn(
                                         help="산 배당 ÷ 마감 배당 − 1 의 경기 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것")})
         st.caption("실시간: 경기 시작 전에 고정 저장한 베팅 (2026-10-26, 260127회차부터). "
                    "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당과 실제 결과로 재현 — "
                    "AI 전략(A·B·C·F·G)은 지금 AI가 그 결과까지 학습했기 때문에 여기서는 실시간으로만 채점해요. "
-                   "B와 C는 후보가 겹쳐 같은 베팅이 나올 수 있어요 (위쪽 '끝난 베팅' 합계는 같은 베팅을 한 번만 세요).")
+                   "B와 C는 후보가 겹쳐 같은 베팅이 나올 수 있어요 (건수는 전략마다 따로 세요).")
         # 누적 수익률(%) 그래프 — 과거 재현과 실시간을 따로 (베팅 수가 수십 배 달라 한 축에 그리면 실시간 선이 묻힘)
         # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교
         # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용 1~5번, 대시보드 배경에서 검사 통과)
@@ -3349,7 +3369,10 @@ with tab3:
 
         # 개별 베팅 내역
         with st.expander("📜 가상 베팅 내역 (회차·전략·결과별)", expanded=False):
-            det = [{**d, "구분": "실시간", "전략명": STRATEGY_LABELS.get(d["strategy"], d["strategy"])}
+            def _short(lab: str) -> str:
+                return lab if "폐기" in lab else lab.split(" (")[0]     # 'G. 자율 AI 베터 (월 10만 원 · …)' → 'G. 자율 AI 베터'
+
+            det = [{**d, "구분": "실시간", "전략명": _short(STRATEGY_LABELS.get(d["strategy"], d["strategy"]))}
                    for d in (pt or {}).get("details", [])]
             det += [{**d, "구분": "과거 재현", "전략명": BACKFILL_LABEL_MAP.get(d["strategy"], d["strategy"])}
                     for d in (bf or {}).get("details", [])]
@@ -3365,9 +3388,10 @@ with tab3:
                 rnd_sel = h2.selectbox("회차", ["전체"] + sorted(ddf["gm_ts"].unique(), reverse=True), key="pt_round")
                 if rnd_sel != "전체":
                     ddf = ddf[ddf["gm_ts"] == rnd_sel]
-                stg_sel = h3.selectbox("전략", ["전체"] + sorted(ddf["전략명"].unique()), key="pt_strategy")
-                if stg_sel != "전체":
-                    ddf = ddf[ddf["전략명"] == stg_sel]
+                retired = ddf["전략명"].str.contains("폐기")
+                stg_sel = h3.selectbox("전략", ["전체"] + sorted(ddf.loc[~retired, "전략명"].unique()) + sorted(ddf.loc[retired, "전략명"].unique()),
+                                       key="pt_strategy", help="폐기한 전략(지금 G에 합쳐진 G′·H′ 등)의 베팅은 여기서 골랐을 때만 보여요")
+                ddf = ddf[ddf["전략명"] == stg_sel] if stg_sel != "전체" else ddf[~retired]
                 res_sel = h4.selectbox("결과", ["전체", "적중", "미적중", "대기"], key="pt_status")
                 if res_sel != "전체":
                     ddf = ddf[ddf["status"] == res_sel]
@@ -3380,11 +3404,14 @@ with tab3:
                 done_mask = ddf["status"] != "대기"
                 # 환급 = 돌려받은 돈(적중 시 배당 × 금액, 미적중 0), 손익 = 환급 − 건 돈 (적중 1.62배 × 1,000원 → 환급 1,620 · 손익 +620)
                 view = pd.DataFrame({
-                    "구분": ddf["구분"], "회차": ddf["gm_ts"], "전략": ddf["전략명"], "베팅 내용": ddf["legs"],
-                    "배당": ddf["odds"], "건 돈(원)": ddf["stake"], "결과": ddf["status"].map(mark),
-                    "환급(원)": [f"{int(p):,}" if d else "-" for p, d in zip(ddf["payout"], done_mask)],
+                    "구분": ddf["구분"], "회차": ddf["gm_ts"], "전략": ddf["전략명"], "결과": ddf["status"].map(mark),
                     "손익(원)": [f"{int(p):+,}" if d else "-" for p, d in zip(ddf["profit"], done_mask)],
+                    "배당": ddf["odds"], "건 돈(원)": ddf["stake"],
+                    "환급(원)": [f"{int(p):,}" if d else "-" for p, d in zip(ddf["payout"], done_mask)],
+                    "베팅 내용": ddf["legs"],
                 })
+                if view["구분"].nunique() <= 1:
+                    view = view.drop(columns="구분")      # 한 가지뿐이면 같은 글자만 반복돼서 숨김
                 st.dataframe(view.head(500), hide_index=True, width="stretch",
                              column_config={"배당": st.column_config.NumberColumn(format="%.2f배"),
                                             "건 돈(원)": st.column_config.NumberColumn(format="localized"),
@@ -3455,7 +3482,7 @@ KIND_STYLE = {"real": ("rgba(59,130,246,.18)", "#60a5fa"), "paper": ("rgba(148,1
 
 def _chip(text, bg, fg):
     return (f"<span style='display:inline-block;padding:1px 8px;border-radius:6px;font-size:12px;font-weight:700;"
-            f"background:{bg};color:{fg}'>{text}</span>")
+            f"white-space:nowrap;background:{bg};color:{fg}'>{text}</span>")
 
 
 def _toggle_kind(slip_id, kind):
@@ -4096,8 +4123,8 @@ with st.sidebar:
             a.markdown(
                 "<div style='font-size:12px;padding:4px 0;border-top:1px solid rgba(148,163,184,.15)'>"
                 "<div style='display:flex;justify-content:space-between;align-items:center;gap:6px'>"
-                f"<span>{_chip(KIND_LABEL[slip_kind(s)][:2], *KIND_STYLE[slip_kind(s)])} {s.get('saved_at', '')[5:]} "
-                f"· {gr['stake']:,}원</span>{_chip(txt, bg, fg)}</div>"
+                f"<span style='white-space:nowrap'>{_chip(KIND_LABEL[slip_kind(s)][:2], *KIND_STYLE[slip_kind(s)])} "
+                f"{s.get('saved_at', '')[5:10]} · {gr['stake']:,}원</span>{_chip(txt, bg, fg)}</div>"
                 f"<div title='{games_txt}' style='opacity:.8;margin-top:3px;white-space:nowrap;overflow:hidden;"
                 f"text-overflow:ellipsis'>{games_txt}</div></div>", unsafe_allow_html=True)
             b.button("›", key=f"side_open_{s['id']}", type="tertiary", on_click=_open_record, args=(s["id"],))
