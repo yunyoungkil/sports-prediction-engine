@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-30T05:01:05+00:00",
+  "updated_at": "2026-10-30T05:42:56+00:00",
   "graded_matches": 237,
   "rounds": [
     260126,
@@ -26,8 +26,8 @@
   "gem_roi_ci_low": 0.0,
   "gem_roi_ci_high": 0.0,
   "prob_sources": {
-    "betman_markets": 138,
-    "betman_corrector": 99
+    "betman_corrector": 99,
+    "betman_markets": 138
   },
   "by_game_type": {
     "농구 SUM": {
@@ -110,6 +110,56 @@
     }
   },
   "fixtures": 136,
+  "calibration_metrics": {
+    "n": 237,
+    "brier_ai": 0.5652,
+    "brier_market": 0.5677,
+    "brier_diff": -0.0025,
+    "brier_diff_ci": [
+      -0.0071,
+      0.0024
+    ],
+    "ece_ai": 4.08,
+    "ece_market": 1.52
+  },
+  "calibration_by_game_type": {
+    "농구 승패": {
+      "n": 37,
+      "brier_ai": 0.448,
+      "brier_market": 0.448,
+      "brier_diff": 0.0,
+      "brier_diff_ci": [
+        -0.0005,
+        0.0006
+      ],
+      "ece_ai": 11.97,
+      "ece_market": 11.97
+    },
+    "축구 승무패": {
+      "n": 99,
+      "brier_ai": 0.5738,
+      "brier_market": 0.5803,
+      "brier_diff": -0.0065,
+      "brier_diff_ci": [
+        -0.0139,
+        0.0015
+      ],
+      "ece_ai": 5.43,
+      "ece_market": 3.89
+    },
+    "축구 핸디캡": {
+      "n": 84,
+      "brier_ai": 0.624,
+      "brier_market": 0.6223,
+      "brier_diff": 0.0017,
+      "brier_diff_ci": [
+        -0.0072,
+        0.0109
+      ],
+      "ece_ai": 3.19,
+      "ece_market": 5.37
+    }
+  },
   "hypotheses": [
     {
       "id": "H1",
