@@ -49,7 +49,8 @@ sports-prediction-engine/
 ├── dashboard/  notifier/      # 화면 · 알림
 ├── data/                      # 봇이 커밋하는 결과 (아래 4번)
 ├── tests/                     # pytest
-└── README.md  TODO.md  REVIEW.md  GEMINI.md  ROADMAP.md  ARCHITECTURE.md  .agents/skills/sports-prediction-engine/SKILL.md
+└── CLAUDE.md  GEMINI.md  README.md  TODO.md  REVIEW.md  ROADMAP.md  ARCHITECTURE.md  .agents/skills/sports-prediction-engine/SKILL.md
+    # CLAUDE.md = 매 세션 자동으로 읽는 짧은 핵심 규칙 (GEMINI.md 맨 위 블록과 같은 내용, 테스트가 일치 확인)
 ```
 
 ### collector/ — 수집

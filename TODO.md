@@ -589,6 +589,12 @@
   - 증상: 파이프라인 수동 실행(run 40826140146)에서 베트맨 결과 API가 5개 회차(260121·122·123·127·128)에서 `The read operation timed out` → 코드가 이를 '경기 0건'으로 받아들여 그 회차의 기존 결과를 통째로 삭제(3,094→2,750건). 성적표 채점이 157→27경기로 줄고 운영 점검(7단계)이 실패로 끝남
   - 수정 (`collector/betman_results_scraper.py` `sync_recent_results`): 조회가 비어 있으면(시간 초과·빈 응답) 그 회차의 기존 결과를 그대로 유지, 조회에 성공한 회차는 지금처럼 새 값으로 갱신(정정 반영). 끝난 경기 결과는 사라지지 않으므로 안전
   - 확인: 테스트 2개 추가(빈 조회 보존 · 성공 시 upsert 유지), 전체 테스트 통과
+- [x] **A.21 짧은 핵심 규칙 문서 `CLAUDE.md` + GEMINI.md 동일 블록** (2026-10-30 · 사용자 질문: "문서가 너무 길면 중간을 놓치지 않나")
+  - 문제: 규칙이 `GEMINI.md`(89줄)·`SKILL.md`·TODO·REVIEW에 흩어져 있고, Claude Code가 세션 시작에 자동으로 읽는 파일이 없었음(긴 문서는 부분만 읽고 중간 규칙은 덜 반영됨)
+  - 해결: `CLAUDE.md`(33줄, Claude Code가 자동으로 읽음) — 사고가 났던 규칙만 10개(브리핑 먼저 · 봇 data/ 커밋 금지 · 되돌릴 수 없는 일은 확인 · 사전 등록 기준 불변 · 미래 정보 금지 · 수치·완료 표시 · Secret·API · 문서 최신화 · 검증 · 환경) + "어느 문서에 무엇이 있나" 표. 같은 블록을 `GEMINI.md` 맨 위에도 넣어 Gemini도 같은 규칙을 먼저 읽음
+  - 어긋남 방지: `tests/test_core_rules.py`가 두 블록의 글자 일치, 규칙 12개 이하·한 줄 420자 이하, CLAUDE.md 60줄 이하, 핵심 키워드 포함을 확인(푸시 때 test.yml이 막음)
+  - 함께 고침: GEMINI.md 1번의 "`git checkout --`로 되돌린다"는 안내가 핵심 규칙 3(되돌릴 수 없는 일은 확인)과 충돌 → `git stash` 안내로 수정, `results.yml` 주기 문구 2시간으로 현재화
+  - 확인: 테스트 4개 추가, 전체 통과
 - [x] **A.20 문서 최신화 + 자동 최신화 규칙** (2026-10-30 · 사용자 요청: "md 최신화 · 이후엔 자동으로")
   - 점검 결과: `ARCHITECTURE.md`는 초기 v1(10-25, 폐기된 `poisson_model.py`·`history.json`) 그대로 → 문서에 없는 모듈·워크플로·데이터 파일 71개, README 코드 커밋 66개·ARCHITECTURE 124개 뒤처짐. 전부 최신화: `ARCHITECTURE.md` 전면 재작성(실행 흐름·워크플로·모듈 표·`data/` 파일 표·예측 스키마), `README.md`(문서 표·자동 실행·대시보드 ③④·현재 상태 수치 10-30·로컬 실행), `SKILL.md`(설명·컴포넌트·Known Issues·Phase 6 현재화), `GEMINI.md`(5번 현재 상태 10-30), `ROADMAP.md`(v1 기록임을 명시)
   - **자동 규칙**: `SKILL.md` "Documentation Sync Rule"(무엇을 바꾸면 어느 문서를 같은 커밋에서 고치는지 표) + `GEMINI.md` 8번. 점검기 `evaluation/docs_sync.py`: `ARCHITECTURE.md`에 이름이 안 나오는 모듈·워크플로·`data/` 파일, 코드보다 뒤처진 문서(문서 마지막 수정 뒤 코드 커밋 수)를 찾음 → 대화 시작 브리핑에 "📚 문서 동기화" 줄로 매번 표시, **테스트(`test_real_repo_docs_are_in_sync`)가 누락을 실패로 만들어 푸시 때 test.yml이 막음**

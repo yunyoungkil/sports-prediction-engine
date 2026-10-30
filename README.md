@@ -13,6 +13,7 @@
 | [TODO.md](./TODO.md) | 단계별 작업 목록과 각 실험의 결과·수치 (Step 0 ~ Phase 7, Feature A 대시보드·점검 작업 기록) |
 | [REVIEW.md](./REVIEW.md) | 검증 리뷰 (R1~R20): 발견한 문제, 원인, 조치 · AI 모델·데이터 사용 점검(R17~R20) |
 | [GEMINI.md](./GEMINI.md) | 협업 규칙 (Git, Secret, API 사용량, 절대 규칙) |
+| [CLAUDE.md](./CLAUDE.md) | Claude Code가 매 세션 자동으로 읽는 짧은 핵심 규칙 (GEMINI.md 맨 위 블록과 동일) |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | **현재 구조**: 실행 흐름, 워크플로, 모듈, `data/` 파일, 예측 파일 스키마 (새 파일을 만들면 같이 갱신 — `python -m evaluation.docs_sync`가 점검) |
 | [ROADMAP.md](./ROADMAP.md) | 초기 설계 기록 (v1) |
 | [.agents/skills/sports-prediction-engine/SKILL.md](./.agents/skills/sports-prediction-engine/SKILL.md) | AI 작업 규칙: 평가 규칙, 컴포넌트, **문서 최신화 규칙** |
