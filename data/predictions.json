@@ -5779,9 +5779,9 @@
     "home_team": "고양소노 스카이거너스",
     "away_team": "서울삼성 썬더스",
     "betman_odds": {
-      "home_win": 1.49,
+      "home_win": 1.52,
       "draw": 0.0,
-      "away_win": 2.09
+      "away_win": 2.03
     },
     "odds_changes": [
       {
@@ -5798,45 +5798,60 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-30 18:37:26",
+        "from": {
+          "home_win": 1.49,
+          "draw": 0.0,
+          "away_win": 2.09
+        },
+        "to": {
+          "home_win": 1.52,
+          "draw": 0.0,
+          "away_win": 2.03
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.49,
+      "home_win": 1.52,
       "draw": 0.0,
-      "away_win": 2.09
+      "away_win": 2.03
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5838,
+      "home": 0.5718,
       "draw": 0.0,
-      "away": 0.4162
+      "away": 0.4282
     },
     "model_probabilities": {
-      "home_win": 0.5838,
+      "home_win": 0.5718,
       "draw": 0.0,
-      "away_win": 0.4162
+      "away_win": 0.4282
     },
     "blended_probabilities": {
-      "home_win": 0.5834,
+      "home_win": 0.5714,
       "draw": 0.0,
-      "away_win": 0.4166
+      "away_win": 0.4286
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1307,
+        "home_win": -0.1315,
         "draw": -1.0,
-        "away_win": -0.1293
+        "away_win": -0.1299
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 서울삼성 썬더스 승",
       "raw_selection_name": "서울삼성 썬더스 승",
-      "best_ev": -0.1293,
-      "best_ev_pct": "-12.9%",
+      "best_ev": -0.1299,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -6015,9 +6030,9 @@
     "home_team": "고양소노 스카이거너스",
     "away_team": "서울삼성 썬더스",
     "betman_odds": {
-      "home_win": 2.01,
-      "draw": 2.6,
-      "away_win": 3.75
+      "home_win": 2.05,
+      "draw": 2.55,
+      "away_win": 3.7
     },
     "odds_changes": [
       {
@@ -6064,45 +6079,60 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-30 18:37:26",
+        "from": {
+          "home_win": 2.01,
+          "draw": 2.6,
+          "away_win": 3.75
+        },
+        "to": {
+          "home_win": 2.05,
+          "draw": 2.55,
+          "away_win": 3.7
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.01,
-      "draw": 2.6,
-      "away_win": 3.75
+      "home_win": 2.05,
+      "draw": 2.55,
+      "away_win": 3.7
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4331,
-      "draw": 0.3348,
-      "away": 0.2321
+      "home": 0.4241,
+      "draw": 0.3409,
+      "away": 0.235
     },
     "model_probabilities": {
-      "home_win": 0.4331,
-      "draw": 0.3348,
-      "away_win": 0.2321
+      "home_win": 0.4241,
+      "draw": 0.3409,
+      "away_win": 0.235
     },
     "blended_probabilities": {
-      "home_win": 0.4331,
-      "draw": 0.3348,
-      "away_win": 0.2321
+      "home_win": 0.4241,
+      "draw": 0.3409,
+      "away_win": 0.235
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1295,
-        "draw": -0.1295,
-        "away_win": -0.1296
+        "home_win": -0.1306,
+        "draw": -0.1307,
+        "away_win": -0.1305
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 고양소노 스카이거너스 승",
-      "raw_selection_name": "고양소노 스카이거너스 승",
-      "best_ev": -0.1295,
-      "best_ev_pct": "-13.0%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 서울삼성 썬더스 승",
+      "raw_selection_name": "서울삼성 썬더스 승",
+      "best_ev": -0.1305,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
