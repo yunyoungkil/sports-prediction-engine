@@ -1,22 +1,23 @@
 {
-  "updated_at": "2026-10-29T23:01:35+00:00",
+  "updated_at": "2026-10-30T01:01:06+00:00",
   "rounds": [
     260126,
     260127,
-    260128
+    260128,
+    260129
   ],
   "value": {
-    "matches": 44,
-    "options": 132,
+    "matches": 130,
+    "options": 390,
     "value_options": 0,
     "value_share_pct": 0.0,
-    "ev_all_mean_pct": -14.11,
+    "ev_all_mean_pct": -14.22,
     "ev_best_per_match": {
-      "n": 44,
-      "mean": -0.0871,
+      "n": 130,
+      "mean": -0.0971,
       "ci": [
-        -0.094,
-        -0.0798
+        -0.1003,
+        -0.0939
       ]
     },
     "ev_value_options": {
@@ -27,7 +28,7 @@
     "max_ev_pct": -1.94
   },
   "follow": {
-    "with_history": 44,
+    "with_history": 130,
     "moved": 9,
     "toward_sharp": 7,
     "toward_sharp_pct": 77.8,
@@ -40,5 +41,5 @@
       ]
     }
   },
-  "verdict": "아직 모름 (표본 부족: 경기 44/100, 해외보다 높은 선택지 0/100)"
+  "verdict": "지연 배당 없음 (해외 공정 배당보다 높은 베트맨 선택지가 거의 없음)"
 }
