@@ -275,6 +275,10 @@ def verdict_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json)
     for name, sh in (card.get("shadow") or {}).items():   # [Phase 7.1] 그림자 모델 — 300경기 뒤 교체 후보
         out.append(f"   - 그림자 모델 {name} (지금 AI와 같은 경기 비교, 음수 = 그림자가 더 정확): {sh['n']}경기 · "
                    f"LL 차이 {sh['ll_diff_vs_model']:+.5f} [{sh['ci'][0]:+.5f}, {sh['ci'][1]:+.5f}] · {sh['verdict']}")
+    cm = card.get("calibration_metrics")
+    if cm:
+        out.append(f"   - 보정 (Brier·ECE): AI {cm['brier_ai']:.3f}·{cm['ece_ai']}%p vs 배당 {cm['brier_market']:.3f}·{cm['ece_market']}%p "
+                   f"(Brier 차이 {cm['brier_diff']:+.4f} [{cm['brier_diff_ci'][0]:+.4f}, {cm['brier_diff_ci'][1]:+.4f}])")
     for h in card.get("hypotheses") or []:
         out.append(f"   - 사전 가설 {h['id']} {h['name']}: {h['n']}/300경기 · {h['verdict']}")
     st = status_from_data(reader("data/walk_forward.json"), card, reader("data/paper_trading.json"))

@@ -158,6 +158,38 @@ def calibration(rows: List[Dict[str, Any]], key: str, n_bins: int = 10) -> List[
     return out
 
 
+def _brier_rows(rows: List[Dict[str, Any]], key: str) -> np.ndarray:
+    """경기별 Brier 점수: 발매된 선택지에 대해 (말한 확률 − 실제(1/0))²의 합. 낮을수록 좋음"""
+    out = []
+    for r in rows:
+        valid = r["odds"] > 1.0
+        hit = np.zeros(3)
+        hit[r["y"]] = 1.0
+        out.append(float(((np.asarray(r[key], dtype=float) - hit) ** 2)[valid].sum()))
+    return np.array(out)
+
+
+def _ece(rows: List[Dict[str, Any]], key: str) -> Optional[float]:
+    """기대 보정 오차(ECE, %p): 구간별 '말한 확률'과 '실제 일어난 비율'의 차이를 선택지 수로 가중 평균. 낮을수록 보정이 잘 됨"""
+    bins = calibration(rows, key)
+    n = sum(b["n"] for b in bins)
+    if not n:
+        return None
+    return round(sum(b["n"] * abs(b["happened_pct"] - b["said_pct"]) for b in bins) / n, 2)
+
+
+def calibration_metrics(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """[보정 평가] 정확도(LL)만이 아니라 보정(Brier·ECE)도 본다 — 베팅은 확률의 '정확한 크기'에 돈을 거는 일이라
+    정확도보다 보정으로 모델을 고르는 편이 수익이 낫다는 연구가 있다 (Walsh & Joshi 2024). 판정 기준(LL)은 바꾸지 않고 옆에 병기.
+    brier_diff_ci는 같은 대진의 여러 게임번호를 한 묶음으로 본 범위"""
+    ai, mk = _brier_rows(rows, "model"), _brier_rows(rows, "market")
+    diff = ai - mk
+    lo, hi = cluster_bootstrap_ci(diff, [r["fixture"] for r in rows])
+    return {"n": len(rows), "brier_ai": round(float(ai.mean()), 4), "brier_market": round(float(mk.mean()), 4),
+            "brier_diff": round(float(diff.mean()), 4), "brier_diff_ci": [round(lo, 4), round(hi, 4)],
+            "ece_ai": _ece(rows, "model"), "ece_market": _ece(rows, "market")}
+
+
 def hypothesis_verdict(n: int, ll_diff: float, ci: List[float]) -> str:
     """미리 정한 판정 (2026-10-27): 300경기부터 판정, 600경기에서도 확인 안 되면 중단"""
     if n < HYPOTHESIS_MIN:
@@ -271,6 +303,10 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
         "by_game_type": {gt: _ll_block_fixtures([r for r in rows if r["game_type"] == gt])
                          for gt in sorted({r["game_type"] for r in rows})},
         "fixtures": len({r["fixture"] for r in rows}),   # '300경기'는 게임번호 기준 — 독립적인 대진 수를 옆에 병기
+        "calibration_metrics": calibration_metrics(rows),
+        "calibration_by_game_type": {gt: calibration_metrics([r for r in rows if r["game_type"] == gt])
+                                     for gt in sorted({r["game_type"] for r in rows})
+                                     if sum(1 for r in rows if r["game_type"] == gt) >= 30},
         "hypotheses": build_hypotheses(rows),
         # [Phase 7.1] 그림자 모델 vs 지금 AI — 같은 실전 경기만 (판정에는 안 씀 · 300경기 뒤 교체 결정용)
         "shadow": shadow_compare(rows),

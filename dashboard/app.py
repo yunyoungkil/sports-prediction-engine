@@ -3058,6 +3058,17 @@ with tab3:
              f"음수면 AI가 더 정확 · 95% 범위 [{ci[0]:+.3f}, {ci[1]:+.3f}]"),
             ("✅ AI 1순위 적중률", f"{card.get('hit_rate_top_pick', 0):.1f}%", "참고용 (배당 1순위도 비슷하게 맞아요)"),
         ])
+        cm = card.get("calibration_metrics")
+        if cm:
+            cd = cm["brier_diff"]
+            st.markdown(
+                "<div style='padding-bottom:10px;font-size:14px;line-height:1.7'>🎚️ <b>보정 지표</b> (확률의 크기가 맞는지) · "
+                f"Brier AI <b>{cm['brier_ai']:.3f}</b> vs 배당 {cm['brier_market']:.3f} "
+                f"(차이 <span style='color:{'#34d399' if cd < 0 else '#f87171'}'>{cd:+.4f}</span>, 95% 범위 [{cm['brier_diff_ci'][0]:+.4f}, {cm['brier_diff_ci'][1]:+.4f}])"
+                + (f" · ECE AI <b>{cm['ece_ai']:.1f}%p</b> vs 배당 {cm['ece_market']:.1f}%p" if cm.get("ece_ai") is not None else "")
+                + "<br><span style='opacity:.7;font-size:12px'>둘 다 낮을수록 좋아요. Brier = 확률 예측의 평균 오차, ECE = AI가 말한 확률과 실제로 일어난 비율의 평균 차이. "
+                "정확도(위 점수)가 비슷해도 보정이 좋은 쪽이 베팅에는 유리하다는 연구가 있어 함께 봐요 (판정 기준은 정확도 그대로). 경기가 적을 때는 ECE가 구간당 선택지 수십 개로 계산돼 크게 흔들리니, Brier의 범위와 함께 참고만 하세요.</span></div>",
+                unsafe_allow_html=True)
         if n_g < SCORE_MIN:
             says = (f"💬 지금까지는 AI가 배당보다 {'조금 더' if card['ll_diff'] < 0 else '덜'} 정확해요. "
                     f"하지만 {n_g:,}경기는 너무 적어서 운일 수 있어요. {SCORE_MIN}경기가 모이면 판정해요.")

@@ -111,3 +111,25 @@ def test_scorecard_counts_independent_fixtures(tmp_path):
     assert card["graded_matches"] == 3 and card["fixtures"] == 2        # A-B 승무패·핸디캡은 한 대진
     assert card["by_game_type"]["축구 승무패"]["fixtures"] == 2
     assert "ll_diff_ci_fixture" in card["by_game_type"]["축구 핸디캡"]
+
+
+# ── 보정 지표 (Brier · ECE) ───────────────────────────────────────────
+def _crow(model, market, y, fixture, odds=(2.0, 3.0, 3.5)):
+    return {"model": np.array(model), "market": np.array(market), "y": y, "odds": np.array(odds), "fixture": fixture}
+
+
+def test_brier_and_ece_known_values():
+    from evaluation.scorecard import _brier_rows, _ece, calibration_metrics
+    perfect = [_crow([1, 0, 0], [0.4, 0.3, 0.3], 0, "f1"), _crow([0, 1, 0], [0.4, 0.3, 0.3], 1, "f2")]
+    assert _brier_rows(perfect, "model").tolist() == [0.0, 0.0]
+    # 시장: 정답 0.4 → (0.6)² + 0.3² + 0.3² = 0.54, 정답 0.3 → 0.4² + 0.7² + 0.3² = 0.74
+    assert np.allclose(_brier_rows(perfect, "market"), [0.54, 0.74])
+    cm = calibration_metrics(perfect)
+    assert cm["brier_ai"] == 0.0 and cm["brier_market"] == 0.64 and cm["brier_diff"] == -0.64
+    assert cm["ece_ai"] == 0.0 and cm["ece_market"] > 0                     # 완벽한 예측은 ECE 0, 시장은 아님
+
+
+def test_brier_ignores_unsold_options():
+    from evaluation.scorecard import _brier_rows
+    two_way = [_crow([0.6, 0.0, 0.4], [0.55, 0.0, 0.45], 0, "f", odds=(1.8, 0.0, 2.0))]
+    assert np.allclose(_brier_rows(two_way, "model"), [0.4 ** 2 + 0.4 ** 2])    # 무승부 칸 제외
