@@ -80,8 +80,8 @@ sports-prediction-engine/
 | `models/form_analyzer.py` | 표시용 최근 폼·상대 전적·순위 (AI 학습 피처와 별개) |
 | `models/combo_builder.py` · `models/combo_finder.py` | 베트맨 맞춤조건구매 규칙(배당 절삭·올림·한도)과 조합 후보 |
 | `models/strategy_backtest.py` | 조합 방식을 과거에 반복했다면 |
-| `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~G) · F 전략(AI 조합 묶음 + 켈리) |
-| `models/ai_bettor.py` | **G 전략 — 실전형 자율 AI 베터**: 월 10만 원 지갑(한국 시간 매월 1일 충전 · 복리 · 바닥나면 다음 달까지 쉼), 매 회차 주력(안정 정배, AI 기대손실이 가장 작은 조합) + 소액 복권(무승부·역배 6~15배) 2장, AI 우위·잔고로 판돈 결정, 베트맨 규정(`validate_combo`) 강제, 슬립별 성적·판돈 조절 효과(`sizing`) 계산 |
+| `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~G + G-본능) · F 전략(AI 조합 묶음 + 켈리) |
+| `models/ai_bettor.py` | **G 전략 — 실전형 자율 AI 베터**: 월 10만 원 지갑(한국 시간 매월 1일 충전 · 복리 · 바닥나면 다음 달까지 쉼), 매 회차 주력(안정 정배, AI 기대손실이 가장 작은 조합) + 소액 복권(무승부·역배 6~15배) 2장, AI 우위·잔고로 판돈 결정, 베트맨 규정(`validate_combo`) 강제, 슬립별 성적·판돈 조절 효과(`sizing`) 계산 · G-본능 규칙(`instinct_plan`, `INSTINCT_*`: 이긴 뒤 판돈 ×1.4 · 진 뒤 복권 15~50배 · 수익 보호 없음) |
 
 ### tracker/ — 기록
 | 파일 | 역할 |
@@ -159,7 +159,8 @@ sports-prediction-engine/
 ### `data/history/paper_bets/{회차}.json`
 `{"gm_ts", "bets": [...], "f_plan"}` — 한 번 만든 베팅은 고치지 않는다. 베팅 한 건: `strategy`, `legs`(`seq`·`key`·`odds`·`match_time`·팀·리그), `combined_odds`, `stake`, `bet_id`, `created_at`(UTC), `ev_ai`.
 G는 추가로 `slip`(`main` 주력 · `lottery` 복권), `p_ai`(AI 적중확률), `edge`(경기당 AI 우위), `stake_mult`(판돈 배율), `wallet_before`(걸 때 잔고), `mode`(`survival`·`defensive`·`normal`), `ai_note`(근거 한 줄)를 남긴다. 폐기한 전략(`G_real_stable`·`H_real_highodds`)과 개편 전 G(첫 버전: `slip`이 없는 `G_ai_bettor` 베팅, `models/ai_bettor.is_g_v1`)의 베팅은 파일에는 그대로 두고 내역에서만 보이며(첫 버전은 `G_v1`) 리그 표·지갑·마감 대비 배당에서는 뺀다.
-`data/paper_trading.json`의 G 항목에는 지갑(`bankroll`·`total_deposited`·`pending_stakes`·`can_bet`·`is_broke`·`mode`), 슬립별 성적 `by_slip`, 판돈 조절 효과 `sizing`(AI 금액 수익률 − 같은 베팅 1,000원 고정 수익률, 회차 단위 95% 범위)이 들어 있다.
+G-본능(`G_instinct`)은 G와 같은 필드에 `boost`(판돈 배율)·`instinct`(`win_boost`·`chase`·빈칸)를 더 남기고, 지갑은 G와 따로다.
+`data/paper_trading.json`의 G·G-본능 항목에는 지갑(`bankroll`·`total_deposited`·`pending_stakes`·`can_bet`·`is_broke`·`mode`), 슬립별 성적 `by_slip`, 판돈 조절 효과 `sizing`(AI 금액 수익률 − 같은 베팅 1,000원 고정 수익률, 회차 단위 95% 범위)이 들어 있다. G-본능에는 본능대로 움직인 회차 수 `instinct_rounds`도 있다.
 
 ## 5. 안전장치 한눈에
 - **미래 정보 금지:** 마감 배당·결과는 피처·베팅 판단에 쓰지 않는다. 폼은 킥오프 이전 경기만.

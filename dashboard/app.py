@@ -3196,7 +3196,8 @@ with tab3:
     st.subheader("🧪 가상 베팅 리그")
     st.caption("전략마다 경기 시작 전에 가상으로 걸어 두고 결과가 나오면 자동으로 채점해요 (실제 구매 없음 · A~E는 1,000원 고정, "
                "F는 가상 지갑 10만 원에서 1/4 켈리로 최적 금액을 정하고 이득이 없으면 쉼, "
-               "G는 월 10만 원 지갑으로 매 회차 안정 조합 1장 + 소액 복권 1장을 사람처럼 사고 금액은 AI가 정함). "
+               "G는 월 10만 원 지갑으로 매 회차 안정 조합 1장 + 소액 복권 1장을 사람처럼 사고 금액은 AI가 정함, "
+               "G-본능은 G와 같은 경기를 사되 이기면 판돈을 키우고 지면 고배당을 쫓는 비교용). "
                f"AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있고, {PAPER_MIN}건 이상에서 수익률 95% 범위 아래 끝이 0보다 커야 '수익 입증'이에요.")
 
     clv_by_strategy = clv.get("paper_strategies", {})
@@ -3233,33 +3234,49 @@ with tab3:
                 "과거 354회차 워크포워드 재현에서는 14회차만 걸고 340회차는 쉬어 15건 건 돈 4,200원 → +2,553원 "
                 "(+60.8%, 95% 범위 [−14.9%, +98.3%] · 표본 부족으로 운과 구분 안 됨)을 기록했어요."
             )
-        g_wallet_txt = ""
-        if g_live:
-            g_b = int(g_live.get("bankroll", 100000))
-            g_dep = int(g_live.get("total_deposited", 100000))
-            g_mf = int(g_live.get("months_funded", 1))
-            g_pend = int(g_live.get("pending_stakes", 0))
-            g_net = int(g_live.get("profit", 0))      # 끝난 베팅의 순손익 = 잔고 + 묶인 돈 − 누적 입금
-            if g_live.get("is_broke"):
+        def _g_wallet_html(gv: dict, title: str) -> str:
+            """G·G-본능 월 10만 원 지갑 한 덩어리 (잔고·누적 입금·순손익·상태·슬립별·판돈 조절 효과)"""
+            g_b = int(gv.get("bankroll", 100000))
+            g_dep = int(gv.get("total_deposited", 100000))
+            g_mf = int(gv.get("months_funded", 1))
+            g_pend = int(gv.get("pending_stakes", 0))
+            g_net = int(gv.get("profit", 0))      # 끝난 베팅의 순손익 = 잔고 + 묶인 돈 − 누적 입금
+            if gv.get("is_broke"):
                 status_tag = "🚨 <span style='color:#e74c3c;font-weight:bold'>잔고 소진 (다음 달 1일 용돈이 들어올 때까지 쉼)</span>"
-            elif g_live.get("can_bet") is False:
+            elif gv.get("can_bet") is False:
                 status_tag = "⏳ <span style='color:#d68910;font-weight:bold'>대기 중인 베팅에 돈이 묶여 있어요</span>"
             else:
-                mode_txt = "" if g_live.get("mode", "normal") == "normal" else f" ({g_live.get('mode_label')} 모드 — 판돈을 줄여 운용)"
+                mode_txt = "" if gv.get("mode", "normal") == "normal" else f" ({gv.get('mode_label')} 모드 — 판돈을 줄여 운용)"
                 status_tag = f"🟢 <span style='color:#27ae60;font-weight:bold'>정상 베팅 중{mode_txt}</span>"
             g_slips = " · ".join(f"{v['label']} {v['bets']}건 {v['roi_pct']:+.1f}%"
-                                 for v in (g_live.get("by_slip") or {}).values() if v.get("bets"))
-            g_z = g_live.get("sizing")
+                                 for v in (gv.get("by_slip") or {}).values() if v.get("bets"))
+            g_z = gv.get("sizing")
             g_range = (f" · 95% 범위 [{g_z['gain_ci_low']:+.1f}, {g_z['gain_ci_high']:+.1f}]%p"
                        if g_z and g_z["gain_ci_low"] != g_z["gain_ci_high"] else "")
-            g_wallet_txt = (
-                f"<br>🤖 <b>G. 자율 AI 베터</b> (월 10만 원 용돈 · 번 돈은 내 돈 · 매 회차 안정 조합 1장 + 소액 복권 1장 · 이득이 없어도 거는 사람형): "
+            return (
+                f"<br>{title}: "
                 f"지갑 <b>{g_b:,}원</b> (누적 입금 {g_dep:,}원 / {g_mf}개월 차"
                 + (f" · 결과 대기에 묶인 돈 {g_pend:,}원" if g_pend else "")
                 + f") · 순손익 <b>{g_net:+,}원</b> · {status_tag}"
                 + (f"<br>↳ {g_slips}" if g_slips else "")
                 + (f"<br>↳ 판돈 조절 효과: AI가 정한 금액 {g_z['roi_ai_pct']:+.1f}% vs 같은 베팅을 1,000원 고정 {g_z['roi_flat_pct']:+.1f}% "
                    f"→ <b>{g_z['gain_pp']:+.1f}%p</b>{g_range} · {g_z['verdict']} (AI가 확신할 때 판돈을 키운 게 도움이 됐는지 보는 지표)" if g_z else "")
+            )
+
+        g_wallet_txt = ""
+        if g_live:
+            g_wallet_txt = _g_wallet_html(g_live, "🤖 <b>G. 자율 AI 베터</b> (월 10만 원 용돈 · 번 돈은 내 돈 · 매 회차 안정 조합 1장 + "
+                                                  "소액 복권 1장 · 이득이 없어도 거는 사람형)")
+        gi_live = live.get("G_instinct") or {}
+        if gi_live:
+            ir = gi_live.get("instinct_rounds") or {}
+            g_wallet_txt += _g_wallet_html(gi_live, "🎲 <b>G-본능</b> (G와 같은 순간에 같은 경기 · 이기면 다음 회차 판돈 ×1.4 · "
+                                                    "지면 복권을 15~50배로 · 수익 보호 없음 · 지갑은 따로)")
+            g_wallet_txt += (
+                f"<br>↳ 본능대로 움직인 회차: 이긴 뒤 판돈 키움 {ir.get('win_boost', 0)} · 진 뒤 고배당 {ir.get('chase', 0)} · "
+                f"순손익 <b>G {int(g_live.get('profit', 0)):+,}원 vs G-본능 {int(gi_live.get('profit', 0)):+,}원</b>. "
+                "과거 28개월 재현(같은 AI·같은 경기)에서는 G −618,790원 vs G-본능 −1,359,720원 — 본능형이 2.2배 더 잃었어요 "
+                "(더 많이 걸어서 약 39만 원 + 진 뒤 고배당을 쫓아서 약 35만 원)."
             )
         if past_txt or f_wallet_txt or g_wallet_txt:
             st.markdown(
@@ -3282,7 +3299,8 @@ with tab3:
         # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교
         # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용 1~5번, 대시보드 배경에서 검사 통과)
         import altair as alt
-        STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181", "F": "#a855f7", "G": "#06b6d4", "H": "#ec4899"}
+        STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181", "F": "#a855f7", "G": "#1aa3c4", "H": "#ec4899",
+                       "G_instinct": "#e66767"}   # A~G + G-본능: 어두운 화면(#0f172a) 기준 색 검사 통과 (2026-10-30)
 
         def _roi_chart(data_, title, min_bets=3):
             unit = (data_ or {}).get("stake_unit", 1000)
@@ -3294,7 +3312,7 @@ with tab3:
                 cs = v.get("cum_staked") or [(i + 1) * unit for i in range(len(cp))]
                 lab = v["label"].split(" (")[0]
                 dom.append(lab)
-                rng_.append(STRAT_COLOR.get(key[:1], "#94a3b8"))
+                rng_.append(STRAT_COLOR.get(key, STRAT_COLOR.get(key[:1], "#94a3b8")))
                 skip = 10 if len(cp) > 50 else 0   # 처음 몇 건은 ±100%로 크게 흔들려 나머지가 납작해짐
                 rows_ += [{"전략": lab, "끝난 베팅 수": i + 1, "누적 수익률": (cp[i] / cs[i] * 100) if cs[i] else 0.0,
                            "누적 손익(원)": cp[i]} for i in range(skip, len(cp))]

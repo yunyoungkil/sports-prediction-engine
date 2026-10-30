@@ -56,6 +56,17 @@ def test_paper_lines_g_wallet_and_sizing():
     assert "⏳ 대기 중인 베팅에 돈이 묶임" in "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G": g}}}.get))
 
 
+def test_paper_lines_g_instinct_counts_and_comparison():
+    """G-본능: 본능대로 움직인 회차 수와, G와의 순손익 비교 줄"""
+    base = {"bets": 2, "hits": 1, "pending": 0, "roi_pct": -10.0, "verdict": "판단 보류 (표본 부족)", "total_deposited": 100_000,
+            "is_broke": False, "can_bet": True, "mode_label": "정상"}
+    g = {**base, "label": "G. 자율 AI 베터", "profit": -1_000, "bankroll": 99_000}
+    gi = {**base, "label": "G-본능", "profit": -3_000, "bankroll": 97_000, "instinct_rounds": {"win_boost": 1, "chase": 2}}
+    text = "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G_ai_bettor": g, "G_instinct": gi}}}.get))
+    assert "이긴 뒤 판돈 키움 1회차 · 진 뒤 고배당 2회차" in text
+    assert "원칙 vs 본능 순손익: G -1,000원 vs G-본능 -3,000원" in text
+
+
 def _fake_runner(times_by_wf):
     """gh run list 결과를 흉내 (워크플로 이름 → createdAt 목록)"""
     import json

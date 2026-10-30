@@ -68,6 +68,12 @@ MULT_STRONG = 2.5
 EV_GAIN = 2.0                 # AI 기준 기대수익이 플러스인(💎) 조합이면 그만큼 더 가산
 SLIP_LABEL = {"main": "주력", "lottery": "복권"}
 
+# ── G-본능 (비교용 · 2026-10-30 사전 등록, 결과를 보고 바꾸지 않음) ─────────────────────────────
+# G와 같은 순간에 같은 경기를 사되 '사람의 본능'만 다르다: 이긴 다음 회차 판돈·회차 상한 ×1.4 (이긴 다음 날 판돈 +41%,
+# 호주 온라인 베터 약 2만 5천 명) · 진 다음 회차 복권 15~50배 (본전 심리 — Thaler·Johnson 1990, Xu·Harvey 2014) · 수익 보호 없음.
+INSTINCT_WIN_BOOST = 1.4
+INSTINCT_CHASE_BAND = (15.0, 50.0)
+
 
 def _p(probs: Dict[str, float], k: str) -> float:
     return float((probs or {}).get(k, (probs or {}).get(k.replace("_win", ""), 0.0)) or 0.0)
@@ -303,6 +309,20 @@ def find_ai_autonomous_combos(predictions: List[Dict[str, Any]], now: Optional[d
         lottery["slip"] = "lottery"
         slips.append(lottery)
     return slips
+
+
+def instinct_plan(predictions: List[Dict[str, Any]], now: datetime, base: List[Dict[str, Any]],
+                  last_net: float) -> Tuple[List[Dict[str, Any]], float, str]:
+    """G-본능: 직전 회차 손익(last_net)에 따라 (슬립, 판돈 배율, 사유). base는 G가 이번 회차에 고른 슬립.
+    이겼으면 같은 슬립에 판돈 ×INSTINCT_WIN_BOOST, 졌으면 복권만 INSTINCT_CHASE_BAND 고배당으로 (없으면 G와 같은 복권)."""
+    if last_net > 0:
+        return base, INSTINCT_WIN_BOOST, "win_boost"
+    if last_net < 0 and base:
+        chase = find_ai_autonomous_combos(predictions, now=now, lottery_band=INSTINCT_CHASE_BAND,
+                                          lottery_fallback_min=INSTINCT_CHASE_BAND[0])
+        if len(chase) == 2:
+            return chase, 1.0, "chase"
+    return base, 1.0, ""
 
 
 # ──────────────────────────────────────────────────────────────────────────────

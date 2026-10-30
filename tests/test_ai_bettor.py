@@ -322,7 +322,8 @@ def test_chase_lottery_band_picks_higher_odds():
 
 
 def test_g_instinct_backtest_boosts_after_a_winning_round():
-    from evaluation.g_instinct_backtest import WIN_BOOST, simulate
+    from evaluation.g_instinct_backtest import simulate
+    from models.ai_bettor import INSTINCT_WIN_BOOST as WIN_BOOST
     preds = []
     for m in FAVS + DRAWS:
         o = m["betman_odds"]

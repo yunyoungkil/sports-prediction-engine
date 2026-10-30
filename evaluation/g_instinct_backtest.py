@@ -6,7 +6,7 @@ G 원칙형 vs G-본능 과거 재현 — "돈을 따면 사람은 원칙을 지
 두 지갑 모두 G와 같은 AI · 같은 경기 고르기(models/ai_bettor.py) · 같은 용돈(한국 시간 매월 1일 10만 원, 번 돈은 복리)으로 굴린다.
 AI 확률은 워크포워드 5구간, 구간마다 그 이전 데이터로만 학습한 AI (미래 정보 없음 · portfolio_backtest와 같은 구간).
 
-G-본능 규칙 — 결과를 보기 전에 연구 숫자로 고정 (사전 등록, 결과를 보고 바꾸지 않는다):
+G-본능 규칙 — 결과를 보기 전에 연구 숫자로 고정 (사전 등록, 결과를 보고 바꾸지 않는다 · 값은 models/ai_bettor.py INSTINCT_*):
 1. 이긴 다음 회차: 판돈 ×1.4, 회차 상한도 ×1.4 — 호주 온라인 스포츠 베터 약 2만 5천 명, 이긴 다음 날 판돈 +41% (2026, 하우스 머니 효과)
 2. 진 다음 회차: 복권을 15~50배 조합으로 — 잃으면 본전을 찾을 수 있는 내기에 끌림 (Thaler·Johnson 1990),
    지고 나면 더 높은 배당을 고름 (Xu·Harvey 2014). 그 범위에 조합이 없으면 G와 같은 복권.
@@ -35,14 +35,12 @@ if sys.platform.startswith("win"):
 from collector.betman_sharp import parse_betman_kickoff
 from evaluation.metrics import cluster_roi_confidence_interval
 from evaluation.walk_forward import FOLD_STARTS, as_predictions, choose_lambda, make_folds
-from models.ai_bettor import (MIN_STAKE, MONTHLY_ALLOWANCE, _all_months_between, _month_key, decide_autonomous_stakes,
-                              find_ai_autonomous_combos)
+from models.ai_bettor import (INSTINCT_CHASE_BAND, INSTINCT_WIN_BOOST, MIN_STAKE, MONTHLY_ALLOWANCE, _all_months_between,
+                              _month_key, decide_autonomous_stakes, find_ai_autonomous_combos, instinct_plan)
 from models.betman_corrector import build_rows, load_archive_df
 from models.combo_builder import calculate_payout
 from models.market_corrector import MarketCorrector
 
-WIN_BOOST = 1.4                 # 이긴 다음 회차 판돈 배율
-CHASE_BAND = (15.0, 50.0)       # 진 다음 회차 복권 조합 배당 범위 (G 복권은 6~15배)
 WALLETS = {"G": "G 원칙형", "G_instinct": "G-본능"}
 REPORT_PATH = Path("data/g_instinct_backtest.json")
 
@@ -79,13 +77,9 @@ def simulate(rounds) -> Dict[str, Dict[str, Any]]:
         base = find_ai_autonomous_combos(preds, now=now)
         for w, s in st.items():
             slips, boost, protect = base, 1.0, True
-            if w == "G_instinct":
+            if w == "G_instinct":       # 규칙은 실전 G-본능과 같은 함수 (models/ai_bettor.instinct_plan)
+                slips, boost, _ = instinct_plan(preds, now, base, s["last"])
                 protect = False
-                if s["last"] > 0:
-                    boost = WIN_BOOST
-                elif s["last"] < 0 and base:
-                    chase = find_ai_autonomous_combos(preds, now=now, lottery_band=CHASE_BAND, lottery_fallback_min=CHASE_BAND[0])
-                    slips = chase if len(chase) == 2 else base
             mo = s["months"].setdefault(month, {"staked": 0, "returned": 0, "bets": 0, "broke_rounds": 0})
             if base and s["cash"] < MIN_STAKE:
                 s["broke_rounds"] += 1
@@ -142,7 +136,7 @@ def run() -> Dict[str, Any]:
     rounds = ai_rounds()
     st = simulate(rounds)
     months = sorted(st["G"]["months"])
-    return {"rules": {"win_boost": WIN_BOOST, "chase_band": list(CHASE_BAND), "instinct_protect": False},
+    return {"rules": {"win_boost": INSTINCT_WIN_BOOST, "chase_band": list(INSTINCT_CHASE_BAND), "instinct_protect": False},
             "period": [months[0], months[-1]] if months else [], "rounds": len(rounds),
             "wallets": {w: _summary(st[w]) for w in WALLETS}, "compare": compare(st)}
 

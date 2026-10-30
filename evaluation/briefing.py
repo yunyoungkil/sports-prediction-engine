@@ -124,6 +124,9 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
                      else "⏳ 대기 중인 베팅에 돈이 묶임" if s.get("can_bet") is False else s.get("mode_label", ""))
             wallet = (f" · 지갑 {s['bankroll']:,}원 (누적 입금 {s['total_deposited']:,}원 · 순손익 {s.get('profit', 0):+,}원"
                       + (f" · {state}" if state else "") + ")")
+            if "instinct_rounds" in s:  # G-본능: 본능대로 움직인 회차 수
+                ir = s["instinct_rounds"]
+                wallet += f" · 이긴 뒤 판돈 키움 {ir.get('win_boost', 0)}회차 · 진 뒤 고배당 {ir.get('chase', 0)}회차"
         elif "bankroll" in s:           # F: 금액이 매번 달라 지갑으로 봄
             wallet = f" · 지갑 {s['bankroll']:,}원 (쉰 회차 {s.get('rounds_skipped', 0)}/{s.get('rounds_planned', 0)})"
         else:
@@ -138,6 +141,10 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
             slips = " · ".join(f"{v['label']} {v['bets']}건 {v['roi_pct']:+.1f}%" for v in (s.get("by_slip") or {}).values() if v["bets"])
             out.append(f"       ↳ {slips} · 판돈 조절 효과 {z['gain_pp']:+.1f}%p "
                        f"(AI 금액 {z['roi_ai_pct']:+.1f}% vs 1,000원 고정 {z['roi_flat_pct']:+.1f}%) · {z['verdict']}")
+    g, gi = pt["strategies"].get("G_ai_bettor"), pt["strategies"].get("G_instinct")
+    if g and gi:                        # 같은 경기, 다른 습관 — 원칙을 지킨 값 (과거 재현 28개월: G −618,790원 vs 본능 −1,359,720원)
+        out.append(f"   ↳ 원칙 vs 본능 순손익: G {g.get('profit', 0):+,}원 vs G-본능 {gi.get('profit', 0):+,}원 "
+                   f"(과거 재현 28개월: −618,790원 vs −1,359,720원)")
     return out
 
 

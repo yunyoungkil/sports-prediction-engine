@@ -157,7 +157,8 @@ def test_g_first_version_bets_are_set_aside(tmp_path):
     assert g_wallet(tmp_path, rpath, now=NOW)["pending_stakes"] == 0                       # 첫 버전의 4,100원은 묶인 돈이 아님
     assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") == 2   # 같은 회차에 새로 산다
     assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") is None
-    new_total = sum(b["stake"] for b in json.loads((tmp_path / "10.json").read_text(encoding="utf-8"))["bets"] if "slip" in b)
+    new_total = sum(b["stake"] for b in json.loads((tmp_path / "10.json").read_text(encoding="utf-8"))["bets"]
+                    if "slip" in b and b["strategy"] == "G_ai_bettor")                      # G-본능(지갑 따로)은 빼고
     assert g_wallet(tmp_path, rpath, now=NOW)["pending_stakes"] == new_total
 
     _write_results(rpath, 10, {"1": "0", "2": "0", "3": "1", "4": "1"})
@@ -171,3 +172,57 @@ def test_g_first_version_bets_are_set_aside(tmp_path):
                (10, "4"): np.array([3.0, 3.0, 3.0])}
     clv = paper_bets_clv(tmp_path, closing)
     assert clv["G_ai_bettor"]["n"] == 4                                                    # 개편한 G의 두 장(2폴더씩) 4다리만, 첫 버전 4다리는 제외
+
+
+def test_g_instinct_buys_with_g_and_reacts_to_its_last_round(tmp_path):
+    """G-본능: G와 같은 순간에 같은 주력을 사고 지갑은 따로 · G가 이미 산 회차엔 끼어들지 않음 · 이긴 뒤 판돈 ×1.4 · 진 뒤 고배당 복권"""
+    from models.ai_bettor import INSTINCT_CHASE_BAND, INSTINCT_WIN_BOOST
+    from models.paper_trading import g_last_round_net, g_wallet
+
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+    added = save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath)
+    assert added.get("G_ai_bettor") == 2 and added.get("G_instinct") == 2
+    bets = json.loads((tmp_path / "10.json").read_text(encoding="utf-8"))["bets"]
+    g = {b["slip"]: b for b in bets if b["strategy"] == "G_ai_bettor"}
+    gi = {b["slip"]: b for b in bets if b["strategy"] == "G_instinct"}
+    assert gi["main"]["legs"] == g["main"]["legs"] and gi["main"]["stake"] == g["main"]["stake"]   # 첫 회차는 보통 회차 → 같은 금액
+    assert gi["main"]["bet_id"].startswith("G_instinct:") and gi["main"]["instinct"] == ""
+    assert g_wallet(tmp_path, rpath, now=NOW, strategy="G_instinct")["pending_stakes"] == sum(b["stake"] for b in gi.values())
+    assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_instinct") is None   # 회차당 한 번
+
+    # 10회차 모두 적중 → 다음 회차 본능형은 판돈 ×1.4
+    _write_results(rpath, 10, {"1": "0", "2": "0", "3": "1", "4": "1"})
+    assert g_last_round_net("G_instinct", tmp_path, rpath) > 0
+    save_new_bets(11, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath)
+    b11 = json.loads((tmp_path / "11.json").read_text(encoding="utf-8"))["bets"]
+    g11 = sum(b["stake"] for b in b11 if b["strategy"] == "G_ai_bettor")
+    gi11 = [b for b in b11 if b["strategy"] == "G_instinct"]
+    assert all(b["boost"] == INSTINCT_WIN_BOOST and b["instinct"] == "win_boost" for b in gi11)
+    assert sum(b["stake"] for b in gi11) > g11
+
+    # 다른 결과로 10회차를 다시 채점: 모두 미적중 → 진 뒤에는 복권만 15~50배로 (무승부 후보 3개면 3폴더로 그 범위가 생김)
+    _write_results(rpath, 10, {"1": "2", "2": "2", "3": "0", "4": "0"})
+    (tmp_path / "11.json").unlink()
+    preds5 = G_PREDS + [_m("5", (2.9, 3.5, 2.5), (0.25, 0.40, 0.35))]
+    save_new_bets(11, preds5, now=NOW, bets_dir=tmp_path, results_path=rpath)
+    b11 = json.loads((tmp_path / "11.json").read_text(encoding="utf-8"))["bets"]
+    g11 = {b["slip"]: b for b in b11 if b["strategy"] == "G_ai_bettor"}
+    gi11 = {b["slip"]: b for b in b11 if b["strategy"] == "G_instinct"}
+    assert gi11["main"]["legs"] == g11["main"]["legs"] and gi11["main"]["boost"] == 1.0
+    assert gi11["lottery"]["instinct"] == "chase" and g11["lottery"]["combined_odds"] <= 15
+    assert INSTINCT_CHASE_BAND[0] <= gi11["lottery"]["combined_odds"] <= INSTINCT_CHASE_BAND[1]
+
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path.parent / f"{tmp_path.name}_s.json", now=NOW)
+    si = s["strategies"]["G_instinct"]
+    assert si["bets"] == 2 and si["total_deposited"] == 100_000 and "by_slip" in si and "instinct_rounds" in si
+
+
+def test_g_instinct_does_not_join_a_round_g_already_bought(tmp_path):
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+    save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath)
+    data = json.loads((tmp_path / "10.json").read_text(encoding="utf-8"))
+    data["bets"] = [b for b in data["bets"] if b["strategy"] != "G_instinct"]       # G-본능이 생기기 전에 G만 산 회차
+    (tmp_path / "10.json").write_text(json.dumps(data), encoding="utf-8")
+    assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_instinct") is None
