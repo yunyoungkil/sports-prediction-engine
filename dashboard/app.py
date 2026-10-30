@@ -711,13 +711,22 @@ def results_index():
     return {**idx, **fresh} if fresh else idx
 
 
-def load_prediction_log(gm_ts: str):
-    """경기 시작 전에 고정 저장된 AI 예측 (사후 정보가 섞이지 않은 채점용 기록)"""
-    path = project_root / "data" / "history" / "prediction_log" / f"{gm_ts}.json"
-    if not path.exists():
-        return {}
-    with open(path, "r", encoding="utf-8") as f:
+@st.cache_resource(show_spinner=False, max_entries=16)
+def _prediction_log_file(path_str: str, mtime_ns: int, size: int) -> dict:
+    """파일 수정 시각·크기가 같으면 다시 읽지 않음 (cache_resource라 복사 없이 같은 dict — 읽기만 할 것)"""
+    with open(path_str, "r", encoding="utf-8") as f:
         return json.load(f).get("matches", {})
+
+
+def load_prediction_log(gm_ts: str):
+    """경기 시작 전에 고정 저장된 AI 예측 (사후 정보가 섞이지 않은 채점용 기록).
+    ② 탭이 경기마다 불러(회차당 500번 넘게) 예전엔 다시 그릴 때마다 3~4초가 여기서 걸렸음 → 파일이 바뀔 때만 읽음"""
+    path = project_root / "data" / "history" / "prediction_log" / f"{gm_ts}.json"
+    try:
+        stat = path.stat()
+    except OSError:
+        return {}
+    return _prediction_log_file(str(path), stat.st_mtime_ns, stat.st_size)
 
 
 @st.cache_data(ttl=60)
