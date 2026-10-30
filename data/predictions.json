@@ -2649,48 +2649,64 @@
     "home_team": "브리즈번 로어",
     "away_team": "오클랜드FC",
     "betman_odds": {
-      "home_win": 1.48,
-      "draw": 3.75,
-      "away_win": 4.85
+      "home_win": 1.52,
+      "draw": 3.65,
+      "away_win": 4.6
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 16:07:22",
+        "from": {
+          "home_win": 1.48,
+          "draw": 3.75,
+          "away_win": 4.85
+        },
+        "to": {
+          "home_win": 1.52,
+          "draw": 3.65,
+          "away_win": 4.6
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.48,
-      "draw": 3.75,
-      "away_win": 4.85
+      "home_win": 1.52,
+      "draw": 3.65,
+      "away_win": 4.6
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5883,
-      "draw": 0.2322,
-      "away": 0.1795
+      "home": 0.5725,
+      "draw": 0.2384,
+      "away": 0.1892
     },
     "model_probabilities": {
-      "home_win": 0.5883,
-      "draw": 0.2322,
-      "away_win": 0.1795
+      "home_win": 0.5725,
+      "draw": 0.2384,
+      "away_win": 0.1892
     },
     "blended_probabilities": {
-      "home_win": 0.6156,
-      "draw": 0.2267,
-      "away_win": 0.1577
+      "home_win": 0.5975,
+      "draw": 0.2344,
+      "away_win": 0.1681
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0889,
-        "draw": -0.1499,
-        "away_win": -0.2352
+        "home_win": -0.0918,
+        "draw": -0.1444,
+        "away_win": -0.2267
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 브리즈번 로어 (+1.0) 승",
       "raw_selection_name": "브리즈번 로어 (+1.0) 승",
-      "best_ev": -0.0889,
-      "best_ev_pct": "-8.9%",
+      "best_ev": -0.0918,
+      "best_ev_pct": "-9.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -2932,9 +2948,9 @@
     "home_team": "브리즈번 로어",
     "away_team": "오클랜드FC",
     "betman_odds": {
-      "home_win": 1.74,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.64
     },
     "odds_changes": [
       {
@@ -2951,45 +2967,60 @@
         },
         "line_from": 2.5,
         "line_to": 2.5
+      },
+      {
+        "at": "2026-10-30 16:07:22",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.74,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.64
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5,
+      "home": 0.4699,
       "draw": 0.0,
-      "away": 0.5
+      "away": 0.5301
     },
     "model_probabilities": {
-      "home_win": 0.5,
+      "home_win": 0.4699,
       "draw": 0.0,
-      "away_win": 0.5
+      "away_win": 0.5301
     },
     "blended_probabilities": {
-      "home_win": 0.5006,
+      "home_win": 0.4667,
       "draw": 0.0,
-      "away_win": 0.4994
+      "away_win": 0.5333
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.129,
+        "home_win": -0.1366,
         "draw": -1.0,
-        "away_win": -0.131
+        "away_win": -0.1254
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
-      "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.129,
-      "best_ev_pct": "-12.9%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 오버 (> 2.5)",
+      "raw_selection_name": "오버 (> 2.5)",
+      "best_ev": -0.1254,
+      "best_ev_pct": "-12.5%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -95864,39 +95895,55 @@
     "home_team": "AFC아약스",
     "away_team": "AZ알크마르",
     "betman_odds": {
-      "home_win": 1.67,
-      "draw": 3.85,
-      "away_win": 3.45
+      "home_win": 1.61,
+      "draw": 3.95,
+      "away_win": 3.65
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 16:09:36",
+        "from": {
+          "home_win": 1.67,
+          "draw": 3.85,
+          "away_win": 3.45
+        },
+        "to": {
+          "home_win": 1.61,
+          "draw": 3.95,
+          "away_win": 3.65
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.525,
-        "draw": 0.2389,
-        "away_win": 0.2361
+        "home_win": 0.5478,
+        "draw": 0.2316,
+        "away_win": 0.2206
       }
     },
     "prediction_odds": {
-      "home_win": 1.67,
-      "draw": 3.85,
-      "away_win": 3.45
+      "home_win": 1.61,
+      "draw": 3.95,
+      "away_win": 3.65
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5214,
-      "draw": 0.2262,
-      "away": 0.2524
+      "home": 0.5409,
+      "draw": 0.2205,
+      "away": 0.2386
     },
     "model_probabilities": {
-      "home_win": 0.5214,
-      "draw": 0.2262,
-      "away_win": 0.2524
+      "home_win": 0.5409,
+      "draw": 0.2205,
+      "away_win": 0.2386
     },
     "blended_probabilities": {
-      "home_win": 0.5294,
-      "draw": 0.2385,
-      "away_win": 0.2321
+      "home_win": 0.5526,
+      "draw": 0.2309,
+      "away_win": 0.2165
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -95941,15 +95988,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1159,
-        "draw": -0.0818,
-        "away_win": -0.1993
+        "home_win": -0.1103,
+        "draw": -0.0879,
+        "away_win": -0.2098
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0818,
-      "best_ev_pct": "-8.2%",
+      "best_ev": -0.0879,
+      "best_ev_pct": "-8.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -96202,48 +96249,64 @@
     "home_team": "AFC아약스",
     "away_team": "AZ알크마르",
     "betman_odds": {
-      "home_win": 2.75,
-      "draw": 3.7,
-      "away_win": 1.94
+      "home_win": 2.45,
+      "draw": 3.85,
+      "away_win": 2.08
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 16:09:36",
+        "from": {
+          "home_win": 2.75,
+          "draw": 3.7,
+          "away_win": 1.94
+        },
+        "to": {
+          "home_win": 2.45,
+          "draw": 3.85,
+          "away_win": 2.08
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.75,
-      "draw": 3.7,
-      "away_win": 1.94
+      "home_win": 2.45,
+      "draw": 3.85,
+      "away_win": 2.08
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3164,
-      "draw": 0.2351,
-      "away": 0.4485
+      "home": 0.3553,
+      "draw": 0.2261,
+      "away": 0.4185
     },
     "model_probabilities": {
-      "home_win": 0.3164,
-      "draw": 0.2351,
-      "away_win": 0.4485
+      "home_win": 0.3553,
+      "draw": 0.2261,
+      "away_win": 0.4185
     },
     "blended_probabilities": {
-      "home_win": 0.2996,
-      "draw": 0.2324,
-      "away_win": 0.468
+      "home_win": 0.3446,
+      "draw": 0.2226,
+      "away_win": 0.4328
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1761,
-        "draw": -0.1401,
-        "away_win": -0.0921
+        "home_win": -0.1557,
+        "draw": -0.143,
+        "away_win": -0.0998
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] AZ알크마르 반대승",
       "raw_selection_name": "AZ알크마르 반대승",
-      "best_ev": -0.0921,
-      "best_ev_pct": "-9.2%",
+      "best_ev": -0.0998,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,

@@ -474,11 +474,27 @@
     "match_state": "2",
     "home_team": "브리즈번 로어",
     "away_team": "오클랜드FC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 16:07:22",
+        "from": {
+          "home_win": 1.48,
+          "draw": 3.75,
+          "away_win": 4.85
+        },
+        "to": {
+          "home_win": 1.52,
+          "draw": 3.65,
+          "away_win": 4.6
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.48,
-      "draw": 3.75,
-      "away_win": 4.85
+      "home_win": 1.52,
+      "draw": 3.65,
+      "away_win": 4.6
     },
     "gm_ts": 260129
   },
@@ -518,12 +534,27 @@
         },
         "line_from": 2.5,
         "line_to": 2.5
+      },
+      {
+        "at": "2026-10-30 16:07:22",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
       }
     ],
     "odds": {
-      "home_win": 1.74,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.64
     },
     "gm_ts": 260129
   },
@@ -10500,11 +10531,27 @@
     "match_state": "2",
     "home_team": "AFC아약스",
     "away_team": "AZ알크마르",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 16:09:36",
+        "from": {
+          "home_win": 1.67,
+          "draw": 3.85,
+          "away_win": 3.45
+        },
+        "to": {
+          "home_win": 1.61,
+          "draw": 3.95,
+          "away_win": 3.65
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.67,
-      "draw": 3.85,
-      "away_win": 3.45
+      "home_win": 1.61,
+      "draw": 3.95,
+      "away_win": 3.65
     },
     "gm_ts": 260129
   },
@@ -10529,11 +10576,27 @@
     "match_state": "2",
     "home_team": "AFC아약스",
     "away_team": "AZ알크마르",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 16:09:36",
+        "from": {
+          "home_win": 2.75,
+          "draw": 3.7,
+          "away_win": 1.94
+        },
+        "to": {
+          "home_win": 2.45,
+          "draw": 3.85,
+          "away_win": 2.08
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 2.75,
-      "draw": 3.7,
-      "away_win": 1.94
+      "home_win": 2.45,
+      "draw": 3.85,
+      "away_win": 2.08
     },
     "gm_ts": 260129
   },
