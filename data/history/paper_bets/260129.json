@@ -1822,6 +1822,66 @@
       "ev_ai": -0.0598,
       "bet_id": "H_real_highodds:1561d+1544d",
       "created_at": "2026-10-30T07:13:09+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "legs": [
+        {
+          "seq": "1731",
+          "key": "home_win",
+          "odds": 1.02,
+          "match_time": "26.11.01 (일) 02:45",
+          "home_team": "PSV에인트호번",
+          "away_team": "빌럼II",
+          "league": "네덜란드 에레디비시"
+        },
+        {
+          "seq": "1782",
+          "key": "home_win",
+          "odds": 1.04,
+          "match_time": "26.11.01 (일) 05:00",
+          "home_team": "바르셀로나",
+          "away_team": "알라베스",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.1,
+      "stake": 2900,
+      "ev_ai": -0.1462,
+      "bet_id": "G_ai_bettor:1731h+1782h",
+      "ai_note": "포트폴리오 주력 (잔고 100,000원 중 2,900원 투입, AI EV -14.6%)",
+      "gm_ts": "260129",
+      "created_at": "2026-10-30T07:47:25+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "legs": [
+        {
+          "seq": "1731",
+          "key": "home_win",
+          "odds": 1.02,
+          "match_time": "26.11.01 (일) 02:45",
+          "home_team": "PSV에인트호번",
+          "away_team": "빌럼II",
+          "league": "네덜란드 에레디비시"
+        },
+        {
+          "seq": "1696",
+          "key": "home_win",
+          "odds": 1.1,
+          "match_time": "26.11.01 (일) 00:30",
+          "home_team": "페예노르트",
+          "away_team": "포르튀나 시타르트",
+          "league": "네덜란드 에레디비시"
+        }
+      ],
+      "combined_odds": 1.2,
+      "stake": 1200,
+      "ev_ai": -0.1124,
+      "bet_id": "G_ai_bettor:1731h+1696h",
+      "ai_note": "포트폴리오 분산 (잔고 100,000원 중 1,200원 투입, AI EV -11.2%)",
+      "gm_ts": "260129",
+      "created_at": "2026-10-30T07:47:25+00:00"
     }
   ],
   "f_plan": {
