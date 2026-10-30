@@ -56,15 +56,16 @@
 - 실전 확률은 게이트를 통과한 모델만 쓴다: `BetmanLivePredictor.load()`, `MarketCorrector.load()`, `MarketsLivePredictor.load()`(유형별)가 검증 실패 시 시장 단독으로 돌아가는 구조를 유지한다.
 - 마감 배당 비교(5.12)는 **평가 전용**이다. 마감 배당·배당 변화를 AI 피처나 베팅 판단에 넣지 않는다.
 
-## 5. 현재 상태 요약 (2026-10-25)
+## 5. 현재 상태 요약 (2026-10-30)
 
-- (삭제됨) 구 Dixon-Coles 모델은 시장보다 나빠서(TEST 1.0010 vs 0.9790, 블렌딩 b = 0) 2026-10-26에 코드에서 제거했다. 유형별 라벨·배당 확률은 `models/market_view.py`가 담당한다.
-- **시장 보정 모델(5.1, `models/market_corrector.py`)**: TEST, 진행 중 시즌, 베트맨 실전 모두 시장보다 LL이 낮음. 다만 CI가 0을 포함한다. 축구 1X2 실전 확률로 사용 중이다.
-- **해외 배당 비교(5.4, `collector/betman_sharp.py`)**: 회차마다 `data/history/sharp_snapshots/`에 누적하고, 실전 검증은 `evaluation/sharp_vs_betman.py`로 한다 (300건 쌓이면 판정).
-- 추천 픽은 0건이 정상이다 (보정 폭 < 베트맨 마진 약 15%).
-- **주간 재학습·성적표(5.3)**: 수요일 Actions가 `python -m models.market_corrector`로 재학습한다(게이트 통과 시 전체 데이터로 실전 모델 재적합). 매 실행마다 킥오프 전 예측을 `data/history/prediction_log/`에 고정 저장하고, `evaluation/scorecard.py`가 결과와 붙여 `data/model_scorecard.json`(날짜별 history)을 만든다. **AI 실력의 공식 지표는 이 성적표다.**
-- **베트맨 학습 보정 모델(5.6, `models/betman_corrector.py`)**: 베트맨 과거 23,323경기(K리그·J리그·MLS 포함)로 학습한 모델이다. TEST 4,306경기에서 베트맨 시장보다 LL −0.0021 [−0.0044, +0.0001]로, 현재 실전 1순위 확률이다. 아카이브는 `collector/betman_archive.py`로 증분 수집한다.
-- **다음 작업은 TODO.md의 Phase 6 (우위 검증과 운영 안정화)이다.** 모델·피처를 더 얹지 않고 먼저 측정한다: 6.1 운영 점검 → 6.2 지연 배당 측정 → 6.3 워크포워드 백테스트 → 6.4 유형별 마진·우위 표. 6.2에서 "지연 배당 있음"이 판정되기 전에는 지연 배당 알림·추천을 만들지 않는다. 새 API 호출은 늘리지 않는다(이미 쌓인 스냅샷만 사용). 가상 베팅 결과는 학습에 되먹이지 않는다.
+- **실전 AI**: 베트맨 학습 보정 모델(`models/betman_corrector.py`, 2.3만 경기). 과거 시험 TEST 4,306경기 LL −0.0021, HOLDOUT −0.0041. 운영 AI는 `norm_team`·`league_group_v2` 옵션이 **꺼진 상태** — 실전 300경기 판정 뒤 `shin_mkt` 교체 때 같이 켠다(켜면 TEST −0.0025 [−0.0047, −0.0003]).
+- **공식 성적표**: 237/300경기(서로 다른 대진 136개), 전체 LL −0.0035로 아직 운과 구분 안 됨. 보정 지표(Brier·ECE) 병기. 판정 기준(300경기·LL·회차 단위 범위)은 바꾸지 않는다.
+- **마감 배당 비교(CLV)**: 143경기에서 AI 반대쪽으로 움직임(−0.79%p [−1.39, −0.25]) — 나쁜 신호. **지연 배당 없음**(130경기)으로 판정돼 알림·추천은 만들지 않는다.
+- **보정**: 사후 보정(온도·선택지별)을 얹으면 TEST에서 오히려 나빠져 불필요. 과거 수천 경기에서 AI의 ECE가 배당보다 낮음.
+- **추천 픽 0건이 정상**(보정 폭 < 마진 약 15%). 가상 베팅 6전략(A~F) 모두 표본 부족, 기준선 E −19.1%(43건).
+- **운영**: cron-job.org 정시 호출 + GitHub 예약 보험(7번), 결과 수집 실패 시 기존 결과 유지, pandera 데이터 계약, 운영 점검, 대화 시작 브리핑.
+- **다음 큰 일**: 실전 AI 300경기 판정 → `shin_mkt` 교체 + R17·R18 피처 켜기(TODO 7.1, REVIEW R17~R18). 그 전에는 모델·피처를 더 얹지 않는다.
+- 이 절의 숫자는 날짜와 함께 갱신한다 (아래 8번 규칙).
 
 ## 6. 여러 PC에서 작업할 때
 
@@ -78,5 +79,11 @@
 - cron-job.org 작업 2개 (시간대 Asia/Seoul): `sports pipeline` = `pipeline.yml` 매일 09:30·18:30 (`30 9,18 * * *`), `sports results` = `results.yml` 2시간마다 (`0 */2 * * *`). 둘 다 `POST https://api.github.com/repos/yunyoungkil/sports-prediction-engine/actions/workflows/<파일>/dispatches`, 본문 `{"ref":"master"}`.
 - 인증: GitHub fine-grained 토큰 `sports-engine-scheduler` (이 저장소 하나, Actions 읽기·쓰기만). **토큰 값은 cron-job.org 헤더에만 있고 저장소·채팅·로그에 쓰지 않는다.**
 - **토큰 만료일: 2027-10-28.** 브리핑(`evaluation/briefing.py`의 `SCHEDULER_TOKEN_EXPIRES`)이 30일 전부터 경고, 7일 전부터 긴급으로 알린다. 갱신: GitHub Settings → Personal access tokens → `sports-engine-scheduler` → Regenerate token(만료 1년) → cron-job.org 두 작업의 `Authorization: Bearer <새 토큰>` 교체 → `SCHEDULER_TOKEN_EXPIRES` 날짜 수정.
-- **대화 시작 브리핑이 매번 확인하는 것** (`python -m evaluation.briefing`): ① 외부 스케줄러가 제때 호출하고 있는지(24시간 횟수·마지막 호출 시각, 늦으면 ⚠️) ② 토큰 만료까지 남은 일수 ③ **데이터 수집 점검**(경기 수·회차·빈 회차·배당 이상·예측/결과 갱신 시각·채점 회차의 결과가 비지 않았는지). ⚠️가 있으면 사용자에게 먼저 알린다.
+- **대화 시작 브리핑이 매번 확인하는 것** (`python -m evaluation.briefing`): ① 외부 스케줄러가 제때 호출하고 있는지(24시간 횟수·마지막 호출 시각, 늦으면 ⚠️) ② 토큰 만료까지 남은 일수 ③ **데이터 수집 점검**(경기 수·회차·빈 회차·배당 이상·예측/결과 갱신 시각·채점 회차의 결과가 비지 않았는지). ⚠️가 있으면 사용자에게 먼저 알린다. ④ **문서 동기화**(ARCHITECTURE.md에 없는 모듈·워크플로·데이터 파일, 코드보다 뒤처진 문서) ⑤ **데이터 계약**(pandera) 점검 결과.
 - `gh`가 없는 PC에서는 "못 가져옴"으로 나온다. `winget install GitHub.cli` 후 `gh auth login`.
+
+## 8. 문서 최신화 규칙 (자동으로 한다)
+
+- 코드·워크플로·`data/` 파일을 만들거나 바꾸면 **같은 커밋에서** 문서를 고친다. 표는 `.agents/skills/sports-prediction-engine/SKILL.md`의 **Documentation Sync Rule**: 새 모듈·워크플로·데이터 파일 → `ARCHITECTURE.md`, 대시보드 변경·판정/수치 변화 → `README.md` 현재 상태·사용법, 규칙·Secret·만료일 → 이 문서.
+- 확인: `python -m evaluation.docs_sync`가 ⚠️ 0개여야 한다. 브리핑의 "📚 문서 동기화"가 ⚠️면 작업보다 먼저 문서를 고친다.
+- 숫자는 파일이나 실행 결과에서 읽은 것만 쓰고 날짜를 붙인다. 낡은 문서를 발견하면 묻지 말고 그 자리에서 고친다.

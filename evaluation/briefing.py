@@ -312,6 +312,8 @@ def main(argv: Optional[List[str]] = None) -> None:
     print(token_expiry_line())
     print("\n".join(data_intake_lines()))
     print("\n".join(contract_lines()))
+    from evaluation.docs_sync import sync_lines
+    print("\n".join(sync_lines()))
     print("\n".join(data_audit_lines()))
     print("\n".join(verdict_lines()))
 

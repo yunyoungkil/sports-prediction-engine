@@ -95,7 +95,7 @@
 * [x] **Task 5.2: 텔레그램 봇 무료 알림 연동 (`notifier/telegram_bot.py`)**
   - 신규 회차 예측 완료 시 최고 기대가치 TOP 3 추천 경기 스마트폰 푸시 알림 모듈 탑재
 
-> **이후 고도화(v2, Phase 5~6)는 [TODO.md](./TODO.md)에서 관리한다.** 다음은 Phase 6 "우위 검증과 운영 안정화"(운영 점검 → 지연 배당 측정 → 워크포워드 백테스트 → 유형별 마진·우위 표)이다.
+> **이 문서는 초기 설계 기록(v1)이다.** 이후 고도화(Phase 5~7)와 결과는 [TODO.md](./TODO.md), 현재 구조는 [ARCHITECTURE.md](./ARCHITECTURE.md), 검증 리뷰는 [REVIEW.md](./REVIEW.md). v1의 Dixon-Coles 승부 예측 모델은 시장보다 나빠(블렌딩 b = 0) 폐기하고, 시장 확률을 출발점으로 삼는 보정 모델(Phase 5)로 바꿨다.
 
 ---
 

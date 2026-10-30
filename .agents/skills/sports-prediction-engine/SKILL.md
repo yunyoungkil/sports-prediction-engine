@@ -1,6 +1,6 @@
 ---
 name: sports-prediction-engine
-description: Architecture, engineering standards, evaluation rules, and v2 upgrade roadmap for the sports-prediction-engine (Betman Proto scraping, Dixon-Coles/Poisson models, EV value picks, result tracking, Streamlit dashboard, GitHub Actions automation). Use when modifying any code in this repo, evaluating model performance, or picking the next task from TODO.md.
+description: Architecture, engineering standards, evaluation rules, documentation-sync rule and roadmap for the sports-prediction-engine (Betman Proto scraping, market-correction AI, scorecard/CLV evaluation, data contracts, Streamlit dashboard, GitHub Actions + cron-job.org automation). Use when modifying any code in this repo, evaluating model performance, updating docs, or picking the next task from TODO.md.
 ---
 
 # Sports Prediction Engine Skill
@@ -45,6 +45,24 @@ This skill defines the architectural blueprint, realistic design constraints, ev
 - **Track CLV:** Compare pick-time odds with closing odds; consistently positive CLV is the fastest signal of a real edge.
 - **Never write in-sample backtest ROI into commit messages, README, or the dashboard as if it were a real result.** Live tracked stats live in `data/performance_stats.json`.
 
+## Documentation Sync Rule (MUST follow — automatic, no need to be asked)
+
+Docs go stale silently (ARCHITECTURE.md described the v1 design for 5 days while 124 code commits landed). So **updating docs is part of the change, in the SAME commit**, whenever you notice any trigger below — do it without asking, and mention it in the summary.
+
+| What you changed / learned | Update (same commit) |
+|---|---|
+| New, renamed or removed module in `collector/ models/ evaluation/ tracker/ notifier/ dashboard/` | `ARCHITECTURE.md` §3 module table (one line) |
+| New or changed workflow, trigger, schedule, workflow step, external scheduler | `ARCHITECTURE.md` §1–2, `README.md` 자동 실행 section, `GEMINI.md` §7 |
+| New or changed file in `data/` or its schema | `ARCHITECTURE.md` §4 (file table, and the `predictions.json` / `prediction_log` schema block if fields changed) and add/adjust the pandera schema in `evaluation/data_contracts.py` |
+| Dashboard tab / filter / metric added or removed | `README.md` 대시보드 사용법 |
+| A verdict, live number or decision moved (scorecard n/300, CLV, stale odds, calibration, paper-bet league, a Phase finished) | `README.md` 현재 상태 table (+ date), `GEMINI.md` §5, `TODO.md` progress table / item |
+| New `REVIEW.md` R-item or `TODO.md` item/phase | `README.md` 문서 table (R-range, Phase range) |
+| New rule, convention, secret, API limit, credential expiry date | `GEMINI.md` (and `SCHEDULER_TOKEN_EXPIRES` in `evaluation/briefing.py` for the token) |
+| New skill rule or workflow for the assistant | this file |
+
+How to check: `python -m evaluation.docs_sync` (also printed in the session-start briefing as "📚 문서 동기화"). It flags any module / workflow / `data/` file that `ARCHITECTURE.md` never names, and docs far behind the code. **Zero ⚠️ before every commit that adds or removes a file.** If the briefing shows ⚠️ at session start, fix the docs first, then continue the task.
+Also: bump the "최종 갱신" date in `ARCHITECTURE.md`, keep numbers in README/GEMINI dated, and never write a number you did not read from a file or run output.
+
 ## Key Components
 
 - **`collector/`**
@@ -60,20 +78,22 @@ This skill defines the architectural blueprint, realistic design constraints, ev
   - `combo_builder.py`: Betman 맞춤조건구매 rules (odds product truncated to 2 decimals then ceil to 1 decimal).
   - `betman_markets.py`: Phase 5.11 per-type (segment = Betman game type × 2/3 outcomes) correction `log p = (1+β)·log p_market + c`, trained on `data/history/betman_markets/{yy}.csv.gz` (all sports/types, collected by `collector/betman_markets_archive.py`; labels = Betman's own GAME_RESULT code). Per-segment gate; `MarketsLivePredictor` applies only passing segments (as of 2026-10-26: 축구 핸디캡|3, 농구 승패|2) with `prob_source="betman_markets"`. Run `python -m models.betman_markets`.
   - `market_corrector.py`: Phase 5.1 market-offset multinomial logit. Feature sets `live` (used in production when gate passes), `live_sharp` (waiting for Betman validation), `full` (research). Run `python -m models.market_corrector`.
-- **`evaluation/`**: `scorecard.py` (official pre-kickoff scorecard; grades every AI-applied type via Betman `game_result`, with `by_game_type`), `clv.py` (Phase 5.12 closing-line comparison → `data/clv_report.json`; evaluation only, never a feature), `sharp_vs_betman.py` (Phase 5.4 live validation, verdict at ≥ 300 matched results).
+- **`evaluation/`**: `scorecard.py` (official pre-kickoff scorecard: LL + Brier/ECE, per-type and per-fixture counts, hypotheses H1/H2 via `league_group_v2`), `clv.py` (closing-odds comparison, fixture-clustered CI), `data_contracts.py` (pandera schemas + result-coverage check → `data/contract_report.json`), `health_check.py` (ops warnings → run marked failed), `briefing.py` (session-start briefing incl. scheduler, token expiry, data intake, contracts, docs sync), `docs_sync.py` (docs vs code check), `gates.py`, `stale_odds.py`, `walk_forward.py`, `market_scan.py`, `calibration_experiment.py`. Full catalog: `ARCHITECTURE.md` §3.
 - **`tracker/`**: `prediction_log.py` (pre-kickoff AI probabilities for all AI-applied types; `first_*` fields are never overwritten), `odds_history.py` (per-round odds: first seen + changes only, written hourly by `results.yml` and by the main pipeline), `quick_results.py` (hourly job).
 - **`notifier/telegram_bot.py`**: alerts via `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` env vars.
 - **`dashboard/app.py`**: Streamlit UI (predictions, parlay basket, past-match verification tab).
 - **`run_pipeline.py`**: single entry point (collect → score past rounds → predict → EV → JSON → notify).
-- **`.github/workflows/pipeline.yml`**: scheduled run twice daily (00:30 and 09:30 UTC; weekly retrain on the Wednesday morning run; overseas odds fetched at most once per 20h per round) with `contents: write`; the bot commits updated `data/` to `master`. Always `git pull --rebase` before starting work and before pushing.
+- **`.github/workflows/`**: `pipeline.yml` (full run: archive sync → weekly retrain when ≥6 days old → `run_pipeline.py` → data contracts → commit → ops verify), `results.yml` (numpy-only results/scorecard refresh), `test.yml`. Triggered by **cron-job.org via `workflow_dispatch`** (GitHub `schedule` is a delayed/dropped backup). See `ARCHITECTURE.md` §2, `GEMINI.md` §7.
 
-## Known Issues (as of 2026-10-25)
+## Known Issues (as of 2026-10-30)
 
-Open items are tracked in `REVIEW.md`:
+Open items are tracked in `REVIEW.md` (R1~R20):
 
 - **R6:** Telegram secrets not registered in GitHub (user action). `ODDS_API_KEY` is registered.
-- **R14:** `betman_scraper.py` labels 홀/짝 (`game_type == "축구 SUM"`, draw odds 0) as category "일반 승무패" (133 of 266 in round 260126). Any 3-way logic must filter `game_type == "축구 승무패"` and draw odds > 1.
-- K리그, J2, and the Chinese Super League are not covered by The Odds API, and are not in the historical training data.
+- **R14 resolved:** 홀/짝 is `category == "홀짝"`; 3-way logic still filters `game_type == "축구 승무패"` and draw odds > 1.
+- **R17~R20 (AI model / data use audit, 2026-10-30):** no leakage found. R19 (line-aware grading/closing odds) and R20 (fixture counts beside the 300-game rule) fixed; R18 fixed for H1/H2 hypotheses; **R17/R18 model-feature fixes (`norm_team`, `league_group_v2`) are implemented but OFF** — switch on together with the `shin_mkt` replacement after the 300-game verdict (changing the model mid-sample would mix the verdict).
+- K리그, J2, and the Chinese Super League are not covered by The Odds API.
+- `match_state` can be 0 for the first hours after a new round opens (Betman API) — normal.
 - `calculate_payout` floors at 1원. Betman's "원단위 절삭" may mean 10원 units (unverified).
 
 ## Roadmap & Workflow
@@ -82,7 +102,7 @@ Open items are tracked in `REVIEW.md`:
 - **v1 (ROADMAP.md Phase 1~5):** built, except Streamlit Cloud deployment.
 - **v2 upgrade plan:** summarized in `README.md` (🚀 고도화 계획) and broken into checkboxes in **`TODO.md`**:
   - Step 0 무인 자동화 복구 → Phase 1 측정 기반 → Phase 2 모델 기본기 보강 → Phase 3 시장과 결합 → Phase 4 자금 관리와 제품 → **Phase 5 AI 정확도 향상** (market corrector, live sharp odds, weekly retraining, xG/lineups, more Betman leagues) → **Phase 6 우위 검증과 운영 안정화** (health check, stale-odds measurement, walk-forward backtest, per-market margin/edge table) → **Phase 7 표본 누적 후 예측 모델 업그레이드 실험** (post-300-sample walk-forward experiments)
-- **Phase 6 principles:** measure before building. Don't add models/features while samples are small (scorecard < 300, sharp odds < 300, stale odds < 100). Don't build stale-odds alerts until 6.2 judges stale odds exist. Don't feed paper-bet results back into training. Don't add new Odds API calls — use the accumulated `sharp_snapshots`/`odds_history`.
+- **Phase 6 (done 2026-10-27/29) principles still apply:** measure before building. Don't add models/features while samples are small (scorecard < 300). Stale-odds was measured (130 games → **no stale odds**, so no alerts/recommendations were built). Don't feed paper-bet results back into training. Don't add new Odds API calls.
 - **Phase 7 roadmap (run AFTER live sample targets are reached):**
   1. **7.1 Non-linear margin removal (Power / Shin / piecewise slope):** test replacing proportional `remove_margin` to better capture Betman's heavy favorite-longshot bias (94.8% return on ≤1.3 favorites vs 59.2% on ≥5.0 longshots).
   2. **7.2 Two-stage `BetmanCorrector` + `sharp_diff` integration:** once `data/history/sharp_snapshots/` reaches ≥ 300 matched results, combine `log(p_sharp) - log(p_betman)` with `BetmanCorrector` and fall back to Betman-only features for unmapped leagues (K-League, J2).
