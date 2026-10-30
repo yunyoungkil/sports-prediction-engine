@@ -18,6 +18,10 @@ models/paper_trading.py
 - F_portfolio_kelly: AI가 조합 묶음(같은 경기를 여러 조합에 넣어도 됨)을 만들고, 모든 결과 경우의 수로 금액을 한꺼번에 정함
                      (켈리 1/4 · 회차 합계 지갑 10% 이내 · 이득 없으면 쉼). 가상 지갑 10만 원에서 시작, 금액이 매번 다름.
                      회차당 한 번 계획 (models/portfolio.py) · 과거 재현은 evaluation/portfolio_backtest.py
+- G_ai_bettor      : 실전형 자율 AI 베터 (models/ai_bettor.py). 월 10만 원 지갑(번 돈은 내 돈 · 바닥나면 다음 달 1일까지 쉼)으로
+                     매 회차 ① 주력(안정 정배 2~3폴더, AI 기준 기대손실이 가장 작은 조합) ② 소액 복권(무승부·역배 6~15배)을 산다.
+                     판돈은 AI 우위·잔고로 정하고 회차 합계는 밑천의 10% 이하. 이득이 없어도 거는 '사람형' (쉬는 전략은 F).
+                     판돈 조절이 도움이 되는지는 '같은 베팅을 1,000원 고정으로 걸었다면'과 비교해 본다 (summary의 sizing).
 """
 
 import json
@@ -31,7 +35,7 @@ from collector.betman_sharp import parse_betman_kickoff
 from evaluation.metrics import cluster_roi_confidence_interval
 from models.combo_builder import calculate_combined_odds, calculate_payout, validate_combo
 from models.combo_finder import candidate_legs, find_combos
-from models.ai_bettor import MonthlyWallet, decide_autonomous_stakes, find_ai_autonomous_combos
+from models.ai_bettor import MonthlyWallet, decide_autonomous_stakes, find_ai_autonomous_combos, g_breakdown
 
 BETS_DIR = Path("data/history/paper_bets")
 SUMMARY_PATH = Path("data/paper_trading.json")
@@ -46,7 +50,7 @@ STRATEGIES = {
     "D_banker_cover": "D. 축 2 + 전배 (비교용)",
     "E_market_fav": "E. 배당 1순위 단일 (기준선)",
     "F_portfolio_kelly": "F. AI 조합 묶음 + 켈리 금액 (지갑 10만 원)",
-    "G_ai_bettor": "G. 자율 AI 베터 (월 10만 원 예산 · 사람형 실전 자금관리)",
+    "G_ai_bettor": "G. 자율 AI 베터 (월 10만 원 · 주력 안정 + 소액 복권)",
 }
 F_START_BANKROLL = 100_000
 G_START_ALLOWANCE = 100_000
@@ -227,13 +231,12 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
         if f["bets"]:
             added["F_portfolio_kelly"] = len(f["bets"])
 
-    # G: 자율 AI 베터 (월 10만 원 예산 · 사람형 실전 자금관리 · AI 동적 조합/판돈)
+    # G: 자율 AI 베터 — 월 10만 원 지갑으로 매 회차 주력(안정) 1장 + 소액 복권 1장 (models/ai_bettor.py). 잔고가 없으면 쉰다.
     if "G_ai_bettor" not in have_once and len(_open_soccer_1x2(predictions, now)) >= 2:
         w = g_wallet(bets_dir, results_path, now=now)
-        if not w["is_broke"]:
-            combos = find_ai_autonomous_combos(predictions, now=now)
-            ai_bets = decide_autonomous_stakes(combos, w["current_cash"])
-            for b in ai_bets:
+        if w["can_bet"]:
+            slips = find_ai_autonomous_combos(predictions, now=now)
+            for b in decide_autonomous_stakes(slips, w["current_cash"]):
                 if b["bet_id"] not in have_ids:
                     b["gm_ts"] = str(gm_ts)
                     b["created_at"] = now.isoformat(timespec="seconds")
@@ -296,25 +299,34 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
     per = {s: [] for s in STRATEGIES}
     pending = {s: 0 for s in STRATEGIES}
     details = []
+    g_rows = []   # G의 끝난 베팅 (슬립별 성적 · 판돈 조절 효과용)
     for f in sorted(bets_dir.glob("*.json")):
         data = json.loads(f.read_text(encoding="utf-8"))
         if not isinstance(data, dict) or "bets" not in data:
             continue
         ts = str(data.get("gm_ts"))
         for b in data.get("bets", []):
+            # 폐기된 전략(G_real_stable·H_real_highodds)의 베팅은 내역에만 남기고 리그 표에는 올리지 않는다
+            in_league = b["strategy"] in STRATEGIES
             outcomes = [res.get((ts, leg["seq"])) for leg in b["legs"]]
             last_ko = max((parse_betman_kickoff(leg["match_time"]) for leg in b["legs"]), default=None)
             row = {"gm_ts": ts, "strategy": b["strategy"], "legs": " × ".join(_leg_text(leg) for leg in b["legs"]),
                    "odds": b["combined_odds"], "stake": b["stake"], "kickoff": last_ko.isoformat() if last_ko else ""}
             if any(o is None for o in outcomes):
-                pending[b["strategy"]] = pending.get(b["strategy"], 0) + 1
+                if in_league:
+                    pending[b["strategy"]] += 1
                 details.append({**row, "status": "대기", "payout": None, "profit": None})
                 continue
             hit = all(o == leg["key"] for o, leg in zip(outcomes, b["legs"]))
             payout = calculate_payout(b["combined_odds"], b["stake"]) if hit else 0
             details.append({**row, "status": "적중" if hit else "미적중", "payout": payout, "profit": payout - b["stake"]})
-            per.setdefault(b["strategy"], []).append({"gm_ts": ts, "hit": hit, "stake": b["stake"], "payout": payout,
-                                                       "settled_at": row["kickoff"]})
+            if not in_league:
+                continue
+            per[b["strategy"]].append({"gm_ts": ts, "hit": hit, "stake": b["stake"], "payout": payout,
+                                       "settled_at": row["kickoff"]})
+            if b["strategy"] == "G_ai_bettor":
+                g_rows.append({"gm_ts": ts, "slip": b.get("slip") or "main", "odds": b["combined_odds"], "stake": b["stake"],
+                               "hit": hit, "payout": payout})
     strategies = _summarize(per, pending, STRATEGIES)
     plans = [json.loads(f.read_text(encoding="utf-8")).get("f_plan") for f in sorted(bets_dir.glob("*.json"))]
     plans = [p for p in plans if p]
@@ -330,7 +342,11 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
             "months_funded": w["months_funded"],
             "pending_stakes": w["pending_stakes"],
             "is_broke": w["is_broke"],
+            "can_bet": w["can_bet"],
+            "mode": w["mode"],
+            "mode_label": w["mode_label"],
             "current_month": w["current_month"],
+            **g_breakdown(g_rows, STAKE, MIN_FOR_VERDICT),     # by_slip · sizing (판돈 조절 효과)
         })
     summary = {"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "stake_unit": STAKE,
                "strategies": strategies,

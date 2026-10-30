@@ -1,31 +1,73 @@
 from datetime import datetime, timezone
+from itertools import combinations
+
 import pytest
 
+import models.ai_bettor as ai_bettor
 from models.ai_bettor import (
-    MONTHLY_ALLOWANCE,
     MonthlyWallet,
     _all_months_between,
     decide_autonomous_stakes,
     find_ai_autonomous_combos,
+    g_breakdown,
+    risk_profile,
+    sizing_effect,
+    stake_multiplier,
 )
-from models.combo_builder import validate_combo
+from models.combo_builder import calculate_combined_odds, validate_combo
+
+NOW = datetime(2026, 10, 30, 10, 0, tzinfo=timezone.utc)
+KEYS = ("home_win", "draw", "away_win")
 
 
-def _make_match(seq: str, odds: tuple, probs: tuple, source="betman_corrector", close_offset=3600):
-    now_ts = datetime(2026, 10, 30, 10, 0, tzinfo=timezone.utc).timestamp()
+def _match(seq, odds, ai, mk=None, source="betman_corrector", close_offset=3600, time="26.10.30 (금) 20:00"):
+    """odds·ai·mk는 (홈, 무, 원정) 순. mk를 생략하면 배당에서 마진 15%를 덜어낸 값."""
+    mk = mk or tuple(1.0 / o / 1.15 for o in odds)
     return {
-        "match_seq": seq,
-        "match_key": f"Home{seq}:Away{seq}",
-        "home_team": f"Home{seq}",
-        "away_team": f"Away{seq}",
-        "game_type": "축구 승무패",
-        "match_time": "26.10.30 (금) 20:00",
-        "close_time": (now_ts + close_offset) * 1000,
-        "prob_source": source,
-        "betman_odds": {"home_win": odds[0], "draw": odds[1], "away_win": odds[2]},
-        "blended_probabilities": {"home_win": probs[0], "draw": probs[1], "away_win": probs[2]},
-        "market_implied_probs": {"home_win": 1.0 / odds[0] / 1.15, "draw": 1.0 / odds[1] / 1.15, "away_win": 1.0 / odds[2] / 1.15},
+        "match_seq": str(seq), "match_key": f"Home{seq}:Away{seq}", "home_team": f"Home{seq}", "away_team": f"Away{seq}",
+        "league": "L", "game_type": "축구 승무패", "match_time": time, "prob_source": source,
+        "close_time": (NOW.timestamp() + close_offset) * 1000,
+        "betman_odds": dict(zip(KEYS, odds)),
+        "blended_probabilities": dict(zip(KEYS, ai)),
+        "market_implied_probs": dict(zip(KEYS, mk)),
     }
+
+
+# 실제 데이터(2026-10-30, 260129회차)에서 가져온 모양: 배당이 거의 없는 우세 팀 둘(PSV·바르셀로나)은 적중확률이 가장 높지만
+# 조합 배당 올림 이득이 작아 기대손실이 크고, 페예노르트·미토 조합이 기대손실이 가장 작다.
+FAVS = [
+    _match(1, (1.02, 12.0, 25.0), (0.889, 0.080, 0.031), (0.853, 0.100, 0.047)),
+    _match(2, (1.04, 10.0, 21.0), (0.873, 0.090, 0.037), (0.837, 0.110, 0.053)),
+    _match(3, (1.10, 8.0, 15.0), (0.832, 0.110, 0.058), (0.791, 0.140, 0.069)),
+    _match(4, (6.50, 4.60, 1.38), (0.100, 0.207, 0.693), (0.120, 0.250, 0.630)),
+]
+# 복권 후보: 무승부를 시장보다 높게 본 경기들 (AI ▲, 배당 3 안팎)
+DRAWS = [
+    _match(11, (2.30, 3.35, 3.10), (0.40, 0.289, 0.311), (0.40, 0.260, 0.340)),
+    _match(12, (2.40, 3.35, 3.00), (0.41, 0.288, 0.302), (0.41, 0.260, 0.330)),
+    _match(13, (2.20, 3.20, 3.40), (0.42, 0.300, 0.280), (0.42, 0.270, 0.310)),
+]
+
+
+def _bruteforce_best_main(matches):
+    """검증용: 정배 2~3폴더 중 AI 적중확률 0.45 이상에서 AI 기대수익이 가장 큰 조합"""
+    legs = []
+    for m in matches:
+        fav = min(KEYS, key=lambda k: m["betman_odds"][k])
+        legs.append((m, fav))
+    best = None
+    for n in (2, 3):
+        for c in combinations(legs, n):
+            odds = calculate_combined_odds([m["betman_odds"][k] for m, k in c])
+            p = 1.0
+            for m, k in c:
+                p *= m["blended_probabilities"][k]
+            if p < 0.45:
+                continue
+            ev = p * odds - 1.0
+            if best is None or ev > best[0]:
+                best = (ev, {m["match_seq"] for m, _ in c})
+    return best
 
 
 def test_all_months_between():
@@ -34,142 +76,229 @@ def test_all_months_between():
     assert _all_months_between("2026-11", "2027-02") == ["2026-11", "2026-12", "2027-01", "2027-02"]
 
 
+# ── 지갑 ──────────────────────────────────────────────────────────────────────────────
 def test_monthly_wallet_allowance_deposit():
-    """매월 1일 10만 원 용돈 충전 규칙 테스트 (Option 1)"""
+    """매월 1일 10만 원 용돈 충전 규칙"""
     wallet = MonthlyWallet(allowance=100_000)
+    w1 = wallet.calculate_wallet([], {}, current_time=datetime(2026, 10, 15, tzinfo=timezone.utc))
+    assert (w1["total_deposited"], w1["current_cash"], w1["months_funded"]) == (100_000, 100_000, 1)
+    assert w1["is_broke"] is False and w1["can_bet"] is True
 
-    # 1. 2026-10월 첫 활동 (베팅 기록 없음)
-    t1 = datetime(2026, 10, 15, tzinfo=timezone.utc)
-    w1 = wallet.calculate_wallet([], {}, current_time=t1)
-    assert w1["total_deposited"] == 100_000
-    assert w1["current_cash"] == 100_000
-    assert w1["months_funded"] == 1
-    assert w1["is_broke"] is False
-
-    # 2. 2026-11월 도래 -> 2개월 차 누적 200,000원
-    t2 = datetime(2026, 11, 1, tzinfo=timezone.utc)
     history = [{"gm_ts": 1, "created_at": "2026-10-20T10:00:00", "stake": 3000, "combined_odds": 2.0, "legs": [{"seq": "1", "key": "home_win"}]}]
-    res = {("1", "1"): "away_win"}  # 10월에 3,000원 손실
-    w2 = wallet.calculate_wallet(history, res, current_time=t2)
-    assert w2["total_deposited"] == 200_000
-    assert w2["months_funded"] == 2
-    assert w2["settled_profit"] == -3000
-    assert w2["current_cash"] == 197_000
+    w2 = wallet.calculate_wallet(history, {("1", "1"): "away_win"}, current_time=datetime(2026, 11, 1, tzinfo=timezone.utc))
+    assert (w2["total_deposited"], w2["months_funded"], w2["settled_profit"], w2["current_cash"]) == (200_000, 2, -3000, 197_000)
+
+
+def test_allowance_arrives_on_korean_first_of_month():
+    """용돈은 한국 시간 매월 1일에 들어온다: 10-31 16:00 UTC = 11-01 01:00 KST → 이미 11월"""
+    wallet = MonthlyWallet()
+    started = [{"gm_ts": 1, "created_at": "2026-10-20T10:00:00+00:00", "stake": 1000, "combined_odds": 2.0, "legs": [{"seq": "1", "key": "home_win"}]}]
+    before = wallet.calculate_wallet(started, {}, current_time=datetime(2026, 10, 31, 14, 59, tzinfo=timezone.utc))   # 10-31 23:59 KST
+    after = wallet.calculate_wallet(started, {}, current_time=datetime(2026, 10, 31, 15, 0, tzinfo=timezone.utc))     # 11-01 00:00 KST
+    assert before["months_funded"] == 1 and after["months_funded"] == 2
+    assert before["current_month"] == "2026-10" and after["current_month"] == "2026-11"
+    # 11월 1일 새벽(KST)에 만든 베팅은 11월 몫으로 센다
+    hist = [{"gm_ts": 1, "created_at": "2026-10-31T16:30:00+00:00", "stake": 1000, "combined_odds": 2.0, "legs": [{"seq": "1", "key": "home_win"}]}]
+    assert MonthlyWallet().calculate_wallet(hist, {}, current_time=datetime(2026, 11, 2, tzinfo=timezone.utc))["funded_months"] == ["2026-11"]
 
 
 def test_earnings_as_assets_compounding():
-    """수익은 AI의 자산: 적중 배당금이 잔고에 합산되어 복리 운용"""
-    wallet = MonthlyWallet(allowance=100_000)
-    t = datetime(2026, 10, 25, tzinfo=timezone.utc)
-    # 5,000원 걸어 3.5배 적중 -> 환급 17,500원 (순이익 +12,500원)
-    history = [{
-        "gm_ts": 1,
-        "created_at": "2026-10-20T10:00:00",
-        "stake": 5000,
-        "combined_odds": 3.5,
-        "legs": [{"seq": "1", "key": "home_win"}],
-    }]
-    res = {("1", "1"): "home_win"}
-    w = wallet.calculate_wallet(history, res, current_time=t)
-    assert w["settled_profit"] == 12_500
-    assert w["current_cash"] == 112_500
-
-
-def test_drawdown_sizing_defense():
-    """손실 관리 (Drawdown Defense): 잔고가 줄어들면 판돈을 최소 단위로 방어"""
-    combos = [{
-        "legs": [
-            {"seq": "1", "match": _make_match("1", (1.4, 4.0, 7.0), (0.7, 0.2, 0.1)), "key": "home_win"},
-            {"seq": "2", "match": _make_match("2", (1.5, 3.8, 6.0), (0.65, 0.25, 0.1)), "key": "home_win"},
-        ],
-        "combined_odds": 2.1,
-        "ev_ai": 0.05,
-        "p_ai": 0.50,
-    }]
-
-    # 1. 원금 구간 (100,000원): 기본 3.5% 안팎 (약 3,500~4,000원)
-    normal_bets = decide_autonomous_stakes(combos, wallet_cash=100_000)
-    assert len(normal_bets) == 1
-    assert 3000 <= normal_bets[0]["stake"] <= 5000
-    assert normal_bets[0]["stake"] % 100 == 0
-
-    # 2. 비상 생존 모드 (잔고 20,000원): 1.5% 수준 방어 (300원)
-    defensive_bets = decide_autonomous_stakes(combos, wallet_cash=20_000)
-    assert len(defensive_bets) == 1
-    assert defensive_bets[0]["stake"] == 300
-
-    # 3. 극소액 잔고 (500원): 최소 100원 단위 집행
-    micro_bets = decide_autonomous_stakes(combos, wallet_cash=500)
-    assert len(micro_bets) == 1
-    assert micro_bets[0]["stake"] == 100
+    """번 돈은 내 자산: 적중 배당금이 잔고에 합산돼 복리로 굴러간다"""
+    history = [{"gm_ts": 1, "created_at": "2026-10-20T10:00:00", "stake": 5000, "combined_odds": 3.5, "legs": [{"seq": "1", "key": "home_win"}]}]
+    w = MonthlyWallet().calculate_wallet(history, {("1", "1"): "home_win"}, current_time=datetime(2026, 10, 25, tzinfo=timezone.utc))
+    assert w["settled_profit"] == 12_500 and w["current_cash"] == 112_500
 
 
 def test_bust_cooling_off():
-    """파산(Bust) 시 쿨다운: 잔고가 100원 미만이면 이번 달 베팅 중단, 익월 1일 충전 후 재개"""
-    combos = [{
-        "legs": [
-            {"seq": "1", "match": _make_match("1", (1.4, 4.0, 7.0), (0.7, 0.2, 0.1)), "key": "home_win"},
-            {"seq": "2", "match": _make_match("2", (1.5, 3.8, 6.0), (0.65, 0.25, 0.1)), "key": "home_win"},
-        ],
-        "combined_odds": 2.1,
-        "ev_ai": 0.05,
-        "p_ai": 0.50,
-    }]
-
-    # 잔고 50원 (< 100원): 베팅 미생성
-    bets = decide_autonomous_stakes(combos, wallet_cash=50)
-    assert bets == []
-
-    # 지갑 상태에서도 is_broke == True
-    wallet = MonthlyWallet(allowance=100_000)
-    t_oct = datetime(2026, 10, 28, tzinfo=timezone.utc)
-    # 10만 원을 전부 잃음
-    lost_history = [{
-        "gm_ts": 1,
-        "created_at": "2026-10-10T10:00:00",
-        "stake": 100_000,
-        "combined_odds": 2.0,
-        "legs": [{"seq": "1", "key": "home_win"}],
-    }]
+    """잔고를 다 잃으면 빚내지 않고 쉰다. 다음 달 1일에 용돈이 들어오면 재개"""
+    assert decide_autonomous_stakes(find_ai_autonomous_combos(FAVS + DRAWS, now=NOW), wallet_cash=50) == []
+    lost = [{"gm_ts": 1, "created_at": "2026-10-10T10:00:00", "stake": 100_000, "combined_odds": 2.0, "legs": [{"seq": "1", "key": "home_win"}]}]
     res = {("1", "1"): "away_win"}
-    w_oct = wallet.calculate_wallet(lost_history, res, current_time=t_oct)
-    assert w_oct["current_cash"] == 0
-    assert w_oct["is_broke"] is True
+    w_oct = MonthlyWallet().calculate_wallet(lost, res, current_time=datetime(2026, 10, 28, tzinfo=timezone.utc))
+    assert (w_oct["current_cash"], w_oct["is_broke"], w_oct["can_bet"]) == (0, True, False)
+    w_nov = MonthlyWallet().calculate_wallet(lost, res, current_time=datetime(2026, 11, 1, tzinfo=timezone.utc))
+    assert (w_nov["total_deposited"], w_nov["current_cash"], w_nov["is_broke"], w_nov["can_bet"]) == (200_000, 100_000, False, True)
 
-    # 11월 1일이 되면 10만 원 충전되어 자동 복구
-    t_nov = datetime(2026, 11, 1, tzinfo=timezone.utc)
-    w_nov = wallet.calculate_wallet(lost_history, res, current_time=t_nov)
-    assert w_nov["total_deposited"] == 200_000
-    assert w_nov["current_cash"] == 100_000
-    assert w_nov["is_broke"] is False
+
+def test_cash_tied_up_in_pending_bets_is_not_bankruptcy():
+    """결과 대기 중인 판돈은 묶인 돈: 더 걸 수는 없지만(can_bet=False) 파산은 아니다"""
+    tied = [{"gm_ts": 1, "created_at": "2026-10-10T10:00:00", "stake": 100_000, "combined_odds": 2.0, "legs": [{"seq": "1", "key": "home_win"}]}]
+    w = MonthlyWallet().calculate_wallet(tied, {}, current_time=datetime(2026, 10, 28, tzinfo=timezone.utc))
+    assert (w["current_cash"], w["pending_stakes"], w["can_bet"], w["is_broke"]) == (0, 100_000, False, False)
+
+
+def test_risk_profile_tiers():
+    """잔고 구간별 위험 한도: 3만 원 미만 비상 절전(복권 중단) · 7만 원 미만 방어 · 그 이상 정상 · 15만 원 초과분은 절반만 밑천"""
+    assert risk_profile(29_999)["mode"] == "survival" and risk_profile(29_999)["lottery_rate"] == 0
+    assert risk_profile(30_000)["mode"] == "defensive" and risk_profile(69_999)["mode"] == "defensive"
+    assert risk_profile(70_000)["mode"] == "normal"
+    assert risk_profile(100_000)["risk_capital"] == 100_000
+    assert risk_profile(250_000)["risk_capital"] == 150_000 + 0.5 * 100_000
+
+
+# ── 조합 고르기 ───────────────────────────────────────────────────────────────────────
+def test_main_slip_is_the_least_expected_loss_not_the_most_likely():
+    """주력은 적중확률이 가장 높은 조합이 아니라, AI 기준 기대손실이 가장 작은(기대수익이 가장 큰) 안정 조합"""
+    slips = find_ai_autonomous_combos(FAVS, now=NOW)
+    main = slips[0]
+    best_ev, best_seqs = _bruteforce_best_main(FAVS)
+    assert main["slip"] == "main"
+    assert {x["seq"] for x in main["legs"]} == best_seqs == {"3", "4"}          # 페예노르트 + 미토
+    assert main["ev_ai"] == pytest.approx(best_ev)
+    assert main["p_ai"] >= ai_bettor.MAIN_MIN_HIT                                  # 안정 (적중확률 하한)
+    most_likely = calculate_combined_odds([1.02, 1.04]) * 0.889 * 0.873 - 1.0      # PSV + 바르셀로나 (적중확률 최고)
+    assert main["ev_ai"] > most_likely + 0.05
+
+
+def test_always_buys_even_when_expected_return_is_negative():
+    """사람처럼 매 회차 산다: 기대수익이 마이너스여도 건다 (쉬는 전략은 F)"""
+    slips = find_ai_autonomous_combos(FAVS, now=NOW)
+    assert slips and slips[0]["ev_ai"] < 0
+    bets = decide_autonomous_stakes(slips, wallet_cash=100_000)
+    assert len(bets) >= 1 and bets[0]["slip"] == "main" and bets[0]["stake"] >= 100
+
+
+def test_lottery_slip_is_disjoint_high_odds_and_ai_up():
+    """복권: 주력과 경기가 하나도 겹치지 않고, 합성 배당 6~15배, 모든 선택지를 AI가 시장보다 높게 본 것"""
+    slips = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    assert [s["slip"] for s in slips] == ["main", "lottery"]
+    main, lot = slips
+    assert not ({x["seq"] for x in main["legs"]} & {x["seq"] for x in lot["legs"]})
+    lo, hi = ai_bettor.LOTTERY_BAND
+    assert lo <= lot["combined_odds"] <= hi
+    assert all(x["p_ai"] > x["p_mk"] and x["odds"] >= ai_bettor.LOTTERY_MIN_LEG_ODDS for x in lot["legs"])
+    assert 2 <= len(lot["legs"]) <= 3
+
+
+def test_lottery_skipped_when_nothing_fits():
+    """복권 후보가 없으면 주력 한 장만 산다 (억지로 만들지 않는다)"""
+    slips = find_ai_autonomous_combos(FAVS, now=NOW)       # 모두 정배라 6배 이상 AI▲ 조합이 없음
+    assert [s["slip"] for s in slips] == ["main"]
+
+
+def test_no_bet_without_two_buyable_games():
+    one = find_ai_autonomous_combos(FAVS[:1], now=NOW)
+    assert one == []
+    closed = [_match(i, (1.2, 5.0, 9.0), (0.8, 0.12, 0.08), close_offset=-60) for i in range(1, 5)]       # 발매 마감 지남
+    started = [_match(i, (1.2, 5.0, 9.0), (0.8, 0.12, 0.08), time="26.10.30 (금) 18:00") for i in range(1, 5)]   # 킥오프 지남 (KST 18:00 = 09:00 UTC)
+    no_ai = [_match(i, (1.2, 5.0, 9.0), (0.8, 0.12, 0.08), source="market") for i in range(1, 5)]            # AI 미적용
+    assert find_ai_autonomous_combos(closed, now=NOW) == []
+    assert find_ai_autonomous_combos(started, now=NOW) == []
+    assert find_ai_autonomous_combos(no_ai, now=NOW) == []
+
+
+# ── 판돈 ─────────────────────────────────────────────────────────────────────────────
+def test_stake_multiplier_follows_ai_edge():
+    """AI 우위가 없으면 절반 · 평소(+5%)면 기본 · 특급(+10%↑)이면 2.5배, 기대수익이 플러스면 가산, 모드 상한으로 자름"""
+    assert stake_multiplier(-0.02, -0.1, 2.5) == 0.5
+    assert stake_multiplier(0.0, -0.1, 2.5) == 0.5
+    assert stake_multiplier(0.05, -0.1, 2.5) == pytest.approx(1.0)
+    assert stake_multiplier(0.10, -0.1, 2.5) == pytest.approx(2.5)
+    assert stake_multiplier(0.30, -0.1, 2.5) == pytest.approx(2.5)
+    assert stake_multiplier(0.075, -0.1, 2.5) == pytest.approx(1.75)
+    assert stake_multiplier(0.05, 0.10, 2.5) == pytest.approx(1.2)       # 💎 가산
+    assert stake_multiplier(0.10, -0.1, 1.5) == 1.5 and stake_multiplier(0.10, -0.1, 1.0) == 1.0
+
+
+def test_stronger_ai_edge_means_bigger_stake():
+    base = {"slip": "main", "combined_odds": 1.6, "p_ai": 0.55, "ev_ai": -0.08}
+    weak = decide_autonomous_stakes([{**_slip_skeleton(), **base, "conviction": 0.02}], 100_000)[0]["stake"]
+    typical = decide_autonomous_stakes([{**_slip_skeleton(), **base, "conviction": 0.05}], 100_000)[0]["stake"]
+    strong = decide_autonomous_stakes([{**_slip_skeleton(), **base, "conviction": 0.10}], 100_000)[0]["stake"]
+    assert weak < typical < strong
+    assert typical == 2000 and strong == 5000                          # 평소 잔고의 2% · 특급 5%
+
+
+def _slip_skeleton():
+    """판돈 계산 시험용 슬립 뼈대 (경기 두 개)"""
+    return {"legs": [{"match": FAVS[2], "seq": "3", "key": "home_win"}, {"match": FAVS[3], "seq": "4", "key": "away_win"}]}
+
+
+def test_drawdown_sizing_defense():
+    """잔고가 줄면 판돈 비율이 줄고(3만 원 미만 1.5% 이하 = 100~450원) 복권은 중단, 100원 단위·최소 100원"""
+    slips = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    normal = decide_autonomous_stakes(slips, 100_000)
+    assert [b["slip"] for b in normal] == ["main", "lottery"]
+    assert all(b["stake"] % 100 == 0 for b in normal)
+
+    survival = decide_autonomous_stakes(slips, 20_000)
+    assert [b["slip"] for b in survival] == ["main"] and 100 <= survival[0]["stake"] <= 300     # 20,000원의 1.5% = 300원 이하
+
+    near_limit = decide_autonomous_stakes(slips, 29_900)[0]["stake"]
+    assert 100 <= near_limit <= 450
+
+    micro = decide_autonomous_stakes(slips, 500)
+    assert [b["stake"] for b in micro] == [100]
+
+    defensive = decide_autonomous_stakes(slips, 50_000)
+    assert defensive[0]["stake_mult"] <= 1.5 and sum(b["stake"] for b in defensive) < sum(b["stake"] for b in normal)
+
+
+def test_round_total_stays_within_cap_and_betman_limit():
+    """한 회차 합계는 밑천의 10% 이하·잔고 이하·10만 원 이하, 모든 베팅은 베트맨 규정을 통과"""
+    slips = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    for cash in (100_000, 250_000, 5_000_000):
+        bets = decide_autonomous_stakes(slips, cash)
+        total = sum(b["stake"] for b in bets)
+        assert total <= 100_000 and total <= risk_profile(cash)["risk_capital"] * ai_bettor.ROUND_CAP + 1e-9
+        for b in bets:
+            ok, msg = validate_combo(b["legs"], stake=b["stake"], total_round_stake=total, is_single_permitted=False)
+            assert ok, msg
+            assert b["stake"] % 100 == 0 and 2 <= len(b["legs"]) <= 10
+            assert len({x["seq"] for x in b["legs"]}) == len(b["legs"])
+
+
+def test_scales_down_and_drops_lottery_when_over_cap(monkeypatch):
+    """상한을 넘으면 비례 축소하고, 100원 단위 때문에 그래도 넘으면 복권부터 뺀다"""
+    slips = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    monkeypatch.setattr(ai_bettor, "ROUND_CAP", 0.02)                    # 100,000원의 2% = 2,000원
+    bets = decide_autonomous_stakes(slips, 100_000)
+    assert sum(b["stake"] for b in bets) <= 2000 and [b["slip"] for b in bets] == ["main", "lottery"]
+    monkeypatch.setattr(ai_bettor, "ROUND_CAP", 0.0)                     # 상한이 100원 밑이어도 최소 한 장(100원)은 살 수 있다
+    bets = decide_autonomous_stakes(slips, 100_000)
+    assert [(b["slip"], b["stake"]) for b in bets] == [("main", 100)]
 
 
 def test_betman_official_rules_compliance():
-    """베트맨 6대 공식 규정 100% 준수 검증"""
-    now = datetime(2026, 10, 30, 10, 0, tzinfo=timezone.utc)
-    preds = [
-        _make_match("1", (1.45, 4.10, 6.80), (0.72, 0.18, 0.10)),
-        _make_match("2", (1.55, 3.75, 5.50), (0.68, 0.21, 0.11)),
-        _make_match("3", (2.10, 3.20, 3.10), (0.45, 0.32, 0.23)),
-    ]
-
-    combos = find_ai_autonomous_combos(preds, now=now)
-    assert len(combos) >= 1
-
-    bets = decide_autonomous_stakes(combos, wallet_cash=100_000)
-    assert len(bets) >= 1
-
-    total_stake = sum(b["stake"] for b in bets)
-    assert total_stake <= 100_000  # 회차당 10만 원 한도
-
+    """베트맨 규정: 2~10폴더 · 같은 경기 중복 불가 · 100원 단위 · 회차 한도 · 조합 배당 올림 규칙"""
+    slips = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    bets = decide_autonomous_stakes(slips, 100_000)
+    assert bets
     for b in bets:
-        # validate_combo 공식 검증
-        ok, msg = validate_combo(b["legs"], stake=b["stake"], is_single_permitted=False)
-        assert ok is True, f"규정 위반: {msg}"
-        # 100원 단위
-        assert b["stake"] % 100 == 0
-        # 2~10폴더
-        assert 2 <= len(b["legs"]) <= 10
-        # 동일 경기 중복 불가
-        seqs = [x["seq"] for x in b["legs"]]
-        assert len(seqs) == len(set(seqs))
+        assert validate_combo(b["legs"], stake=b["stake"], total_round_stake=sum(x["stake"] for x in bets), is_single_permitted=False)[0]
+        assert b["combined_odds"] == calculate_combined_odds([x["odds"] for x in b["legs"]])
+        assert b["strategy"] == "G_ai_bettor" and b["bet_id"].startswith("G_ai_bettor:")
+        assert b["wallet_before"] == 100_000 and b["mode"] == "normal" and "AI 우위" in b["ai_note"]
+
+
+# ── 성적 해석 ────────────────────────────────────────────────────────────────────────
+def _rows(spec):
+    """spec: [(gm_ts, slip, odds, stake, hit)]"""
+    from models.combo_builder import calculate_payout
+    return [{"gm_ts": g, "slip": s, "odds": o, "stake": st, "hit": h, "payout": calculate_payout(o, st) if h else 0}
+            for g, s, o, st, h in spec]
+
+
+def test_sizing_effect_rewards_betting_more_on_winners():
+    """확신 있을 때 크게 걸어 맞춘 쪽이 많으면 'AI 판돈 조절'이 고정 금액보다 낫다"""
+    good = _rows([(r, s, 2.0, big, hit) for r in range(10) for s, big, hit in (("main", 5000, True), ("lottery", 500, False))])
+    z = sizing_effect(good, flat_stake=1000, min_for_verdict=10)
+    assert z["bets"] == 20 and z["gain_pp"] > 0 and z["gain_ci_low"] > 0 and z["verdict"] == "판돈 조절이 도움"
+    bad = _rows([(r, s, 2.0, big, hit) for r in range(10) for s, big, hit in (("main", 5000, False), ("lottery", 500, True))])
+    z = sizing_effect(bad, flat_stake=1000, min_for_verdict=10)
+    assert z["gain_pp"] < 0 and z["gain_ci_high"] < 0 and z["verdict"] == "판돈 조절이 해가 됨"
+
+
+def test_sizing_effect_holds_verdict_with_few_bets():
+    z = sizing_effect(_rows([(1, "main", 2.0, 3000, True), (1, "lottery", 8.0, 800, False)]), flat_stake=1000, min_for_verdict=300)
+    assert z["verdict"].startswith("판단 보류") and z["bets"] == 2
+    assert sizing_effect([], 1000, 300) is None
+
+
+def test_g_breakdown_splits_slips():
+    rows = _rows([(1, "main", 2.0, 3000, True), (1, "lottery", 8.0, 1000, False), (2, "main", 2.0, 2000, False)])
+    b = g_breakdown(rows, 1000, 300)["by_slip"]
+    assert (b["main"]["bets"], b["main"]["hits"], b["main"]["staked"], b["main"]["returned"], b["main"]["profit"]) == (2, 1, 5000, 6000, 1000)
+    assert (b["lottery"]["bets"], b["lottery"]["profit"], b["lottery"]["roi_pct"]) == (1, -1000, -100.0)
+    empty = g_breakdown([], 1000, 300)
+    assert empty["sizing"] is None and all(v["bets"] == 0 and v["roi_pct"] == 0.0 for v in empty["by_slip"].values())

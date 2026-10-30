@@ -63,44 +63,77 @@ def test_f_skips_round_without_edge(tmp_path):
     assert json.loads((tmp_path / "8.json").read_text(encoding="utf-8"))["f_plan"]["bets"] == 0   # 쉰 회차로 기록
 
 
-def test_g_ai_bettor_autonomous_and_rule_compliant(tmp_path):
-    """G(자율 AI 베터): 베트맨 규정 준수(2~3경기, 100원 단위, 동일경기 불가) + AI 자율 조합/판돈 + 월별 지갑 갱신"""
-    from models.paper_trading import G_START_ALLOWANCE, g_bankroll, g_wallet
-    from models.combo_builder import validate_combo
+G_PREDS = [
+    _m("1", (1.4, 4.2, 7.5), (0.75, 0.17, 0.08)),     # 안정 정배 (AI가 배당보다 높게 봄)
+    _m("2", (1.5, 3.8, 6.0), (0.70, 0.20, 0.10)),     # 안정 정배
+    _m("3", (2.8, 3.4, 2.4), (0.28, 0.40, 0.32)),     # 무승부 3.40을 AI가 높게 봄 → 복권 후보
+    _m("4", (3.2, 3.3, 2.2), (0.22, 0.42, 0.36)),     # 무승부 3.30을 AI가 높게 봄 → 복권 후보
+]
 
-    preds = [
-        _m("1", (1.4, 4.2, 7.5), (0.75, 0.17, 0.08)),  # 강력한 저배당 정배 (AI 우위)
-        _m("2", (1.5, 3.8, 6.0), (0.70, 0.20, 0.10)),  # 저배당 정배 (AI 우위)
-        _m("3", (2.8, 3.4, 2.4), (0.28, 0.40, 0.32)),  # 무승부(3.40) AI 우위
-        _m("4", (3.2, 3.3, 2.2), (0.22, 0.42, 0.36)),  # 무승부(3.30) AI 우위
-    ]
+
+def _write_results(path, gm_ts, codes):
+    path.write_text(json.dumps([{"gm_ts": gm_ts, "match_seq": s, "game_type": "축구 승무패", "game_result": c}
+                                for s, c in codes.items()]), encoding="utf-8")
+
+
+def test_g_ai_bettor_two_slips_rule_compliant_and_settled(tmp_path):
+    """G: 주력(안정) 1장 + 소액 복권 1장을 한 지갑에서 · 베트맨 규정 준수 · 경기 겹침 없음 · 한 회차에 한 번 · 정산하면 지갑·슬립별 성적·판돈 조절 효과가 나온다"""
+    from models.combo_builder import validate_combo
+    from models.paper_trading import G_START_ALLOWANCE, g_wallet
+
     rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
     rpath.write_text("[]", encoding="utf-8")
-
-    added = save_new_bets(10, preds, now=NOW, bets_dir=tmp_path, results_path=rpath)
-    assert added.get("G_ai_bettor") >= 1
+    assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") == 2
+    assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") is None   # 회차당 한 번
 
     data = json.loads((tmp_path / "10.json").read_text(encoding="utf-8"))
     g_bets = [b for b in data["bets"] if b["strategy"] == "G_ai_bettor"]
-    assert len(g_bets) >= 1
+    assert [b["slip"] for b in g_bets] == ["main", "lottery"]
+    main, lottery = g_bets
+    assert not ({x["seq"] for x in main["legs"]} & {x["seq"] for x in lottery["legs"]})     # 두 장은 경기가 겹치지 않는다
+    assert main["combined_odds"] < 3 and 6 <= lottery["combined_odds"] <= 15
+    total = sum(b["stake"] for b in g_bets)
+    assert total <= G_START_ALLOWANCE * 0.10                                                  # 회차 합계는 밑천의 10% 이하
+    for b in g_bets:
+        assert validate_combo(b["legs"], stake=b["stake"], total_round_stake=total, is_single_permitted=False)[0] is True
+        assert b["stake"] % 100 == 0 and b["wallet_before"] == G_START_ALLOWANCE and b["created_at"]
+    assert g_wallet(tmp_path, rpath, now=NOW)["pending_stakes"] == total                      # 걸어 둔 돈은 묶인 돈
 
-    for gb in g_bets:
-        # 1. 베트맨 규정 검증 (validate_combo)
-        assert validate_combo(gb["legs"], stake=gb["stake"], is_single_permitted=False)[0] is True
-        # 2. 판돈 규정 검증 (100원 단위, 10만원 한도 이하, 지갑 대비 안전 비율)
-        assert gb["stake"] % 100 == 0 and 100 <= gb["stake"] <= G_START_ALLOWANCE * 0.08
+    # 모두 적중 (1·2 홈승, 3·4 무승부)
+    _write_results(rpath, 10, {"1": "0", "2": "0", "3": "1", "4": "1"})
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json", now=NOW)["strategies"]["G_ai_bettor"]
+    assert (s["bets"], s["hits"], s["pending"]) == (2, 2, 0)
+    assert s["total_deposited"] == G_START_ALLOWANCE and s["bankroll"] == G_START_ALLOWANCE + s["profit"] and s["profit"] > 0
+    assert s["is_broke"] is False and s["can_bet"] is True and s["mode"] == "normal"
+    assert s["by_slip"]["main"]["bets"] == 1 and s["by_slip"]["lottery"]["bets"] == 1
+    assert s["by_slip"]["main"]["staked"] + s["by_slip"]["lottery"]["staked"] == total
+    assert s["sizing"]["bets"] == 2 and s["sizing"]["verdict"].startswith("판단 보류")        # 300건 전에는 판정하지 않는다
+    # 같은 베팅을 1,000원 고정으로 걸었다면: 적중했으니 수익률은 배당만큼 (환급 ÷ 1,000원 − 1)
+    assert s["sizing"]["roi_flat_pct"] == round((2.1 + 11.3) / 2 * 100 - 100, 2)
 
-    # 3. 정산 및 지갑 갱신 (1, 2 홈승 적중)
-    results = [
-        {"gm_ts": 10, "match_seq": "1", "game_type": "축구 승무패", "game_result": "0"},
-        {"gm_ts": 10, "match_seq": "2", "game_type": "축구 승무패", "game_result": "0"},
-        {"gm_ts": 10, "match_seq": "3", "game_type": "축구 승무패", "game_result": "1"},
-        {"gm_ts": 10, "match_seq": "4", "game_type": "축구 승무패", "game_result": "1"},
-    ]
-    rpath.write_text(json.dumps(results), encoding="utf-8")
-    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json", now=NOW)["strategies"]
-    
-    assert "G_ai_bettor" in s
-    assert s["G_ai_bettor"]["total_deposited"] == G_START_ALLOWANCE
-    assert s["G_ai_bettor"]["bankroll"] == G_START_ALLOWANCE + s["G_ai_bettor"]["profit"]
-    assert s["G_ai_bettor"]["is_broke"] is False
+
+def test_g_rests_when_wallet_is_tied_up_or_empty(tmp_path):
+    """잔고가 100원 미만이면(대기 중 판돈 포함) 이번 회차는 사지 않는다. 용돈이 들어오는 다음 달에는 다시 산다"""
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+    old_legs = [{"seq": "1", "key": "home_win", "odds": 1.4, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"},
+                {"seq": "2", "key": "home_win", "odds": 1.5, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"}]
+    (tmp_path / "9.json").write_text(json.dumps({"gm_ts": 9, "bets": [{
+        "strategy": "G_ai_bettor", "slip": "main", "legs": old_legs, "combined_odds": 2.1, "stake": 100_000, "bet_id": "G_ai_bettor:1h+2h",
+        "created_at": NOW.isoformat(timespec="seconds")}]}), encoding="utf-8")                  # 용돈 전부가 결과 대기 중
+    assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") is None
+    nov = datetime(2026, 12, 1, tzinfo=timezone.utc)    # 다음 달 1일: 용돈 10만 원이 또 들어옴
+    assert save_new_bets(11, G_PREDS, now=nov, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") == 2
+
+
+def test_retired_strategies_stay_in_details_but_not_in_the_league(tmp_path):
+    """폐기한 G_real_stable·H_real_highodds 베팅은 내역에만 남고 전략 표(리그)에 올라가지 않는다"""
+    legs = [{"seq": "1", "key": "home_win", "odds": 1.4, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"},
+            {"seq": "2", "key": "home_win", "odds": 1.5, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"}]
+    (tmp_path / "9.json").write_text(json.dumps({"gm_ts": 9, "bets": [
+        {"strategy": "G_real_stable", "legs": legs, "combined_odds": 2.1, "stake": 2000, "bet_id": "G_real_stable:1h+2h"}]}), encoding="utf-8")
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    _write_results(rpath, 9, {"1": "0", "2": "0"})
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json", now=NOW)
+    assert "G_real_stable" not in s["strategies"]
+    assert [d["strategy"] for d in s["details"]] == ["G_real_stable"] and s["details"][0]["status"] == "적중"

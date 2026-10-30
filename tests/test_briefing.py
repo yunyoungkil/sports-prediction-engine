@@ -36,6 +36,26 @@ def test_paper_lines_without_file():
     assert paper_lines(reader=lambda rel: None) == ["🧪 가상 베팅: 기록 없음"]
 
 
+def test_paper_lines_g_wallet_and_sizing():
+    """G는 지갑(잔고·누적 입금·순손익·상태)과 슬립별 성적, 판돈 조절 효과를 보여 준다. 채점 전에도 지갑은 보인다"""
+    g = {"label": "G. 자율 AI 베터", "bets": 0, "hits": 0, "pending": 2, "bankroll": 94_500, "total_deposited": 100_000,
+         "is_broke": False, "can_bet": True, "mode_label": "정상"}
+    text = "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G": g}}}.get))
+    assert "G. 자율 AI 베터: 채점된 베팅 없음 · 결과 대기 2 · 지갑 94,500원 (누적 입금 100,000원 · 순손익 +0원 · 정상)" in text
+
+    g.update({"bets": 4, "hits": 1, "profit": -2300, "roi_pct": -17.6, "verdict": "판단 보류 (표본 부족)",
+              "by_slip": {"main": {"label": "주력", "bets": 2, "roi_pct": -35.0}, "lottery": {"label": "복권", "bets": 2, "roi_pct": 10.0}},
+              "sizing": {"gain_pp": -4.2, "roi_ai_pct": -17.6, "roi_flat_pct": -13.4, "verdict": "판단 보류 (표본 부족)"}})
+    text = "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G": g}}}.get))
+    assert "손익 -2,300원 (수익률 -17.6%)" in text and "순손익 -2,300원" in text
+    assert "주력 2건 -35.0% · 복권 2건 +10.0% · 판돈 조절 효과 -4.2%p (AI 금액 -17.6% vs 1,000원 고정 -13.4%)" in text
+
+    g.update({"is_broke": True, "can_bet": False})
+    assert "🚨 소진, 다음 달 1일까지 쉼" in "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G": g}}}.get))
+    g.update({"is_broke": False})
+    assert "⏳ 대기 중인 베팅에 돈이 묶임" in "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G": g}}}.get))
+
+
 def _fake_runner(times_by_wf):
     """gh run list 결과를 흉내 (워크플로 이름 → createdAt 목록)"""
     import json

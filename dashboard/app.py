@@ -3193,7 +3193,8 @@ with tab3:
     st.divider()
     st.subheader("🧪 가상 베팅 리그")
     st.caption("전략마다 경기 시작 전에 가상으로 걸어 두고 결과가 나오면 자동으로 채점해요 (실제 구매 없음 · A~E는 1,000원 고정, "
-               "F는 가상 지갑 10만 원에서 1/4 켈리로 최적 금액을 정하고 이득이 없으면 쉼). "
+               "F는 가상 지갑 10만 원에서 1/4 켈리로 최적 금액을 정하고 이득이 없으면 쉼, "
+               "G는 월 10만 원 지갑으로 매 회차 안정 조합 1장 + 소액 복권 1장을 사람처럼 사고 금액은 AI가 정함). "
                f"AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있고, {PAPER_MIN}건 이상에서 수익률 95% 범위 아래 끝이 0보다 커야 '수익 입증'이에요.")
 
     clv_by_strategy = clv.get("paper_strategies", {})
@@ -3235,11 +3236,28 @@ with tab3:
             g_b = int(g_live.get("bankroll", 100000))
             g_dep = int(g_live.get("total_deposited", 100000))
             g_mf = int(g_live.get("months_funded", 1))
-            g_broke = bool(g_live.get("is_broke", False))
-            status_tag = "🚨 <span style='color:#e74c3c;font-weight:bold'>이번 달 잔고 소진 (익월 1일 충전 대기)</span>" if g_broke else "🟢 <span style='color:#27ae60;font-weight:bold'>정상 베팅 중</span>"
+            g_pend = int(g_live.get("pending_stakes", 0))
+            g_net = int(g_live.get("profit", 0))      # 끝난 베팅의 순손익 = 잔고 + 묶인 돈 − 누적 입금
+            if g_live.get("is_broke"):
+                status_tag = "🚨 <span style='color:#e74c3c;font-weight:bold'>잔고 소진 (다음 달 1일 용돈이 들어올 때까지 쉼)</span>"
+            elif g_live.get("can_bet") is False:
+                status_tag = "⏳ <span style='color:#d68910;font-weight:bold'>대기 중인 베팅에 돈이 묶여 있어요</span>"
+            else:
+                mode_txt = "" if g_live.get("mode", "normal") == "normal" else f" ({g_live.get('mode_label')} 모드 — 판돈을 줄여 운용)"
+                status_tag = f"🟢 <span style='color:#27ae60;font-weight:bold'>정상 베팅 중{mode_txt}</span>"
+            g_slips = " · ".join(f"{v['label']} {v['bets']}건 {v['roi_pct']:+.1f}%"
+                                 for v in (g_live.get("by_slip") or {}).values() if v.get("bets"))
+            g_z = g_live.get("sizing")
+            g_range = (f" · 95% 범위 [{g_z['gain_ci_low']:+.1f}, {g_z['gain_ci_high']:+.1f}]%p"
+                       if g_z and g_z["gain_ci_low"] != g_z["gain_ci_high"] else "")
             g_wallet_txt = (
-                f"<br>🤖 <b>G. 자율 AI 베터 가상 지갑</b> (매월 1일 10만 원 용돈 충전 · 수익 복리 증식 · 손실 시 판돈 방어 · 베트맨 규정 준수): "
-                f"현재 가용 잔고 <b>{g_b:,}원</b> (누적 입금 {g_dep:,}원 / {g_mf}개월 차) · 상태: {status_tag}"
+                f"<br>🤖 <b>G. 자율 AI 베터</b> (월 10만 원 용돈 · 번 돈은 내 돈 · 매 회차 안정 조합 1장 + 소액 복권 1장 · 이득이 없어도 거는 사람형): "
+                f"지갑 <b>{g_b:,}원</b> (누적 입금 {g_dep:,}원 / {g_mf}개월 차"
+                + (f" · 결과 대기에 묶인 돈 {g_pend:,}원" if g_pend else "")
+                + f") · 순손익 <b>{g_net:+,}원</b> · {status_tag}"
+                + (f"<br>↳ {g_slips}" if g_slips else "")
+                + (f"<br>↳ 판돈 조절 효과: AI가 정한 금액 {g_z['roi_ai_pct']:+.1f}% vs 같은 베팅을 1,000원 고정 {g_z['roi_flat_pct']:+.1f}% "
+                   f"→ <b>{g_z['gain_pp']:+.1f}%p</b>{g_range} · {g_z['verdict']} (AI가 확신할 때 판돈을 키운 게 도움이 됐는지 보는 지표)" if g_z else "")
             )
         if past_txt or f_wallet_txt or g_wallet_txt:
             st.markdown(
@@ -3256,7 +3274,7 @@ with tab3:
                                         help="산 배당 ÷ 마감 배당 − 1 의 경기 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것")})
         st.caption("실시간: 경기 시작 전에 고정 저장한 베팅 (2026-10-26, 260127회차부터). "
                    "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당과 실제 결과로 재현 — "
-                   "AI 전략(A·B·C·F·G·H)은 지금 AI가 그 결과까지 학습했기 때문에 여기서는 실시간으로만 채점해요. "
+                   "AI 전략(A·B·C·F·G)은 지금 AI가 그 결과까지 학습했기 때문에 여기서는 실시간으로만 채점해요. "
                    "B와 C는 후보가 겹쳐 같은 베팅이 나올 수 있어요 (위쪽 '끝난 베팅' 합계는 같은 베팅을 한 번만 세요).")
         # 누적 수익률(%) 그래프 — 과거 재현과 실시간을 따로 (베팅 수가 수십 배 달라 한 축에 그리면 실시간 선이 묻힘)
         # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교

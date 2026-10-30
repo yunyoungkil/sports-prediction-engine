@@ -119,13 +119,25 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
     out = [f"🧪 가상 베팅 (1건 {unit:,}원, 갱신 {str(pt.get('updated_at', ''))[:16].replace('T', ' ')} UTC):"]
     for s in pt["strategies"].values():
         pend = f" · 결과 대기 {s['pending']}" if s.get("pending") else ""
+        if "total_deposited" in s:      # G: 월 10만 원 지갑 — 잔고·누적 입금·순손익·상태
+            state = ("🚨 소진, 다음 달 1일까지 쉼" if s.get("is_broke")
+                     else "⏳ 대기 중인 베팅에 돈이 묶임" if s.get("can_bet") is False else s.get("mode_label", ""))
+            wallet = (f" · 지갑 {s['bankroll']:,}원 (누적 입금 {s['total_deposited']:,}원 · 순손익 {s.get('profit', 0):+,}원"
+                      + (f" · {state}" if state else "") + ")")
+        elif "bankroll" in s:           # F: 금액이 매번 달라 지갑으로 봄
+            wallet = f" · 지갑 {s['bankroll']:,}원 (쉰 회차 {s.get('rounds_skipped', 0)}/{s.get('rounds_planned', 0)})"
+        else:
+            wallet = ""
         if not s.get("bets"):
-            out.append(f"   - {s['label']}: 채점된 베팅 없음{pend}")
+            out.append(f"   - {s['label']}: 채점된 베팅 없음{pend}{wallet}")
             continue
-        wallet = (f" · 지갑 {s['bankroll']:,}원 (쉰 회차 {s.get('rounds_skipped', 0)}/{s.get('rounds_planned', 0)})"
-                  if "bankroll" in s else "")   # F: 금액이 매번 달라 지갑으로 봄
         out.append(f"   - {s['label']}: {s['bets']}건 중 {s['hits']}건 적중{pend} · 손익 {s['profit']:+,}원 "
                    f"(수익률 {s['roi_pct']:+.1f}%){wallet} · {s.get('verdict', '')}")
+        if s.get("sizing"):             # G: 주력/복권 성적과 '판돈 조절이 도움이 되나' (같은 베팅 1,000원 고정과 비교)
+            z = s["sizing"]
+            slips = " · ".join(f"{v['label']} {v['bets']}건 {v['roi_pct']:+.1f}%" for v in (s.get("by_slip") or {}).values() if v["bets"])
+            out.append(f"       ↳ {slips} · 판돈 조절 효과 {z['gain_pp']:+.1f}%p "
+                       f"(AI 금액 {z['roi_ai_pct']:+.1f}% vs 1,000원 고정 {z['roi_flat_pct']:+.1f}%) · {z['verdict']}")
     return out
 
 
