@@ -1084,7 +1084,7 @@
     "kickoff_ts": 1793354400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "고양소노 스카이거너스",
     "away_team": "서울삼성 썬더스",
@@ -1144,7 +1144,7 @@
     "kickoff_ts": 1793354400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "고양소노 스카이거너스",
     "away_team": "서울삼성 썬더스",
@@ -1234,7 +1234,7 @@
     "kickoff_ts": 1793354400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "고양소노 스카이거너스",
     "away_team": "서울삼성 썬더스",
@@ -1309,7 +1309,7 @@
     "kickoff_ts": 1793354400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "고양소노 스카이거너스",
     "away_team": "서울삼성 썬더스",
@@ -1354,7 +1354,7 @@
     "kickoff_ts": 1793354400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "고양소노 스카이거너스",
     "away_team": "서울삼성 썬더스",
@@ -1416,11 +1416,27 @@
     "match_state": "2",
     "home_team": "르아브르AC",
     "away_team": "파리 생제르맹",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 18:59:42",
+        "from": {
+          "home_win": 3.6,
+          "draw": 3.75,
+          "away_win": 1.65
+        },
+        "to": {
+          "home_win": 3.5,
+          "draw": 4.2,
+          "away_win": 1.6
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 3.6,
-      "draw": 3.75,
-      "away_win": 1.65
+      "home_win": 3.5,
+      "draw": 4.2,
+      "away_win": 1.6
     },
     "gm_ts": 260129
   },
@@ -1593,11 +1609,27 @@
     "match_state": "2",
     "home_team": "OGC니스",
     "away_team": "스타드 렌",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:00:05",
+        "from": {
+          "home_win": 2.45,
+          "draw": 3.4,
+          "away_win": 2.24
+        },
+        "to": {
+          "home_win": 2.45,
+          "draw": 3.2,
+          "away_win": 2.33
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
       "home_win": 2.45,
-      "draw": 3.4,
-      "away_win": 2.24
+      "draw": 3.2,
+      "away_win": 2.33
     },
     "gm_ts": 260129
   },
@@ -1709,10 +1741,26 @@
     "match_state": "2",
     "home_team": "엘버스베르크",
     "away_team": "FSV마인츠05",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:00:49",
+        "from": {
+          "home_win": 2.7,
+          "draw": 3.55,
+          "away_win": 2.01
+        },
+        "to": {
+          "home_win": 2.8,
+          "draw": 3.4,
+          "away_win": 2.01
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.7,
-      "draw": 3.55,
+      "home_win": 2.8,
+      "draw": 3.4,
       "away_win": 2.01
     },
     "gm_ts": 260129
@@ -1738,11 +1786,27 @@
     "match_state": "2",
     "home_team": "엘버스베르크",
     "away_team": "FSV마인츠05",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:00:49",
+        "from": {
+          "home_win": 1.63,
+          "draw": 3.85,
+          "away_win": 3.6
+        },
+        "to": {
+          "home_win": 1.69,
+          "draw": 3.75,
+          "away_win": 3.45
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.63,
-      "draw": 3.85,
-      "away_win": 3.6
+      "home_win": 1.69,
+      "draw": 3.75,
+      "away_win": 3.45
     },
     "gm_ts": 260129
   },
@@ -2086,11 +2150,27 @@
     "match_state": "2",
     "home_team": "릴OSC",
     "away_team": "RC랑스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:07:09",
+        "from": {
+          "home_win": 2.29,
+          "draw": 3.2,
+          "away_win": 2.5
+        },
+        "to": {
+          "home_win": 2.55,
+          "draw": 3.1,
+          "away_win": 2.3
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.29,
-      "draw": 3.2,
-      "away_win": 2.5
+      "home_win": 2.55,
+      "draw": 3.1,
+      "away_win": 2.3
     },
     "gm_ts": 260129
   },
@@ -2102,7 +2182,7 @@
     "game_type": "축구 핸디캡",
     "category": "핸디캡",
     "is_single": true,
-    "line": -1.0,
+    "line": 1.0,
     "win_txt": "승",
     "draw_txt": "무",
     "lose_txt": "패",
@@ -2115,11 +2195,27 @@
     "match_state": "2",
     "home_team": "릴OSC",
     "away_team": "RC랑스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:07:09",
+        "from": {
+          "home_win": 4.65,
+          "draw": 3.85,
+          "away_win": 1.48
+        },
+        "to": {
+          "home_win": 1.48,
+          "draw": 3.8,
+          "away_win": 4.75
+        },
+        "line_from": -1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 4.65,
-      "draw": 3.85,
-      "away_win": 1.48
+      "home_win": 1.48,
+      "draw": 3.8,
+      "away_win": 4.75
     },
     "gm_ts": 260129
   },
@@ -2144,11 +2240,27 @@
     "match_state": "2",
     "home_team": "릴OSC",
     "away_team": "RC랑스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:07:09",
+        "from": {
+          "home_win": 1.87,
+          "draw": 0.0,
+          "away_win": 1.63
+        },
+        "to": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.87,
+      "home_win": 1.75,
       "draw": 0.0,
-      "away_win": 1.63
+      "away_win": 1.73
     },
     "gm_ts": 260129
   },

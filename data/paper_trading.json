@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-30T09:48:26+00:00",
+  "updated_at": "2026-10-30T10:18:13+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -254,6 +254,55 @@
         }
       },
       "sizing": null
+    },
+    "G_instinct": {
+      "label": "G-본능 (G와 같은 경기 · 이기면 판돈 키우고 지면 고배당, 비교용)",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "cum_staked": [],
+      "verdict": "판단 보류 (표본 부족)",
+      "bankroll": 100000,
+      "total_deposited": 100000,
+      "months_funded": 1,
+      "pending_stakes": 0,
+      "is_broke": false,
+      "can_bet": true,
+      "mode": "normal",
+      "mode_label": "정상",
+      "current_month": "2026-10",
+      "by_slip": {
+        "main": {
+          "label": "주력",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0
+        },
+        "lottery": {
+          "label": "복권",
+          "bets": 0,
+          "hits": 0,
+          "staked": 0,
+          "returned": 0,
+          "profit": 0,
+          "roi_pct": 0.0
+        }
+      },
+      "sizing": null,
+      "instinct_rounds": {
+        "win_boost": 0,
+        "chase": 0
+      }
     }
   },
   "details": [

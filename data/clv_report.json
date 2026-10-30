@@ -1,41 +1,41 @@
 {
-  "updated_at": "2026-10-30T09:48:26+00:00",
+  "updated_at": "2026-10-30T10:18:13+00:00",
   "rounds": [
     260126,
     260127,
     260128,
     260129
   ],
-  "matches": 243,
-  "moved": 147,
-  "toward_ai": 65,
-  "away_from_ai": 82,
-  "toward_ai_pct": 44.2,
-  "fav_toward_pct": 44.2,
+  "matches": 246,
+  "moved": 149,
+  "toward_ai": 66,
+  "away_from_ai": 83,
+  "toward_ai_pct": 44.3,
+  "fav_toward_pct": 43.6,
   "mean_move_pp": {
-    "n": 243,
-    "mean": -0.78784,
+    "n": 246,
+    "mean": -0.7724,
     "ci": [
-      -1.37483,
-      -0.26093
+      -1.34126,
+      -0.25027
     ],
     "ci_iid": [
-      -1.37483,
-      -0.26516
+      -1.34126,
+      -0.25027
     ],
-    "clusters": 138,
+    "clusters": 139,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
     "농구 SUM": {
-      "matches": 6,
+      "matches": 7,
       "moved": 0,
       "toward_ai": 0,
       "away_from_ai": 0,
       "toward_ai_pct": null,
       "fav_toward_pct": null,
       "mean_move_pp": {
-        "n": 6,
+        "n": 7,
         "mean": 0.0,
         "ci": [
           0.0,
@@ -45,51 +45,51 @@
           0.0,
           0.0
         ],
-        "clusters": 6,
+        "clusters": 7,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "농구 승패": {
-      "matches": 37,
-      "moved": 14,
-      "toward_ai": 4,
+      "matches": 38,
+      "moved": 15,
+      "toward_ai": 5,
       "away_from_ai": 10,
-      "toward_ai_pct": 28.6,
-      "fav_toward_pct": 21.4,
+      "toward_ai_pct": 33.3,
+      "fav_toward_pct": 20.0,
       "mean_move_pp": {
-        "n": 37,
-        "mean": -1.50423,
+        "n": 38,
+        "mean": -1.38907,
         "ci": [
-          -3.27084,
-          -0.21401
+          -3.07589,
+          -0.05795
         ],
         "ci_iid": [
-          -3.21013,
-          -0.21401
+          -2.97361,
+          -0.06556
         ],
-        "clusters": 37,
+        "clusters": 38,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "농구 언더오버": {
-      "matches": 6,
-      "moved": 1,
+      "matches": 7,
+      "moved": 2,
       "toward_ai": 0,
-      "away_from_ai": 1,
+      "away_from_ai": 2,
       "toward_ai_pct": 0.0,
-      "fav_toward_pct": 100.0,
+      "fav_toward_pct": 50.0,
       "mean_move_pp": {
-        "n": 6,
-        "mean": -0.23946,
+        "n": 7,
+        "mean": -0.41051,
         "ci": [
-          -0.71839,
+          -1.02627,
           0.0
         ],
         "ci_iid": [
-          -0.71839,
+          -0.82102,
           0.0
         ],
-        "clusters": 6,
+        "clusters": 7,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
