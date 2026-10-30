@@ -1654,11 +1654,27 @@
     "match_state": "2",
     "home_team": "OGC니스",
     "away_team": "스타드 렌",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 20:03:28",
+        "from": {
+          "home_win": 1.5,
+          "draw": 4.0,
+          "away_win": 4.3
+        },
+        "to": {
+          "home_win": 1.47,
+          "draw": 3.9,
+          "away_win": 4.7
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.5,
-      "draw": 4.0,
-      "away_win": 4.3
+      "home_win": 1.47,
+      "draw": 3.9,
+      "away_win": 4.7
     },
     "gm_ts": 260129
   },
@@ -1918,11 +1934,27 @@
     "match_state": "2",
     "home_team": "셰필드 유나이티드",
     "away_team": "렉섬",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:28:12",
+        "from": {
+          "home_win": 2.22,
+          "draw": 3.1,
+          "away_win": 2.65
+        },
+        "to": {
+          "home_win": 2.18,
+          "draw": 3.0,
+          "away_win": 2.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.22,
-      "draw": 3.1,
-      "away_win": 2.65
+      "home_win": 2.18,
+      "draw": 3.0,
+      "away_win": 2.8
     },
     "gm_ts": 260129
   },
@@ -1947,11 +1979,27 @@
     "match_state": "2",
     "home_team": "셰필드 유나이티드",
     "away_team": "렉섬",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:28:12",
+        "from": {
+          "home_win": 4.6,
+          "draw": 3.7,
+          "away_win": 1.51
+        },
+        "to": {
+          "home_win": 4.5,
+          "draw": 3.5,
+          "away_win": 1.56
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 4.6,
-      "draw": 3.7,
-      "away_win": 1.51
+      "home_win": 4.5,
+      "draw": 3.5,
+      "away_win": 1.56
     },
     "gm_ts": 260129
   },
@@ -2034,11 +2082,27 @@
     "match_state": "2",
     "home_team": "비야레알",
     "away_team": "RCD에스파뇰",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:36:54",
+        "from": {
+          "home_win": 1.36,
+          "draw": 4.2,
+          "away_win": 5.7
+        },
+        "to": {
+          "home_win": 1.32,
+          "draw": 4.55,
+          "away_win": 5.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.36,
-      "draw": 4.2,
-      "away_win": 5.7
+      "home_win": 1.32,
+      "draw": 4.55,
+      "away_win": 5.8
     },
     "gm_ts": 260129
   },
@@ -2063,11 +2127,27 @@
     "match_state": "2",
     "home_team": "비야레알",
     "away_team": "RCD에스파뇰",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 19:36:54",
+        "from": {
+          "home_win": 2.06,
+          "draw": 3.4,
+          "away_win": 2.7
+        },
+        "to": {
+          "home_win": 2.0,
+          "draw": 3.3,
+          "away_win": 2.9
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 2.06,
-      "draw": 3.4,
-      "away_win": 2.7
+      "home_win": 2.0,
+      "draw": 3.3,
+      "away_win": 2.9
     },
     "gm_ts": 260129
   },
