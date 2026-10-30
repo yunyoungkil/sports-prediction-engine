@@ -137,3 +137,37 @@ def test_retired_strategies_stay_in_details_but_not_in_the_league(tmp_path):
     s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json", now=NOW)
     assert "G_real_stable" not in s["strategies"]
     assert [d["strategy"] for d in s["details"]] == ["G_real_stable"] and s["details"][0]["status"] == "적중"
+
+
+def test_g_first_version_bets_are_set_aside(tmp_path):
+    """개편 전 G(첫 버전, slip 필드 없음) 베팅: 개편한 G가 같은 회차에 새로 사고, 지갑·리그 표·마감 대비 배당에서는 빠지며 내역에는 'G_v1'로 남는다"""
+    import numpy as np
+    from evaluation.clv import paper_bets_clv
+    from models.paper_trading import RETIRED_LABELS, g_wallet
+
+    def v1(stake, odds, seqs):
+        legs = [{"seq": s, "key": "home_win", "odds": 1.2, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"} for s in seqs]
+        return {"strategy": "G_ai_bettor", "legs": legs, "combined_odds": odds, "stake": stake,
+                "bet_id": "G_ai_bettor:" + "+".join(f"{s}h" for s in seqs), "created_at": NOW.isoformat(timespec="seconds")}   # slip 없음
+
+    (tmp_path / "10.json").write_text(json.dumps({"gm_ts": 10, "bets": [v1(2900, 1.5, ["1", "2"]), v1(1200, 1.4, ["1", "3"])]}), encoding="utf-8")
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+
+    assert g_wallet(tmp_path, rpath, now=NOW)["pending_stakes"] == 0                       # 첫 버전의 4,100원은 묶인 돈이 아님
+    assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") == 2   # 같은 회차에 새로 산다
+    assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") is None
+    new_total = sum(b["stake"] for b in json.loads((tmp_path / "10.json").read_text(encoding="utf-8"))["bets"] if "slip" in b)
+    assert g_wallet(tmp_path, rpath, now=NOW)["pending_stakes"] == new_total
+
+    _write_results(rpath, 10, {"1": "0", "2": "0", "3": "1", "4": "1"})
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path.parent / f"{tmp_path.name}_s.json", now=NOW)   # 요약은 베팅 폴더 밖에
+    g = s["strategies"]["G_ai_bettor"]
+    assert g["bets"] == 2 and g["pending"] == 0 and g["staked"] == new_total               # 리그 표·판정에는 개편한 G만
+    v1_rows = [d for d in s["details"] if d["strategy"] == "G_v1"]                         # 내역에는 남는다 (1·2 홈승 적중, 1·3은 3이 무승부라 미적중)
+    assert sorted(d["status"] for d in v1_rows) == ["미적중", "적중"] and "G_v1" in RETIRED_LABELS
+
+    closing = {(10, "1"): np.array([1.2, 5.0, 9.0]), (10, "2"): np.array([1.2, 5.0, 9.0]), (10, "3"): np.array([1.2, 5.0, 9.0]),
+               (10, "4"): np.array([3.0, 3.0, 3.0])}
+    clv = paper_bets_clv(tmp_path, closing)
+    assert clv["G_ai_bettor"]["n"] == 4                                                    # 개편한 G의 두 장(2폴더씩) 4다리만, 첫 버전 4다리는 제외

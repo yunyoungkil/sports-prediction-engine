@@ -72,7 +72,9 @@ except ImportError:
 from models.strategy_backtest import backtest, describe_rule, extract_rule, outcome_kind
 from models.combo_finder import candidate_legs, find_combos
 from collector.betman_sharp import parse_betman_kickoff
-from models.paper_trading import STRATEGIES as STRATEGY_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
+from models.paper_trading import STRATEGIES, RETIRED_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
+
+STRATEGY_LABELS = {**RETIRED_LABELS, **STRATEGIES}   # 내역 표에서는 폐기한 전략 이름도 보여 줌
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
 from tracker.prob_view import current_probs, shown_probs

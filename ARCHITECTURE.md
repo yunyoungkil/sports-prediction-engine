@@ -157,7 +157,7 @@ sports-prediction-engine/
 
 ### `data/history/paper_bets/{회차}.json`
 `{"gm_ts", "bets": [...], "f_plan"}` — 한 번 만든 베팅은 고치지 않는다. 베팅 한 건: `strategy`, `legs`(`seq`·`key`·`odds`·`match_time`·팀·리그), `combined_odds`, `stake`, `bet_id`, `created_at`(UTC), `ev_ai`.
-G는 추가로 `slip`(`main` 주력 · `lottery` 복권), `p_ai`(AI 적중확률), `edge`(경기당 AI 우위), `stake_mult`(판돈 배율), `wallet_before`(걸 때 잔고), `mode`(`survival`·`defensive`·`normal`), `ai_note`(근거 한 줄)를 남긴다. 폐기한 전략(`G_real_stable`·`H_real_highodds`)의 베팅은 내역에만 남고 리그 표에서는 뺀다.
+G는 추가로 `slip`(`main` 주력 · `lottery` 복권), `p_ai`(AI 적중확률), `edge`(경기당 AI 우위), `stake_mult`(판돈 배율), `wallet_before`(걸 때 잔고), `mode`(`survival`·`defensive`·`normal`), `ai_note`(근거 한 줄)를 남긴다. 폐기한 전략(`G_real_stable`·`H_real_highodds`)과 개편 전 G(첫 버전: `slip`이 없는 `G_ai_bettor` 베팅, `models/ai_bettor.is_g_v1`)의 베팅은 파일에는 그대로 두고 내역에서만 보이며(첫 버전은 `G_v1`) 리그 표·지갑·마감 대비 배당에서는 뺀다.
 `data/paper_trading.json`의 G 항목에는 지갑(`bankroll`·`total_deposited`·`pending_stakes`·`can_bet`·`is_broke`·`mode`), 슬립별 성적 `by_slip`, 판돈 조절 효과 `sizing`(AI 금액 수익률 − 같은 베팅 1,000원 고정 수익률, 회차 단위 95% 범위)이 들어 있다.
 
 ## 5. 안전장치 한눈에

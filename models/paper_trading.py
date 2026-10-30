@@ -35,7 +35,7 @@ from collector.betman_sharp import parse_betman_kickoff
 from evaluation.metrics import cluster_roi_confidence_interval
 from models.combo_builder import calculate_combined_odds, calculate_payout, validate_combo
 from models.combo_finder import candidate_legs, find_combos
-from models.ai_bettor import MonthlyWallet, decide_autonomous_stakes, find_ai_autonomous_combos, g_breakdown
+from models.ai_bettor import MonthlyWallet, decide_autonomous_stakes, find_ai_autonomous_combos, g_breakdown, is_g_v1
 
 BETS_DIR = Path("data/history/paper_bets")
 SUMMARY_PATH = Path("data/paper_trading.json")
@@ -51,6 +51,13 @@ STRATEGIES = {
     "E_market_fav": "E. 배당 1순위 단일 (기준선)",
     "F_portfolio_kelly": "F. AI 조합 묶음 + 켈리 금액 (지갑 10만 원)",
     "G_ai_bettor": "G. 자율 AI 베터 (월 10만 원 · 주력 안정 + 소액 복권)",
+}
+# 폐기한 전략의 베팅은 기록(파일)에는 남지만 전략 표·지갑·판정에는 넣지 않고, 내역에서만 이 이름으로 보여 준다.
+# G_v1 = 2026-10-30 개편 전 G(첫 버전, `slip` 필드 없음 — models/ai_bettor.is_g_v1)
+RETIRED_LABELS = {
+    "G_real_stable": "G′ 실전 주력 (폐기)",
+    "H_real_highodds": "H′ 실전 복권 (폐기)",
+    "G_v1": "G′ 자율 AI 베터 첫 버전 (폐기, 2026-10-30 개편)",
 }
 F_START_BANKROLL = 100_000
 G_START_ALLOWANCE = 100_000
@@ -168,7 +175,7 @@ def g_wallet(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/
                 d_f = json.loads(f.read_text(encoding="utf-8"))
                 ts = str(d_f.get("gm_ts", ""))
                 for b in d_f.get("bets", []):
-                    if b.get("strategy") == "G_ai_bettor":
+                    if b.get("strategy") == "G_ai_bettor" and not is_g_v1(b):
                         b_copy = dict(b)
                         if "gm_ts" not in b_copy or not b_copy["gm_ts"]:
                             b_copy["gm_ts"] = ts
@@ -206,8 +213,9 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
     data = {"gm_ts": gm_ts, "bets": []}
     if path.exists():
         data = json.loads(path.read_text(encoding="utf-8"))
-    have_ids = {b["bet_id"] for b in data["bets"]}
-    have_once = {b["strategy"] for b in data["bets"] if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", "G_ai_bettor")}
+    current = [b for b in data["bets"] if not is_g_v1(b)]      # 개편 전 G(첫 버전) 베팅은 없는 것으로 본다 → 개편한 G가 같은 회차에 새로 산다
+    have_ids = {b["bet_id"] for b in current}
+    have_once = {b["strategy"] for b in current if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", "G_ai_bettor")}
     used_matches = {(b["strategy"], leg["seq"]) for b in data["bets"] for leg in b["legs"]}
     added = {}
     for bt in propose_bets(predictions, now):
@@ -306,11 +314,12 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
             continue
         ts = str(data.get("gm_ts"))
         for b in data.get("bets", []):
-            # 폐기된 전략(G_real_stable·H_real_highodds)의 베팅은 내역에만 남기고 리그 표에는 올리지 않는다
-            in_league = b["strategy"] in STRATEGIES
+            # 폐기된 전략(G_real_stable·H_real_highodds·G 첫 버전)의 베팅은 내역에만 남기고 리그 표에는 올리지 않는다
+            skey = "G_v1" if is_g_v1(b) else b["strategy"]
+            in_league = skey in STRATEGIES
             outcomes = [res.get((ts, leg["seq"])) for leg in b["legs"]]
             last_ko = max((parse_betman_kickoff(leg["match_time"]) for leg in b["legs"]), default=None)
-            row = {"gm_ts": ts, "strategy": b["strategy"], "legs": " × ".join(_leg_text(leg) for leg in b["legs"]),
+            row = {"gm_ts": ts, "strategy": skey, "legs": " × ".join(_leg_text(leg) for leg in b["legs"]),
                    "odds": b["combined_odds"], "stake": b["stake"], "kickoff": last_ko.isoformat() if last_ko else ""}
             if any(o is None for o in outcomes):
                 if in_league:
