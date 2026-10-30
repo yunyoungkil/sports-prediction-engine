@@ -186,7 +186,8 @@ def check_predictions(preds: List[Dict[str, Any]]) -> Dict[str, Any]:
     started = sum(1 for x in preds if x.get("kickoff_ts") and float(x["kickoff_ts"]) < now_ms)
     if states == {"0"} and started:
         notes.append(f"예측 파일의 경기 상태(match_state)가 전부 0이에요 — 시작한 경기가 {started}건인데 상태 정보가 없어 "
-                     "대시보드의 '경기 중·종료' 판정이 시각 추정에 의존해요")
+                     "대시보드의 '경기 중·종료' 판정이 시각 추정에 의존해요. 새 회차가 열린 직후 몇 시간은 베트맨 API가 상태를 0으로 줘서 "
+                     "정상이고(2026-10-30 확인), 오래 이어지면 확인이 필요해요")
     return {"errors": errors, "notes": notes, "rows": int(len(df))}
 
 
