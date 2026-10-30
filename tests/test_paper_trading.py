@@ -51,7 +51,7 @@ def test_f_portfolio_bets_sized_and_bankroll(tmp_path):
     # 세 경기 모두 홈승 → F 베팅 전부 적중 → 지갑 = 시작 + 손익
     rpath.write_text(json.dumps([{"gm_ts": 7, "match_seq": s, "game_type": "축구 승무패", "game_result": "0"} for s in "123"]),
                      encoding="utf-8")
-    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json")["strategies"]["F_portfolio_kelly"]
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json", now=NOW)["strategies"]["F_portfolio_kelly"]
     assert s["bankroll"] == F_START_BANKROLL + s["profit"] and s["rounds_planned"] == 1 and s["rounds_skipped"] == 0
 
 
@@ -63,41 +63,34 @@ def test_f_skips_round_without_edge(tmp_path):
     assert json.loads((tmp_path / "8.json").read_text(encoding="utf-8"))["f_plan"]["bets"] == 0   # 쉰 회차로 기록
 
 
-def test_g_and_h_real_bets_sized_and_rule_compliant(tmp_path):
-    """G(실전 주력) & H(실전 복권): 베트맨 규정 준수(2~3경기, 100원 단위, 동일경기 불가) + AI 최적금액 + 지갑 갱신"""
-    from models.paper_trading import G_START_BANKROLL, H_START_BANKROLL, g_bankroll, h_bankroll
+def test_g_ai_bettor_autonomous_and_rule_compliant(tmp_path):
+    """G(자율 AI 베터): 베트맨 규정 준수(2~3경기, 100원 단위, 동일경기 불가) + AI 자율 조합/판돈 + 월별 지갑 갱신"""
+    from models.paper_trading import G_START_ALLOWANCE, g_bankroll, g_wallet
     from models.combo_builder import validate_combo
 
     preds = [
         _m("1", (1.4, 4.2, 7.5), (0.75, 0.17, 0.08)),  # 강력한 저배당 정배 (AI 우위)
         _m("2", (1.5, 3.8, 6.0), (0.70, 0.20, 0.10)),  # 저배당 정배 (AI 우위)
-        _m("3", (2.8, 3.4, 2.4), (0.28, 0.40, 0.32)),  # 무승부(3.40) AI 우위 (고배당용)
-        _m("4", (3.2, 3.3, 2.2), (0.22, 0.42, 0.36)),  # 무승부(3.30) AI 우위 (고배당용)
+        _m("3", (2.8, 3.4, 2.4), (0.28, 0.40, 0.32)),  # 무승부(3.40) AI 우위
+        _m("4", (3.2, 3.3, 2.2), (0.22, 0.42, 0.36)),  # 무승부(3.30) AI 우위
     ]
     rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
     rpath.write_text("[]", encoding="utf-8")
 
     added = save_new_bets(10, preds, now=NOW, bets_dir=tmp_path, results_path=rpath)
-    assert added.get("G_real_stable") == 1
-    assert added.get("H_real_highodds") == 1
+    assert added.get("G_ai_bettor") >= 1
 
     data = json.loads((tmp_path / "10.json").read_text(encoding="utf-8"))
-    gb = [b for b in data["bets"] if b["strategy"] == "G_real_stable"][0]
-    hb = [b for b in data["bets"] if b["strategy"] == "H_real_highodds"][0]
+    g_bets = [b for b in data["bets"] if b["strategy"] == "G_ai_bettor"]
+    assert len(g_bets) >= 1
 
-    # 1. 베트맨 규정 검증 (validate_combo)
-    assert validate_combo(gb["legs"], stake=gb["stake"], is_single_permitted=False)[0] is True
-    assert validate_combo(hb["legs"], stake=hb["stake"], is_single_permitted=False)[0] is True
+    for gb in g_bets:
+        # 1. 베트맨 규정 검증 (validate_combo)
+        assert validate_combo(gb["legs"], stake=gb["stake"], is_single_permitted=False)[0] is True
+        # 2. 판돈 규정 검증 (100원 단위, 10만원 한도 이하, 지갑 대비 안전 비율)
+        assert gb["stake"] % 100 == 0 and 100 <= gb["stake"] <= G_START_ALLOWANCE * 0.08
 
-    # 2. 판돈 규정 검증 (100원 단위, 10만원 한도 이하, 지갑 대비 안전 비율)
-    assert gb["stake"] % 100 == 0 and 100 <= gb["stake"] <= G_START_BANKROLL * 0.05
-    assert hb["stake"] % 100 == 0 and 100 <= hb["stake"] <= 2000
-
-    # 3. 고배당 H 배당 범위 확인 (5배 이상)
-    assert hb["combined_odds"] >= 5.0
-
-    # 4. 정산 및 지갑 갱신
-    # 1, 2 홈승 (G 적중) / 3, 4 무승부 (H 적중)
+    # 3. 정산 및 지갑 갱신 (1, 2 홈승 적중)
     results = [
         {"gm_ts": 10, "match_seq": "1", "game_type": "축구 승무패", "game_result": "0"},
         {"gm_ts": 10, "match_seq": "2", "game_type": "축구 승무패", "game_result": "0"},
@@ -105,9 +98,9 @@ def test_g_and_h_real_bets_sized_and_rule_compliant(tmp_path):
         {"gm_ts": 10, "match_seq": "4", "game_type": "축구 승무패", "game_result": "1"},
     ]
     rpath.write_text(json.dumps(results), encoding="utf-8")
-    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json")["strategies"]
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json", now=NOW)["strategies"]
     
-    assert s["G_real_stable"]["hits"] == 1
-    assert s["G_real_stable"]["bankroll"] == G_START_BANKROLL + s["G_real_stable"]["profit"]
-    assert s["H_real_highodds"]["hits"] == 1
-    assert s["H_real_highodds"]["bankroll"] == H_START_BANKROLL + s["H_real_highodds"]["profit"]
+    assert "G_ai_bettor" in s
+    assert s["G_ai_bettor"]["total_deposited"] == G_START_ALLOWANCE
+    assert s["G_ai_bettor"]["bankroll"] == G_START_ALLOWANCE + s["G_ai_bettor"]["profit"]
+    assert s["G_ai_bettor"]["is_broke"] is False

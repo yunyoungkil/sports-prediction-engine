@@ -3220,8 +3220,7 @@ with tab3:
         st.info("⏳ 아직 가상 베팅 기록이 없어요. 다음 파이프라인 실행부터 쌓여요.")
     else:
         f_live = live.get("F_portfolio_kelly") or (pt or {}).get("f_state") or {}
-        g_live = live.get("G_real_stable") or (pt or {}).get("strategies", {}).get("G_real_stable") or {}
-        h_live = live.get("H_real_highodds") or (pt or {}).get("strategies", {}).get("H_real_highodds") or {}
+        g_live = live.get("G_ai_bettor") or (pt or {}).get("strategies", {}).get("G_ai_bettor") or {}
         f_wallet_txt = ""
         if f_live:
             f_wallet_txt = (
@@ -3231,22 +3230,24 @@ with tab3:
                 "과거 354회차 워크포워드 재현에서는 14회차만 걸고 340회차는 쉬어 15건 건 돈 4,200원 → +2,553원 "
                 "(+60.8%, 95% 범위 [−14.9%, +98.3%] · 표본 부족으로 운과 구분 안 됨)을 기록했어요."
             )
-        gh_wallet_txt = ""
-        if g_live or h_live:
-            g_b = int(g_live.get("bankroll", 100000)) if g_live else 100000
-            h_b = int(h_live.get("bankroll", 100000)) if h_live else 100000
-            gh_wallet_txt = (
-                f"<br>🎯 <b>실전형 AI 베팅 가상 지갑</b> (시작 각 10만 원 · 베트맨 6대 공식 규정 준수): "
-                f"<b>G. 실전 주력(안정 정배)</b> <b>{g_b:,}원</b> · "
-                f"<b>H. 실전 복권(고배당)</b> <b>{h_b:,}원</b>"
+        g_wallet_txt = ""
+        if g_live:
+            g_b = int(g_live.get("bankroll", 100000))
+            g_dep = int(g_live.get("total_deposited", 100000))
+            g_mf = int(g_live.get("months_funded", 1))
+            g_broke = bool(g_live.get("is_broke", False))
+            status_tag = "🚨 <span style='color:#e74c3c;font-weight:bold'>이번 달 잔고 소진 (익월 1일 충전 대기)</span>" if g_broke else "🟢 <span style='color:#27ae60;font-weight:bold'>정상 베팅 중</span>"
+            g_wallet_txt = (
+                f"<br>🤖 <b>G. 자율 AI 베터 가상 지갑</b> (매월 1일 10만 원 용돈 충전 · 수익 복리 증식 · 손실 시 판돈 방어 · 베트맨 규정 준수): "
+                f"현재 가용 잔고 <b>{g_b:,}원</b> (누적 입금 {g_dep:,}원 / {g_mf}개월 차) · 상태: {status_tag}"
             )
-        if past_txt or f_wallet_txt or gh_wallet_txt:
+        if past_txt or f_wallet_txt or g_wallet_txt:
             st.markdown(
                 "<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>"
                 + (f"💬 과거 회차로 재현해 보면 {past_txt}예요. 배당만 보고 고르는 방식은 베트맨 마진 때문에 오래 하면 손해예요. "
-                   f"AI 전략(A·B·C·F·G·H)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
+                   f"AI 전략(A·B·C·F·G)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
                    f"결과 대기 {live_wait:,}건)." if past_txt else "")
-                + f_wallet_txt + gh_wallet_txt
+                + f_wallet_txt + g_wallet_txt
                 + "</div></div>", unsafe_allow_html=True)
         st.dataframe(pd.DataFrame(league_rows), hide_index=True, width="stretch",
                      column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized"),

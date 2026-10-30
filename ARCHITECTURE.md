@@ -80,7 +80,8 @@ sports-prediction-engine/
 | `models/form_analyzer.py` | 표시용 최근 폼·상대 전적·순위 (AI 학습 피처와 별개) |
 | `models/combo_builder.py` · `models/combo_finder.py` | 베트맨 맞춤조건구매 규칙(배당 절삭·올림·한도)과 조합 후보 |
 | `models/strategy_backtest.py` | 조합 방식을 과거에 반복했다면 |
-| `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~F) · F 전략(AI 조합 묶음 + 켈리) |
+| `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~G) · F 전략(AI 조합 묶음 + 켈리) |
+| `models/ai_bettor.py` | **실전형 자율 AI 베터**: 월 10만 원 예산제, 자산 복리, 손실 방어, 베트맨 6대 공식 규정 준수 자금관리 |
 
 ### tracker/ — 기록
 | 파일 | 역할 |
