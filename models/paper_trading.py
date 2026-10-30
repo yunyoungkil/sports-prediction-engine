@@ -29,7 +29,7 @@ import numpy as np
 
 from collector.betman_sharp import parse_betman_kickoff
 from evaluation.metrics import cluster_roi_confidence_interval
-from models.combo_builder import calculate_combined_odds, calculate_payout
+from models.combo_builder import calculate_combined_odds, calculate_payout, validate_combo
 from models.combo_finder import candidate_legs, find_combos
 
 BETS_DIR = Path("data/history/paper_bets")
@@ -45,8 +45,12 @@ STRATEGIES = {
     "D_banker_cover": "D. 축 2 + 전배 (비교용)",
     "E_market_fav": "E. 배당 1순위 단일 (기준선)",
     "F_portfolio_kelly": "F. AI 조합 묶음 + 켈리 금액 (지갑 10만 원)",
+    "G_real_stable": "G. 실전 주력 (안정 정배 + AI 최적금액)",
+    "H_real_highodds": "H. 실전 복권 (고배당 한방 + AI 최적금액)",
 }
 F_START_BANKROLL = 100_000
+G_START_BANKROLL = 100_000
+H_START_BANKROLL = 100_000
 MIN_FOR_VERDICT = 300
 
 
@@ -125,15 +129,16 @@ def propose_bets(predictions: List[Dict[str, Any]], now: Optional[datetime] = No
     return bets
 
 
-def f_bankroll(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> float:
-    """F 가상 지갑: 시작 10만 원 + 결과 난 F 베팅 손익 − 결과 대기 중인 F 베팅에 묶인 돈"""
+def _strategy_bankroll(strategy_key: str, start_bank: float, bets_dir: Path = BETS_DIR,
+                       results_path: Path = Path("data/history/betman_recent_results.json")) -> float:
+    """가상 지갑 잔고: 시작 자금 + 정산된 손익 - 결과 대기 중 묶인 베팅금"""
     res = _results_index(results_path) if results_path.exists() else {}
-    bank = float(F_START_BANKROLL)
+    bank = float(start_bank)
     for f in sorted(bets_dir.glob("*.json")):
         data = json.loads(f.read_text(encoding="utf-8"))
         ts = str(data.get("gm_ts"))
         for b in data.get("bets", []):
-            if b["strategy"] != "F_portfolio_kelly":
+            if b["strategy"] != strategy_key:
                 continue
             outs = [res.get((ts, leg["seq"])) for leg in b["legs"]]
             if any(o is None for o in outs):
@@ -143,6 +148,116 @@ def f_bankroll(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/histor
             else:
                 bank -= b["stake"]
     return bank
+
+
+def f_bankroll(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> float:
+    return _strategy_bankroll("F_portfolio_kelly", F_START_BANKROLL, bets_dir, results_path)
+
+
+def g_bankroll(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> float:
+    return _strategy_bankroll("G_real_stable", G_START_BANKROLL, bets_dir, results_path)
+
+
+def h_bankroll(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> float:
+    return _strategy_bankroll("H_real_highodds", H_START_BANKROLL, bets_dir, results_path)
+
+
+def _g_bet(predictions, now, bankroll: float) -> Optional[Dict[str, Any]]:
+    """G: 실전 주력 (안정 정배 2~3폴더 + AI 최적금액). 지갑 10만원 시작, 베트맨 공식 규정 준수."""
+    if bankroll < 100:
+        return None
+    legs = candidate_legs(predictions, fav_range=(1.01, 1.60), only_ai_up=True, include_gems=True, now=now)
+    if len(legs) < 2:
+        legs = candidate_legs(predictions, fav_range=(1.01, 1.80), only_ai_up=False, include_gems=True, now=now)
+    combos = find_combos(legs, sizes=(2, 3), top=5)
+    if not combos:
+        return None
+    c = combos[0]
+    c_odds = c["odds"]
+    ev_ai = c["ev_ai"]
+
+    # AI 판돈 결정: 기본 지갑 2% (~2,000원), 우위에 따라 최대 5% (~5,000원)
+    rate = 0.02 + max(0.0, float(ev_ai)) * 0.15
+    rate = min(0.05, max(0.01, rate))
+    stake = int((bankroll * rate) // 100 * 100)
+    stake = max(100, min(100_000, stake, int(bankroll)))
+
+    combo_legs = [_leg(x["match"], x["key"]) for x in c["legs"]]
+    ok, _ = validate_combo(combo_legs, stake=stake, is_single_permitted=False)
+    if not ok:
+        return None
+    return {
+        "strategy": "G_real_stable",
+        "legs": combo_legs,
+        "combined_odds": c_odds,
+        "stake": stake,
+        "ev_ai": round(float(ev_ai), 4),
+        "bet_id": "G_real_stable:" + "+".join(f"{x['seq']}{x['key'][0]}" for x in combo_legs),
+    }
+
+
+def _h_bet(predictions, now, bankroll: float) -> Optional[Dict[str, Any]]:
+    """H: 실전 복권 (고배당 한방 5~20배 + AI 최적금액). 지갑 10만원 시작, 베트맨 공식 규정 준수."""
+    if bankroll < 100:
+        return None
+    ms = _open_soccer_1x2(predictions, now)
+    legs = []
+    for m in ms:
+        odds = m.get("betman_odds") or {}
+        ai = m.get("blended_probabilities") or {}
+        mk = m.get("market_implied_probs") or {}
+        for k in KEYS:
+            o_k = float(odds.get(k) or 0)
+            if o_k < 1.9:
+                continue
+            p_ai_k = _p(ai, k)
+            p_mk_k = _p(mk, k)
+            if p_ai_k > p_mk_k or (p_ai_k * o_k > 1.0):
+                base = {"match": m, "seq": str(m["match_seq"]),
+                        "match_key": m.get("match_key") or f"{m.get('home_team')}:{m.get('away_team')}"}
+                legs.append({**base, "key": k, "odds": o_k, "p_ai": p_ai_k, "p_mk": p_mk_k, "role": "고배당"})
+    if len(legs) < 4:
+        for m in ms:
+            odds = m.get("betman_odds") or {}
+            o_draw = float(odds.get("draw") or 0)
+            if o_draw > 1.0:
+                base = {"match": m, "seq": str(m["match_seq"]),
+                        "match_key": m.get("match_key") or f"{m.get('home_team')}:{m.get('away_team')}"}
+                if (base["seq"], "draw") not in {(x["seq"], x["key"]) for x in legs}:
+                    legs.append({**base, "key": "draw", "odds": o_draw,
+                                 "p_ai": _p(m.get("blended_probabilities"), "draw"),
+                                 "p_mk": _p(m.get("market_implied_probs"), "draw"), "role": "무"})
+
+    legs.sort(key=lambda x: x["p_ai"] * x["odds"], reverse=True)
+    legs = legs[:16]
+    combos = find_combos(legs, sizes=(2, 3), top=30)
+    high_combos = [c for c in combos if 5.0 <= c["odds"] <= 20.0]
+    if not high_combos:
+        high_combos = sorted(combos, key=lambda c: -c["odds"])
+    if not high_combos:
+        return None
+    c = high_combos[0]
+    c_odds = c["odds"]
+    ev_ai = c["ev_ai"]
+
+    # AI 판돈 결정: 고배당 복권형 소액 기본 0.5%~1% (~1,000원), 최대 2% (~2,000원)
+    rate = 0.01 + max(0.0, float(ev_ai)) * 0.05
+    rate = min(0.02, max(0.005, rate))
+    stake = int((bankroll * rate) // 100 * 100)
+    stake = max(100, min(2_000, stake, int(bankroll)))
+
+    combo_legs = [_leg(x["match"], x["key"]) for x in c["legs"]]
+    ok, _ = validate_combo(combo_legs, stake=stake, is_single_permitted=False)
+    if not ok:
+        return None
+    return {
+        "strategy": "H_real_highodds",
+        "legs": combo_legs,
+        "combined_odds": c_odds,
+        "stake": stake,
+        "ev_ai": round(float(ev_ai), 4),
+        "bet_id": "H_real_highodds:" + "+".join(f"{x['seq']}{x['key'][0]}" for x in combo_legs),
+    }
 
 
 def _f_bets(predictions, now, bankroll: float) -> Dict[str, Any]:
@@ -168,7 +283,7 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
     if path.exists():
         data = json.loads(path.read_text(encoding="utf-8"))
     have_ids = {b["bet_id"] for b in data["bets"]}
-    have_once = {b["strategy"] for b in data["bets"] if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover")}
+    have_once = {b["strategy"] for b in data["bets"] if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", "G_real_stable", "H_real_highodds")}
     used_matches = {(b["strategy"], leg["seq"]) for b in data["bets"] for leg in b["legs"]}
     added = {}
     for bt in propose_bets(predictions, now):
@@ -191,6 +306,25 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
         data["f_plan"] = {**f["plan"], "at": now.isoformat(timespec="seconds")}
         if f["bets"]:
             added["F_portfolio_kelly"] = len(f["bets"])
+
+    # G: 실전 주력 (안정 정배 2~3폴더 + AI 최적금액)
+    if "G_real_stable" not in have_once and len(_open_soccer_1x2(predictions, now)) >= 2:
+        g = _g_bet(predictions, now, g_bankroll(bets_dir, results_path))
+        if g:
+            g["created_at"] = now.isoformat(timespec="seconds")
+            data["bets"].append(g)
+            have_ids.add(g["bet_id"])
+            added["G_real_stable"] = 1
+
+    # H: 실전 복권 (고배당 한방 + AI 최적금액)
+    if "H_real_highodds" not in have_once and len(_open_soccer_1x2(predictions, now)) >= 2:
+        h = _h_bet(predictions, now, h_bankroll(bets_dir, results_path))
+        if h:
+            h["created_at"] = now.isoformat(timespec="seconds")
+            data["bets"].append(h)
+            have_ids.add(h["bet_id"])
+            added["H_real_highodds"] = 1
+
     # 조합 전략은 이번 실행에서 처음 생겼다면 이후 실행에서 다시 만들지 않음
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return added
@@ -271,6 +405,12 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
         strategies["F_portfolio_kelly"].update({
             "bankroll": round(f_bankroll(bets_dir, results_path)), "start_bankroll": F_START_BANKROLL,
             "rounds_planned": len(plans), "rounds_skipped": sum(1 for p in plans if not p["bets"])})
+    for s_key, s_bank, start_b in [
+        ("G_real_stable", g_bankroll(bets_dir, results_path), G_START_BANKROLL),
+        ("H_real_highodds", h_bankroll(bets_dir, results_path), H_START_BANKROLL),
+    ]:
+        if s_key in strategies:
+            strategies[s_key].update({"bankroll": round(s_bank), "start_bankroll": start_b})
     summary = {"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "stake_unit": STAKE,
                "strategies": strategies,
                "details": sorted(details, key=lambda d: (d["gm_ts"], d["kickoff"]), reverse=True)}

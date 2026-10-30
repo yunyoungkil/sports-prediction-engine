@@ -3220,6 +3220,8 @@ with tab3:
         st.info("⏳ 아직 가상 베팅 기록이 없어요. 다음 파이프라인 실행부터 쌓여요.")
     else:
         f_live = live.get("F_portfolio_kelly") or (pt or {}).get("f_state") or {}
+        g_live = live.get("G_real_stable") or (pt or {}).get("strategies", {}).get("G_real_stable") or {}
+        h_live = live.get("H_real_highodds") or (pt or {}).get("strategies", {}).get("H_real_highodds") or {}
         f_wallet_txt = ""
         if f_live:
             f_wallet_txt = (
@@ -3229,13 +3231,22 @@ with tab3:
                 "과거 354회차 워크포워드 재현에서는 14회차만 걸고 340회차는 쉬어 15건 건 돈 4,200원 → +2,553원 "
                 "(+60.8%, 95% 범위 [−14.9%, +98.3%] · 표본 부족으로 운과 구분 안 됨)을 기록했어요."
             )
-        if past_txt or f_wallet_txt:
+        gh_wallet_txt = ""
+        if g_live or h_live:
+            g_b = int(g_live.get("bankroll", 100000)) if g_live else 100000
+            h_b = int(h_live.get("bankroll", 100000)) if h_live else 100000
+            gh_wallet_txt = (
+                f"<br>🎯 <b>실전형 AI 베팅 가상 지갑</b> (시작 각 10만 원 · 베트맨 6대 공식 규정 준수): "
+                f"<b>G. 실전 주력(안정 정배)</b> <b>{g_b:,}원</b> · "
+                f"<b>H. 실전 복권(고배당)</b> <b>{h_b:,}원</b>"
+            )
+        if past_txt or f_wallet_txt or gh_wallet_txt:
             st.markdown(
                 "<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>"
                 + (f"💬 과거 회차로 재현해 보면 {past_txt}예요. 배당만 보고 고르는 방식은 베트맨 마진 때문에 오래 하면 손해예요. "
-                   f"AI 전략(A·B·C·F)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
+                   f"AI 전략(A·B·C·F·G·H)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
                    f"결과 대기 {live_wait:,}건)." if past_txt else "")
-                + f_wallet_txt
+                + f_wallet_txt + gh_wallet_txt
                 + "</div></div>", unsafe_allow_html=True)
         st.dataframe(pd.DataFrame(league_rows), hide_index=True, width="stretch",
                      column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized"),
@@ -3244,13 +3255,13 @@ with tab3:
                                         help="산 배당 ÷ 마감 배당 − 1 의 경기 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것")})
         st.caption("실시간: 경기 시작 전에 고정 저장한 베팅 (2026-10-26, 260127회차부터). "
                    "과거 재현: 배당만 쓰는 전략(D·E)을 베트맨 과거 회차의 경기 전 배당과 실제 결과로 재현 — "
-                   "AI 전략(A·B·C·F)은 지금 AI가 그 결과까지 학습했기 때문에 여기서는 실시간으로만 채점해요. "
+                   "AI 전략(A·B·C·F·G·H)은 지금 AI가 그 결과까지 학습했기 때문에 여기서는 실시간으로만 채점해요. "
                    "B와 C는 후보가 겹쳐 같은 베팅이 나올 수 있어요 (위쪽 '끝난 베팅' 합계는 같은 베팅을 한 번만 세요).")
         # 누적 수익률(%) 그래프 — 과거 재현과 실시간을 따로 (베팅 수가 수십 배 달라 한 축에 그리면 실시간 선이 묻힘)
         # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교
         # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용 1~5번, 대시보드 배경에서 검사 통과)
         import altair as alt
-        STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181", "F": "#a855f7"}
+        STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181", "F": "#a855f7", "G": "#06b6d4", "H": "#ec4899"}
 
         def _roi_chart(data_, title, min_bets=3):
             unit = (data_ or {}).get("stake_unit", 1000)
