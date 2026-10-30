@@ -516,6 +516,12 @@ def signed(x: float, nd: int = 4, plus: bool = True) -> str:
     return f"{v:+.{nd}f}" if plus else f"{v:.{nd}f}"
 
 
+def signed_int(x: float) -> str:
+    """부호 있는 원 단위 금액 (쉼표) — 0은 '+0'이 아니라 '0'. 소수는 버림 (사이드바·STEP 02 합계와 같게)"""
+    v = int(x)
+    return f"{v:+,}" if v else "0"
+
+
 def won(pct: float) -> str:
     """환급률 % → 1만 원당 돌아오는 돈"""
     return f"{pct * 100:,.0f}원"
@@ -1072,16 +1078,16 @@ def selection_status() -> dict:
     if n == 0:
         msg = "ℹ️ 경기를 선택해 주세요 (조합은 최소 2경기, 한경기 표시 경기는 1경기도 가능)."
     elif n_closed > 0:
-        msg = f"⚠️ 발매 마감된 경기 {n_closed}개가 포함되어 있어 구매할 수 없습니다. ✕로 마감 경기를 빼 주세요."
+        msg = f"⚠️ 발매 마감된 경기가 {n_closed}개 있어서 살 수 없어요. ✕로 마감 경기를 빼 주세요."
     elif n == 1:
         if next(iter(active.values()))["is_single"]:
-            valid, msg = True, "✅ 한경기 구매가 가능한 경기입니다. 조합 결과 보기가 가능합니다."
+            valid, msg = True, "✅ 한경기로 살 수 있는 경기예요."
         else:
-            msg = "⚠️ 1경기만 선택되었습니다. 이 경기는 한경기 구매가 안 되므로 2경기 이상 선택해야 합니다."
+            msg = "⚠️ 이 경기는 한경기로 살 수 없어요. 2경기 이상 골라 주세요."
     elif n > 10:
-        msg = f"⚠️ 베트맨 규정상 조합은 최대 10경기까지만 가능합니다 (현재 {n}경기)."
+        msg = f"⚠️ 베트맨 규정상 조합은 최대 10경기까지예요 (지금 {n}경기)."
     elif len({v["match_key"] for v in active.values()}) != n:
-        msg = "⚠️ 같은 대진의 다른 유형(예: 승무패와 핸디캡)은 한 조합에 묶을 수 없습니다."
+        msg = "⚠️ 같은 대진의 다른 유형(예: 승무패와 핸디캡)은 한 조합에 묶을 수 없어요."
     elif any("더블찬스" in str(v["match"].get("game_type", "")) for v in active.values()):
         msg = "⚠️ 더블찬스는 한경기 전용 상품이라 다른 경기와 묶을 수 없어요 (베트맨 안내)."
     else:
@@ -2035,7 +2041,7 @@ with tab1:
                     q1.button("☑️ 전체 선택", width="stretch", on_click=_quick_select, args=("all",))
                     q2.button("⬜ 전체 해제", width="stretch", on_click=_quick_select, args=("none",))
                     q3.button("⚖️ 균등 환급 배분", width="stretch", on_click=_apply_equal_payout, disabled=len(combos) < 2,
-                              help="선택한 여러 조합 중 어느 것이 맞아도 환급금이 비슷해지도록 현재 총액을 배당에 반비례해 자동 배분합니다 (더칭·커버 방어)")
+                              help="고른 조합 중 어느 게 맞아도 돌려받는 돈이 비슷해지도록, 지금 총액을 배당이 낮은 조합에 더 많이 나눠요")
                     if GEM_ON:   # [6.5] AI 기준 기대가치로 고르는 버튼은 추천 잠금 중 숨김
                         q4.button("💎 기대가치 플러스만", width="stretch", on_click=_quick_select, args=("ev",),
                                   help="기대가치가 플러스인 조합만 선택")
@@ -2053,7 +2059,17 @@ with tab1:
                 summary_box = st.container()
 
                 # 4) 조합 표 — 경기마다 한 열, 선택·금액 직접 수정 + 적중 시 순익(환급 - 총 투표금액) 표시
-                match_cols = {seq: f"#{seq} {v['home_team'][:8]}" for seq, v in active_selections.items()}
+                def _head_name(name: str, budget: int = 8) -> str:
+                    """열 머리에 들어갈 만큼만 (한글 2칸 · 영문 1칸, 8칸 ≈ 한글 4자) — 전체 이름은 머리의 말풍선"""
+                    out, used = "", 0
+                    for ch in name:
+                        used += 2 if ord(ch) > 0x2E80 else 1
+                        if used > budget:
+                            break
+                        out += ch
+                    return out.rstrip()
+
+                match_cols = {seq: f"#{seq} {_head_name(v['home_team'])}" for seq, v in active_selections.items()}
                 # 먼저 체크된 조합들의 총 투표금액을 계산해 각 행의 '적중 시 순익'에 반영
                 pre_total_stake = 0
                 for c in combos:
@@ -2078,29 +2094,40 @@ with tab1:
                         "배당": round(c["combined_odds"], 2),
                         "투표금액": stake,
                         "적중 시 환급": payout,
-                        "적중 시 순익": net_if_hit,
+                        "적중 시 순익": signed_int(net_if_hit),   # 글자로: 숫자 열 서식은 '+'를 못 붙임
                         "적중 확률": round(c.get("prob_exact", c["prob_product"]) * 100, 2),
                         "기대가치": round(c["ev"] * 100, 1),
                         "비과세": "✅" if is_tax_free(c["combined_odds"], payout) else "과세",
                     })
                     rows.append(row)
+                if all(r["비과세"] == "✅" for r in rows):   # 다 비과세면 열을 빼서 표가 화면에 들어가게
+                    for r in rows:
+                        del r["비과세"]
 
+                # 너비는 픽셀로 고정: 3경기 조합이 넓은 화면(약 980px)에 가로 스크롤 없이 들어가게.
+                # 경기가 많아 넘치면 선택·# 열은 왼쪽에 고정된 채로 옆으로 넘겨 본다
                 col_cfg = {
-                    "선택": st.column_config.CheckboxColumn("선택", width="small"),
-                    "#": st.column_config.NumberColumn("#", width="small"),
-                    "배당": st.column_config.NumberColumn("배당", format="%.2f배", width="small"),
-                    "투표금액": st.column_config.NumberColumn("투표금액(원) ✏️", min_value=unit, max_value=100000, step=unit,
-                                                         format="localized", help=f"{unit:,}원 단위로 직접 수정할 수 있습니다"),
-                    "적중 시 환급": st.column_config.NumberColumn("적중 시 환급(원)", format="localized"),
-                    "적중 시 순익": st.column_config.NumberColumn(
-                        "적중 시 순익(원)", format="localized",
-                        help="이 조합이 맞았을 때 (적중 시 환급금 − 선택한 전체 조합의 총 투표금액). 마이너스면 적중해도 원금 미달(손실)입니다."),
-                    "적중 확률": st.column_config.NumberColumn("적중 확률", format="%.2f%%", width="small"),
-                    "기대가치": st.column_config.NumberColumn("기대가치", format="%+.1f%%", width="small"),
-                    "비과세": st.column_config.TextColumn("비과세", width="small"),
+                    "선택": st.column_config.CheckboxColumn("선택", width=64, pinned=True),   # 고칠 수 있는 열은 머리에 연필 아이콘이 붙음
+                    "#": st.column_config.NumberColumn("#", width=40, pinned=True, help="조합 번호 (아래 베팅 슬립의 '조합 #'와 같아요)"),
+                    "배당": st.column_config.NumberColumn("배당", format="%.2f배", width=72),
+                    "투표금액": st.column_config.NumberColumn("투표금액", min_value=unit, max_value=100000, step=unit,
+                                                         format="localized", width=104,
+                                                         help=f"이 조합에 거는 돈(원). {unit:,}원 단위로 직접 바꿀 수 있어요."),
+                    "적중 시 환급": st.column_config.NumberColumn("적중 시 환급", format="localized", width=100,
+                                                            help="이 조합이 맞으면 돌려받는 돈(원)"),
+                    "적중 시 순익": st.column_config.TextColumn(
+                        "적중 시 순익", width=96, alignment="right",
+                        help="이 조합이 맞았을 때 남는 돈(원) = 돌려받는 돈 − 고른 조합 전체의 투표금액. 마이너스면 맞아도 손해예요."),
+                    "적중 확률": st.column_config.NumberColumn("적중 확률", format="%.2f%%", width=78),
+                    "기대가치": st.column_config.NumberColumn("기대가치", format="%+.1f%%", width=76,
+                                                         help="아주 많이 반복했을 때 건 돈 대비 평균 손익"),
                 }
-                for name in match_cols.values():
-                    col_cfg[name] = st.column_config.TextColumn(name, width="small")
+                if "비과세" in rows[0]:
+                    col_cfg["비과세"] = st.column_config.TextColumn("비과세", width=64,
+                                                                 help="과세: 환급금에서 세금 22%를 떼요 (베트맨 기준)")
+                for seq, name in match_cols.items():
+                    v_ = active_selections[seq]
+                    col_cfg[name] = st.column_config.TextColumn(name, width=112, help=f"{v_['home_team']} vs {v_['away_team']}")
 
                 editor_key = f"combo_editor_{sel_sig}_{sort_option}_{st.session_state.get('combo_editor_ver', 0)}"
                 row_ids = [ckey_of[c["combo_index"]] for c in combos]
@@ -2149,26 +2176,38 @@ with tab1:
                     if not pays:
                         net_sub = "고른 조합이 맞으면"
                     elif min(pays) == max(pays):
-                        net_sub = f"순익 {pays[0] - total_stake:+,}원 (총 투표금 차감)"
+                        net_sub = f"순익 {signed_int(pays[0] - total_stake)}원 (총 투표금 차감)"
                     else:
-                        net_sub = f"순익 {min(pays) - total_stake:+,} ~ {max(pays) - total_stake:+,}원"
+                        net_sub = f"순익 {signed_int(min(pays) - total_stake)} ~ {signed_int(max(pays) - total_stake)}원"
                     pnl_pct = exp_pnl / total_stake * 100 if total_stake else 0.0
                     pnl_color = "#f87171" if exp_pnl < 0 else "#34d399"
                     render_tiles([
                         ("💰 총 투표금액", f"{total_stake:,}원", f"{len(chosen)} / {len(combos)} 조합 선택"),
                         ("🎯 적중 시 환급", pay_txt, net_sub),
                         ("🎲 하나라도 맞을 확률", f"{hit_any * 100:.1f}%", "조합끼리는 동시에 맞지 않아요"),
-                        ("📊 기대 손익", f"<span style='color:{pnl_color}'>{int(exp_pnl):+,}원</span>",
+                        ("📊 기대 손익", f"<span style='color:{pnl_color}'>{signed_int(exp_pnl)}원</span>",
                          f"{pnl_pct:+.1f}% · 아주 많이 반복했을 때 한 번 평균"),
                     ])
                     if total_stake > 100000:
                         st.error("⚠️ 총 투표금액이 베트맨 1인 1회차 구매 한도(100,000원)를 넘어요.")
                     if deficit_combos:
-                        st.warning(
-                            f"⚠️ 선택한 {len(chosen)}개 조합 중 **{len(deficit_combos)}개**는 적중해도 총 투표금액({total_stake:,}원)보다 "
-                            f"적게 돌려받아요 (최소 순익 **{min(pays) - total_stake:+,}원 · 적중 후 손실**). "
-                            "커버 조합의 투표금액을 올리거나 위 **'⚖️ 균등 환급 배분'** 버튼을 눌러 보세요."
-                        )
+                        # 버튼을 누르면 실제로 어떻게 되는지 같은 함수로 미리 계산해서 알려 준다 (_apply_equal_payout과 같은 예산)
+                        odds_c = [c["combined_odds"] for c, _, _ in chosen]
+                        alloc = allocate_equal_payout_stakes(odds_c, max(len(chosen) * unit, min(100000, total_stake)), unit=unit)
+                        nets = [calculate_payout(o, a) - sum(alloc) for o, a in zip(odds_c, alloc)]
+                        rng = (signed_int(min(nets)) if min(nets) == max(nets)
+                               else f"{signed_int(min(nets))} ~ {signed_int(max(nets))}")
+                        msg = (f"⚠️ 고른 {len(chosen)}개 조합 중 **{len(deficit_combos)}개**는 맞아도 손해예요 — 돌려받는 돈이 "
+                               f"총 투표금액({total_stake:,}원)보다 적어요 (가장 적을 때 {signed_int(min(pays) - total_stake)}원).")
+                        # 모든 조합이 '맞으면 이익'이려면 배당 역수의 합이 1 이하여야 함 (금액 = 총액 ÷ 배당 이상이 필요)
+                        if sum(1.0 / o for o in odds_c) > 1.0:
+                            msg += (" 고른 조합이 경우의 수를 너무 많이 덮고 있어서, 금액을 어떻게 나눠도 "
+                                    "어느 게 맞든 이익이 나게 만들 수는 없어요.")
+                        if alloc != [s for _, s, _ in chosen]:
+                            # '** 버튼': 따옴표 뒤 닫는 **에 바로 한글 조사가 붙으면 마크다운이 굵게로 안 바꿔 별표가 그대로 보임
+                            msg += (f" 위 **'⚖️ 균등 환급 배분'** 버튼을 누르면 어느 게 맞아도 순익이 **{rng}원**"
+                                    + ("이 돼요." if min(nets) == max(nets) else " 사이로 좁혀져요."))
+                        st.warning(msg)
                     if chosen:
                         n_m = len(active_selections)
                         # 경기별 환급률 = 1 ÷ (배당 역수의 합). 베트맨은 대부분 1 ÷ 1.15 ≈ 87%, 홀짝은 1 ÷ 1.11 ≈ 90%
@@ -2183,12 +2222,12 @@ with tab1:
                         st.markdown(
                             "<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>"
                             f"💬 고른 {len(chosen)}개 조합 중 하나가 맞을 확률은 <b>{hit_any * 100:.1f}%</b>이고, 맞으면 <b>{pay_txt}</b>을 돌려받아요. "
-                            f"같은 방식을 아주 많이 반복하면 한 번에 평균 <b style='color:{pnl_color}'>{int(exp_pnl):+,}원 ({pnl_pct:+.1f}%)</b>이에요."
+                            f"같은 방식을 아주 많이 반복하면 한 번에 평균 <b style='color:{pnl_color}'>{signed_int(exp_pnl)}원 ({pnl_pct:+.1f}%)</b>이에요."
                             f"{why}</div></div>", unsafe_allow_html=True)
                     else:
                         st.info("표에서 조합을 하나 이상 선택해 주세요.")
                     st.caption("확률: AI 적용 유형(② 탭 맨 위 참고)은 AI 확률, 그 외 유형은 배당(마진 제거) 확률이에요. "
-                               "표의 선택·투표금액 ✏️ 칸은 직접 바꿀 수 있어요.")
+                               "표에서 연필 표시가 있는 선택·투표금액 칸은 직접 바꿀 수 있어요.")
                     # 저장한 뒤 여기서 금액·선택을 바꿨으면 그 기록에도 반영 (표 편집 결과가 세션에 들어간 뒤라 지금 값으로 비교)
                     already_in_slips = render_saved_slip_sync(rule_check["active"], unit, "step2")
                     if not already_in_slips and rule_check["valid"] and chosen and total_stake <= 100000:
@@ -2237,7 +2276,9 @@ with tab1:
                                 st.caption("ℹ️ 과거 백테스트는 표에서 일부 조합을 뺐거나 금액을 다르게 넣은 설정이 아니라, "
                                            "고른 선택지 전체 조합(조합당 동일 금액 1단위) 기준으로 계산돼요.")
                         else:
-                            st.caption("축구 일반 승무패 경기로만 구성된 조합에서 사용할 수 있습니다 (과거 데이터가 축구 승무패만 있음).")
+                            others = [f"#{s}" for s in active_selections if pred_map.get(s, {}).get("game_type") != "축구 승무패"]
+                            st.caption("축구 승무패 경기로만 이뤄진 조합에서 쓸 수 있어요 (과거 데이터가 축구 승무패뿐이에요)."
+                                       + (f" 다른 유형: {' · '.join(others)}" if others else ""))
                     with bt_c2:
                         run_bt = st.button("과거 결과로 확인", width="stretch", disabled=not rule, key="run_backtest")
                     if run_bt and rule:
@@ -2245,7 +2286,7 @@ with tab1:
                     if st.session_state.get("bt_result") and rule and st.session_state["bt_result"][0] == describe_rule(rule):
                         r = st.session_state["bt_result"][1]
                         if not r.get("rounds"):
-                            st.warning("조건에 맞는 과거 회차가 없습니다. 배당 범위가 너무 특이한 조합일 수 있습니다.")
+                            st.warning("조건에 맞는 과거 회차가 없어요. 배당이 아주 드문 모양의 조합일 수 있어요.")
                         else:
                             ci_r = r.get("roi_ci")
                             roi_color = "#f87171" if r["roi_pct"] < 0 else "#34d399"
@@ -2288,11 +2329,11 @@ with tab1:
                                 st.line_chart(pd.DataFrame({"누적 손익 (회차당 투자 1 기준)": r["cum_curve"]}), height=180)
                             notes = []
                             if "bankers_only_roi_pct" in r and r["bankers_only_roi_pct"] > r["roi_pct"]:
-                                notes.append("커버(2~3개 선택)를 붙이면 그 경기의 마진을 추가로 내게 되어 **축 경기만 걸 때보다 손실이 커집니다.**")
+                                notes.append("한 경기에 2~3개를 함께 고르면(커버) 그 경기의 마진을 더 내게 돼서 **축 경기만 걸 때보다 손실이 커져요.**")
                             if r["hit_rate_pct"] >= 50 and r["roi_pct"] < 0:
-                                notes.append("자주 맞지만 장기적으로는 잃는 방식입니다. 적중률보다 **수익률**을 보세요.")
+                                notes.append("자주 맞지만 길게 보면 잃는 방식이에요. 적중률보다 **수익률**을 보세요.")
                             if r["roi_pct"] >= 0:
-                                notes.append("과거에는 플러스였지만, 같은 데이터로 규칙을 고르면 우연히 좋아 보일 수 있습니다. 회차 수가 충분한지 함께 확인하세요.")
+                                notes.append("과거에는 플러스였지만, 같은 데이터를 보고 고른 규칙은 우연히 좋아 보일 수 있어요. 회차 수가 충분한지 함께 보세요.")
                             for n in notes:
                                 st.caption("💡 " + n)
 
@@ -2312,43 +2353,46 @@ with tab1:
                             parts.append(f"#{p['match_seq']} {p['home_team']}{ln_txt} [{p['selection_name']} {float(p['odds']):.2f}]")
                         lines.append(f"🎫 조합 #{c['combo_index']}: " + " × ".join(parts))
                         lines.append(f"   ↳ 배당 {c['combined_odds']:.2f}배 · {stake:,}원 → 적중 시 {pay:,}원 "
-                                     f"(순익 {pay - total_stake:+,}원 · 확률 {c['prob_pct']} · EV {c['ev_pct']})")
+                                     f"(순익 {signed_int(pay - total_stake)}원 · 확률 {c['prob_pct']} · EV {c['ev_pct']})")
                     lines += ["────────────────────────────────────────",
-                              f"💰 총 투표금액 {total_stake:,}원 · 기대 손익 {int(exp_pnl):+,}원"]
+                              f"💰 총 투표금액 {total_stake:,}원 · 기대 손익 {signed_int(exp_pnl)}원"]
                     st.code("\n".join(lines), language="text")
 
                 # 6) 켈리 자금 배분 (고급)
                 with st.expander("📐 켈리 기준 자금 배분 (고급)", expanded=False):
-                    st.caption("기대 손익이 플러스일 때만 베팅을 권장합니다. 변동성을 줄이려면 1/4 켈리 이하를 권장합니다.")
-                    kc1, kc2, kc3 = st.columns([1.5, 1.5, 1.2])
-                    with kc1:
-                        bankroll = st.number_input("보유 자금 (원)", min_value=10000, max_value=100000000,
-                                                   value=st.session_state.get("user_bankroll", 200000), step=10000,
-                                                   key="custom_bankroll_input")
-                        st.session_state["user_bankroll"] = bankroll
-                    with kc2:
-                        kelly_mode = st.selectbox("켈리 비율", ["1/4 켈리 (권장)", "1/2 켈리", "1/8 켈리"], key="kelly_mode")
-                        k_mult = {"1/4 켈리 (권장)": 0.25, "1/2 켈리": 0.5, "1/8 켈리": 0.125}[kelly_mode]
-                    raw_k = 0.0
-                    if chosen and total_stake and exp_pnl > 0 and hit_any > 0:
+                    st.caption("켈리 기준: 맞을 확률과 배당으로 '내 돈의 몇 %를 걸지' 정하는 공식이에요. "
+                               "기대 손익이 플러스일 때만 금액이 나오고, 흔들림을 줄이려면 1/4 켈리 이하가 좋아요.")
+                    if not (chosen and total_stake and exp_pnl > 0 and hit_any > 0):
+                        # 손해인 판은 자금·비율과 상관없이 늘 0원이라 입력칸 없이 결론만
+                        st.info("기대 손익이 플러스가 아니라서 켈리 기준으로는 **걸지 않는 게 맞아요** (권장 금액 0원).")
+                    else:
+                        kc1, kc2, kc3 = st.columns([1.5, 1.5, 1.2])
+                        with kc1:
+                            bankroll = st.number_input("보유 자금 (원)", min_value=10000, max_value=100000000,
+                                                       value=st.session_state.get("user_bankroll", 200000), step=10000,
+                                                       key="custom_bankroll_input")
+                            st.session_state["user_bankroll"] = bankroll
+                        with kc2:
+                            kelly_mode = st.selectbox("켈리 비율", ["1/4 켈리 (권장)", "1/2 켈리", "1/8 켈리"], key="kelly_mode")
+                            k_mult = {"1/4 켈리 (권장)": 0.25, "1/2 켈리": 0.5, "1/8 켈리": 0.125}[kelly_mode]
                         # 적중 시 평균 환급 배수(투표금 대비)로 단일 베팅처럼 근사
                         avg_mult = exp_return / hit_any / total_stake
                         b_val = max(1e-9, avg_mult - 1.0)
                         raw_k = max(0.0, (hit_any * b_val - (1 - hit_any)) / b_val)
-                    app_k = min(0.05, raw_k * k_mult)
-                    k_stake = min(100000, max(0, (int(bankroll * app_k) // unit) * unit))
-                    with kc3:
-                        st.metric("권장 총 베팅액", f"{k_stake:,}원")
-                        st.caption(f"자금의 {app_k * 100:.2f}%")
-                    if k_stake == 0:
-                        st.info("기대 손익이 플러스가 아니어서 켈리 기준 권장 베팅액은 0원입니다.")
-                    elif chosen:
-                        per = max(unit, (k_stake // len(chosen) // unit) * unit)
-                        if st.button(f"👉 선택 조합에 균등 적용 ({per:,}원씩)"):
-                            for c, _, _ in chosen:
-                                st.session_state[f"stake_{ckey_of[c['combo_index']]}"] = per
-                            _bump_editor()
-                            st.rerun()
+                        app_k = min(0.05, raw_k * k_mult)
+                        k_stake = min(100000, max(0, (int(bankroll * app_k) // unit) * unit))
+                        with kc3:
+                            st.metric("권장 총 베팅액", f"{k_stake:,}원")
+                            st.caption(f"자금의 {app_k * 100:.2f}%")
+                        if k_stake == 0:
+                            st.info(f"기대 손익은 플러스지만 아주 작아서 권장 금액이 최소 단위({unit:,}원)보다 적어요.")
+                        else:
+                            per = max(unit, (k_stake // len(chosen) // unit) * unit)
+                            if st.button(f"👉 선택 조합에 균등 적용 ({per:,}원씩)"):
+                                for c, _, _ in chosen:
+                                    st.session_state[f"stake_{ckey_of[c['combo_index']]}"] = per
+                                _bump_editor()
+                                st.rerun()
 
 
 # ==============================================================================
@@ -4071,7 +4115,7 @@ with st.sidebar:
         pnl_pct = (exp_pnl / total * 100) if total else 0.0
         pnl_col = "#f87171" if exp_pnl < 0 else "#34d399"
         hit_txt = f"{hit_any * 100:.1f}%" if (picked and hit_any > 0) else "-"
-        pnl_txt = (f"<span style='color:{pnl_col}'>{int(exp_pnl):+,}원 ({pnl_pct:+.1f}%)</span>"
+        pnl_txt = (f"<span style='color:{pnl_col}'>{signed_int(exp_pnl)}원 ({pnl_pct:+.1f}%)</span>"
                    if (picked and total > 0 and hit_any > 0) else "-")
         rows = [("선택 경기수", f"{cart['n']} 경기"),
                 ("조합 수", f"{cart['combos']:,} 개" if n_pick == cart["combos"] else f"{n_pick:,} / {cart['combos']:,} 개 선택"),
