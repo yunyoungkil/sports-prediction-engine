@@ -246,7 +246,11 @@ def verdict_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json)
     stale = reader("data/stale_odds_report.json") or {}
     health = reader("data/health_report.json") or {}
     out = ["📊 판정 진행 (미리 정한 기준):"]
-    out.append(f"   - AI 실전 채점: {card.get('graded_matches', 0)}/300경기 · {card.get('verdict', '기록 없음')}")
+    fx = card.get("fixtures")
+    soc = (card.get("by_game_type") or {}).get("축구 승무패") or {}
+    out.append(f"   - AI 실전 채점: {card.get('graded_matches', 0)}/300경기 · {card.get('verdict', '기록 없음')}"
+               + (f" · 서로 다른 대진 {fx}개" + (f" (축구 승무패 AI만 {soc.get('fixtures', soc.get('n'))}대진, "
+                                               f"LL 차이 {soc['ll_diff']:+.4f})" if soc.get("ll_diff") is not None else "") if fx else ""))
     v = stale.get("value") or {}
     out.append(f"   - 지연 배당 (베트맨이 해외 배당을 늦게 따라가나): {v.get('matches', 0)}/100경기 · "
                f"{stale.get('verdict', '아직 기록 없음')}")

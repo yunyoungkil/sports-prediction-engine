@@ -21,7 +21,7 @@ import math
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
@@ -33,7 +33,7 @@ if sys.platform.startswith('win'):
 
 from collector.betman_sharp import parse_betman_kickoff
 from evaluation.metrics import cluster_bootstrap_ci, cluster_roi_confidence_interval
-from models.league_groups import league_group
+from models.league_groups import league_group_v2
 from tracker.prediction_log import LOG_DIR
 
 SCORECARD_PATH = Path("data/model_scorecard.json")
@@ -61,13 +61,43 @@ def load_graded_results(path: Path = Path("data/history/betman_recent_results.js
     res: Dict[tuple, int] = {}
     for it in json.loads(path.read_text(encoding="utf-8")):
         key = (int(it["gm_ts"]), str(it["match_seq"]))
-        code = str(it.get("game_result") or "")
+        code = "" if it.get("game_result") is None else str(it.get("game_result"))
         if code in ("0", "1", "2"):
             res[key] = int(code)
         elif it.get("game_type") == "축구 승무패" and it.get("home_score") is not None and it.get("away_score") is not None:
             hs, as_ = it["home_score"], it["away_score"]
             res[key] = 0 if hs > as_ else (1 if hs == as_ else 2)
     return res
+
+
+def load_graded_by_line(path: Path = Path("data/history/betman_recent_results.json")) -> Dict[tuple, List[tuple]]:
+    """(회차, 경기번호) → [(기준값 handi_win, 정답 0/1/2), …]. 핸디캡·언더오버는 같은 경기번호에 기준값별 결과 줄이 여럿 (REVIEW R19)"""
+    out: Dict[tuple, List[tuple]] = {}
+    for it in json.loads(path.read_text(encoding="utf-8")):
+        key = (int(it["gm_ts"]), str(it["match_seq"]))
+        code = "" if it.get("game_result") is None else str(it.get("game_result"))
+        y = None
+        if code in ("0", "1", "2"):
+            y = int(code)
+        elif it.get("game_type") == "축구 승무패" and it.get("home_score") is not None and it.get("away_score") is not None:
+            hs, as_ = it["home_score"], it["away_score"]
+            y = 0 if hs > as_ else (1 if hs == as_ else 2)
+        if y is not None:
+            out.setdefault(key, []).append((float(it.get("handi_win") or 0.0), y))
+    return out
+
+
+def pick_result(cands: Optional[List[tuple]], line: Any) -> Optional[int]:
+    """결과 줄이 하나면 그대로, 여럿이면 예측 로그의 기준값과 같은 줄만. 맞는 줄이 없으면 추측하지 않고 None (채점 제외)"""
+    if not cands:
+        return None
+    if len(cands) == 1:
+        return cands[0][1]
+    ln = float(line or 0.0)
+    for handi, y in cands:
+        if abs(handi - ln) < 1e-9:
+            return y
+    return None
 
 
 def _ll_diffs(rows: List[Dict[str, Any]]) -> np.ndarray:
@@ -86,6 +116,15 @@ def _round_ci(values, rows: List[Dict[str, Any]], digits: int = 4) -> List[float
 def _ll_block(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     d = _ll_diffs(rows)
     return {"n": len(rows), "ll_diff": round(float(d.mean()), 4), "ll_diff_ci": _round_ci(d, rows)}
+
+
+def _ll_block_fixtures(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """_ll_block + 서로 다른 대진 수와 대진 단위 부트스트랩 범위 (같은 대진의 여러 게임번호는 독립이 아님 — REVIEW R20)"""
+    blk = _ll_block(rows)
+    d = _ll_diffs(rows)
+    lo, hi = cluster_bootstrap_ci(d, [r["fixture"] for r in rows])
+    blk.update({"fixtures": len({r["fixture"] for r in rows}), "ll_diff_ci_fixture": [round(lo, 4), round(hi, 4)]})
+    return blk
 
 
 def _value_bets(rows: List[Dict[str, Any]], threshold: float) -> List[tuple]:
@@ -135,7 +174,7 @@ def hypothesis_verdict(n: int, ll_diff: float, ci: List[float]) -> str:
 def build_hypotheses(rows: List[Dict[str, Any]], since: datetime = HYPOTHESES_SINCE) -> List[Dict[str, Any]]:
     out = []
     for h in HYPOTHESES:
-        sub = [r for r in rows if r["game_type"] == "축구 승무패" and league_group(r["league"]) == h["group"]
+        sub = [r for r in rows if r["game_type"] == "축구 승무패" and league_group_v2(r["league"]) == h["group"]
                and r["kickoff"] is not None and r["kickoff"] >= since]
         item = {**h, "since": since.isoformat(), "n": len(sub)}
         if sub:
@@ -178,16 +217,19 @@ def shadow_compare(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> Dict[str, Any]:
-    results = load_graded_results(results_path)
+    results = load_graded_by_line(results_path)
     rows: List[Dict[str, Any]] = []
     for f in sorted(log_dir.glob("*.json")):
         data = json.loads(f.read_text(encoding="utf-8"))
         gm_ts = int(data.get("gm_ts"))
         for seq, e in data.get("matches", {}).items():
-            y = results.get((gm_ts, str(seq)))
+            y = pick_result(results.get((gm_ts, str(seq))), e.get("line"))
             if y is None or not e.get("model_probs") or not e.get("market_probs"):
                 continue
-            rows.append({"gm_ts": gm_ts, "y": y, "model": _vec(e["model_probs"]), "market": _vec(e["market_probs"]),
+            home, away = e.get("home_team"), e.get("away_team")
+            rows.append({"gm_ts": gm_ts, "y": y,
+                         # 같은 대진의 승무패·핸디캡 등은 결과가 같이 움직이는 한 묶음 (REVIEW R20)
+                         "fixture": f"{gm_ts}|{home}|{away}" if home and away else f"{gm_ts}|{seq}", "model": _vec(e["model_probs"]), "market": _vec(e["market_probs"]),
                          "odds": np.array([float(e["betman_odds"][k]) for k in KEYS]),
                          "source": e.get("prob_source"), "game_type": e.get("game_type") or "축구 승무패",
                          "league": e.get("league") or "", "kickoff": parse_betman_kickoff(e.get("match_time")),
@@ -226,8 +268,9 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
         "gem_roi_pct": g_roi, "gem_roi_ci_low": g_lo, "gem_roi_ci_high": g_hi,
         "prob_sources": {s: sum(1 for r in rows if r["source"] == s) for s in {r["source"] for r in rows}},
         # 유형별 LL 차이 (어느 유형에서 AI가 이기고 지는지)
-        "by_game_type": {gt: _ll_block([r for r in rows if r["game_type"] == gt])
+        "by_game_type": {gt: _ll_block_fixtures([r for r in rows if r["game_type"] == gt])
                          for gt in sorted({r["game_type"] for r in rows})},
+        "fixtures": len({r["fixture"] for r in rows}),   # '300경기'는 게임번호 기준 — 독립적인 대진 수를 옆에 병기
         "hypotheses": build_hypotheses(rows),
         # [Phase 7.1] 그림자 모델 vs 지금 AI — 같은 실전 경기만 (판정에는 안 씀 · 300경기 뒤 교체 결정용)
         "shadow": shadow_compare(rows),

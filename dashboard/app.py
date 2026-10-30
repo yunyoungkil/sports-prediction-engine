@@ -3051,7 +3051,8 @@ with tab3:
         d_color = "#34d399" if card["ll_diff"] < 0 else ("#f87171" if card["ll_diff"] > 0 else "inherit")
         render_tiles([
             ("📋 채점한 경기", f"{n_g:,}경기",
-             (f"판정까지 {SCORE_MIN - n_g:,}경기 남음 · " if n_g < SCORE_MIN else "") + f"회차 {len(card.get('rounds', []))}개"),
+             (f"판정까지 {SCORE_MIN - n_g:,}경기 남음 · " if n_g < SCORE_MIN else "") + f"회차 {len(card.get('rounds', []))}개"
+             + (f" · 서로 다른 대진 {card['fixtures']:,}개" if card.get("fixtures") else "")),
             ("🎯 정확도 점수 (낮을수록 좋음)", f"AI {card['model_ll']:.3f}", f"배당 {card['market_ll']:.3f}"),
             ("⚖️ AI − 배당", f"<span style='color:{d_color}'>{card['ll_diff']:+.4f}</span>",
              f"음수면 AI가 더 정확 · 95% 범위 [{ci[0]:+.3f}, {ci[1]:+.3f}]"),
@@ -3101,10 +3102,13 @@ with tab3:
         if len(card.get("by_game_type", {})) > 1:
             with st.expander("유형별 성적 (어느 유형에서 AI가 앞서는지)"):
                 st.dataframe(commas(pd.DataFrame([
-                    {"유형": gt, "채점한 경기": v["n"], "AI − 배당 (음수 = AI 우세)": f"{v['ll_diff']:+.4f}",
+                    {"유형": gt, "채점한 경기": v["n"], "서로 다른 대진": v.get("fixtures", v["n"]),
+                     "AI − 배당 (음수 = AI 우세)": f"{v['ll_diff']:+.4f}",
                      "95% 범위": f"[{v['ll_diff_ci'][0]:+.4f}, {v['ll_diff_ci'][1]:+.4f}]"}
-                    for gt, v in sorted(card["by_game_type"].items(), key=lambda x: -x[1]["n"])]), "채점한 경기"),
+                    for gt, v in sorted(card["by_game_type"].items(), key=lambda x: -x[1]["n"])]), "채점한 경기", "서로 다른 대진"),
                     hide_index=True, width="stretch")
+                st.caption("같은 경기의 승무패·핸디캡은 따로 세어져서 '채점한 경기'가 '서로 다른 대진'보다 많아요. 유형마다 AI 모델이 달라서 "
+                           "전체 평균 하나로 판단하지 말고 유형별로 보세요.")
     else:
         st.info(f"⏳ 아직 채점할 경기가 없어요 (현재 {n_g}경기). 2026-10-25부터 경기 전 예측을 기록하기 시작했고, "
                 f"기록된 경기가 끝날 때마다 자동으로 채점돼요. {SCORE_MIN}경기가 쌓이면 판정해요.")

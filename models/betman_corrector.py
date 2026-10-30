@@ -19,6 +19,7 @@ models/market_corrector.py와 같은 구조(시장 확률 오프셋 + 보정 학
 """
 
 import json
+import re
 import sys
 from collections import defaultdict, deque
 from datetime import datetime, timezone
@@ -54,31 +55,42 @@ FEATURE_SETS["betman"] = {
 }
 
 
+def norm_team(name: Any) -> str:
+    """팀 이름 정규화 키 (공백·기호 제거, 소문자) — '맨체스터시티'와 '맨체스터 시티'를 같은 팀으로 (REVIEW R17).
+    운영 중인 AI는 아직 쓰지 않는다(normalize=False 기본). 실전 AI 300경기 판정 뒤 교체 때 켠다"""
+    return re.sub(r"[\s\.\-_·]", "", str(name)).lower()
+
+
+def _same(name: Any) -> Any:
+    return name
+
+
 class TeamForm:
     """킥오프 순서로 경기를 넣으면서, 각 팀의 '그 경기 이전' 최근 N경기 폼을 제공"""
 
-    def __init__(self, n: int = FORM_N):
+    def __init__(self, n: int = FORM_N, key=_same):
+        self.key = key
         self.hist: Dict[str, deque] = defaultdict(lambda: deque(maxlen=n))
 
     def get(self, team: str) -> Optional[Dict[str, float]]:
-        h = self.hist.get(team)
+        h = self.hist.get(self.key(team))
         if not h:
             return None
         return {"pts": sum(p for p, _ in h) / len(h), "gd": sum(g for _, g in h) / len(h)}
 
     def add(self, home: str, away: str, hs: int, as_: int) -> None:
         hp, ap = (3, 0) if hs > as_ else ((1, 1) if hs == as_ else (0, 3))
-        self.hist[home].append((hp, hs - as_))
-        self.hist[away].append((ap, as_ - hs))
+        self.hist[self.key(home)].append((hp, hs - as_))
+        self.hist[self.key(away)].append((ap, as_ - hs))
 
 
-def _features(form: TeamForm, home: str, away: str, league: str) -> Dict[str, float]:
+def _features(form: TeamForm, home: str, away: str, league: str, group_fn=league_group) -> Dict[str, float]:
     hf, af = form.get(home), form.get(away)
     feats = {
         "form_pts_diff": (hf["pts"] - af["pts"]) if hf and af else 0.0,
         "form_gd_diff": (hf["gd"] - af["gd"]) if hf and af else 0.0,
     }
-    g = league_group(league)
+    g = group_fn(league)
     for name in GROUP_NAMES:
         feats[f"g_{name}"] = 1.0 if g == name else 0.0
     return feats
@@ -224,9 +236,11 @@ def elo_features(elo: Elo, home: str, away: str, p_market: np.ndarray, tag: str)
             f"elo_known_{tag}": 1.0 if known else 0.0}
 
 
-def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
-    """킥오프 순으로 행을 만들며 폼은 해당 경기 이전 결과만 반영 (같은 시각 경기끼리도 서로 반영 안 함)"""
-    form = TeamForm()
+def build_rows(df: pd.DataFrame, normalize: bool = False, group_fn=league_group) -> List[Dict[str, Any]]:
+    """킥오프 순으로 행을 만들며 폼은 해당 경기 이전 결과만 반영 (같은 시각 경기끼리도 서로 반영 안 함)
+    normalize=True: 팀 이름 표기 차이를 같은 팀으로 (R17) · group_fn: 리그 그룹 정의 (R18, league_group_v2)"""
+    nm = norm_team if normalize else _same
+    form = TeamForm(key=nm)
     elos = {f"k{int(k)}": Elo(k) for k in ELO_CONFIGS}
     last_seen: Dict[str, Any] = {}      # 팀별 직전 경기 킥오프 (휴식일 계산)
     rows: List[Dict[str, Any]] = []
@@ -238,32 +252,32 @@ def build_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
                 form.add(*args)
                 for e in elos.values():
                     e.update(*args)
-                last_seen[args[0]] = last_seen[args[1]] = last_ko
+                last_seen[nm(args[0])] = last_seen[nm(args[1])] = last_ko
             pending = []
         last_ko = r.kickoff
         p = _fair_probs(r.odds_win, r.odds_draw, r.odds_lose)
         if p is None:
             continue
         y = 0 if r.home_score > r.away_score else (1 if r.home_score == r.away_score else 2)
-        row = {"kickoff": r.kickoff, "gm_ts": int(r.gm_ts), "league": r.league, "group": league_group(r.league),
+        row = {"kickoff": r.kickoff, "gm_ts": int(r.gm_ts), "league": r.league, "group": group_fn(r.league),
                "actual": y, "odds": np.array([r.odds_win, r.odds_draw, r.odds_lose], dtype=float),
                "p_market": p, "p_avg": None, "p_sharp": None,
                # 경기 정보 (피처 아님 — 워크포워드 전략 재현용, evaluation/walk_forward.py)
                "match_seq": getattr(r, "match_seq", None), "match_time": getattr(r, "match_time", None),
                "home_team": r.home_team, "away_team": r.away_team, "sgl": getattr(r, "sgl", None)}
-        row.update(_features(form, r.home_team, r.away_team, r.league))
+        row.update(_features(form, r.home_team, r.away_team, r.league, group_fn))
         row.update(market_features(row["odds"], p))
-        row.update(rest_features(last_seen, r.home_team, r.away_team, r.kickoff))
+        row.update(rest_features(last_seen, nm(r.home_team), nm(r.away_team), r.kickoff))
         row.update(ou_features(r._asdict(), p))
         for tag, e in elos.items():
-            row.update(elo_features(e, r.home_team, r.away_team, p, tag))
+            row.update(elo_features(e, nm(r.home_team), nm(r.away_team), p, tag))
         rows.append(row)
-        pending.append((r.home_team, r.away_team, int(r.home_score), int(r.away_score)))
+        pending.append((nm(r.home_team), nm(r.away_team), int(r.home_score), int(r.away_score)))
     return rows
 
 
-def run(df: pd.DataFrame) -> MarketCorrector:
-    rows = build_rows(df)
+def run(df: pd.DataFrame, normalize: bool = False, group_fn=league_group) -> MarketCorrector:
+    rows = build_rows(df, normalize, group_fn)
     split = {
         "train": [r for r in rows if r["kickoff"] < TUNE_START],
         "tune": [r for r in rows if TUNE_START <= r["kickoff"] < TEST_START],
@@ -310,18 +324,19 @@ def run(df: pd.DataFrame) -> MarketCorrector:
 class TimedTeamForm:
     """팀별 경기 기록을 킥오프 시각과 함께 보관하고, 특정 시각 '이전' 경기만으로 폼을 계산"""
 
-    def __init__(self, n: int = FORM_N):
+    def __init__(self, n: int = FORM_N, key=_same):
         self.n = n
+        self.key = key
         self.hist: Dict[str, List[tuple]] = defaultdict(list)   # team -> [(kickoff, pts, gd)] 시간순
 
     def add(self, kickoff, home: str, away: str, hs: int, as_: int) -> None:
         hp, ap = (3, 0) if hs > as_ else ((1, 1) if hs == as_ else (0, 3))
-        self.hist[home].append((kickoff, hp, hs - as_))
-        self.hist[away].append((kickoff, ap, as_ - hs))
+        self.hist[self.key(home)].append((kickoff, hp, hs - as_))
+        self.hist[self.key(away)].append((kickoff, ap, as_ - hs))
 
     def at(self, before) -> "TeamForm":
         """before(킥오프) 이전 경기만 반영한 TeamForm 뷰. before가 None이면 전체"""
-        view = TeamForm(self.n)
+        view = TeamForm(self.n, key=self.key)
         for team, games in self.hist.items():
             for ko, pts, gd in games:
                 if before is None or ko < before:
@@ -332,14 +347,16 @@ class TimedTeamForm:
 class BetmanLivePredictor:
     """실전용: 게이트 통과 모델 + 아카이브로 만든 팀 폼 (예측 대상 경기 킥오프 이전 경기만 반영)"""
 
-    def __init__(self, model: MarketCorrector, form: TimedTeamForm):
+    def __init__(self, model: MarketCorrector, form: TimedTeamForm, group_fn=league_group):
         self.model = model
+        self.group_fn = group_fn
         self.timed_form = form
         self.form = form.at(None)          # 기본(가장 최근까지) 폼
         self._views: Dict[Any, TeamForm] = {}
 
     @classmethod
-    def load(cls, params_path: Path = PARAMS_PATH, archive_path: Path = ARCHIVE_CSV) -> Optional["BetmanLivePredictor"]:
+    def load(cls, params_path: Path = PARAMS_PATH, archive_path: Path = ARCHIVE_CSV, normalize: bool = False,
+             group_fn=league_group) -> Optional["BetmanLivePredictor"]:
         if not params_path.exists() or not archive_path.exists():
             return None
         d = json.loads(params_path.read_text(encoding="utf-8"))
@@ -349,10 +366,10 @@ class BetmanLivePredictor:
         m.beta, m.gamma, m.c = np.array(d["beta"]), np.array(d["gamma"]), np.array(d["c"])
         m.mu, m.sd = np.array(d["mu"]), np.array(d["sd"])
         m.report, m.is_fitted = d.get("report", {}), True
-        form = TimedTeamForm()
+        form = TimedTeamForm(key=norm_team if normalize else _same)
         for r in load_archive_df(archive_path).itertuples(index=False):
             form.add(r.kickoff, r.home_team, r.away_team, int(r.home_score), int(r.away_score))
-        return cls(m, form)
+        return cls(m, form, group_fn)
 
     def _form_before(self, kickoff) -> TeamForm:
         if kickoff is None:
@@ -368,7 +385,7 @@ class BetmanLivePredictor:
         if p is None:
             return None
         row = {"p_market": p, "p_avg": None, "p_sharp": None, "actual": 0}
-        row.update(_features(self._form_before(kickoff), home, away, league))
+        row.update(_features(self._form_before(kickoff), home, away, league, self.group_fn))
         out = self.model.predict_rows([row])[0]
         return {"home_win": round(float(out[0]), 4), "draw": round(float(out[1]), 4), "away_win": round(float(out[2]), 4)}
 

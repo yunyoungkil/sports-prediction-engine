@@ -80,11 +80,27 @@ def closing_odds_index(results_path: Path = RESULTS_PATH, hist_dir: Path = HIST_
                 if o[0] > 1.0 and o[2] > 1.0:
                     idx[(int(p.stem), str(seq))] = o
     if results_path.exists():
-        for r in json.loads(results_path.read_text(encoding="utf-8")):
+        rows = json.loads(results_path.read_text(encoding="utf-8"))
+        n_rows: Dict[tuple, int] = {}
+        for r in rows:
+            k2 = (int(r["gm_ts"]), str(r["match_seq"]))
+            n_rows[k2] = n_rows.get(k2, 0) + 1
+        for r in rows:
             o = np.array([float(r.get("odds_win") or 0), float(r.get("odds_draw") or 0), float(r.get("odds_lose") or 0)])
             if o[0] > 1.0 and o[2] > 1.0:
-                idx[(int(r["gm_ts"]), str(r["match_seq"]))] = o
+                k2 = (int(r["gm_ts"]), str(r["match_seq"]))
+                idx[k2 + (round(float(r.get("handi_win") or 0.0), 4),)] = o      # 기준값(핸디캡·언더오버)별 줄
+                if n_rows[k2] == 1:
+                    idx[k2] = o
+                else:
+                    idx.pop(k2, None)   # 기준값이 여럿이면 어느 줄인지 모르는 (회차, 경기번호) 키는 두지 않는다 (REVIEW R19)
     return idx
+
+
+def closing_for(closing: Dict[tuple, np.ndarray], gm_ts: int, seq: Any, line: Any = 0.0) -> Optional[np.ndarray]:
+    """마감 배당 찾기 — 같은 경기번호에 기준값별 줄이 여럿이면 예측 때의 기준값(line)과 같은 줄"""
+    o = closing.get((int(gm_ts), str(seq), round(float(line or 0.0), 4)))
+    return o if o is not None else closing.get((int(gm_ts), str(seq)))
 
 
 def _mean_ci(x: List[float], clusters: Optional[List[Any]] = None) -> Dict[str, Any]:
@@ -113,7 +129,7 @@ def ai_line_moves(log_dir: Path = LOG_DIR, closing: Optional[Dict[tuple, np.ndar
         for seq, e in data.get("matches", {}).items():
             o_open = _odds_vec(e.get("first_odds") or e.get("betman_odds"))
             p_ai = _prob_vec(e.get("first_model_probs") or e.get("model_probs"))
-            o_close = closing.get((ts, str(seq)))
+            o_close = closing_for(closing, ts, seq, e.get("line"))
             if o_open is None or p_ai is None or o_close is None:
                 continue
             if (o_open[1] > 1.0) != (o_close[1] > 1.0):
@@ -157,7 +173,7 @@ def paper_bets_clv(bets_dir: Path = BETS_DIR, closing: Optional[Dict[tuple, np.n
         ts = int(data.get("gm_ts") or f.stem)
         for b in data.get("bets", []):
             for leg in b.get("legs", []):
-                c = closing.get((ts, str(leg["seq"])))
+                c = closing_for(closing, ts, leg["seq"], leg.get("line"))
                 if c is None:
                     continue
                 k = KEYS.index(leg["key"])

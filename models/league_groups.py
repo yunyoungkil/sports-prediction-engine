@@ -28,3 +28,20 @@ def league_group(league: str) -> str:
         if any(t in s for t in tokens):
             return g
     return "other"
+
+
+def league_group_v2(league: str) -> str:
+    """리그 그룹 바로잡은 판 (REVIEW R18) — 운영 중인 AI의 피처(league_group)는 그대로 두고, 사전 가설 판정과
+    그림자 모델 검증에서 쓴다. 고친 점:
+    - 클럽 대회(FIFA 클럽월드컵, 클럽친선경기)는 국가대표가 아님 → other
+    - 네이션스리그·네이션스컵은 UEFA 대회여도 국가대표전 → national
+    - 동남아시아 축구챔피언십·EAFF E-1 챔피언십은 국가대표 대회 → national (챔피언십 토큰이 europe_other로 새던 것)
+    - UEFA 클럽 대회(챔피언스·유로파·컨퍼런스·슈퍼컵)만 uefa_cup, AFC·CAF·CONCACAF 클럽 대회는 other"""
+    s = str(league or "")
+    if "클럽" in s:
+        return "other"
+    if any(t in s for t in ("네이션스리그", "네이션스컵", "EAFF", "동남아시아")):
+        return "national"
+    if any(c in s for c in ("AFC", "CAF", "CONCACAF")) and "챔피언스" in s:
+        return "other"
+    return league_group(s)
