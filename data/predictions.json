@@ -20,7 +20,7 @@
     "kickoff_ts": 1793318400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "애틀랜타 호크스",
     "away_team": "클리블랜드 캐벌리어스",
@@ -214,7 +214,7 @@
     "kickoff_ts": 1793318400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "애틀랜타 호크스",
     "away_team": "클리블랜드 캐벌리어스",
@@ -408,7 +408,7 @@
     "kickoff_ts": 1793318400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "애틀랜타 호크스",
     "away_team": "클리블랜드 캐벌리어스",
@@ -602,7 +602,7 @@
     "kickoff_ts": 1793318400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "애틀랜타 호크스",
     "away_team": "클리블랜드 캐벌리어스",
@@ -796,7 +796,7 @@
     "kickoff_ts": 1793318400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "새크라멘토 킹스",
@@ -981,7 +981,7 @@
     "kickoff_ts": 1793318400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "새크라멘토 킹스",
@@ -1166,7 +1166,7 @@
     "kickoff_ts": 1793318400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "새크라멘토 킹스",
@@ -1351,7 +1351,7 @@
     "kickoff_ts": 1793318400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "새크라멘토 킹스",
@@ -1536,52 +1536,83 @@
     "kickoff_ts": 1793325600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "포틀랜드 트레일블레이저스",
     "away_team": "멤피스 그리즐리스",
     "betman_odds": {
-      "home_win": 1.18,
+      "home_win": 1.26,
       "draw": 0.0,
-      "away_win": 3.31
+      "away_win": 2.81
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 09:17:20",
+        "from": {
+          "home_win": 1.18,
+          "draw": 0.0,
+          "away_win": 3.31
+        },
+        "to": {
+          "home_win": 1.22,
+          "draw": 0.0,
+          "away_win": 3.03
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-10-30 10:26:55",
+        "from": {
+          "home_win": 1.22,
+          "draw": 0.0,
+          "away_win": 3.03
+        },
+        "to": {
+          "home_win": 1.26,
+          "draw": 0.0,
+          "away_win": 2.81
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.18,
+      "home_win": 1.26,
       "draw": 0.0,
-      "away_win": 3.31
+      "away_win": 2.81
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.7372,
+      "home": 0.6904,
       "draw": 0.0,
-      "away": 0.2628
+      "away": 0.3096
     },
     "model_probabilities": {
-      "home_win": 0.7372,
+      "home_win": 0.6904,
       "draw": 0.0,
-      "away_win": 0.2628
+      "away_win": 0.3096
     },
     "blended_probabilities": {
-      "home_win": 0.7375,
+      "home_win": 0.6905,
       "draw": 0.0,
-      "away_win": 0.2625
+      "away_win": 0.3095
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1298,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.1311
+        "away_win": -0.1303
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 포틀랜드 트레일블레이저스 승",
       "raw_selection_name": "포틀랜드 트레일블레이저스 승",
-      "best_ev": -0.1298,
+      "best_ev": -0.13,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -1712,7 +1743,7 @@
     "kickoff_ts": 1793325600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "포틀랜드 트레일블레이저스",
     "away_team": "멤피스 그리즐리스",
@@ -1875,20 +1906,20 @@
     "league": "NBA",
     "game_type": "농구 언더오버",
     "category": "언더오버",
-    "category_label": "언더/오버 (기준 234.5)",
+    "category_label": "언더/오버 (기준 235.5)",
     "selection_labels": {
-      "home_win": "언더 (< 234.5)",
+      "home_win": "언더 (< 235.5)",
       "draw": "-",
-      "away_win": "오버 (> 234.5)"
+      "away_win": "오버 (> 235.5)"
     },
     "is_single": true,
-    "line": 234.5,
+    "line": 235.5,
     "match_time": "26.10.30 (금) 11:00",
     "close_time": 1793325600000,
     "kickoff_ts": 1793325600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "포틀랜드 트레일블레이저스",
     "away_team": "멤피스 그리즐리스",
@@ -1897,7 +1928,53 @@
       "draw": 0.0,
       "away_win": 1.73
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 08:15:57",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 234.5,
+        "line_to": 234.5
+      },
+      {
+        "at": "2026-10-30 10:26:55",
+        "from": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 234.5,
+        "line_to": 235.5
+      },
+      {
+        "at": "2026-10-30 10:40:37",
+        "from": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "to": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "line_from": 235.5,
+        "line_to": 235.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
       "home_win": 1.75,
@@ -1931,8 +2008,8 @@
         "away_win": -0.144
       },
       "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 언더 (< 234.5)",
-      "raw_selection_name": "언더 (< 234.5)",
+      "best_selection_name": "[단통 ⚡] 언더 (< 235.5)",
+      "raw_selection_name": "언더 (< 235.5)",
       "best_ev": -0.1159,
       "best_ev_pct": "-11.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
@@ -2064,7 +2141,7 @@
     "kickoff_ts": 1793325600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "포틀랜드 트레일블레이저스",
     "away_team": "멤피스 그리즐리스",
@@ -7465,33 +7542,49 @@
     "home_team": "르아브르AC",
     "away_team": "파리 생제르맹",
     "betman_odds": {
-      "home_win": 1.08,
+      "home_win": 1.11,
       "draw": 0.0,
-      "away_win": 4.47
+      "away_win": 4.02
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 08:37:26",
+        "from": {
+          "home_win": 1.08,
+          "draw": 0.0,
+          "away_win": 4.47
+        },
+        "to": {
+          "home_win": 1.11,
+          "draw": 0.0,
+          "away_win": 4.02
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.08,
+      "home_win": 1.11,
       "draw": 0.0,
-      "away_win": 4.47
+      "away_win": 4.02
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.8054,
+      "home": 0.7836,
       "draw": 0.0,
-      "away": 0.1946
+      "away": 0.2164
     },
     "model_probabilities": {
-      "home_win": 0.8054,
+      "home_win": 0.7836,
       "draw": 0.0,
-      "away_win": 0.1946
+      "away_win": 0.2164
     },
     "blended_probabilities": {
-      "home_win": 0.8054,
+      "home_win": 0.7836,
       "draw": 0.0,
-      "away_win": 0.1946
+      "away_win": 0.2164
     },
     "prob_source": "market",
     "sharp": null,
@@ -72125,47 +72218,63 @@
     "home_team": "바이에른 뮌헨",
     "away_team": "도르트문트",
     "betman_odds": {
-      "home_win": 4.85,
+      "home_win": 4.31,
       "draw": 0.0,
-      "away_win": 1.06
+      "away_win": 1.09
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 08:36:44",
+        "from": {
+          "home_win": 4.85,
+          "draw": 0.0,
+          "away_win": 1.06
+        },
+        "to": {
+          "home_win": 4.31,
+          "draw": 0.0,
+          "away_win": 1.09
+        },
+        "line_from": -3.5,
+        "line_to": -3.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 4.85,
+      "home_win": 4.31,
       "draw": 0.0,
-      "away_win": 1.06
+      "away_win": 1.09
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.1794,
+      "home": 0.2019,
       "draw": 0.0,
-      "away": 0.8206
+      "away": 0.7981
     },
     "model_probabilities": {
-      "home_win": 0.1794,
+      "home_win": 0.2019,
       "draw": 0.0,
-      "away_win": 0.8206
+      "away_win": 0.7981
     },
     "blended_probabilities": {
-      "home_win": 0.1794,
+      "home_win": 0.2019,
       "draw": 0.0,
-      "away_win": 0.8206
+      "away_win": 0.7981
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1299,
+        "home_win": -0.1298,
         "draw": -1.0,
-        "away_win": -0.1302
+        "away_win": -0.1301
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 바이에른 뮌헨 (-3.5) 승",
       "raw_selection_name": "바이에른 뮌헨 (-3.5) 승",
-      "best_ev": -0.1299,
+      "best_ev": -0.1298,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -75048,47 +75157,63 @@
     "home_team": "PSV에인트호번",
     "away_team": "빌럼II",
     "betman_odds": {
-      "home_win": 3.57,
+      "home_win": 3.16,
       "draw": 0.0,
-      "away_win": 1.15
+      "away_win": 1.2
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 08:34:09",
+        "from": {
+          "home_win": 3.57,
+          "draw": 0.0,
+          "away_win": 1.15
+        },
+        "to": {
+          "home_win": 3.16,
+          "draw": 0.0,
+          "away_win": 1.2
+        },
+        "line_from": -4.5,
+        "line_to": -4.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 3.57,
+      "home_win": 3.16,
       "draw": 0.0,
-      "away_win": 1.15
+      "away_win": 1.2
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2436,
+      "home": 0.2752,
       "draw": 0.0,
-      "away": 0.7564
+      "away": 0.7248
     },
     "model_probabilities": {
-      "home_win": 0.2436,
+      "home_win": 0.2752,
       "draw": 0.0,
-      "away_win": 0.7564
+      "away_win": 0.7248
     },
     "blended_probabilities": {
-      "home_win": 0.2436,
+      "home_win": 0.2752,
       "draw": 0.0,
-      "away_win": 0.7564
+      "away_win": 0.7248
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1303,
+        "home_win": -0.1304,
         "draw": -1.0,
-        "away_win": -0.1301
+        "away_win": -0.1302
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 빌럼II 반대승",
       "raw_selection_name": "빌럼II 반대승",
-      "best_ev": -0.1301,
+      "best_ev": -0.1302,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -86447,46 +86572,62 @@
     "home_team": "바르셀로나",
     "away_team": "알라베스",
     "betman_odds": {
-      "home_win": 4.65,
+      "home_win": 4.16,
       "draw": 0.0,
-      "away_win": 1.07
+      "away_win": 1.1
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-30 08:36:55",
+        "from": {
+          "home_win": 4.65,
+          "draw": 0.0,
+          "away_win": 1.07
+        },
+        "to": {
+          "home_win": 4.16,
+          "draw": 0.0,
+          "away_win": 1.1
+        },
+        "line_from": -4.5,
+        "line_to": -4.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 4.65,
+      "home_win": 4.16,
       "draw": 0.0,
-      "away_win": 1.07
+      "away_win": 1.1
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.1871,
+      "home": 0.2091,
       "draw": 0.0,
-      "away": 0.8129
+      "away": 0.7909
     },
     "model_probabilities": {
-      "home_win": 0.1871,
+      "home_win": 0.2091,
       "draw": 0.0,
-      "away_win": 0.8129
+      "away_win": 0.7909
     },
     "blended_probabilities": {
-      "home_win": 0.1871,
+      "home_win": 0.2091,
       "draw": 0.0,
-      "away_win": 0.8129
+      "away_win": 0.7909
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.13,
+        "home_win": -0.1301,
         "draw": -1.0,
-        "away_win": -0.1302
+        "away_win": -0.13
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 바르셀로나 (-4.5) 승",
-      "raw_selection_name": "바르셀로나 (-4.5) 승",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 알라베스 반대승",
+      "raw_selection_name": "알라베스 반대승",
       "best_ev": -0.13,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
