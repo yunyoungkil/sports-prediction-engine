@@ -26,6 +26,37 @@ def test_parse_keeps_full_time_1x2_only():
     assert (rows[0]["home_score"], rows[0]["away_score"]) == (2, 1)
 
 
+def test_sync_retries_failed_round_and_reports_what_still_failed(tmp_path, monkeypatch):
+    """조회가 끊긴 회차는 끝에 한 번 더 받고, 그래도 실패한 회차는 'failed'로 알려 완료 목록에 넣지 않는다
+    (2026-10-31: 진행 중 260129가 SSL 끊김으로 빠졌는데 성공으로 끝나 하루 동안 다시 안 받음)"""
+    import json
+
+    import collector.betman_archive as ba
+    monkeypatch.setattr(ba, "ARCHIVE_CSV", tmp_path / "a.csv")
+    monkeypatch.setattr(ba, "ROUNDS_JSON", tmp_path / "r.json")
+    monkeypatch.setattr(ba, "BetmanResultsScraper", lambda: None)
+    monkeypatch.setattr(ba.time, "sleep", lambda s: None)
+    (tmp_path / "r.json").write_text(json.dumps(list(range(260001, 260129))), encoding="utf-8")   # 1~128회차는 이미 받음
+    calls = {}
+
+    def fake_fetch(scraper, ts):
+        calls[ts] = calls.get(ts, 0) + 1
+        if ts == 260129 and calls[ts] <= 3:       # 처음 3번은 끊기고 마지막 재시도에서 성공
+            raise OSError("SSL: UNEXPECTED_EOF_WHILE_READING")
+        if ts == 260130:                          # 계속 실패
+            raise OSError("timed out")
+        if ts == 260129:
+            return [dict(_raw(1, (2.0, 3.3, 3.2), "2:1"), GM_TS=260129)]
+        return []
+
+    monkeypatch.setattr(ba, "fetch_raw_round", fake_fetch)
+    res = ba.sync_archive([26], refetch_last=0)
+    assert res["failed"] == [260130]
+    assert [r["gm_ts"] for r in ba.load_archive()] == ["260129"]
+    done = json.loads((tmp_path / "r.json").read_text(encoding="utf-8"))
+    assert 260129 in done and 260130 not in done
+
+
 def test_league_group():
     assert league_group("K리그2") == "kleague"
     assert league_group("AFC 챔피언스리그 엘리트") == "other"

@@ -23,7 +23,7 @@ import sys
 import time
 import urllib.request
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 if sys.platform.startswith('win'):
     try:
@@ -44,6 +44,7 @@ FIELDS = ["gm_ts", "match_seq", "kickoff_ms", "match_time", "league", "home_team
 UO_LINES = (2.5, 3.5)
 REQUEST_DELAY_SEC = 0.7
 MAX_EMPTY_STREAK = 6   # 연속으로 빈 회차가 이만큼 나오면 그 해는 끝난 것으로 판단
+RETRY_PAUSE_SEC = 20   # 조회 실패한 회차는 끝에 한 번 더 (연결 끊김은 잠깐 뒤면 풀리는 경우가 많음)
 
 
 def fetch_raw_round(scraper: BetmanResultsScraper, gm_ts: int) -> List[Dict[str, Any]]:
@@ -124,15 +125,39 @@ def load_archive() -> List[Dict[str, Any]]:
         return list(csv.DictReader(f))
 
 
+def _fetch_with_retry(scraper: BetmanResultsScraper, ts: int, attempts: int = 3) -> Optional[List[Dict[str, Any]]]:
+    """회차 원자료. 끝까지 실패하면 None (빈 회차 []와 구분)"""
+    for attempt in range(attempts):   # 일시적 연결 끊김 재시도
+        try:
+            return fetch_raw_round(scraper, ts)
+        except Exception as e:
+            if attempt == attempts - 1:
+                print(f"  ⚠ {ts} 조회 실패: {e}")
+                return None
+            time.sleep(2 + attempt * 3)
+    return None
+
+
 def sync_archive(years: List[int], refetch_last: int = 3, full: bool = False) -> Dict[str, Any]:
     done = set(json.loads(ROUNDS_JSON.read_text(encoding="utf-8"))) if (ROUNDS_JSON.exists() and not full) else set()
     rows = {(int(r["gm_ts"]), r["match_seq"]): r for r in load_archive()}
     scraper = BetmanResultsScraper()
     # 최근 회차는 늦게 끝난 경기가 있을 수 있어 다시 받는다
-    for ts in sorted(done)[-refetch_last:]:
+    for ts in (sorted(done)[-refetch_last:] if refetch_last > 0 else []):   # [-0:]은 전부라서 0은 따로
         done.discard(ts)
 
     fetched = 0
+    failed: List[int] = []
+
+    def _add(ts: int, raw: List[Dict[str, Any]]) -> None:
+        for r in parse_soccer_1x2(raw):
+            rows[(r["gm_ts"], r["match_seq"])] = r
+        # 결과가 아직 다 안 나온 진행 중 회차는 완료 목록에 넣지 않음
+        pending = sum(1 for it in raw if it.get("MCH_SPORT_CD") == "SC" and str(it.get("MCH_SCORE") or "-") == "-"
+                      and str(it.get("PR_ST_VAL")) not in ("4", "5"))
+        if pending == 0:
+            done.add(ts)
+
     for yy in years:
         empty_streak = 0
         for n in range(1, 400):
@@ -140,33 +165,34 @@ def sync_archive(years: List[int], refetch_last: int = 3, full: bool = False) ->
             if ts in done:
                 empty_streak = 0
                 continue
-            raw = []
-            for attempt in range(3):   # 일시적 연결 끊김 재시도
-                try:
-                    raw = fetch_raw_round(scraper, ts)
-                    break
-                except Exception as e:
-                    if attempt == 2:
-                        print(f"  ⚠ {ts} 조회 실패: {e}")
-                    time.sleep(2 + attempt * 3)
+            raw = _fetch_with_retry(scraper, ts)
             time.sleep(REQUEST_DELAY_SEC)
-            if not raw:
+            if raw is None:
+                failed.append(ts)
+            if not raw:   # 실패도 빈 회차처럼 세어 끝없이 돌지 않게
                 empty_streak += 1
                 if empty_streak >= MAX_EMPTY_STREAK:
                     break
                 continue
             empty_streak = 0
-            parsed = parse_soccer_1x2(raw)
-            for r in parsed:
-                rows[(r["gm_ts"], r["match_seq"])] = r
-            # 결과가 아직 다 안 나온 진행 중 회차는 완료 목록에 넣지 않음
-            pending = sum(1 for it in raw if it.get("MCH_SPORT_CD") == "SC" and str(it.get("MCH_SCORE") or "-") == "-"
-                          and str(it.get("PR_ST_VAL")) not in ("4", "5"))
-            if pending == 0:
-                done.add(ts)
+            _add(ts, raw)
             fetched += 1
             if fetched % 20 == 0:
                 print(f"  … {ts}회차까지 조회, 누적 {len(rows)}경기")
+
+    # 2026-10-31: 진행 중 회차(260129)가 SSL 끊김으로 빠졌는데 '성공'으로 끝나 하루 동안 다시 받지 않았음 → 끝에 한 번 더
+    if failed:
+        time.sleep(RETRY_PAUSE_SEC)
+        still = []
+        for ts in failed:
+            raw = _fetch_with_retry(scraper, ts, attempts=1)
+            time.sleep(REQUEST_DELAY_SEC)
+            if raw is None:
+                still.append(ts)
+            elif raw:
+                _add(ts, raw)
+                fetched += 1
+        failed = still
 
     ARCHIVE_CSV.parent.mkdir(parents=True, exist_ok=True)
     out = sorted(rows.values(), key=lambda r: (int(r["gm_ts"]), int(r["match_seq"])))
@@ -175,13 +201,20 @@ def sync_archive(years: List[int], refetch_last: int = 3, full: bool = False) ->
         w.writeheader()
         w.writerows({k: r.get(k) for k in FIELDS} for r in out)
     ROUNDS_JSON.write_text(json.dumps(sorted(done)), encoding="utf-8")
-    return {"rounds_fetched": fetched, "total_matches": len(out)}
+    return {"rounds_fetched": fetched, "total_matches": len(out), "failed": failed}
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="베트맨 과거 축구 승무패 아카이브 수집")
     ap.add_argument("--years", type=int, nargs="+", default=[24, 25, 26])
     ap.add_argument("--full", action="store_true", help="이미 받은 회차도 모두 다시 받기 (컬럼 추가 시)")
+    ap.add_argument("--strict", action="store_true",
+                    help="조회 실패한 회차가 남으면 종료 코드 1 (파이프라인 4-1단계가 '오늘 갱신함'을 적지 않고 다음 실행 때 다시)")
     args = ap.parse_args()
     res = sync_archive(args.years, full=args.full)
-    print(f"✅ 베트맨 아카이브: 이번에 {res['rounds_fetched']}회차 조회, 총 {res['total_matches']}경기 → {ARCHIVE_CSV}")
+    if res["failed"]:
+        print(f"⚠️ 베트맨 아카이브: 조회 실패 회차 {res['failed']} — 받은 것만 저장 ({res['total_matches']}경기 → {ARCHIVE_CSV})")
+        if args.strict:
+            sys.exit(1)
+    else:
+        print(f"✅ 베트맨 아카이브: 이번에 {res['rounds_fetched']}회차 조회, 총 {res['total_matches']}경기 → {ARCHIVE_CSV}")

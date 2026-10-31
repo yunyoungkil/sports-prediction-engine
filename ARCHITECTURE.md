@@ -31,7 +31,7 @@
 
 | 파일 | 언제 | 하는 일 |
 |---|---|---|
-| `.github/workflows/pipeline.yml` | cron-job.org 매일 09:30·18:30 KST (+GitHub 예약 보험) | 패키지 설치 → 베트맨 과거 기록 하루 1번 갱신(4-1) → 그림자 모델 학습(4-2) → 6일 지났으면 주간 재학습(4) → `run_pipeline.py`(5) → **데이터 계약 점검(5-1)** → `data/` 커밋·푸시(6) → 운영 점검 확인(7, 경고가 있으면 실행을 실패로 표시) |
+| `.github/workflows/pipeline.yml` | cron-job.org 매일 09:30·18:30 KST (+GitHub 예약 보험) | 패키지 설치 → 베트맨 과거 기록 하루 1번 갱신(4-1, 조회 실패 회차가 남으면 그날 다음 실행 때 다시) → 그림자 모델 학습(4-2) → 6일 지났으면 주간 재학습(4) → `run_pipeline.py`(5) → **데이터 계약 점검(5-1)** → `data/` 커밋·푸시(6) → 운영 점검 확인(7, 경고가 있으면 실행을 실패로 표시) |
 | `.github/workflows/results.yml` | cron-job.org 2시간마다 (+GitHub 예약 보험) | numpy만 설치하는 가벼운 실행: 끝난 경기 결과·성적표·가상 베팅 채점 (`tracker/quick_results.py`) |
 | `.github/workflows/test.yml` | 푸시할 때 | `pytest` 전체 |
 
@@ -132,7 +132,7 @@ sports-prediction-engine/
 | `data/contract_report.json` | 데이터 계약 점검 결과 | pipeline (5-1) |
 | `data/calibration_experiment.json` | 사후 보정 실험 결과 (기록용) | 수동 |
 | `data/odds_moves_report.json` · `data/vote_bias_report.json` · `data/portfolio_backtest.json` · `data/g_instinct_backtest.json` · `data/g_month_backtest.json` · `data/value_engine_replay.json` | 배당 변경·구매 쏠림 시험(둘 다 효과 없음) · F 전략 · G 원칙형 vs 본능형 과거 재현 결과 (이 PC에만, 커밋 안 함) | 수동 |
-| `data/last_archive_sync.txt` · `data/last_retrain.txt` | 아카이브 갱신·재학습 마지막 날짜 | pipeline |
+| `data/last_archive_sync.txt` · `data/last_retrain.txt` | 아카이브 갱신·재학습 마지막 날짜 (아카이브는 모든 회차를 받았을 때만 적음 · `betman_archive --strict`) | pipeline |
 
 `data/history/`: `prediction_log/`(경기 전 고정 예측) · `odds_history/` · `paper_bets/` · `sharp_snapshots/` · `betman_markets/`(전 유형 아카이브) · `betman_recent_results.json`(최근 회차 결과) · `betman_soccer_1x2.csv`(학습·폼 아카이브) · `betman_archive_rounds.json` · `all_historical_matches.csv`와 `E0/D1/I1/SP1/F1_*.csv`(유럽 데이터).
 

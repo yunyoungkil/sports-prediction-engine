@@ -40,8 +40,9 @@ jobs:
       - name: 4-1. 베트맨 과거 기록 하루 1번 갱신 (AI가 쓰는 팀 최근 폼이 1주일씩 늦지 않게)
         run: |
           # 오늘(UTC) 아직 안 했으면만 — 파이프라인이 하루 여러 번 돌아도 베트맨 요청은 하루 한 번 (최근 회차 몇 개만 증분)
+          # --strict: 조회 실패한 회차가 남으면 날짜를 적지 않아 다음 실행 때 다시 (2026-10-31 진행 중 회차가 끊김으로 빠진 채 '성공' 처리됨)
           if [ "$(cat data/last_archive_sync.txt 2>/dev/null)" != "$(date -u +%F)" ]; then
-            python -m collector.betman_archive --years $(( $(date +%y) - 1 )) $(date +%y) && date -u +%F > data/last_archive_sync.txt               || echo "⚠️ 베트맨 과거 기록 갱신 실패 (다음 실행 때 다시)"
+            python -m collector.betman_archive --years $(( $(date +%y) - 1 )) $(date +%y) --strict && date -u +%F > data/last_archive_sync.txt               || echo "⚠️ 베트맨 과거 기록 갱신 실패 (다음 실행 때 다시)"
           fi
 
       - name: 4-2. 그림자 모델 파일이 없으면 학습 (Phase 7.1 shin_mkt · 기록·비교 전용)
