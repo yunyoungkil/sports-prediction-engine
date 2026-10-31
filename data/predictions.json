@@ -68237,7 +68237,7 @@
     "match_time": "26.10.31 (토) 23:30",
     "close_time": 1793455200000,
     "kickoff_ts": 1793457000000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -107885,47 +107885,63 @@
     "home_team": "유타 재즈",
     "away_team": "포틀랜드 트레일블레이저스",
     "betman_odds": {
-      "home_win": 2.97,
+      "home_win": 3.24,
       "draw": 0.0,
-      "away_win": 1.23
+      "away_win": 1.19
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 22:33:18",
+        "from": {
+          "home_win": 2.97,
+          "draw": 0.0,
+          "away_win": 1.23
+        },
+        "to": {
+          "home_win": 3.24,
+          "draw": 0.0,
+          "away_win": 1.19
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.97,
+      "home_win": 3.24,
       "draw": 0.0,
-      "away_win": 1.23
+      "away_win": 1.19
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2929,
+      "home": 0.2686,
       "draw": 0.0,
-      "away": 0.7071
+      "away": 0.7314
     },
     "model_probabilities": {
-      "home_win": 0.2929,
+      "home_win": 0.2686,
       "draw": 0.0,
-      "away_win": 0.7071
+      "away_win": 0.7314
     },
     "blended_probabilities": {
-      "home_win": 0.2913,
+      "home_win": 0.267,
       "draw": 0.0,
-      "away_win": 0.7087
+      "away_win": 0.733
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1348,
+        "home_win": -0.1349,
         "draw": -1.0,
-        "away_win": -0.1283
+        "away_win": -0.1277
       },
       "best_selection": "away_win",
       "best_selection_name": "포틀랜드 트레일블레이저스 승",
       "raw_selection_name": "포틀랜드 트레일블레이저스 승",
-      "best_ev": -0.1283,
+      "best_ev": -0.1277,
       "best_ev_pct": "-12.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -108061,14 +108077,14 @@
     "league": "NBA",
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
-    "category_label": "핸디캡 (+6.5)",
+    "category_label": "핸디캡 (+7.5)",
     "selection_labels": {
-      "home_win": "유타 재즈 (+6.5) 승",
+      "home_win": "유타 재즈 (+7.5) 승",
       "draw": "-",
       "away_win": "포틀랜드 트레일블레이저스 반대승"
     },
     "is_single": false,
-    "line": 6.5,
+    "line": 7.5,
     "match_time": "26.11.01 (일) 04:00",
     "close_time": 1793455200000,
     "kickoff_ts": 1793473200000,
@@ -108083,7 +108099,23 @@
       "draw": 0.0,
       "away_win": 1.71
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 22:33:18",
+        "from": {
+          "home_win": 1.77,
+          "draw": 0.0,
+          "away_win": 1.71
+        },
+        "to": {
+          "home_win": 1.77,
+          "draw": 0.0,
+          "away_win": 1.71
+        },
+        "line_from": 6.5,
+        "line_to": 7.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
       "home_win": 1.77,
@@ -108117,8 +108149,8 @@
         "away_win": -0.1303
       },
       "best_selection": "home_win",
-      "best_selection_name": "유타 재즈 (+6.5) 승",
-      "raw_selection_name": "유타 재즈 (+6.5) 승",
+      "best_selection_name": "유타 재즈 (+7.5) 승",
+      "raw_selection_name": "유타 재즈 (+7.5) 승",
       "best_ev": -0.1302,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
@@ -108255,14 +108287,14 @@
     "league": "NBA",
     "game_type": "농구 언더오버",
     "category": "언더오버",
-    "category_label": "언더/오버 (기준 231.5)",
+    "category_label": "언더/오버 (기준 232.5)",
     "selection_labels": {
-      "home_win": "언더 (< 231.5)",
+      "home_win": "언더 (< 232.5)",
       "draw": "-",
-      "away_win": "오버 (> 231.5)"
+      "away_win": "오버 (> 232.5)"
     },
     "is_single": false,
-    "line": 231.5,
+    "line": 232.5,
     "match_time": "26.11.01 (일) 04:00",
     "close_time": 1793455200000,
     "kickoff_ts": 1793473200000,
@@ -108277,7 +108309,23 @@
       "draw": 0.0,
       "away_win": 1.73
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 22:33:18",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "line_from": 231.5,
+        "line_to": 232.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
       "home_win": 1.75,
@@ -108311,8 +108359,8 @@
         "away_win": -0.144
       },
       "best_selection": "home_win",
-      "best_selection_name": "언더 (< 231.5)",
-      "raw_selection_name": "언더 (< 231.5)",
+      "best_selection_name": "언더 (< 232.5)",
+      "raw_selection_name": "언더 (< 232.5)",
       "best_ev": -0.1159,
       "best_ev_pct": "-11.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
@@ -110372,7 +110420,7 @@
     "match_time": "26.11.01 (일) 04:45",
     "close_time": 1793455200000,
     "kickoff_ts": 1793475900000,
-    "buy_reject": "1",
+    "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -120597,48 +120645,64 @@
     "home_team": "멤피스 그리즐리스",
     "away_team": "새크라멘토 킹스",
     "betman_odds": {
-      "home_win": 1.06,
+      "home_win": 1.09,
       "draw": 0.0,
-      "away_win": 4.85
+      "away_win": 4.31
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 22:33:29",
+        "from": {
+          "home_win": 1.06,
+          "draw": 0.0,
+          "away_win": 4.85
+        },
+        "to": {
+          "home_win": 1.09,
+          "draw": 0.0,
+          "away_win": 4.31
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.06,
+      "home_win": 1.09,
       "draw": 0.0,
-      "away_win": 4.85
+      "away_win": 4.31
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.8206,
+      "home": 0.7981,
       "draw": 0.0,
-      "away": 0.1794
+      "away": 0.2019
     },
     "model_probabilities": {
-      "home_win": 0.8206,
+      "home_win": 0.7981,
       "draw": 0.0,
-      "away_win": 0.1794
+      "away_win": 0.2019
     },
     "blended_probabilities": {
-      "home_win": 0.8212,
+      "home_win": 0.7987,
       "draw": 0.0,
-      "away_win": 0.1788
+      "away_win": 0.2013
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1295,
+        "home_win": -0.1294,
         "draw": -1.0,
-        "away_win": -0.1328
+        "away_win": -0.1324
       },
       "best_selection": "home_win",
       "best_selection_name": "멤피스 그리즐리스 승",
       "raw_selection_name": "멤피스 그리즐리스 승",
-      "best_ev": -0.1295,
-      "best_ev_pct": "-13.0%",
+      "best_ev": -0.1294,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,

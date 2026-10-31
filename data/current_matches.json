@@ -9870,7 +9870,7 @@
     "match_time": "26.10.31 (토) 23:30",
     "close_time": 1793455200000,
     "kickoff_ts": 1793457000000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -14471,11 +14471,27 @@
     "match_state": "2",
     "home_team": "유타 재즈",
     "away_team": "포틀랜드 트레일블레이저스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 22:33:18",
+        "from": {
+          "home_win": 2.97,
+          "draw": 0.0,
+          "away_win": 1.23
+        },
+        "to": {
+          "home_win": 3.24,
+          "draw": 0.0,
+          "away_win": 1.19
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.97,
+      "home_win": 3.24,
       "draw": 0.0,
-      "away_win": 1.23
+      "away_win": 1.19
     },
     "gm_ts": 260129
   },
@@ -14487,7 +14503,7 @@
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
     "is_single": false,
-    "line": 6.5,
+    "line": 7.5,
     "win_txt": "승",
     "draw_txt": "-",
     "lose_txt": "패",
@@ -14500,7 +14516,23 @@
     "match_state": "2",
     "home_team": "유타 재즈",
     "away_team": "포틀랜드 트레일블레이저스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 22:33:18",
+        "from": {
+          "home_win": 1.77,
+          "draw": 0.0,
+          "away_win": 1.71
+        },
+        "to": {
+          "home_win": 1.77,
+          "draw": 0.0,
+          "away_win": 1.71
+        },
+        "line_from": 6.5,
+        "line_to": 7.5
+      }
+    ],
     "odds": {
       "home_win": 1.77,
       "draw": 0.0,
@@ -14516,7 +14548,7 @@
     "game_type": "농구 언더오버",
     "category": "언더오버",
     "is_single": false,
-    "line": 231.5,
+    "line": 232.5,
     "win_txt": "언더",
     "draw_txt": "-",
     "lose_txt": "오버",
@@ -14529,7 +14561,23 @@
     "match_state": "2",
     "home_team": "유타 재즈",
     "away_team": "포틀랜드 트레일블레이저스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 22:33:18",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "line_from": 231.5,
+        "line_to": 232.5
+      }
+    ],
     "odds": {
       "home_win": 1.75,
       "draw": 0.0,
@@ -14755,7 +14803,7 @@
     "match_time": "26.11.01 (일) 04:45",
     "close_time": 1793455200000,
     "kickoff_ts": 1793475900000,
-    "buy_reject": "1",
+    "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -15962,11 +16010,27 @@
     "match_state": "2",
     "home_team": "멤피스 그리즐리스",
     "away_team": "새크라멘토 킹스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 22:33:29",
+        "from": {
+          "home_win": 1.06,
+          "draw": 0.0,
+          "away_win": 4.85
+        },
+        "to": {
+          "home_win": 1.09,
+          "draw": 0.0,
+          "away_win": 4.31
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.06,
+      "home_win": 1.09,
       "draw": 0.0,
-      "away_win": 4.85
+      "away_win": 4.31
     },
     "gm_ts": 260129
   },
