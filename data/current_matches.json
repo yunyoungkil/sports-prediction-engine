@@ -7239,7 +7239,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
@@ -7284,7 +7284,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
@@ -7329,7 +7329,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
@@ -7358,7 +7358,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
@@ -7387,7 +7387,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
@@ -7416,7 +7416,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
@@ -7445,7 +7445,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
@@ -7520,7 +7520,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
@@ -7583,12 +7583,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-31 15:56:26",
+        "from": {
+          "home_win": 2.55,
+          "draw": 3.1,
+          "away_win": 2.3
+        },
+        "to": {
+          "home_win": 2.45,
+          "draw": 3.05,
+          "away_win": 2.42
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.55,
-      "draw": 3.1,
-      "away_win": 2.3
+      "home_win": 2.45,
+      "draw": 3.05,
+      "away_win": 2.42
     },
     "gm_ts": 260129
   },
@@ -7628,12 +7643,27 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-10-31 15:56:26",
+        "from": {
+          "home_win": 1.48,
+          "draw": 4.1,
+          "away_win": 4.35
+        },
+        "to": {
+          "home_win": 1.42,
+          "draw": 4.25,
+          "away_win": 4.75
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 1.48,
-      "draw": 4.1,
-      "away_win": 4.35
+      "home_win": 1.42,
+      "draw": 4.25,
+      "away_win": 4.75
     },
     "gm_ts": 260129
   },
@@ -7745,11 +7775,27 @@
     "match_state": "2",
     "home_team": "광주FC",
     "away_team": "김천상무 프로축구단",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 15:58:27",
+        "from": {
+          "home_win": 3.35,
+          "draw": 2.08,
+          "away_win": 2.7
+        },
+        "to": {
+          "home_win": 3.0,
+          "draw": 2.15,
+          "away_win": 2.85
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 3.35,
-      "draw": 2.08,
-      "away_win": 2.7
+      "home_win": 3.0,
+      "draw": 2.15,
+      "away_win": 2.85
     },
     "gm_ts": 260129
   },
@@ -7832,11 +7878,27 @@
     "match_state": "2",
     "home_team": "충남아산 프로축구단",
     "away_team": "김포FC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 16:00:13",
+        "from": {
+          "home_win": 2.42,
+          "draw": 3.05,
+          "away_win": 2.45
+        },
+        "to": {
+          "home_win": 2.4,
+          "draw": 3.0,
+          "away_win": 2.5
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.42,
-      "draw": 3.05,
-      "away_win": 2.45
+      "home_win": 2.4,
+      "draw": 3.0,
+      "away_win": 2.5
     },
     "gm_ts": 260129
   },
@@ -8133,7 +8195,7 @@
     "match_time": "26.10.31 (토) 16:30",
     "close_time": 1793431800000,
     "kickoff_ts": 1793431800000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",

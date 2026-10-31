@@ -49806,7 +49806,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
@@ -49862,45 +49862,7 @@
       "away_win": 0.3023
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "59b472dec5725c28f2b14b11b38d97d5",
-      "home_team": "Kashiwa Reysol",
-      "away_team": "Urawa Red Diamonds",
-      "commence_time": "2026-10-31T07:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.17,
-        "draw": 3.81,
-        "away_win": 3.24
-      },
-      "sharp_probs": {
-        "home_win": 0.4466,
-        "draw": 0.2543,
-        "away_win": 0.2991
-      },
-      "consensus_probs": {
-        "home_win": 0.45002222222222227,
-        "draw": 0.25555555555555554,
-        "away_win": 0.2944333333333333
-      },
-      "n_bookmakers": 9,
-      "match_method": "time_odds",
-      "prob_distance": 0.0136,
-      "sport_key": "soccer_japan_j_league",
-      "betman_odds": {
-        "home_win": 1.98,
-        "draw": 3.35,
-        "away_win": 2.9
-      },
-      "betman_home": "가시와 레이솔",
-      "betman_away": "우라와 레드",
-      "match_time": "26.10.31 (토) 16:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1157,
-        "draw": -0.1481,
-        "away_win": -0.1326
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
@@ -50099,7 +50061,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
@@ -50348,7 +50310,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
@@ -50581,7 +50543,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
@@ -50814,7 +50776,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
@@ -51027,7 +50989,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
@@ -51240,7 +51202,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
@@ -51499,7 +51461,7 @@
     "kickoff_ts": 1793430000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
@@ -51717,9 +51679,9 @@
     "home_team": "광주FC",
     "away_team": "김천상무 프로축구단",
     "betman_odds": {
-      "home_win": 2.55,
-      "draw": 3.1,
-      "away_win": 2.3
+      "home_win": 2.45,
+      "draw": 3.05,
+      "away_win": 2.42
     },
     "odds_changes": [
       {
@@ -51751,51 +51713,66 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-31 15:56:26",
+        "from": {
+          "home_win": 2.55,
+          "draw": 3.1,
+          "away_win": 2.3
+        },
+        "to": {
+          "home_win": 2.45,
+          "draw": 3.05,
+          "away_win": 2.42
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3125,
-        "draw": 0.2998,
-        "away_win": 0.3877
+        "home_win": 0.328,
+        "draw": 0.3061,
+        "away_win": 0.3659
       }
     },
     "prediction_odds": {
-      "home_win": 2.55,
-      "draw": 3.1,
-      "away_win": 2.3
+      "home_win": 2.45,
+      "draw": 3.05,
+      "away_win": 2.42
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3411,
-      "draw": 0.2806,
-      "away": 0.3782
+      "home": 0.3552,
+      "draw": 0.2853,
+      "away": 0.3596
     },
     "model_probabilities": {
-      "home_win": 0.3411,
-      "draw": 0.2806,
-      "away_win": 0.3782
+      "home_win": 0.3552,
+      "draw": 0.2853,
+      "away_win": 0.3596
     },
     "blended_probabilities": {
-      "home_win": 0.3103,
-      "draw": 0.3012,
-      "away_win": 0.3885
+      "home_win": 0.3263,
+      "draw": 0.3077,
+      "away_win": 0.366
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2087,
-        "draw": -0.0663,
-        "away_win": -0.1065
+        "home_win": -0.2006,
+        "draw": -0.0615,
+        "away_win": -0.1143
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0663,
-      "best_ev_pct": "-6.6%",
+      "best_ev": -0.0615,
+      "best_ev_pct": "-6.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -52048,9 +52025,9 @@
     "home_team": "광주FC",
     "away_team": "김천상무 프로축구단",
     "betman_odds": {
-      "home_win": 1.48,
-      "draw": 4.1,
-      "away_win": 4.35
+      "home_win": 1.42,
+      "draw": 4.25,
+      "away_win": 4.75
     },
     "odds_changes": [
       {
@@ -52067,45 +52044,60 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-10-31 15:56:26",
+        "from": {
+          "home_win": 1.48,
+          "draw": 4.1,
+          "away_win": 4.35
+        },
+        "to": {
+          "home_win": 1.42,
+          "draw": 4.25,
+          "away_win": 4.75
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.48,
-      "draw": 4.1,
-      "away_win": 4.35
+      "home_win": 1.42,
+      "draw": 4.25,
+      "away_win": 4.75
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5878,
-      "draw": 0.2122,
-      "away": 0.2
+      "home": 0.6123,
+      "draw": 0.2046,
+      "away": 0.1831
     },
     "model_probabilities": {
-      "home_win": 0.5878,
-      "draw": 0.2122,
-      "away_win": 0.2
+      "home_win": 0.6123,
+      "draw": 0.2046,
+      "away_win": 0.1831
     },
     "blended_probabilities": {
-      "home_win": 0.6163,
-      "draw": 0.2043,
-      "away_win": 0.1794
+      "home_win": 0.644,
+      "draw": 0.1949,
+      "away_win": 0.161
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0879,
-        "draw": -0.1624,
-        "away_win": -0.2196
+        "home_win": -0.0855,
+        "draw": -0.1717,
+        "away_win": -0.2352
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 광주FC (+1.0) 승",
       "raw_selection_name": "광주FC (+1.0) 승",
-      "best_ev": -0.0879,
-      "best_ev_pct": "-8.8%",
+      "best_ev": -0.0855,
+      "best_ev_pct": "-8.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -53240,33 +53232,49 @@
     "home_team": "광주FC",
     "away_team": "김천상무 프로축구단",
     "betman_odds": {
-      "home_win": 3.35,
-      "draw": 2.08,
-      "away_win": 2.7
+      "home_win": 3.0,
+      "draw": 2.15,
+      "away_win": 2.85
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 15:58:27",
+        "from": {
+          "home_win": 3.35,
+          "draw": 2.08,
+          "away_win": 2.7
+        },
+        "to": {
+          "home_win": 3.0,
+          "draw": 2.15,
+          "away_win": 2.85
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 3.35,
-      "draw": 2.08,
-      "away_win": 2.7
+      "home_win": 3.0,
+      "draw": 2.15,
+      "away_win": 2.85
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2597,
-      "draw": 0.4182,
-      "away": 0.3222
+      "home": 0.29,
+      "draw": 0.4047,
+      "away": 0.3053
     },
     "model_probabilities": {
-      "home_win": 0.2597,
-      "draw": 0.4182,
-      "away_win": 0.3222
+      "home_win": 0.29,
+      "draw": 0.4047,
+      "away_win": 0.3053
     },
     "blended_probabilities": {
-      "home_win": 0.2597,
-      "draw": 0.4182,
-      "away_win": 0.3222
+      "home_win": 0.29,
+      "draw": 0.4047,
+      "away_win": 0.3053
     },
     "prob_source": "market",
     "sharp": null,
@@ -53274,13 +53282,13 @@
     "evaluation": {
       "expected_values": {
         "home_win": -0.13,
-        "draw": -0.1301,
-        "away_win": -0.1301
+        "draw": -0.1299,
+        "away_win": -0.1299
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 전반 광주FC 승",
-      "raw_selection_name": "전반 광주FC 승",
-      "best_ev": -0.13,
+      "best_selection": "draw",
+      "best_selection_name": "[단통 ⚡] 전반 무승부",
+      "raw_selection_name": "전반 무승부",
+      "best_ev": -0.1299,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -54122,54 +54130,70 @@
     "home_team": "충남아산 프로축구단",
     "away_team": "김포FC",
     "betman_odds": {
-      "home_win": 2.42,
-      "draw": 3.05,
-      "away_win": 2.45
+      "home_win": 2.4,
+      "draw": 3.0,
+      "away_win": 2.5
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 16:00:13",
+        "from": {
+          "home_win": 2.42,
+          "draw": 3.05,
+          "away_win": 2.45
+        },
+        "to": {
+          "home_win": 2.4,
+          "draw": 3.0,
+          "away_win": 2.5
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3361,
-        "draw": 0.3033,
-        "away_win": 0.3606
+        "home_win": 0.3391,
+        "draw": 0.309,
+        "away_win": 0.3519
       }
     },
     "prediction_odds": {
-      "home_win": 2.42,
-      "draw": 3.05,
-      "away_win": 2.45
+      "home_win": 2.4,
+      "draw": 3.0,
+      "away_win": 2.5
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3596,
-      "draw": 0.2853,
-      "away": 0.3552
+      "home": 0.3623,
+      "draw": 0.2899,
+      "away": 0.3478
     },
     "model_probabilities": {
-      "home_win": 0.3596,
-      "draw": 0.2853,
-      "away_win": 0.3552
+      "home_win": 0.3623,
+      "draw": 0.2899,
+      "away_win": 0.3478
     },
     "blended_probabilities": {
-      "home_win": 0.3345,
-      "draw": 0.3048,
-      "away_win": 0.3607
+      "home_win": 0.3376,
+      "draw": 0.3108,
+      "away_win": 0.3516
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1905,
-        "draw": -0.0704,
-        "away_win": -0.1163
+        "home_win": -0.1898,
+        "draw": -0.0676,
+        "away_win": -0.121
       },
       "best_selection": "draw",
       "best_selection_name": "무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0704,
-      "best_ev_pct": "-7.0%",
+      "best_ev": -0.0676,
+      "best_ev_pct": "-6.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -56745,7 +56769,7 @@
     "match_time": "26.10.31 (토) 16:30",
     "close_time": 1793431800000,
     "kickoff_ts": 1793431800000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
