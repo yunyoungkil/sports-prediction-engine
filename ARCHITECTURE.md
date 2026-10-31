@@ -82,6 +82,7 @@ sports-prediction-engine/
 | `models/strategy_backtest.py` | 조합 방식을 과거에 반복했다면 |
 | `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~G + G-본능) · F 전략(AI 조합 묶음 + 켈리) |
 | `models/ai_bettor.py` | **G 전략 — 실전형 자율 AI 베터**: 월 10만 원 지갑(한국 시간 매월 1일 충전 · 복리 · 바닥나면 다음 달까지 쉼), 매 회차 주력(안정 정배, AI 기대손실이 가장 작은 조합) + 소액 복권(무승부·역배 6~15배) 2장, AI 우위·**월 밑천**(월 용돈 70% + 번 돈의 일부, 매월 1일에 한 번 정해 고정 — 용돈이 쌓여도 판돈이 안 커짐)·잔고(모드)로 판돈 결정, 베트맨 규정(`validate_combo`) 강제, 슬립별 성적·판돈 조절 효과(`sizing`) 계산 · G-본능 규칙(`instinct_plan`, `INSTINCT_*`: 이긴 뒤 판돈 ×1.4 · 진 뒤 복권 15~50배 · 수익 보호 없음) |
+| `models/value_engine.py` | **가치 판정 엔진 (TODO 7.9, 독립 모듈 · 아직 파이프라인에 연결 안 함)**: AI 확률의 보수적 하한(신뢰도 기울기) → 보수적 EV → BET/WATCH/REJECT/BLOCK + 이유 코드, 경기당 BET 최대 1개 |
 
 ### tracker/ — 기록
 | 파일 | 역할 |
@@ -105,6 +106,7 @@ sports-prediction-engine/
 | `evaluation/data_contracts.py` | **데이터 계약(pandera)**: 예측·결과·아카이브 스키마 + 결과 누락 교차 검사 → `contract_report.json` |
 | `evaluation/audit.py` · `evaluation/docs_sync.py` · `evaluation/briefing.py` · `evaluation/gh_cli.py` | 브리핑용 데이터 점검 · 문서 동기화 점검 · 대화 시작 브리핑(TODO의 `📌 이어서` 항목 포함) · gh 경로 찾기 |
 | `evaluation/calibration_experiment.py` | 사후 보정 실험 (결과: 보정 불필요) |
+| `evaluation/value_engine_replay.py` | 가치 판정 엔진을 워크포워드 5구간으로 재현 — "BET이 몇 건이었나" (TODO 7.9) |
 | `evaluation/staking_simulation.py` | 판돈 규칙 비교 시뮬레이션 — 원칙형·정액·손실 추격, 가정한 확률로 (TODO 7.8) |
 | `evaluation/odds_moves_test.py` · `evaluation/vote_bias.py` | 배당 변경·구매 쏠림 시험 |
 
@@ -129,7 +131,7 @@ sports-prediction-engine/
 | `data/health_report.json` · `data/health_state.json` | 운영 점검 결과 · 직전 상태 | pipeline·results |
 | `data/contract_report.json` | 데이터 계약 점검 결과 | pipeline (5-1) |
 | `data/calibration_experiment.json` | 사후 보정 실험 결과 (기록용) | 수동 |
-| `data/odds_moves_report.json` · `data/vote_bias_report.json` · `data/portfolio_backtest.json` · `data/g_instinct_backtest.json` · `data/g_month_backtest.json` | 배당 변경·구매 쏠림 시험(둘 다 효과 없음) · F 전략 · G 원칙형 vs 본능형 과거 재현 결과 (이 PC에만, 커밋 안 함) | 수동 |
+| `data/odds_moves_report.json` · `data/vote_bias_report.json` · `data/portfolio_backtest.json` · `data/g_instinct_backtest.json` · `data/g_month_backtest.json` · `data/value_engine_replay.json` | 배당 변경·구매 쏠림 시험(둘 다 효과 없음) · F 전략 · G 원칙형 vs 본능형 과거 재현 결과 (이 PC에만, 커밋 안 함) | 수동 |
 | `data/last_archive_sync.txt` · `data/last_retrain.txt` | 아카이브 갱신·재학습 마지막 날짜 | pipeline |
 
 `data/history/`: `prediction_log/`(경기 전 고정 예측) · `odds_history/` · `paper_bets/` · `sharp_snapshots/` · `betman_markets/`(전 유형 아카이브) · `betman_recent_results.json`(최근 회차 결과) · `betman_soccer_1x2.csv`(학습·폼 아카이브) · `betman_archive_rounds.json` · `all_historical_matches.csv`와 `E0/D1/I1/SP1/F1_*.csv`(유럽 데이터).
