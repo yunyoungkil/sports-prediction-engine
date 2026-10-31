@@ -276,3 +276,42 @@ def test_g_bets_made_when_the_stake_basis_was_the_wallet_are_set_aside(tmp_path)
     s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path.parent / f"{tmp_path.name}_s.json", now=NOW)
     assert s["strategies"]["G_ai_bettor"]["bets"] == 2 and "G_v2" in RETIRED_LABELS
     assert [d["status"] for d in s["details"] if d["strategy"] == "G_v2"] == ["적중"]
+
+
+def test_h_bets_trailing_team_on_single_second_legs_only(tmp_path):
+    """H(7.14): 1차전 2골 차 이상 벌어진 토너먼트 2차전에서 뒤진 팀 승리 단일 — 1골 차·단통 불가·다른 대회는 안 사고, 다시 실행해도 한 번만"""
+    from models.two_leg import build_index
+    ucl, t1 = "UEFA 챔피언스리그", datetime(2027, 3, 2, 20, tzinfo=timezone.utc)     # 1차전 3월 → 2차전 7일 뒤
+    idx = build_index([{"league": ucl, "home_team": a, "away_team": h, "kickoff": t1, "home_score": hs, "away_score": as_}
+                       for h, a, hs, as_ in [("H1", "A1", 0, 3), ("H2", "A2", 2, 0), ("H3", "A3", 1, 2), ("H4", "A4", 0, 4)]])
+    preds = []
+    for seq, single, league in [("1", True, ucl), ("2", True, ucl), ("3", True, ucl), ("4", False, ucl), ("5", True, "L")]:
+        m = _m(seq, (1.4, 4.5, 7.0), (0.7, 0.2, 0.1), single=single, time="27.03.10 (수) 05:00")
+        m["league"] = league
+        preds.append(m)
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+    added = save_new_bets(9, preds, now=NOW, bets_dir=tmp_path, results_path=rpath, two_leg_index=idx)
+    h = [b for b in json.loads((tmp_path / "9.json").read_text(encoding="utf-8"))["bets"] if b["strategy"] == "H_two_leg_trail"]
+    # 1번: 2차전 홈팀이 1차전 3:0으로 앞섬 → 원정팀(뒤진 팀) 승 · 2번: 2차전 홈팀이 0:2로 뒤짐 → 홈팀 승
+    assert [(b["legs"][0]["seq"], b["legs"][0]["key"], b["first_leg_margin"]) for b in h] == [("1", "away_win", 3), ("2", "home_win", -2)]
+    assert added.get("H_two_leg_trail") == 2 and h[0]["combined_odds"] == 7.0 and h[0]["stake"] == 1000
+    assert save_new_bets(9, preds, now=NOW, bets_dir=tmp_path, results_path=rpath, two_leg_index=idx).get("H_two_leg_trail") is None
+
+
+def test_h_interim_check_uses_first_100_bets_once():
+    """H 중간 점검은 100~299건일 때 앞 100건으로만 정하고, 다른 전략의 판정 규칙은 그대로"""
+    from models.paper_trading import STRATEGIES, _summarize
+
+    def rows(n, win_every, odds, start=0):
+        return [{"gm_ts": str(i // 5), "settled_at": f"2027-01-01T00:00:{i:05d}", "stake": 1000, "hit": (i - start) % win_every == 0,
+                 "payout": int(odds * 1000) if (i - start) % win_every == 0 else 0} for i in range(start, start + n)]
+
+    lose = rows(150, 5, 3.0)           # 5건에 1번 3배 → −40%
+    win = rows(100, 2, 4.0)            # 2건에 1번 4배 → +100%
+    s = _summarize({"H_two_leg_trail": lose, "E_market_fav": lose}, {}, STRATEGIES)
+    assert s["H_two_leg_trail"]["verdict"].startswith("접기") and s["E_market_fav"]["verdict"].startswith("판단 보류")
+    assert _summarize({"H_two_leg_trail": win}, {}, STRATEGIES)["H_two_leg_trail"]["verdict"].startswith("중간 점검 통과")
+    assert _summarize({"H_two_leg_trail": lose[:99]}, {}, STRATEGIES)["H_two_leg_trail"]["verdict"].startswith("판단 보류")
+    late_win = lose[:100] + rows(150, 1, 2.0, start=1000)    # 앞 100건이 정한 판정은 뒤에 이겨도 바뀌지 않음
+    assert _summarize({"H_two_leg_trail": late_win}, {}, STRATEGIES)["H_two_leg_trail"]["verdict"].startswith("접기")

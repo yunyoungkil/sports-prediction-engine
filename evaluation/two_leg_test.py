@@ -25,35 +25,21 @@ if sys.platform.startswith("win"):
 from evaluation.metrics import cluster_roi_confidence_interval
 from models.betman_corrector import load_archive_df
 from models.betman_markets import _fair
+from models.two_leg import KO_MONTHS, LEAD, build_index, first_leg_margin   # 두 경기 승부 규칙은 H 가상 베팅(7.14)과 공유
 
-# 대회별로 '두 경기 승부'의 1차전이 열리는 달 — 조별·리그 단계의 홈·원정 반복은 이 달에 없다
-KO_MONTHS = {
-    "UEFA 챔피언스리그": {2, 3, 4, 5, 7, 8}, "UEFA 유로파리그": {2, 3, 4, 5, 7, 8}, "UEFA 컨퍼런스리그": {2, 3, 4, 5, 7, 8},
-    "AFC 챔피언스리그 엘리트": {2, 3, 4, 5}, "AFC 챔피언스리그2": {2, 3, 4, 5}, "XXACL": {2, 3, 4, 5},
-    "코파 리베르타도레스": {2, 3, 7, 8, 9, 10}, "CONCACAF 챔피언스컵": {2, 3, 4, 5},
-    "잉글랜드 리그컵": {1, 2}, "이탈리아 FA컵": {1, 2, 3, 4}, "스페인 FA컵": {1, 2, 3, 4},
-    "K리그 승강플레이오프": {12}, "일본 리그컵": {6, 9, 10},
-}
-MIN_GAP, MAX_GAP = pd.Timedelta(days=3), pd.Timedelta(days=35)
-LEAD = 2
 SPLIT = pd.Timestamp("2025-07-01", tz="UTC")
 MIN_BETS = 100
 
 
 def find_second_legs(df: pd.DataFrame) -> pd.DataFrame:
     """2차전 + 1차전 득실(first_margin, 2차전 홈팀 기준: 양수 = 2차전 홈팀이 앞섬)"""
+    idx = build_index(df.to_dict("records"))
     out = []
-    for lg, months in KO_MONTHS.items():
-        sub = df[df["league"] == lg].sort_values("kickoff")
-        for m2 in sub.itertuples(index=False):
-            prev = sub[(sub["home_team"] == m2.away_team) & (sub["away_team"] == m2.home_team)
-                       & (sub["kickoff"] <= m2.kickoff - MIN_GAP) & (sub["kickoff"] >= m2.kickoff - MAX_GAP)]
-            if prev.empty:
-                continue
-            m1 = prev.iloc[-1]
-            if m1["kickoff"].month not in months:
-                continue
-            out.append({**m2._asdict(), "first_margin": int(m1["away_score"]) - int(m1["home_score"])})
+    for lg in KO_MONTHS:
+        for m2 in df[df["league"] == lg].sort_values("kickoff").itertuples(index=False):
+            margin = first_leg_margin(idx, lg, m2.home_team, m2.away_team, m2.kickoff)
+            if margin is not None:
+                out.append({**m2._asdict(), "first_margin": margin})
     return pd.DataFrame(out)
 
 

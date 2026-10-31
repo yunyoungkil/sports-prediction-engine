@@ -27,3 +27,21 @@ def test_skips_group_stage_months_far_apart_and_other_competitions():
                                  ("잉글랜드 프리미어리그", "2025-02-01 15:00", "E", "F", 3, 0),
                                  ("잉글랜드 프리미어리그", "2025-02-15 15:00", "F", "E", 0, 0)]))
     assert legs.empty
+
+
+def test_load_index_reads_archive_csv_and_finds_first_leg(tmp_path):
+    """가상 베팅(H)이 쓰는 경로: pandas 없이 과거 기록 CSV를 읽어 1차전 득실을 찾는다 (두 경기 승부 대회만 색인)"""
+    from datetime import datetime, timezone
+
+    from models.two_leg import first_leg_margin, load_index
+    ko1 = int(datetime(2027, 3, 3, 20, tzinfo=timezone.utc).timestamp() * 1000)
+    p = tmp_path / "a.csv"
+    p.write_text("gm_ts,match_seq,kickoff_ms,league,home_team,away_team,home_score,away_score\n"
+                 f"270030,1,{ko1},{UCL},A,B,0,3\n"
+                 f"270030,2,{ko1},잉글랜드 프리미어리그,C,D,4,0\n", encoding="utf-8-sig")
+    idx = load_index(p)
+    assert list(idx) == [(UCL, "A", "B")]
+    leg2 = datetime(2027, 3, 10, 20, tzinfo=timezone.utc)
+    assert first_leg_margin(idx, UCL, "B", "A", leg2) == 3          # 2차전 홈 B가 3골 앞섬
+    assert first_leg_margin(idx, UCL, "A", "B", leg2) is None       # 홈·원정이 같으면 2차전 아님
+    assert load_index(tmp_path / "없음.csv") == {}

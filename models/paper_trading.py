@@ -25,6 +25,10 @@ models/paper_trading.py
 - G_instinct       : G-본능 (비교용, 2026-10-30). G와 같은 순간에 같은 경기를 사되 사람의 본능대로 — 이긴 다음 회차 판돈 ×1.4,
                      진 다음 회차 복권 15~50배, 수익 보호 없음 (규칙은 models/ai_bettor.instinct_plan, 연구 근거와 과거 재현은
                      evaluation/g_instinct_backtest.py: 28개월 G −62만 원 vs 본능 −136만 원). 지갑은 G와 따로 월 10만 원.
+- H_two_leg_trail  : 토너먼트 2차전 확인용 (TODO 7.14, 2026-11-01). 1차전에서 2골 차 이상 벌어진 홈·원정 두 경기 승부의 2차전에서
+                     합계로 뒤진 팀 승리 단일(단통 가능 경기만, 1,000원). 과거 166경기 +15.8% [−17.0, +51.2]였지만 앞 104경기는 −1.7%라
+                     운과 구분이 안 돼(7.13 탈락) 앞으로의 경기로만 확인한다. 1차전은 models/two_leg.py가 과거 기록에서 찾는다.
+                     판정: 100건째에 한 번 중간 점검(앞 100건 수익률 0% 이하 → 접기 · 95% 범위 아래 끝 > 0 → 중간 통과), 300건에 최종.
 """
 
 import json
@@ -40,6 +44,7 @@ from models.combo_builder import calculate_combined_odds, calculate_payout, vali
 from models.combo_finder import candidate_legs, find_combos
 from models.ai_bettor import (MonthlyWallet, decide_autonomous_stakes, find_ai_autonomous_combos, g_breakdown, instinct_plan,
                               is_retired_g, month_capital, retired_g_key)
+from models.two_leg import KO_MONTHS, LEAD, first_leg_margin, load_index as load_two_leg_index
 
 BETS_DIR = Path("data/history/paper_bets")
 SUMMARY_PATH = Path("data/paper_trading.json")
@@ -56,6 +61,7 @@ STRATEGIES = {
     "F_portfolio_kelly": "F. AI 조합 묶음 + 켈리 금액 (지갑 10만 원)",
     "G_ai_bettor": "G. 자율 AI 베터 (월 10만 원 · 주력 안정 + 소액 복권)",
     "G_instinct": "G-본능 (G와 같은 경기 · 이기면 판돈 키우고 지면 고배당, 비교용)",
+    "H_two_leg_trail": "H. 2차전 뒤진 팀 (토너먼트 1차전 2골 차 이상 · 확인용)",
 }
 G_WALLETS = ("G_ai_bettor", "G_instinct")      # 월 10만 원 지갑을 쓰는 전략
 INSTINCT_NOTE = {"win_boost": "본능: 지난 회차를 이겨서 판돈 ×1.4 · ", "chase": "본능: 지난 회차를 져서 고배당 복권 · "}
@@ -70,6 +76,9 @@ RETIRED_LABELS = {
 F_START_BANKROLL = 100_000
 G_START_ALLOWANCE = 100_000
 MIN_FOR_VERDICT = 300
+H_INTERIM = 100       # H: 이 건수째에 한 번 중간 점검 (TODO 7.14 사전 등록)
+H_VERDICTS = {"fold": "접기 (100건 중간 점검: 수익률 0% 이하)", "pass": "중간 점검 통과 (95% 범위 아래 끝 > 0)",
+              "watch": "계속 확인 (100건 중간 점검)"}
 
 
 def _p(probs, k):
@@ -144,6 +153,28 @@ def propose_bets(predictions: List[Dict[str, Any]], now: Optional[datetime] = No
         bt["combined_odds"] = calculate_combined_odds([x["odds"] for x in bt["legs"]]) if len(bt["legs"]) > 1 else bt["legs"][0]["odds"]
         bt["stake"] = STAKE
         bt["bet_id"] = bt["strategy"] + ":" + "+".join(f"{x['seq']}{x['key'][0]}" for x in bt["legs"])
+    return bets
+
+
+def propose_two_leg_bets(predictions: List[Dict[str, Any]], now: Optional[datetime] = None,
+                         index: Optional[Dict[Any, Any]] = None) -> List[Dict[str, Any]]:
+    """H: 토너먼트 2차전에서 1차전 2골 차 이상 뒤진 팀 승리 단일 (단통 가능 경기만).
+    과거 기록은 두 경기 승부 대회의 경기가 열려 있을 때만 읽는다. walk_forward 재현(propose_bets)에는 넣지 않음"""
+    now = now or datetime.now(timezone.utc)
+    ms = [m for m in _open_soccer_1x2(predictions, now) if m.get("is_single") and m.get("league") in KO_MONTHS]
+    if not ms:
+        return []
+    index = load_two_leg_index() if index is None else index
+    bets = []
+    for m in ms:
+        margin = first_leg_margin(index, m.get("league"), m.get("home_team"), m.get("away_team"),
+                                  parse_betman_kickoff(m.get("match_time")))
+        if margin is None or abs(margin) < LEAD:
+            continue
+        k = "away_win" if margin > 0 else "home_win"      # 2차전 홈팀이 앞서면 원정팀이 뒤진 팀
+        leg = _leg(m, k)
+        bets.append({"strategy": "H_two_leg_trail", "legs": [leg], "first_leg_margin": margin, "combined_odds": leg["odds"],
+                     "stake": STAKE, "bet_id": f"H_two_leg_trail:{leg['seq']}{k[0]}"})
     return bets
 
 
@@ -242,7 +273,8 @@ def _f_bets(predictions, now, bankroll: float) -> Dict[str, Any]:
 
 
 def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: Path = BETS_DIR,
-                  results_path: Path = Path("data/history/betman_recent_results.json")) -> Dict[str, int]:
+                  results_path: Path = Path("data/history/betman_recent_results.json"),
+                  two_leg_index: Optional[Dict[Any, Any]] = None) -> Dict[str, int]:
     """새 베팅만 추가 (기존 베팅은 수정하지 않음). 조합 전략(B·C·D·F)은 회차당 한 번만 만든다."""
     now = now or datetime.now(timezone.utc)
     bets_dir.mkdir(parents=True, exist_ok=True)
@@ -255,11 +287,11 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
     have_once = {b["strategy"] for b in current if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", *G_WALLETS)}
     used_matches = {(b["strategy"], leg["seq"]) for b in data["bets"] for leg in b["legs"]}
     added = {}
-    for bt in propose_bets(predictions, now):
+    for bt in propose_bets(predictions, now) + propose_two_leg_bets(predictions, now, two_leg_index):
         s = bt["strategy"]
         if bt["bet_id"] in have_ids or s in have_once:
             continue
-        if s in ("A_gem_single", "E_market_fav") and (s, bt["legs"][0]["seq"]) in used_matches:
+        if s in ("A_gem_single", "E_market_fav", "H_two_leg_trail") and (s, bt["legs"][0]["seq"]) in used_matches:
             continue
         bt["created_at"] = now.isoformat(timespec="seconds")
         data["bets"].append(bt)
@@ -325,6 +357,15 @@ def _leg_text(leg: Dict[str, Any]) -> str:
     return f"{what} {leg['odds']:.2f}"
 
 
+def h_interim_verdict(first: List[Dict[str, Any]]) -> str:
+    """H 중간 점검 — 끝난 순서로 앞 100건만 써서 한 번 정한다 (건수가 늘어도 바뀌지 않음 · 300건에 최종 판정, TODO 7.14)"""
+    roi, lo, _ = cluster_roi_confidence_interval([(r["payout"] - r["stake"]) / r["stake"] for r in first],
+                                                 [r["gm_ts"] for r in first])
+    if roi <= 0:
+        return H_VERDICTS["fold"]
+    return H_VERDICTS["pass"] if lo > 0 else H_VERDICTS["watch"]
+
+
 def _summarize(per: Dict[str, List[Dict[str, Any]]], pending: Dict[str, int], labels: Dict[str, str]) -> Dict[str, Any]:
     out = {}
     for s, rows in per.items():
@@ -337,13 +378,16 @@ def _summarize(per: Dict[str, List[Dict[str, Any]]], pending: Dict[str, int], la
         roi, lo, hi = cluster_roi_confidence_interval(rets, [r["gm_ts"] for r in rows], weights=stakes) if rets else (0.0, 0.0, 0.0)
         cum = np.cumsum([r["payout"] - r["stake"] for r in rows]).tolist()
         cum_s = np.cumsum(stakes).tolist()
+        verdict = "판단 보류 (표본 부족)" if len(rows) < MIN_FOR_VERDICT else ("수익 입증" if lo > 0 else "수익 미입증")
+        if s == "H_two_leg_trail" and H_INTERIM <= len(rows) < MIN_FOR_VERDICT:
+            verdict = h_interim_verdict(rows[:H_INTERIM])
         out[s] = {
             "label": labels.get(s, s), "bets": len(rows), "hits": sum(r["hit"] for r in rows), "pending": pending.get(s, 0),
             "staked": staked, "returned": returned, "profit": returned - staked,
             "roi_pct": round((returned / staked - 1) * 100, 2) if staked else 0.0, "roi_ci_low": lo, "roi_ci_high": hi,
             "cum_profit": [int(x) for x in cum],
             "cum_staked": [int(x) for x in cum_s],
-            "verdict": "판단 보류 (표본 부족)" if len(rows) < MIN_FOR_VERDICT else ("수익 입증" if lo > 0 else "수익 미입증"),
+            "verdict": verdict,
         }
     return out
 

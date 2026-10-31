@@ -80,7 +80,8 @@ sports-prediction-engine/
 | `models/form_analyzer.py` | 표시용 최근 폼·상대 전적·순위 (AI 학습 피처와 별개) |
 | `models/combo_builder.py` · `models/combo_finder.py` | 베트맨 맞춤조건구매 규칙(배당 절삭·올림·한도)과 조합 후보 |
 | `models/strategy_backtest.py` | 조합 방식을 과거에 반복했다면 |
-| `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~G + G-본능) · F 전략(AI 조합 묶음 + 켈리) |
+| `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~H + G-본능) · F 전략(AI 조합 묶음 + 켈리) |
+| `models/two_leg.py` | 홈·원정 두 경기 토너먼트 찾기 — 2차전의 1차전 득실을 과거 기록 CSV에서 (pandas 없이) · H 전략과 7.13 시험이 같은 규칙을 씀 |
 | `models/ai_bettor.py` | **G 전략 — 실전형 자율 AI 베터**: 월 10만 원 지갑(한국 시간 매월 1일 충전 · 복리 · 바닥나면 다음 달까지 쉼), 매 회차 주력(안정 정배, AI 기대손실이 가장 작은 조합) + 소액 복권(무승부·역배 6~15배) 2장, AI 우위·**월 밑천**(월 용돈 70% + 번 돈의 일부, 매월 1일에 한 번 정해 고정 — 용돈이 쌓여도 판돈이 안 커짐)·잔고(모드)로 판돈 결정, 베트맨 규정(`validate_combo`) 강제, 슬립별 성적·판돈 조절 효과(`sizing`) 계산 · G-본능 규칙(`instinct_plan`, `INSTINCT_*`: 이긴 뒤 판돈 ×1.4 · 진 뒤 복권 15~50배 · 수익 보호 없음) |
 | `models/value_engine.py` | **가치 판정 엔진 (TODO 7.9, 독립 모듈 · 아직 파이프라인에 연결 안 함)**: AI 확률의 보수적 하한(신뢰도 기울기) → 보수적 EV → BET/WATCH/REJECT/BLOCK + 이유 코드, 경기당 BET 최대 1개, 단일 구매 불가 경기는 BLOCK |
 
@@ -112,7 +113,7 @@ sports-prediction-engine/
 | `evaluation/odds_moves_test.py` · `evaluation/vote_bias.py` | 배당 변경·구매 쏠림 시험 |
 | `evaluation/new_hypotheses_test.py` | [7.11] 폼·무승부·핸디캡 가설 5종(시즌 리셋/감쇠·직전 대승·무승부율·핸무·홈/원정 폼) 워크포워드 시험 — 3번은 같은 코드의 0 피처 대조군과 비교 (결과: 5종 모두 효과 없음, 2026-11-01) |
 | `evaluation/streak_slot_line_test.py` | [7.12] 사전 등록 시험 — 득실 연속 기록(축구 승무패·언더오버) · 경기 시각(한국 시간) · 농구 핸디캡 기준선 크기, 기준과 같은 학습 코드로 비교 (결과: 신호 없음, 2026-11-01) |
-| `evaluation/two_leg_test.py` | [7.13] 토너먼트 2차전 시험 — 1차전 2골 차 이상 앞선 경기의 2차전 무승부·뒤진 팀 승리 단일 수익률 (결과: 둘 다 탈락, 2026-11-01) |
+| `evaluation/two_leg_test.py` | [7.13] 토너먼트 2차전 시험 — 1차전 2골 차 이상 앞선 경기의 2차전 무승부·뒤진 팀 승리 단일 수익률 (결과: 둘 다 탈락, 2026-11-01 · 뒤진 팀 승리는 H 가상 베팅으로 앞으로 확인, 7.14) |
 
 ### dashboard/ · notifier/
 - `dashboard/app.py`: Streamlit 4탭 — ① 맞춤조건구매(경기 카드·조합 계산) ② AI 경기 분석(상태·점수·결과 필터) ③ 성과 검증(공식 성적표·보정 지표·CLV·가상 베팅 리그) ④ 내 베팅 기록
@@ -167,6 +168,7 @@ sports-prediction-engine/
 `{"gm_ts", "bets": [...], "f_plan"}` — 한 번 만든 베팅은 고치지 않는다. 베팅 한 건: `strategy`, `legs`(`seq`·`key`·`odds`·`match_time`·팀·리그), `combined_odds`, `stake`, `bet_id`, `created_at`(UTC), `ev_ai`.
 G는 추가로 `slip`(`main` 주력 · `lottery` 복권), `stake_basis`(`month` = 월 밑천제) · `month_capital`(그달 판돈 밑천, 한 달 동안 같은 값), `p_ai`(AI 적중확률), `edge`(경기당 AI 우위), `stake_mult`(판돈 배율), `wallet_before`(걸 때 잔고), `mode`(`survival`·`defensive`·`normal`), `ai_note`(근거 한 줄)를 남긴다. 폐기한 전략(`G_real_stable`·`H_real_highodds`)과 폐기한 G 세대(`models/ai_bettor.retired_g_key`: `slip`이 없는 첫 버전 `G_v1`, 판돈 밑천이 잔고였던 `stake_basis`가 없는 세대 `G_v2`)의 베팅은 파일에는 그대로 두고 내역에서만 보이며 리그 표·지갑·300건 판정·마감 대비 배당에서는 뺀다.
 G-본능(`G_instinct`)은 G와 같은 필드에 `boost`(판돈 배율)·`instinct`(`win_boost`·`chase`·빈칸)를 더 남기고, 지갑은 G와 따로다.
+H(`H_two_leg_trail`)는 단일 1건에 `first_leg_margin`(1차전 득실, 2차전 홈팀 기준)을 남긴다. 판정은 100~299건일 때 앞 100건으로 한 번 정한 중간 점검(`models/paper_trading.H_VERDICTS`), 300건부터 다른 전략과 같다.
 `data/paper_trading.json`의 G·G-본능 항목에는 지갑(`bankroll`·`total_deposited`·`pending_stakes`·`can_bet`·`is_broke`·`mode`·`month_capital`·`proven_profit`), 슬립별 성적 `by_slip`, 판돈 조절 효과 `sizing`(AI 금액 수익률 − 같은 베팅 1,000원 고정 수익률, 회차 단위 95% 범위)이 들어 있다. G-본능에는 본능대로 움직인 회차 수 `instinct_rounds`도 있다.
 
 ## 5. 안전장치 한눈에

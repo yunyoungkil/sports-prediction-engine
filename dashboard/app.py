@@ -71,7 +71,7 @@ except ImportError:
 from models.strategy_backtest import backtest, describe_rule, extract_rule, outcome_kind
 from models.combo_finder import candidate_legs, find_combos
 from collector.betman_sharp import parse_betman_kickoff
-from models.paper_trading import STRATEGIES, RETIRED_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP
+from models.paper_trading import STRATEGIES, RETIRED_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP, H_INTERIM, H_VERDICTS
 
 STRATEGY_LABELS = {**RETIRED_LABELS, **STRATEGIES}   # 내역 표에서는 폐기한 전략 이름도 보여 줌
 from models.betman_markets import SPORT_NAMES
@@ -3309,11 +3309,13 @@ with tab3:
     st.caption("전략마다 경기 시작 전에 가상으로 걸어 두고 결과가 나오면 자동으로 채점해요 (실제 구매 없음 · A~E는 1,000원 고정, "
                "F는 가상 지갑 10만 원에서 1/4 켈리로 최적 금액을 정하고 이득이 없으면 쉼, "
                "G는 월 10만 원 지갑으로 매 회차 안정 조합 1장 + 소액 복권 1장을 사람처럼 사고 금액은 AI가 정함, "
-               "G-본능은 G와 같은 경기를 사되 이기면 판돈을 키우고 지면 고배당을 쫓는 비교용). "
+               "G-본능은 G와 같은 경기를 사되 이기면 판돈을 키우고 지면 고배당을 쫓는 비교용, "
+               "H는 토너먼트 2차전 확인용으로 1,000원 고정). "
                f"AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있고, {PAPER_MIN}건 이상에서 수익률 95% 범위 아래 끝이 0보다 커야 '수익 입증'이에요.")
 
     clv_by_strategy = clv.get("paper_strategies", {})
-    VERDICT_MARK = {"수익 입증": "✅ 입증", "수익 미입증": "❌ 미입증", "판단 보류 (표본 부족)": "⏳ 표본 부족"}
+    VERDICT_MARK = {"수익 입증": "✅ 입증", "수익 미입증": "❌ 미입증", "판단 보류 (표본 부족)": "⏳ 표본 부족",
+                    H_VERDICTS["fold"]: "🛑 접기 (중간 점검)", H_VERDICTS["pass"]: "🟡 중간 점검 통과", H_VERDICTS["watch"]: "⏳ 계속 확인"}
 
     def _league_rows(strategies: dict, source: str) -> list:
         rows_ = []
@@ -3394,17 +3396,25 @@ with tab3:
                 "판돈 밑천이 지갑 잔고였던 옛 방식에서는 −618,870원 vs −1,359,720원(2.2배)이었는데, 월 밑천제로 한 달에 거는 돈이 월 용돈의 392%에서 37%로 "
                 "줄면서 손실도 줄었어요."
             )
-        if past_txt or f_wallet_txt or g_wallet_txt:
+        h_live = live.get("H_two_leg_trail") or {}
+        h_txt = ""
+        if h_live:
+            h_txt = ("<br>🔎 <b>H. 2차전 뒤진 팀</b> (확인용): 1차전에서 2골 차 이상 벌어진 토너먼트 2차전에서 뒤진 팀 승리에 1,000원 "
+                     "(단통 가능 경기만). 과거 166경기는 +15.8%였지만 앞 104경기는 −1.7%이고 수익이 큰 역전승 몇 번에 몰려 있어 "
+                     "운과 구분이 안 돼요. 그래서 앞으로의 경기로만 확인해요 (1년에 약 40건 · "
+                     f"{H_INTERIM}건째에 한 번 중간 점검, 수익률 0% 이하면 접기 · 지금 {int(h_live.get('bets', 0))}/{H_INTERIM}건).")
+        if past_txt or f_wallet_txt or g_wallet_txt or h_txt:
             st.markdown(
                 "<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>"
                 + (f"💬 과거 회차로 재현해 보면 {past_txt}예요. 배당만 보고 고르는 방식은 베트맨 마진 때문에 오래 하면 손해예요. "
                    f"AI 전략(A·B·C·F·G)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
                    f"결과 대기 {live_wait:,}건)." if past_txt else "")
-                + f_wallet_txt + g_wallet_txt
+                + f_wallet_txt + g_wallet_txt + h_txt
                 + "</div></div>", unsafe_allow_html=True)
         st.dataframe(pd.DataFrame(league_rows), hide_index=True, width="stretch",
                      column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized"),
-                                    "판정": st.column_config.TextColumn(help="수익 입증 = 300건 이상 + 수익률 95% 범위 아래 끝 > 0"),
+                                    "판정": st.column_config.TextColumn(help="수익 입증 = 300건 이상 + 수익률 95% 범위 아래 끝 > 0 "
+                                                                             f"(H는 {H_INTERIM}건째에 한 번 중간 점검)"),
                                     "마감 대비 배당": st.column_config.TextColumn(
                                         help="산 배당 ÷ 마감 배당 − 1 의 경기 평균 (괄호는 경기 수). 플러스면 마감보다 좋은 배당에 산 것")})
         st.caption("실시간: 경기 시작 전에 고정 저장한 베팅 (2026-10-26, 260127회차부터). "
@@ -3423,7 +3433,7 @@ with tab3:
             rows_, dom, rng_ = [], [], []
             for key, v in (data_ or {}).get("strategies", {}).items():
                 cp = v.get("cum_profit") or []
-                if len(cp) < min_bets:
+                if len(cp) < min_bets or key == "H_two_leg_trail":   # H(확인용)는 표로만 — 9번째 색이 되고 1년에 약 40건이라 선이 짧음
                     continue
                 cs = v.get("cum_staked") or [(i + 1) * unit for i in range(len(cp))]
                 lab = v["label"].split(" (")[0]
