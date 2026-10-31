@@ -210,3 +210,10 @@ def test_oof_reliability_uses_only_earlier_predictions_and_a_cutoff():
     cut = oof_reliability(rows, [np.array(probs)], before=pd.Timestamp("2024-12-01", tz="UTC"))
     assert full["rounds"] == 80 and cut["rounds"] < 80 and cut["rounds"] >= 30
     assert oof_reliability(rows, [np.array(probs)], before=pd.Timestamp("2024-06-02", tz="UTC")) is None     # 컷오프 앞에 근거가 없으면 None
+
+
+def test_default_revision_uses_the_strict_independent_slope():
+    """정정 결과(기본)는 엄격 독립 기울기 + 단통 검사, 앞 구간 누적(현재 구간의 λ 선택 구간과 겹침)은 비교용으로만 남는다"""
+    from evaluation.value_engine_replay import VARIANTS
+    assert VARIANTS["revision"] == ("strict", True) and VARIANTS["revision_cumulative"] == ("oof", True)
+    assert VARIANTS["slope_only"] == ("strict", False) and VARIANTS["original"] == ("original", False)

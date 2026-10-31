@@ -8,11 +8,13 @@ evaluation/value_engine_replay.py
 - 확률 하한의 신뢰도 기울기 — 사전 등록 당시('original')에는 '안쪽 학습으로 학습한 AI가 안쪽 튜닝 구간을 예측한 값'으로 구했는데,
   그 구간을 λ 선택에도 쓰므로 선택 편향이 있었다(최근 두 구간에서 약 1 오차 낙관). 정정('revision')은 **앞 구간들의 표본 밖 예측을 시간 순으로 누적**해서 구한다:
   각 예측은 그 구간 시작 전 데이터로만 학습·튜닝한 AI가 만든 것이라 그 경기의 정답을 본 적이 없다.
-  과거 예측이 없는 첫 구간(2024-07)은 기울기를 임의로 채우지 않고 BLOCK(DATA_QUALITY_NO_CALIBRATION_HISTORY).
+  **기본값은 엄격 독립(정정 2)**: 지금 구간의 λ 선택 구간(직전 TUNE_MONTHS=6개월)에 속한 경기의 예측은 기울기 추정에서 뺀다 —
+  λ 선택에 쓴 정답과 기울기 추정에 쓴 정답이 겹치지 않는다. (정정 1의 누적 방식은 이 구간을 겹쳐 썼으므로 비교용 'revision_cumulative'로만 남김)
+  과거 예측이 없는 구간(엄격 독립에서는 앞 두 구간)은 기울기를 임의로 채우지 않고 BLOCK(DATA_QUALITY_NO_CALIBRATION_HISTORY).
 - 단일 구매: 한경기(단통) 구매가 안 되는 경기(sgl != 1)는 BET 조건을 통과해도 BLOCK(NOT_SINGLE_PURCHASABLE). 그 앞의 사유 코드는 그대로.
 - 경기마다 선택지 3개를 모두 판정하고 경기당 BET 최대 1개. 가상 금액 1,000원. 기준값(+5% · +2% · Z 1.645 · BET 30건)은 사전 등록 그대로.
-- 두 정정의 영향을 따로 보려고 변형을 함께 집계한다: original · slope_only(기울기만 정정) · single_only(단통 필터만) · revision(둘 다, 정정 결과) ·
-  revision_strict(참고: 현재 구간의 λ 선택 구간=직전 6개월의 예측까지 빼서 완전히 독립시킨 경우, 앞 두 구간이 BLOCK).
+- 두 정정의 영향을 따로 보려고 변형을 함께 집계한다: original · slope_only(기울기만 정정, 엄격 독립) · single_only(단통 필터만) ·
+  revision(둘 다, 정정 결과 = 기본) · revision_cumulative(비교: 앞 구간 예측 누적, λ 선택 구간과 일부 겹침).
 - 읽는 규칙: BET 합계 30건 미만이면 '검증할 수 없는 규모' (300건 게이트 기준으로 도달 불가).
 
 출력: data/value_engine_replay.json (이 PC에만, 커밋 안 함)
@@ -44,8 +46,9 @@ KEYS = ("home_win", "draw", "away_win")
 REPORT_PATH = Path("data/value_engine_replay.json")
 MIN_BETS_TO_JUDGE = 30
 # 변형 이름 → (기울기 방식, 단통 필터). 기울기 방식: original = 안쪽 튜닝 구간 / oof = 앞 구간 예측 누적 / strict = 누적에서 현재 구간의 λ 선택 구간 제외
-VARIANTS = {"original": ("original", False), "slope_only": ("oof", False), "single_only": ("original", True),
-            "revision": ("oof", True), "revision_strict": ("strict", True)}
+# 정정 결과(기본)는 strict (정정 2). 누적(oof)은 비교용.
+VARIANTS = {"original": ("original", False), "slope_only": ("strict", False), "single_only": ("original", True),
+            "revision": ("strict", True), "revision_cumulative": ("oof", True)}
 
 
 def outcome_arrays(rows: List[Dict[str, Any]], probs: np.ndarray):
@@ -154,7 +157,7 @@ def run(starts: List[str] = FOLD_STARTS) -> Dict[str, Any]:
             games[name] += decide_games(f["test"], probs, rels[kind], single_only=single)
         history_rows += f["test"]
         history_probs.append(probs)
-        s = summarize(decide_games(f["test"], probs, rels["oof"], single_only=True))
+        s = summarize(decide_games(f["test"], probs, rels["strict"], single_only=True))
         per_fold.append({"fold": f["name"], "lambda": lam, "tune_games": len(f["inner_tune"]), "reliability": rels,
                          **{k: s[k] for k in ("games", "decisions", "ev_candidates", "ev_positive_top_games", "bets",
                                               "max_expected_ev", "max_conservative_ev")}})
@@ -181,7 +184,7 @@ if __name__ == "__main__":
     rep = run()
     REPORT_PATH.write_text(json.dumps(rep, ensure_ascii=False, indent=2, default=float), encoding="utf-8")
     print(f"기준(사전 등록 그대로): 일반 EV ≥ {EV_CANDIDATE:+.0%} · 보수적 EV ≥ {CEV_MIN:+.0%} · Z {Z_LOWER} · BET {MIN_BETS_TO_JUDGE}건 미만이면 검증 불가 규모")
-    print("신뢰도 기울기 (기울기 ± 오차 (회차)): 구간 | 원래(안쪽 튜닝) | 정정(앞 구간 예측 누적) | 엄격 독립(직전 6개월 제외)")
+    print("신뢰도 기울기 (기울기 ± 오차 (회차)): 구간 | 원래(안쪽 튜닝) | 앞 구간 예측 누적(비교) | 엄격 독립(직전 6개월 제외, 기본)")
     for f in rep["folds"]:
         r = f["reliability"]
         print(f"  {f['fold']}: {_fmt_rel(r['original'])} | {_fmt_rel(r['oof'])} | {_fmt_rel(r['strict'])}")
@@ -190,7 +193,7 @@ if __name__ == "__main__":
     for name, v in rep["variants"].items():
         print(_variant_line(name, v))
     t = rep["total"]
-    print(f"정정 결과(revision): 경기 {t['games']} · 선택지 {t['outcomes']} · 판정 {t['decisions']}")
+    print(f"정정 결과(revision = 엄격 독립 + 단통 검사): 경기 {t['games']} · 선택지 {t['outcomes']} · 판정 {t['decisions']}")
     print(f"이유: {t['reasons']}")
     print(f"BET {t['bets']}건 (단통 가능 {t['bets_single_eligible']}) · 적중 {t['bet_hits']} · 수익률 {t['bet_roi_pct']:+.1f}% {t['bet_roi_ci']}")
     print(f"비교: AI 기준 EV>0 최고 선택지(기존 A 💎와 같은 규칙) {t['ev_positive_top_games']}경기 (단통 가능 {t['ev_positive_top_single_games']})")
