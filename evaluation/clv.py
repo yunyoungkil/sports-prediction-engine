@@ -37,7 +37,7 @@ if sys.platform.startswith('win'):
     except Exception:
         pass
 
-from models.ai_bettor import is_g_v1
+from models.ai_bettor import is_retired_g
 from tracker.odds_history import HIST_DIR, load_history
 from tracker.prediction_log import LOG_DIR
 
@@ -173,7 +173,7 @@ def paper_bets_clv(bets_dir: Path = BETS_DIR, closing: Optional[Dict[tuple, np.n
         data = json.loads(f.read_text(encoding="utf-8"))
         ts = int(data.get("gm_ts") or f.stem)
         for b in data.get("bets", []):
-            if is_g_v1(b):      # 개편 전 G(첫 버전)는 개편한 G의 마감 대비 배당에 섞지 않는다
+            if is_retired_g(b):      # 폐기한 G 세대(첫 버전·잔고 밑천 버전)는 지금 G의 마감 대비 배당에 섞지 않는다
                 continue
             for leg in b.get("legs", []):
                 c = closing_for(closing, ts, leg["seq"], leg.get("line"))

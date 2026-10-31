@@ -39,7 +39,7 @@ from evaluation.metrics import cluster_roi_confidence_interval
 from models.combo_builder import calculate_combined_odds, calculate_payout, validate_combo
 from models.combo_finder import candidate_legs, find_combos
 from models.ai_bettor import (MonthlyWallet, decide_autonomous_stakes, find_ai_autonomous_combos, g_breakdown, instinct_plan,
-                              is_g_v1)
+                              is_retired_g, month_capital, retired_g_key)
 
 BETS_DIR = Path("data/history/paper_bets")
 SUMMARY_PATH = Path("data/paper_trading.json")
@@ -60,11 +60,12 @@ STRATEGIES = {
 G_WALLETS = ("G_ai_bettor", "G_instinct")      # 월 10만 원 지갑을 쓰는 전략
 INSTINCT_NOTE = {"win_boost": "본능: 지난 회차를 이겨서 판돈 ×1.4 · ", "chase": "본능: 지난 회차를 져서 고배당 복권 · "}
 # 폐기한 전략의 베팅은 기록(파일)에는 남지만 전략 표·지갑·판정에는 넣지 않고, 내역에서만 이 이름으로 보여 준다.
-# G_v1 = 2026-10-30 개편 전 G(첫 버전, `slip` 필드 없음 — models/ai_bettor.is_g_v1)
+# G_v1 = 2026-10-30 개편 전 G(첫 버전, `slip` 필드 없음), G_v2 = 판돈 밑천이 지갑 잔고였던 세대(`stake_basis` 없음) — models/ai_bettor.retired_g_key
 RETIRED_LABELS = {
     "G_real_stable": "G′ 실전 주력 (폐기)",
     "H_real_highodds": "H′ 실전 복권 (폐기)",
     "G_v1": "G′ 자율 AI 베터 첫 버전 (폐기, 2026-10-30 개편)",
+    "G_v2": "G′ 판돈 밑천이 잔고였던 버전 (폐기, 2026-10-31 월 밑천제로 교체)",
 }
 F_START_BANKROLL = 100_000
 G_START_ALLOWANCE = 100_000
@@ -171,26 +172,38 @@ def f_bankroll(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/histor
     return _strategy_bankroll("F_portfolio_kelly", F_START_BANKROLL, bets_dir, results_path)
 
 
-def g_wallet(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json"),
-             now: Optional[datetime] = None, strategy: str = "G_ai_bettor") -> Dict[str, Any]:
-    """G·G-본능: 월별 가상 지갑 현황 (매월 1일 10만 원 충전, 복리 증식, 쿨다운). 전략마다 지갑이 따로다."""
-    res_idx = _results_index(results_path) if results_path.exists() else {}
-    g_history = []
+def _g_history(bets_dir: Path, strategy: str) -> List[Dict[str, Any]]:
+    """그 전략의 지금 세대 베팅 전체 (폐기한 세대는 뺀다). 베팅마다 회차(gm_ts)를 채워 돌려 준다."""
+    out = []
     if bets_dir.exists():
         for f in sorted(bets_dir.glob("*.json")):
             try:
                 d_f = json.loads(f.read_text(encoding="utf-8"))
                 ts = str(d_f.get("gm_ts", ""))
                 for b in d_f.get("bets", []):
-                    if b.get("strategy") == strategy and not is_g_v1(b):
+                    if b.get("strategy") == strategy and not is_retired_g(b):
                         b_copy = dict(b)
                         if "gm_ts" not in b_copy or not b_copy["gm_ts"]:
                             b_copy["gm_ts"] = ts
-                        g_history.append(b_copy)
+                        out.append(b_copy)
             except Exception:
                 pass
+    return out
+
+
+def g_wallet(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json"),
+             now: Optional[datetime] = None, strategy: str = "G_ai_bettor") -> Dict[str, Any]:
+    """G·G-본능: 월별 가상 지갑 현황 (매월 1일 10만 원 충전, 복리 증식, 쿨다운). 전략마다 지갑이 따로다."""
+    res_idx = _results_index(results_path) if results_path.exists() else {}
     wallet = MonthlyWallet(allowance=G_START_ALLOWANCE)
-    return wallet.calculate_wallet(g_history, res_idx, current_time=now)
+    return wallet.calculate_wallet(_g_history(bets_dir, strategy), res_idx, current_time=now)
+
+
+def g_month_capital(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json"),
+                    now: Optional[datetime] = None, strategy: str = "G_ai_bettor") -> Dict[str, Any]:
+    """G·G-본능의 이번 달 판돈 밑천 (월 밑천제 — 매월 1일에 한 번 정해 한 달 동안 고정, 번 돈만큼만 커짐). G-본능은 번 돈을 전부 보탠다."""
+    res_idx = _results_index(results_path) if results_path.exists() else {}
+    return month_capital(_g_history(bets_dir, strategy), res_idx, now, G_START_ALLOWANCE, protect=strategy == "G_ai_bettor")
 
 
 def g_last_round_net(strategy: str, bets_dir: Path = BETS_DIR,
@@ -201,7 +214,7 @@ def g_last_round_net(strategy: str, bets_dir: Path = BETS_DIR,
     for f in sorted(bets_dir.glob("*.json"), reverse=True) if bets_dir.exists() else []:
         data = json.loads(f.read_text(encoding="utf-8"))
         ts = str(data.get("gm_ts"))
-        bets = [b for b in data.get("bets", []) if b.get("strategy") == strategy]
+        bets = [b for b in data.get("bets", []) if b.get("strategy") == strategy and not is_retired_g(b)]
         outs = [[res.get((ts, leg["seq"])) for leg in b["legs"]] for b in bets]
         if not bets or any(o is None for os_ in outs for o in os_):
             continue
@@ -237,7 +250,7 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
     data = {"gm_ts": gm_ts, "bets": []}
     if path.exists():
         data = json.loads(path.read_text(encoding="utf-8"))
-    current = [b for b in data["bets"] if not is_g_v1(b)]      # 개편 전 G(첫 버전) 베팅은 없는 것으로 본다 → 개편한 G가 같은 회차에 새로 산다
+    current = [b for b in data["bets"] if not is_retired_g(b)]      # 폐기한 G 세대(첫 버전·잔고 밑천 버전) 베팅은 없는 것으로 본다 → 지금 세대 G가 같은 회차에 새로 산다
     have_ids = {b["bet_id"] for b in current}
     have_once = {b["strategy"] for b in current if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", *G_WALLETS)}
     used_matches = {(b["strategy"], leg["seq"]) for b in data["bets"] for leg in b["legs"]}
@@ -275,7 +288,8 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
             slips, boost, why = base, 1.0, ""
             if strat == "G_instinct":
                 slips, boost, why = instinct_plan(predictions, now, base, g_last_round_net(strat, bets_dir, results_path))
-            for b in decide_autonomous_stakes(slips, w["current_cash"], boost=boost, protect=strat == "G_ai_bettor"):
+            cap = g_month_capital(bets_dir, results_path, now=now, strategy=strat)["capital"]      # 월 밑천제: 잔고가 아니라 이번 달 밑천
+            for b in decide_autonomous_stakes(slips, w["current_cash"], boost=boost, protect=strat == "G_ai_bettor", capital=cap):
                 if strat != "G_ai_bettor":
                     b.update({"strategy": strat, "bet_id": strat + ":" + b["bet_id"].split(":", 1)[1], "boost": boost,
                               "instinct": why, "ai_note": INSTINCT_NOTE.get(why, "") + b["ai_note"]})
@@ -350,7 +364,7 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
         ts = str(data.get("gm_ts"))
         for b in data.get("bets", []):
             # 폐기된 전략(G_real_stable·H_real_highodds·G 첫 버전)의 베팅은 내역에만 남기고 리그 표에는 올리지 않는다
-            skey = "G_v1" if is_g_v1(b) else b["strategy"]
+            skey = retired_g_key(b) or b["strategy"]
             in_league = skey in STRATEGIES
             outcomes = [res.get((ts, leg["seq"])) for leg in b["legs"]]
             last_ko = max((parse_betman_kickoff(leg["match_time"]) for leg in b["legs"]), default=None)
@@ -384,6 +398,7 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
         if gk not in strategies:
             continue
         w = g_wallet(bets_dir, results_path, now=now, strategy=gk)
+        mc = g_month_capital(bets_dir, results_path, now=now, strategy=gk)
         strategies[gk].update({
             "bankroll": round(w["current_cash"]),
             "total_deposited": w["total_deposited"],
@@ -394,6 +409,7 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
             "mode": w["mode"],
             "mode_label": w["mode_label"],
             "current_month": w["current_month"],
+            "month_capital": round(mc["capital"]), "month_capital_frozen": mc["frozen"], "proven_profit": mc["proven_profit"],
             **g_breakdown(g_rows[gk], STAKE, MIN_FOR_VERDICT),     # by_slip · sizing (판돈 조절 효과)
         })
     if "G_instinct" in strategies:

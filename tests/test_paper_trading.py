@@ -119,7 +119,7 @@ def test_g_rests_when_wallet_is_tied_up_or_empty(tmp_path):
     old_legs = [{"seq": "1", "key": "home_win", "odds": 1.4, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"},
                 {"seq": "2", "key": "home_win", "odds": 1.5, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"}]
     (tmp_path / "9.json").write_text(json.dumps({"gm_ts": 9, "bets": [{
-        "strategy": "G_ai_bettor", "slip": "main", "legs": old_legs, "combined_odds": 2.1, "stake": 100_000, "bet_id": "G_ai_bettor:1h+2h",
+        "strategy": "G_ai_bettor", "slip": "main", "stake_basis": "month", "legs": old_legs, "combined_odds": 2.1, "stake": 100_000, "bet_id": "G_ai_bettor:1h+2h",
         "created_at": NOW.isoformat(timespec="seconds")}]}), encoding="utf-8")                  # 용돈 전부가 결과 대기 중
     assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") is None
     nov = datetime(2026, 12, 1, tzinfo=timezone.utc)    # 다음 달 1일: 용돈 10만 원이 또 들어옴
@@ -226,3 +226,53 @@ def test_g_instinct_does_not_join_a_round_g_already_bought(tmp_path):
     data["bets"] = [b for b in data["bets"] if b["strategy"] != "G_instinct"]       # G-본능이 생기기 전에 G만 산 회차
     (tmp_path / "10.json").write_text(json.dumps(data), encoding="utf-8")
     assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_instinct") is None
+
+
+def test_g_month_capital_is_frozen_within_the_month_and_grows_with_proven_profit(tmp_path):
+    """월 밑천제: 같은 달에는 이겨서 잔고가 늘어도 판돈 밑천이 그대로고, 다음 달에는 번 돈의 절반이 밑천에 더해진다"""
+    from models.ai_bettor import MONTH_CAPITAL_PCT
+    from models.paper_trading import G_START_ALLOWANCE, g_month_capital
+
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+    base = round(G_START_ALLOWANCE * MONTH_CAPITAL_PCT)
+    save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath)
+    b10 = [b for b in json.loads((tmp_path / "10.json").read_text(encoding="utf-8"))["bets"] if b["strategy"] == "G_ai_bettor"]
+    assert len(b10) == 2 and all(b["stake_basis"] == "month" and b["month_capital"] == base for b in b10)
+
+    codes = {"1": "0", "2": "0", "3": "1", "4": "1"}                    # 전부 적중 → 잔고가 늘어남
+    rpath.write_text(json.dumps([{"gm_ts": g, "match_seq": s, "game_type": "축구 승무패", "game_result": c} for g in (10, 11) for s, c in codes.items()]),
+                     encoding="utf-8")
+    assert g_wallet_cash(tmp_path, rpath) > G_START_ALLOWANCE
+    save_new_bets(11, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath)                      # 같은 달 다음 회차
+    b11 = [b for b in json.loads((tmp_path / "11.json").read_text(encoding="utf-8"))["bets"] if b["strategy"] == "G_ai_bettor"]
+    assert [b["month_capital"] for b in b11] == [base, base] and [b["stake"] for b in b11] == [b["stake"] for b in b10]
+
+    dec = datetime(2026, 12, 1, tzinfo=timezone.utc)
+    mc = g_month_capital(tmp_path, rpath, now=dec)
+    assert mc["proven_profit"] > 0 and not mc["frozen"] and mc["capital"] == base + 0.5 * mc["proven_profit"]
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path.parent / f"{tmp_path.name}_s.json", now=dec)["strategies"]
+    assert s["G_ai_bettor"]["month_capital"] == round(mc["capital"]) and s["G_ai_bettor"]["proven_profit"] == mc["proven_profit"]
+
+
+def g_wallet_cash(bets_dir, rpath):
+    from models.paper_trading import g_wallet
+    return g_wallet(bets_dir, rpath, now=NOW)["current_cash"]
+
+
+def test_g_bets_made_when_the_stake_basis_was_the_wallet_are_set_aside(tmp_path):
+    """판돈 밑천이 잔고였던 세대(slip은 있지만 stake_basis 없음)의 베팅은 지갑·리그에서 빼고 내역에서만 G_v2로 보인다 — 지금 세대가 같은 회차에 새로 산다"""
+    from models.paper_trading import RETIRED_LABELS, g_wallet
+    legs = [{"seq": "1", "key": "home_win", "odds": 1.4, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"},
+            {"seq": "2", "key": "home_win", "odds": 1.5, "match_time": "26.12.01 (화) 20:00", "home_team": "H", "away_team": "A", "league": "L"}]
+    gen2 = {"strategy": "G_ai_bettor", "slip": "main", "legs": legs, "combined_odds": 2.1, "stake": 3500, "bet_id": "G_ai_bettor:1h+2h",
+            "created_at": NOW.isoformat(timespec="seconds")}
+    (tmp_path / "10.json").write_text(json.dumps({"gm_ts": 10, "bets": [gen2]}), encoding="utf-8")
+    rpath = tmp_path.parent / f"{tmp_path.name}_res.json"
+    rpath.write_text("[]", encoding="utf-8")
+    assert g_wallet(tmp_path, rpath, now=NOW)["pending_stakes"] == 0
+    assert save_new_bets(10, G_PREDS, now=NOW, bets_dir=tmp_path, results_path=rpath).get("G_ai_bettor") == 2
+    _write_results(rpath, 10, {"1": "0", "2": "0", "3": "1", "4": "1"})
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path.parent / f"{tmp_path.name}_s.json", now=NOW)
+    assert s["strategies"]["G_ai_bettor"]["bets"] == 2 and "G_v2" in RETIRED_LABELS
+    assert [d["status"] for d in s["details"] if d["strategy"] == "G_v2"] == ["적중"]

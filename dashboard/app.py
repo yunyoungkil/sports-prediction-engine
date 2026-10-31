@@ -3336,11 +3336,14 @@ with tab3:
             g_z = gv.get("sizing")
             g_range = (f" · 95% 범위 [{g_z['gain_ci_low']:+.1f}, {g_z['gain_ci_high']:+.1f}]%p"
                        if g_z and g_z["gain_ci_low"] != g_z["gain_ci_high"] else "")
+            g_cap = (f"<br>↳ 이번 달 판돈 밑천 <b>{int(gv['month_capital']):,}원</b> (월 용돈의 70% + 번 돈의 일부 · 매월 1일에 한 번 정해 한 달 동안 고정 — "
+                     "용돈이 쌓여도 판돈은 안 커지고, 번 만큼만 커져요)" if gv.get("month_capital") else "")
             return (
                 f"<br>{title}: "
                 f"지갑 <b>{g_b:,}원</b> (누적 입금 {g_dep:,}원 / {g_mf}개월 차"
                 + (f" · 결과 대기에 묶인 돈 {g_pend:,}원" if g_pend else "")
                 + f") · 순손익 <b>{g_net:+,}원</b> · {status_tag}"
+                + g_cap
                 + (f"<br>↳ {g_slips}" if g_slips else "")
                 + (f"<br>↳ 판돈 조절 효과: AI가 정한 금액 {g_z['roi_ai_pct']:+.1f}% vs 같은 베팅을 1,000원 고정 {g_z['roi_flat_pct']:+.1f}% "
                    f"→ <b>{g_z['gain_pp']:+.1f}%p</b>{g_range} · {g_z['verdict']} (AI가 확신할 때 판돈을 키운 게 도움이 됐는지 보는 지표)" if g_z else "")
@@ -3358,8 +3361,9 @@ with tab3:
             g_wallet_txt += (
                 f"<br>↳ 본능대로 움직인 회차: 이긴 뒤 판돈 키움 {ir.get('win_boost', 0)} · 진 뒤 고배당 {ir.get('chase', 0)} · "
                 f"순손익 <b>G {int(g_live.get('profit', 0)):+,}원 vs G-본능 {int(gi_live.get('profit', 0)):+,}원</b>. "
-                "과거 28개월 재현(같은 AI·같은 경기)에서는 G −618,790원 vs G-본능 −1,359,720원 — 본능형이 2.2배 더 잃었어요 "
-                "(더 많이 걸어서 약 39만 원 + 진 뒤 고배당을 쫓아서 약 35만 원)."
+                "과거 28개월 재현(같은 AI·같은 경기, 월 밑천제)에서는 G −44,870원 vs G-본능 −64,140원 — 본능형이 더 잃었어요. "
+                "판돈 밑천이 지갑 잔고였던 옛 방식에서는 −618,870원 vs −1,359,720원(2.2배)이었는데, 월 밑천제로 한 달에 거는 돈이 월 용돈의 392%에서 37%로 "
+                "줄면서 손실도 줄었어요."
             )
         if past_txt or f_wallet_txt or g_wallet_txt:
             st.markdown(

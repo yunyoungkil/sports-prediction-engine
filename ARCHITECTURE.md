@@ -81,7 +81,7 @@ sports-prediction-engine/
 | `models/combo_builder.py` · `models/combo_finder.py` | 베트맨 맞춤조건구매 규칙(배당 절삭·올림·한도)과 조합 후보 |
 | `models/strategy_backtest.py` | 조합 방식을 과거에 반복했다면 |
 | `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~G + G-본능) · F 전략(AI 조합 묶음 + 켈리) |
-| `models/ai_bettor.py` | **G 전략 — 실전형 자율 AI 베터**: 월 10만 원 지갑(한국 시간 매월 1일 충전 · 복리 · 바닥나면 다음 달까지 쉼), 매 회차 주력(안정 정배, AI 기대손실이 가장 작은 조합) + 소액 복권(무승부·역배 6~15배) 2장, AI 우위·잔고로 판돈 결정, 베트맨 규정(`validate_combo`) 강제, 슬립별 성적·판돈 조절 효과(`sizing`) 계산 · G-본능 규칙(`instinct_plan`, `INSTINCT_*`: 이긴 뒤 판돈 ×1.4 · 진 뒤 복권 15~50배 · 수익 보호 없음) |
+| `models/ai_bettor.py` | **G 전략 — 실전형 자율 AI 베터**: 월 10만 원 지갑(한국 시간 매월 1일 충전 · 복리 · 바닥나면 다음 달까지 쉼), 매 회차 주력(안정 정배, AI 기대손실이 가장 작은 조합) + 소액 복권(무승부·역배 6~15배) 2장, AI 우위·**월 밑천**(월 용돈 70% + 번 돈의 일부, 매월 1일에 한 번 정해 고정 — 용돈이 쌓여도 판돈이 안 커짐)·잔고(모드)로 판돈 결정, 베트맨 규정(`validate_combo`) 강제, 슬립별 성적·판돈 조절 효과(`sizing`) 계산 · G-본능 규칙(`instinct_plan`, `INSTINCT_*`: 이긴 뒤 판돈 ×1.4 · 진 뒤 복권 15~50배 · 수익 보호 없음) |
 
 ### tracker/ — 기록
 | 파일 | 역할 |
@@ -98,7 +98,7 @@ sports-prediction-engine/
 | `evaluation/scorecard.py` | **공식 AI 성적표**: 경기 전 예측만 결과로 채점 (LL·Brier·ECE, 유형별·대진 수, 사전 가설 H1·H2) |
 | `evaluation/clv.py` | 마감 배당 비교 (평가 전용) |
 | `evaluation/stale_odds.py` · `evaluation/sharp_vs_betman.py` | 지연 배당 측정 · 해외 배당 검증 |
-| `evaluation/walk_forward.py` · `evaluation/portfolio_backtest.py` · `evaluation/g_instinct_backtest.py` | 워크포워드 백테스트 · F 전략 과거 재현 · G 원칙형 vs G-본능 과거 재현 |
+| `evaluation/walk_forward.py` · `evaluation/portfolio_backtest.py` · `evaluation/g_instinct_backtest.py` | 워크포워드 백테스트 · F 전략 과거 재현 · G 원칙형 vs G-본능 과거 재현 (기본: 옛 잔고 밑천 · `--month`: 월 밑천제) |
 | `evaluation/market_scan.py` · `evaluation/market_model.py` · `evaluation/metrics.py` · `evaluation/config.py` | 유형별 마진표 · 시장 기준선 · 지표(부트스트랩 포함) · 학습/튜닝/시험 분할 고정 |
 | `evaluation/gates.py` | 추천 잠금: 검증 3단계 통과한 기능만 켬 |
 | `evaluation/health_check.py` | 운영 점검(수집·갱신 시각·채점 감소·데이터 계약 오류) → 경고 시 실행 실패 표시·텔레그램 |
@@ -129,7 +129,7 @@ sports-prediction-engine/
 | `data/health_report.json` · `data/health_state.json` | 운영 점검 결과 · 직전 상태 | pipeline·results |
 | `data/contract_report.json` | 데이터 계약 점검 결과 | pipeline (5-1) |
 | `data/calibration_experiment.json` | 사후 보정 실험 결과 (기록용) | 수동 |
-| `data/odds_moves_report.json` · `data/vote_bias_report.json` · `data/portfolio_backtest.json` · `data/g_instinct_backtest.json` | 배당 변경·구매 쏠림 시험(둘 다 효과 없음) · F 전략 · G 원칙형 vs 본능형 과거 재현 결과 (이 PC에만, 커밋 안 함) | 수동 |
+| `data/odds_moves_report.json` · `data/vote_bias_report.json` · `data/portfolio_backtest.json` · `data/g_instinct_backtest.json` · `data/g_month_backtest.json` | 배당 변경·구매 쏠림 시험(둘 다 효과 없음) · F 전략 · G 원칙형 vs 본능형 과거 재현 결과 (이 PC에만, 커밋 안 함) | 수동 |
 | `data/last_archive_sync.txt` · `data/last_retrain.txt` | 아카이브 갱신·재학습 마지막 날짜 | pipeline |
 
 `data/history/`: `prediction_log/`(경기 전 고정 예측) · `odds_history/` · `paper_bets/` · `sharp_snapshots/` · `betman_markets/`(전 유형 아카이브) · `betman_recent_results.json`(최근 회차 결과) · `betman_soccer_1x2.csv`(학습·폼 아카이브) · `betman_archive_rounds.json` · `all_historical_matches.csv`와 `E0/D1/I1/SP1/F1_*.csv`(유럽 데이터).
@@ -159,9 +159,9 @@ sports-prediction-engine/
 
 ### `data/history/paper_bets/{회차}.json`
 `{"gm_ts", "bets": [...], "f_plan"}` — 한 번 만든 베팅은 고치지 않는다. 베팅 한 건: `strategy`, `legs`(`seq`·`key`·`odds`·`match_time`·팀·리그), `combined_odds`, `stake`, `bet_id`, `created_at`(UTC), `ev_ai`.
-G는 추가로 `slip`(`main` 주력 · `lottery` 복권), `p_ai`(AI 적중확률), `edge`(경기당 AI 우위), `stake_mult`(판돈 배율), `wallet_before`(걸 때 잔고), `mode`(`survival`·`defensive`·`normal`), `ai_note`(근거 한 줄)를 남긴다. 폐기한 전략(`G_real_stable`·`H_real_highodds`)과 개편 전 G(첫 버전: `slip`이 없는 `G_ai_bettor` 베팅, `models/ai_bettor.is_g_v1`)의 베팅은 파일에는 그대로 두고 내역에서만 보이며(첫 버전은 `G_v1`) 리그 표·지갑·마감 대비 배당에서는 뺀다.
+G는 추가로 `slip`(`main` 주력 · `lottery` 복권), `stake_basis`(`month` = 월 밑천제) · `month_capital`(그달 판돈 밑천, 한 달 동안 같은 값), `p_ai`(AI 적중확률), `edge`(경기당 AI 우위), `stake_mult`(판돈 배율), `wallet_before`(걸 때 잔고), `mode`(`survival`·`defensive`·`normal`), `ai_note`(근거 한 줄)를 남긴다. 폐기한 전략(`G_real_stable`·`H_real_highodds`)과 폐기한 G 세대(`models/ai_bettor.retired_g_key`: `slip`이 없는 첫 버전 `G_v1`, 판돈 밑천이 잔고였던 `stake_basis`가 없는 세대 `G_v2`)의 베팅은 파일에는 그대로 두고 내역에서만 보이며 리그 표·지갑·300건 판정·마감 대비 배당에서는 뺀다.
 G-본능(`G_instinct`)은 G와 같은 필드에 `boost`(판돈 배율)·`instinct`(`win_boost`·`chase`·빈칸)를 더 남기고, 지갑은 G와 따로다.
-`data/paper_trading.json`의 G·G-본능 항목에는 지갑(`bankroll`·`total_deposited`·`pending_stakes`·`can_bet`·`is_broke`·`mode`), 슬립별 성적 `by_slip`, 판돈 조절 효과 `sizing`(AI 금액 수익률 − 같은 베팅 1,000원 고정 수익률, 회차 단위 95% 범위)이 들어 있다. G-본능에는 본능대로 움직인 회차 수 `instinct_rounds`도 있다.
+`data/paper_trading.json`의 G·G-본능 항목에는 지갑(`bankroll`·`total_deposited`·`pending_stakes`·`can_bet`·`is_broke`·`mode`·`month_capital`·`proven_profit`), 슬립별 성적 `by_slip`, 판돈 조절 효과 `sizing`(AI 금액 수익률 − 같은 베팅 1,000원 고정 수익률, 회차 단위 95% 범위)이 들어 있다. G-본능에는 본능대로 움직인 회차 수 `instinct_rounds`도 있다.
 
 ## 5. 안전장치 한눈에
 - **미래 정보 금지:** 마감 배당·결과는 피처·베팅 판단에 쓰지 않는다. 폼은 킥오프 이전 경기만.

@@ -337,3 +337,82 @@ def test_g_instinct_backtest_boosts_after_a_winning_round():
     r2_g = sum(b["stake"] for b in g["bets"] if b["gm_ts"] == "2")
     r2_i = [b for b in i["bets"] if b["gm_ts"] == "2"]
     assert all(b["boost"] == WIN_BOOST for b in r2_i) and sum(b["stake"] for b in r2_i) > r2_g
+
+
+# ── 월 밑천제 (TODO 7.8) ─────────────────────────────────────────────────────────────
+def _settled(gm_ts, created_at, stake, odds, key="home_win"):
+    return {"gm_ts": gm_ts, "created_at": created_at, "stake": stake, "combined_odds": odds, "legs": [{"seq": "1", "key": key}]}
+
+
+def test_month_capital_is_frozen_and_grows_only_with_proven_profit():
+    from models.ai_bettor import MONTH_CAPITAL_PCT, month_capital, month_capital_value
+    base = 100_000 * MONTH_CAPITAL_PCT
+    nov = datetime(2026, 11, 10, tzinfo=timezone.utc)
+    assert month_capital([], {}, nov)["capital"] == base and month_capital_value(0) == base
+
+    won = _settled(1, "2026-10-20T10:00:00+00:00", 5000, 3.5)          # +12,500
+    lost = _settled(2, "2026-10-21T10:00:00+00:00", 3000, 2.0)          # −3,000
+    res = {("1", "1"): "home_win", ("2", "1"): "away_win"}
+    mc = month_capital([won, lost], res, nov)
+    assert mc["proven_profit"] == 9_500 and mc["capital"] == base + 0.5 * 9_500 and not mc["frozen"]      # 번 돈의 절반만 보탬 (G)
+    assert month_capital([won, lost], res, nov, protect=False)["capital"] == base + 9_500                 # G-본능은 전부
+    assert month_capital([lost], res, nov)["capital"] == base                                             # 손실은 밑천을 깎지 않는다
+    assert month_capital([_settled(3, "2026-10-22T10:00:00+00:00", 5000, 3.5)], {}, nov)["capital"] == base   # 결과 대기는 세지 않음
+
+    # 이번 달 첫 베팅이 남긴 밑천은 한 달 동안 그대로 — 그 뒤 순이익이 바뀌어도, 이번 달 베팅은 순이익에 안 셈
+    this_month = {**_settled(4, "2026-11-02T10:00:00+00:00", 2000, 2.0), "month_capital": 123_456}
+    mc = month_capital([won, this_month], {**res, ("4", "1"): "home_win"}, nov)
+    assert mc["capital"] == 123_456 and mc["frozen"] is True and mc["proven_profit"] == 12_500
+    # 한국 시간 11월 1일 새벽에 만든 베팅은 11월 몫 (이번 달 베팅)
+    kst_nov = _settled(5, "2026-10-31T16:30:00+00:00", 5000, 3.5)
+    assert month_capital([kst_nov], {("5", "1"): "home_win"}, nov)["proven_profit"] == 0
+
+
+def test_stakes_follow_the_month_capital_not_the_wallet():
+    """월 밑천제: 잔고가 30배여도 판돈은 같다 (용돈이 쌓여도 판돈이 안 커짐). 옛 방식(밑천=잔고)은 잔고에 따라 폭증"""
+    slips = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    a = decide_autonomous_stakes(slips, 100_000, capital=70_000)
+    b = decide_autonomous_stakes(slips, 3_000_000, capital=70_000)
+    assert [x["stake"] for x in a] == [x["stake"] for x in b] and len(a) == 2
+    assert all(x["stake_basis"] == "month" and x["month_capital"] == 70_000 and "이번 달 밑천 70,000원" in x["ai_note"] for x in a)
+    assert sum(x["stake"] for x in a) <= 70_000 * ai_bettor.ROUND_CAP
+    old = decide_autonomous_stakes(slips, 3_000_000)
+    assert "stake_basis" not in old[0] and sum(x["stake"] for x in old) > 10 * sum(x["stake"] for x in a)
+    # 모드는 잔고로 정한다: 비상 절전이면 주력만, 밑천의 1.5% 이하
+    survival = decide_autonomous_stakes(slips, 20_000, capital=70_000)
+    assert [x["slip"] for x in survival] == ["main"] and survival[0]["stake"] <= 70_000 * 0.015
+
+
+def test_retired_g_generations():
+    from models.ai_bettor import is_retired_g, retired_g_key
+    assert retired_g_key({"strategy": "G_ai_bettor", "legs": []}) == "G_v1"                               # 개편 전 첫 버전 (slip 없음)
+    assert retired_g_key({"strategy": "G_ai_bettor", "slip": "main"}) == "G_v2"                          # 밑천이 잔고였던 세대
+    assert retired_g_key({"strategy": "G_instinct", "slip": "main"}) == "G_v2"
+    assert retired_g_key({"strategy": "G_ai_bettor", "slip": "main", "stake_basis": "month"}) is None    # 지금 세대
+    assert retired_g_key({"strategy": "E_market_fav"}) is None and not is_retired_g({"strategy": "F_portfolio_kelly"})
+    slips = find_ai_autonomous_combos(FAVS + DRAWS, now=NOW)
+    assert all(not is_retired_g(x) for x in decide_autonomous_stakes(slips, 100_000, capital=70_000))
+
+
+def test_month_basis_replay_freezes_capital_within_the_month_and_grows_next_month():
+    from datetime import timedelta
+    from evaluation.g_instinct_backtest import simulate
+
+    def with_actual(ms):
+        return [{**m, "actual": "draw" if m["match_seq"] in {"11", "12", "13"} else min(KEYS, key=lambda k: m["betman_odds"][k])} for m in ms]
+
+    preds = with_actual(FAVS + DRAWS)                                   # 정배·무승부가 모두 맞는 회차
+    later = NOW + timedelta(days=40)
+    preds3 = with_actual([_match(m["match_seq"], tuple(m["betman_odds"].values()), tuple(m["blended_probabilities"].values()),
+                                 tuple(m["market_implied_probs"].values()), time="26.12.20 (일) 20:00", close_offset=45 * 86400)
+                          for m in FAVS + DRAWS])
+    rounds = [(1, NOW, preds), (2, NOW, preds), (3, later, preds3)]
+    month = simulate(rounds, "month")["G"]["bets"]
+    wallet = simulate(rounds, "wallet")["G"]["bets"]
+
+    def round_stake(bets, ts):
+        return sum(b["stake"] for b in bets if b["gm_ts"] == ts)
+
+    assert round_stake(month, "1") == round_stake(month, "2")           # 같은 달: 이겨서 잔고가 늘어도 판돈 그대로
+    assert round_stake(wallet, "2") > round_stake(wallet, "1")          # 옛 방식: 잔고가 늘면 판돈도 늘어남
+    assert round_stake(month, "3") > round_stake(month, "1")            # 다음 달: 번 돈의 절반이 밑천에 더해짐

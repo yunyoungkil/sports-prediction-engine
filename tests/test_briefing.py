@@ -43,6 +43,8 @@ def test_paper_lines_g_wallet_and_sizing():
     text = "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G": g}}}.get))
     assert "G. 자율 AI 베터: 채점된 베팅 없음 · 결과 대기 2 · 지갑 94,500원 (누적 입금 100,000원 · 순손익 +0원 · 정상)" in text
 
+    g.update({"month_capital": 70_000})
+    assert "· 이번 달 판돈 밑천 70,000원" in "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G": g}}}.get))
     g.update({"bets": 4, "hits": 1, "profit": -2300, "roi_pct": -17.6, "verdict": "판단 보류 (표본 부족)",
               "by_slip": {"main": {"label": "주력", "bets": 2, "roi_pct": -35.0}, "lottery": {"label": "복권", "bets": 2, "roi_pct": 10.0}},
               "sizing": {"gain_pp": -4.2, "roi_ai_pct": -17.6, "roi_flat_pct": -13.4, "verdict": "판단 보류 (표본 부족)"}})

@@ -52,8 +52,13 @@ POOL_MAX_LOTTERY = 16
 # ── 자금 관리 (사람이 정함) ──────────────────────────────────────────────────────────────
 SURVIVAL_BELOW = 30_000       # 이 미만: 비상 절전 (주력만, 잔고의 1.5% 이하 = 100~450원)
 DEFENSIVE_BELOW = 70_000      # 이 미만: 방어
-PROTECT_ABOVE = 150_000       # 이 초과: 불어난 몫의 절반만 밑천으로 (수익 일부 보호)
-PROTECT_REINVEST = 0.5
+PROTECT_ABOVE = 150_000       # (잔고 기준 옛 규칙) 이 초과: 불어난 몫의 절반만 밑천으로 — 월 밑천제 전의 방식, 과거 재현 비교용으로만 남김
+PROTECT_REINVEST = 0.5        # 번 돈(확정 순이익)의 절반만 밑천에 보탠다 (G-본능은 전부)
+# 월 밑천제 (2026-10-31, TODO 7.8): 판돈의 밑천을 '지갑 잔고'가 아니라 매월 1일(한국 시간)에 한 번 정한 값으로 고정한다.
+# 용돈이 쌓여도 판돈이 커지지 않고, 번 돈(누적 확정 순이익이 플러스일 때)만큼만 커진다. 한 달 안에서는 바뀌지 않는다.
+# 밑천 = 월 용돈 × MONTH_CAPITAL_PCT + 번 돈 × 재투자 비율. MONTH_CAPITAL_PCT는 수익이 아니라 '노출'만 보고 정했다 —
+# 목표: 한 달에 걸린 돈이 월 용돈의 약 35%. 과거 재현 28개월(354회차)에서 0.5 → 25.7%, 0.6 → 31.0%, 0.7 → 36.5%, 0.75 → 39.1% (TODO 7.8).
+MONTH_CAPITAL_PCT = 0.7
 # (이름, 잔고 상한(미만), 주력 비율, 복권 비율, 판돈 배율 상한)
 MODES = (("survival", SURVIVAL_BELOW, 0.015, 0.0, 1.0),
          ("defensive", DEFENSIVE_BELOW, 0.015, 0.005, 1.5),
@@ -110,13 +115,18 @@ def _all_months_between(start_month: str, end_month: str) -> List[str]:
     return months
 
 
-def risk_profile(cash: float, protect: bool = True) -> Dict[str, Any]:
-    """잔고 구간별 위험 한도: 모드 · 주력/복권 기본 비율 · 판돈 배율 상한 · 밑천(수익 보호 반영, protect=False면 잔고 전부)"""
+def risk_profile(cash: float, protect: bool = True, capital: Optional[float] = None) -> Dict[str, Any]:
+    """잔고 구간별 위험 한도: 모드 · 주력/복권 기본 비율 · 판돈 배율 상한 · 밑천.
+    capital을 주면(월 밑천제) 그 값이 밑천이고 잔고는 모드(비상 절전·방어)만 정한다. 안 주면 옛 방식: 잔고가 밑천
+    (protect=True면 15만 원 초과분은 절반만, False면 전부) — 월 밑천제 전 과거 재현과 비교용."""
     cash = max(0.0, float(cash))
     for name, upper, main_rate, lottery_rate, max_mult in MODES:
         if cash < upper:
             break
-    capital = cash if not protect or cash <= PROTECT_ABOVE else PROTECT_ABOVE + PROTECT_REINVEST * (cash - PROTECT_ABOVE)
+    if capital is None:
+        capital = cash if not protect or cash <= PROTECT_ABOVE else PROTECT_ABOVE + PROTECT_REINVEST * (cash - PROTECT_ABOVE)
+    else:
+        capital = max(0.0, float(capital))
     return {"mode": name, "label": MODE_LABEL[name], "main_rate": main_rate, "lottery_rate": lottery_rate,
             "max_mult": max_mult, "risk_capital": capital}
 
@@ -197,10 +207,58 @@ class MonthlyWallet:
         }
 
 
-def is_g_v1(bet: Dict[str, Any]) -> bool:
-    """2026-10-30 개편 전 G(첫 버전)의 베팅인가 — 개편 뒤 베팅에는 `slip`이 있고 첫 버전에는 없다.
-    첫 버전은 지갑·집계·판정(300건)·마감 대비 배당에서 뺀다 (베팅 기록 파일은 고치지 않고 그대로 둔다)."""
-    return bet.get("strategy") == "G_ai_bettor" and "slip" not in bet
+G_STRATEGIES = ("G_ai_bettor", "G_instinct")
+
+
+def retired_g_key(bet: Dict[str, Any]) -> Optional[str]:
+    """폐기한 G 세대의 베팅이면 그 이름, 지금 세대면 None. 폐기한 세대는 지갑·집계·판정(300건)·마감 대비 배당에서 뺀다
+    (베팅 기록 파일은 고치지 않고 그대로 둔다). 판정 표본이 한 설계로만 채워지게 하려는 장치다.
+    G_v1: 2026-10-30 개편 전 첫 버전 (`slip` 없음). G_v2: 개편했지만 판돈 밑천이 '지갑 잔고'였던 세대 (`stake_basis` 없음) —
+    2026-10-31 월 밑천제(TODO 7.8)로 바꾸면서 폐기."""
+    if bet.get("strategy") not in G_STRATEGIES:
+        return None
+    if "slip" not in bet:
+        return "G_v1"
+    return None if bet.get("stake_basis") == "month" else "G_v2"
+
+
+def is_retired_g(bet: Dict[str, Any]) -> bool:
+    return retired_g_key(bet) is not None
+
+
+def month_capital_value(proven_profit: float, allowance: int = MONTHLY_ALLOWANCE, protect: bool = True) -> float:
+    """월 밑천 = 월 용돈 × MONTH_CAPITAL_PCT + 번 돈(누적 확정 순이익이 플러스일 때만) × 재투자 비율. 손실은 밑천을 깎지 않는다."""
+    return allowance * MONTH_CAPITAL_PCT + (PROTECT_REINVEST if protect else 1.0) * max(0.0, float(proven_profit))
+
+
+def month_capital(bets_history: List[Dict[str, Any]], results_idx: Dict[Tuple[str, str], str],
+                  now: Optional[datetime] = None, allowance: int = MONTHLY_ALLOWANCE, protect: bool = True) -> Dict[str, Any]:
+    """이번 달(한국 시간) 판돈 밑천. 이번 달 첫 베팅이 남긴 `month_capital`이 있으면 그 값을 그대로 쓴다(한 달 동안 고정),
+    없으면 지난달까지의 확정 순이익으로 새로 계산한다 (이번 달 베팅·결과 대기 중인 베팅은 세지 않음)."""
+    now = now or datetime.now(timezone.utc)
+    cur = _month_key(now)
+    frozen: Optional[float] = None
+    proven = 0
+    for b in sorted(bets_history, key=lambda x: str(x.get("created_at") or "")):
+        ca = b.get("created_at")
+        try:
+            bm = _month_key(datetime.fromisoformat(ca)) if ca else None
+        except Exception:
+            bm = None
+        if bm == cur:
+            if frozen is None and b.get("month_capital") is not None:
+                frozen = float(b["month_capital"])
+            continue
+        if bm is not None and bm > cur:
+            continue
+        outs = [results_idx.get((str(b.get("gm_ts", "")), str(leg["seq"]))) for leg in b["legs"]]
+        if any(o is None for o in outs):
+            continue
+        stake = int(b.get("stake") or 0)
+        hit = all(o == leg["key"] for o, leg in zip(outs, b["legs"]))
+        proven += (calculate_payout(b["combined_odds"], stake) if hit else 0) - stake
+    capital = frozen if frozen is not None else month_capital_value(proven, allowance, protect)
+    return {"capital": capital, "month": cur, "frozen": frozen is not None, "proven_profit": proven}
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -342,19 +400,22 @@ def stake_multiplier(conviction: float, ev: float, max_mult: float) -> float:
 
 
 def decide_autonomous_stakes(slips: List[Dict[str, Any]], wallet_cash: int, boost: float = 1.0,
-                             protect: bool = True) -> List[Dict[str, Any]]:
+                             protect: bool = True, capital: Optional[float] = None) -> List[Dict[str, Any]]:
     """
-    지갑 잔고·AI 우위로 슬립별 판돈을 정한다 (100원 단위).
+    밑천·잔고·AI 우위로 슬립별 판돈을 정한다 (100원 단위).
     - 잔고 100원 미만: 0건 (쉼).
-    - 비상 절전(3만 원 미만): 주력만, 잔고의 1.5% 이하 (100~450원). 방어(7만 원 미만): 판돈 배율 1.5배까지. 정상: 2.5배까지.
+    - 판돈 = 밑천 × 슬립 비율 × AI 우위 배율. 밑천은 `capital`(월 밑천제: 매월 1일에 한 번 정한 값 — `month_capital`)이고,
+      안 주면 옛 방식(잔고가 밑천)이다. 실전 G·G-본능은 월 밑천제, 옛 방식은 과거 재현 비교용.
+    - 비상 절전(잔고 3만 원 미만): 주력만, 배율 1.0 상한. 방어(7만 원 미만): 배율 1.5배까지. 정상: 2.5배까지. (모드는 잔고로 정한다)
     - 한 회차 합계는 밑천의 10% 이하 · 잔고 이하 · 10만 원 이하. 넘으면 비례 축소, 그래도 넘으면 복권부터 뺀다.
     - 모든 베팅은 `validate_combo`(2~10폴더, 같은 경기 중복 불가, 100원 단위, 회차 합계 한도)를 통과해야 한다.
-    - boost·protect는 G-본능 과거 재현용 (이긴 뒤 판돈·회차 상한 ×boost, protect=False면 수익 보호 없음). 실전 G는 기본값.
+    - boost·protect는 G-본능용 (이긴 뒤 판돈·회차 상한 ×boost, protect=False면 수익 보호 없음). 실전 G는 기본값.
     """
     cash = int(wallet_cash)
     if cash < MIN_STAKE or not slips:
         return []
-    prof = risk_profile(cash, protect)
+    month_mode = capital is not None
+    prof = risk_profile(cash, protect, capital)
     capital = prof["risk_capital"]
     wanted = []
     for s in slips:
@@ -397,9 +458,12 @@ def decide_autonomous_stakes(slips: List[Dict[str, Any]], wallet_cash: int, boos
             "wallet_before": cash,
             "mode": prof["mode"],
             "bet_id": "G_ai_bettor:" + "+".join(f"{x['seq']}{x['key'][0]}" for x in legs),
-            "ai_note": (f"{SLIP_LABEL.get(slip, slip)} · 잔고 {cash:,}원 중 {stake:,}원({stake / cash * 100:.1f}%) · "
-                        f"경기당 AI 우위 {float(s.get('conviction') or 0.0):+.1%} → 판돈 ×{mult:.1f} · AI 기대수익 {float(s.get('ev_ai') or 0.0):+.1%} "
+            "ai_note": (f"{SLIP_LABEL.get(slip, slip)} · "
+                        + (f"이번 달 밑천 {capital:,.0f}원 · 잔고 {cash:,}원 중 {stake:,}원 · " if month_mode
+                           else f"잔고 {cash:,}원 중 {stake:,}원({stake / cash * 100:.1f}%) · ")
+                        + f"경기당 AI 우위 {float(s.get('conviction') or 0.0):+.1%} → 판돈 ×{mult:.1f} · AI 기대수익 {float(s.get('ev_ai') or 0.0):+.1%} "
                         f"({prof['label']} 모드)"),
+            **({"stake_basis": "month", "month_capital": round(capital)} if month_mode else {}),
         })
     return bets
 

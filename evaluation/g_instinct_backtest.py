@@ -16,8 +16,10 @@ G-본능 규칙 — 결과를 보기 전에 연구 숫자로 고정 (사전 등�
 단순화: 회차마다 그 회차 첫 경기 1분 전에 사고, 다음 회차 전에 모두 정산한다 (결과 대기로 묶이는 돈 없음).
 '이긴/진 회차' = 직전 회차의 그 지갑 손익(받은 돈 − 건 돈)이 + / −. 직전 회차에 안 샀으면 보통 회차.
 
-출력: data/g_instinct_backtest.json
+출력: data/g_instinct_backtest.json (옛 방식: 판돈 밑천 = 지갑 잔고)
 실행: python -m evaluation.g_instinct_backtest
+      python -m evaluation.g_instinct_backtest --month   # 월 밑천제(TODO 7.8): 밑천 = 월 용돈 × 70% + 번 돈, 매월 1일에 한 번 정해 고정
+                                                          → data/g_month_backtest.json
 """
 
 import json
@@ -36,13 +38,14 @@ from collector.betman_sharp import parse_betman_kickoff
 from evaluation.metrics import cluster_roi_confidence_interval
 from evaluation.walk_forward import FOLD_STARTS, as_predictions, choose_lambda, make_folds
 from models.ai_bettor import (INSTINCT_CHASE_BAND, INSTINCT_WIN_BOOST, MIN_STAKE, MONTHLY_ALLOWANCE, _all_months_between,
-                              _month_key, decide_autonomous_stakes, find_ai_autonomous_combos, instinct_plan)
+                              _month_key, decide_autonomous_stakes, find_ai_autonomous_combos, instinct_plan, month_capital_value)
 from models.betman_corrector import build_rows, load_archive_df
 from models.combo_builder import calculate_payout
 from models.market_corrector import MarketCorrector
 
 WALLETS = {"G": "G 원칙형", "G_instinct": "G-본능"}
 REPORT_PATH = Path("data/g_instinct_backtest.json")
+MONTH_REPORT_PATH = Path("data/g_month_backtest.json")
 
 
 def ai_rounds() -> List[Tuple[Any, Any, List[Dict[str, Any]]]]:
@@ -62,8 +65,9 @@ def ai_rounds() -> List[Tuple[Any, Any, List[Dict[str, Any]]]]:
     return sorted(out, key=lambda r: r[1])
 
 
-def simulate(rounds) -> Dict[str, Dict[str, Any]]:
-    """두 지갑을 회차 순서대로 굴린다 (경기마다 'actual' 결과가 있어야 함). 회차마다 바로 정산."""
+def simulate(rounds, basis: str = "wallet") -> Dict[str, Dict[str, Any]]:
+    """두 지갑을 회차 순서대로 굴린다 (경기마다 'actual' 결과가 있어야 함). 회차마다 바로 정산.
+    basis="wallet": 판돈 밑천 = 지갑 잔고 (7.7 기록 · 기본). basis="month": 월 밑천제 — 달이 바뀔 때 한 번 정한 밑천을 한 달 동안 쓴다."""
     st = {w: {"cash": 0, "deposited": 0, "last": 0, "bets": [], "months": {}, "broke_rounds": 0} for w in WALLETS}
     funded = None
     for ts, now, preds in rounds:
@@ -85,7 +89,13 @@ def simulate(rounds) -> Dict[str, Dict[str, Any]]:
                 s["broke_rounds"] += 1
                 mo["broke_rounds"] += 1
             net = 0
-            bets = decide_autonomous_stakes(slips, s["cash"], boost=boost, protect=protect)
+            cap = None
+            if basis == "month":
+                if s.get("cap_month") != month:     # 달이 바뀌면 지금까지의 순이익(= 잔고 − 넣은 돈, 바로 정산이라 전부 확정)으로 밑천을 다시 정한다
+                    s["cap_month"] = month
+                    s["capital"] = month_capital_value(s["cash"] - s["deposited"], MONTHLY_ALLOWANCE, protect=protect)
+                cap = s["capital"]
+            bets = decide_autonomous_stakes(slips, s["cash"], boost=boost, protect=protect, capital=cap)
             for b in bets:
                 hit = all(actual.get(leg["seq"]) == leg["key"] for leg in b["legs"])
                 pay = calculate_payout(b["combined_odds"], b["stake"]) if hit else 0
@@ -117,6 +127,8 @@ def _summary(s: Dict[str, Any]) -> Dict[str, Any]:
     best = max(month_net.items(), key=lambda kv: kv[1]) if month_net else ("", 0)
     worst = min(month_net.items(), key=lambda kv: kv[1]) if month_net else ("", 0)
     return {"deposited": s["deposited"], "end_cash": s["cash"], "net": s["cash"] - s["deposited"], "staked": staked,
+            "avg_month_staked": round(staked / len(month_net)) if month_net else 0,
+            "exposure_pct": round(100.0 * staked / len(month_net) / MONTHLY_ALLOWANCE, 1) if month_net else 0.0,
             "returned": returned, "roi_pct": roi, "roi_ci": [lo, hi], "bets": len(bets),
             "hits": sum(1 for b in bets if b["payout"] > 0), "boosted_bets": sum(1 for b in bets if b["boost"] > 1),
             "broke_rounds": s["broke_rounds"], "months": len(month_net), "months_up": sum(1 for v in month_net.values() if v > 0),
@@ -132,24 +144,27 @@ def compare(st: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
             "months_g_better": sum(1 for r in rows if r["G_instinct"] < r["G"]), "monthly": rows}
 
 
-def run() -> Dict[str, Any]:
-    rounds = ai_rounds()
-    st = simulate(rounds)
+def run(basis: str = "wallet", rounds=None) -> Dict[str, Any]:
+    rounds = rounds if rounds is not None else ai_rounds()
+    st = simulate(rounds, basis)
     months = sorted(st["G"]["months"])
-    return {"rules": {"win_boost": INSTINCT_WIN_BOOST, "chase_band": list(INSTINCT_CHASE_BAND), "instinct_protect": False},
+    return {"basis": basis,
+            "rules": {"win_boost": INSTINCT_WIN_BOOST, "chase_band": list(INSTINCT_CHASE_BAND), "instinct_protect": False},
             "period": [months[0], months[-1]] if months else [], "rounds": len(rounds),
             "wallets": {w: _summary(st[w]) for w in WALLETS}, "compare": compare(st)}
 
 
 if __name__ == "__main__":
-    rep = run()
-    REPORT_PATH.write_text(json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8")
+    basis = "month" if "--month" in sys.argv else "wallet"
+    rep = run(basis)
+    (MONTH_REPORT_PATH if basis == "month" else REPORT_PATH).write_text(json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"판돈 밑천: {'월 밑천제 (월 용돈 기준, 매월 1일 고정)' if basis == 'month' else '지갑 잔고 (옛 방식)'}")
     print(f"기간 {rep['period'][0]} ~ {rep['period'][1]} · 회차 {rep['rounds']}")
     for w, label in WALLETS.items():
         s = rep["wallets"][w]
         print(f"{label}: 넣은 돈 {s['deposited']:,} → 남은 돈 {s['end_cash']:,}원 · 순손익 {s['net']:+,}원 · 건 돈 {s['staked']:,} · "
               f"수익률 {s['roi_pct']:+.1f}% [{s['roi_ci'][0]:+.1f}, {s['roi_ci'][1]:+.1f}] · {s['bets']}장 중 {s['hits']}장 적중 · "
-              f"판돈 키운 장 {s['boosted_bets']} · 돈 없어 쉰 회차 {s['broke_rounds']} · 번 달 {s['months_up']}/{s['months']} · "
+              f"월 평균 건 돈 {s['avg_month_staked']:,}원(월 용돈의 {s['exposure_pct']}%) · 판돈 키운 장 {s['boosted_bets']} · 돈 없어 쉰 회차 {s['broke_rounds']} · 번 달 {s['months_up']}/{s['months']} · "
               f"최고 달 {s['best_month'][0]} {s['best_month'][1]:+,} · 최악 달 {s['worst_month'][0]} {s['worst_month'][1]:+,}")
         for k, v in s["by_slip"].items():
             print(f"    {k}: {v['bets']}장 · 적중 {v['hits']} · 건 돈 {v['staked']:,} · 손익 {v['profit']:+,}")
