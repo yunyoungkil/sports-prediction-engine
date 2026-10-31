@@ -18,7 +18,6 @@ import threading
 import time
 from datetime import datetime
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 
 # 프로젝트 루트 경로를 sys.path에 추가 (dashboard 하위 폴더에서 실행 시 models/tracker 패키지 인식)
@@ -78,7 +77,7 @@ STRATEGY_LABELS = {**RETIRED_LABELS, **STRATEGIES}   # 내역 표에서는 폐�
 from models.betman_markets import SPORT_NAMES
 from models.form_analyzer import KOREAN_NAME
 from tracker.prob_view import current_probs, shown_probs
-from evaluation.gates import roi_range_text
+from evaluation.gates import eta_days, roi_range_text
 from tracker.my_slips import (BASIS_LABEL, KIND_LABEL, MAX_SAVED_COMBOS, REASON_LABEL, active_pick_keys, add_slip,
                               apply_combo_changes, build_slip, combo_changes, combo_results, delete_slip, display_score,
                               draw_is_void, find_slip, grade_slip, line_row, load_json, load_slips, outcome_from_rows,
@@ -467,6 +466,15 @@ def load_stale_odds():
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+@st.cache_data(ttl=60)
+def load_sharp_validation():
+    """[5.4] 해외 샤프 배당 vs 베트맨 배당 실전 검증 (표본 진행도 · 로그 손실 비교)"""
+    path = project_root / "data" / "sharp_validation.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 # 3-1. 경기 결과 · 경기 전 AI 예측 기록 (맞춤조건구매 목록의 적중 여부 표시용)
 PICK_KEYS = ("home_win", "draw", "away_win")
 SEL_KEY = {"home_win": "home", "draw": "draw", "away_win": "away"}
@@ -539,16 +547,15 @@ def bucket_summary(scan):
 
 
 def eta_text(card, target: int = 300) -> str:
-    """성적표 history의 쌓이는 속도로 목표까지 남은 기간 (근거가 부족하면 빈 문자열)"""
-    hist = [h for h in (card or {}).get("history", []) if h.get("graded_matches")]
-    n = (card or {}).get("graded_matches") or 0
-    if n >= target or len(hist) < 2:
+    """성적표 history의 쌓이는 속도로 목표까지 남은 기간 — 하루 안이면 '하루 안에', 일주일 안이면 일 단위, 그 뒤는 주 단위 (근거가 부족하면 빈 문자열)"""
+    left = eta_days((card or {}).get("history"), (card or {}).get("graded_matches") or 0, target)
+    if left is None:
         return ""
-    days = (datetime.fromisoformat(hist[-1]["date"]) - datetime.fromisoformat(hist[0]["date"])).days
-    gained = hist[-1]["graded_matches"] - hist[0]["graded_matches"]
-    if days < 3 or gained <= 0:
-        return ""
-    return f" 지금 속도면 약 {max(1, round((target - n) / (gained / days) / 7))}주 뒤예요."
+    if left < 1:
+        return " 지금 속도면 하루 안에 모여요."
+    if left < 7:
+        return f" 지금 속도면 약 {int(-(-left // 1))}일 뒤예요."
+    return f" 지금 속도면 약 {max(1, round(left / 7))}주 뒤예요."
 
 
 def render_conclusion(card, scan, stale) -> None:
@@ -605,7 +612,7 @@ def render_glossary() -> None:
             "- **왜 300경기?**: 축구는 운이 커서 몇십 경기로는 실력과 운을 구분할 수 없어요. 그래서 기준을 미리 정해 뒀어요.\n"
             "- **마감 배당 비교**: AI가 '배당보다 높다'고 본 쪽 배당이 마감 때 내려갔다면, 다른 사람들의 돈이 나중에 그쪽으로 몰렸다는 "
             "뜻이에요 (AI가 먼저 맞게 봤다는 신호).\n"
-            "- **적중률**: 참고용이에요. 배당 1순위만 골라도 꽤 맞아요. 돈이 되는지는 **돌아온 돈(환급률·수익률)**으로 봐야 해요.")
+            "- **적중률**: 참고용이에요. 배당 1순위만 골라도 꽤 맞아요. 돈이 되는지는 **돌아온 돈**(환급률·수익률)으로 봐야 해요.")
 
 
 def render_margin_tables(scan) -> None:
@@ -1622,7 +1629,8 @@ with tab1:
             st.button(f"▼ 더 보기 (게임번호 {min(LOAD_STEP, left)}개 더 · 남은 {left:,}개)", key="step1_load_more",
                       width="stretch", on_click=_load_more)
             # 같은 출처 iframe에서 부모 문서의 '더 보기' 버튼을 감시 → 화면에 들어오면 클릭. 실패해도 버튼은 수동으로 동작
-            components.html("""
+            # (st.components.v1.html은 2026-06-01 이후 제거 예정이라 st.iframe으로 — 높이 0은 안 돼서 1px)
+            st.iframe("""
 <script>
 (function () {
   const doc = window.parent.document;
@@ -1646,7 +1654,7 @@ with tab1:
   }, 250);
 })();
 </script>
-""", height=0)
+""", height=1)
 
         if open_ms or wait_ms or done_ms:
             n_mk, n_ai = len(mk_hits), len(ai_pairs)
@@ -2975,7 +2983,7 @@ with tab3:
     clv = load_clv() or {}
     pt = load_paper_trading()
     bf = load_paper_backfill()
-    SCORE_MIN, CLV_MIN, PAPER_MIN = 300, 50, 300   # 판정에 필요한 표본 (scorecard · clv · paper_trading 과 같은 기준)
+    SCORE_MIN, CLV_MIN, PAPER_MIN, SHARP_MIN = 300, 50, 300, 300   # 판정에 필요한 표본 (scorecard · clv · paper_trading · sharp_vs_betman 과 같은 기준)
     scan = load_market_scan()
 
     # 바로가기 — 이 탭은 아주 길어서 구역으로 바로 이동 (구역 제목의 anchor와 같은 이름)
@@ -3075,10 +3083,31 @@ with tab3:
     past_txt = " · ".join(f"{v['label'].split(' (')[0]} <b>{v['roi_pct']:+.0f}%</b>" for v in past.values() if v["bets"])
     # 건수는 아래 리그 표와 같은 셈 — 전략별 합계 (폐기한 전략은 빠짐 · 표의 '끝난 베팅'·'결과 대기' 열을 더한 값)
     live_sum = sum(v["bets"] for v in live.values())
-    sent = (f"실시간 가상 베팅: 끝난 {live_sum:,}건 · 결과 대기 {live_wait:,}건 (전략별 합계)."
+    g_live_s = live.get("G_ai_bettor")
+    g_line = ""
+    if g_live_s:      # G의 300건 판정 진행도 (이 카드의 막대는 전략 중 가장 많은 쪽이라 G는 따로 적는다)
+        g_z = g_live_s.get("sizing") or {}
+        g_line = (f"<br>🤖 G(자율 AI 베터): 끝난 <b>{g_live_s['bets']:,} / {PAPER_MIN}건</b> (한 달에 약 25건씩 쌓여요) · "
+                  f"판돈 조절 효과 판정: {g_z.get('verdict', '아직 없음')}")
+    sent = (f"실시간 가상 베팅: 끝난 {live_sum:,}건 · 결과 대기 {live_wait:,}건 (전략별 합계)." + g_line
             + (f"<br>과거 재현: {past_txt}" + (" → 배당만 보는 전략은 모두 손실이에요." if all(v["roi_pct"] < 0 for v in past.values() if v["bets"]) else "")
                if past_txt else ""))
     summary.append(_summary_card("🧪 돈을 버는 전략이 있나?", kind, chip_txt, sent, live_done, PAPER_MIN, "전략별 끝난 베팅(최다)"))
+
+    # (4) 해외 샤프 배당을 더하면 AI가 나아질까? — 다음 실험(TODO 7.2)의 표본 진행도
+    sv = load_sharp_validation() or {}
+    sv_n = int(sv.get("with_results") or 0)
+    if sv:
+        sv_value = ((sv.get("roi") or {}).get("0.0") or {}).get("bets", 0)
+        kind, chip_txt = ("wait", "표본 모으는 중") if sv_n < SHARP_MIN else ("neutral", "실험 시작 가능")
+        sent = (f"해외 배당과 맞춰 본 {int(sv.get('snapshot_matches') or 0):,}경기 중 결과가 난 <b>{sv_n:,}경기</b>에서 로그 손실(낮을수록 정확)은 "
+                f"베트맨 {sv.get('ll_betman_market')} · 해외 샤프 {sv.get('ll_sharp')}예요."
+                + (" 차이가 아주 작고 경기가 적어서 운일 수 있어요." if sv_n < SHARP_MIN else "")
+                + f"<br>해외 배당을 진짜 확률로 쳐도 베트맨에서 이득인 경기는 <b>{sv_value}경기</b>예요."
+                + f"<br>{SHARP_MIN}경기가 모이면 해외 배당을 AI에 더하는 실험을 시작해요 — 결론은 그 뒤로도 몇 달 걸려요.")
+    else:
+        kind, chip_txt, sent = "wait", "표본 모으는 중", "아직 해외 배당과 맞춰 본 경기가 없어요. 회차가 쌓이면 자동으로 늘어나요."
+    summary.append(_summary_card("🌐 해외 샤프 배당을 더하면 AI가 나아질까?", kind, chip_txt, sent, sv_n, SHARP_MIN, "결과 난 해외 배당 경기"))
 
     st.markdown("<div style='padding-bottom:12px'><div style='font-size:20px;font-weight:700;margin-bottom:8px'>📋 한눈에 보기</div>"
                 "<div style='display:flex;flex-wrap:wrap;gap:10px'>" + "".join(summary) + "</div></div>", unsafe_allow_html=True)

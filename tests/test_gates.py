@@ -88,3 +88,16 @@ def test_stage_profit_detail_has_no_fake_range_for_tiny_samples():
     from evaluation.gates import stage_profit
     d = stage_profit("가상 베팅 C", 2, 65.0, 65.0, 65.0)["detail"]
     assert "수익률 +65.0%" in d and "[" not in d
+
+
+def test_eta_days_follows_the_actual_pace_and_never_rounds_up_to_a_week():
+    from evaluation.gates import eta_days
+    hist = [{"date": "2026-10-25", "graded_matches": 0}, {"date": "2026-10-27", "graded_matches": 53}, {"date": "2026-10-31", "graded_matches": 296}]
+    left = eta_days(hist, 296, 300)
+    assert left is not None and left < 1                     # 4경기 남았고 하루 약 61경기 → 하루도 안 걸림 (예전엔 '약 1주'로 나왔다)
+    assert 2 < eta_days(hist, 150, 300) < 3                   # 150경기 남음 → 약 2.5일 (채점이 0이던 첫 기록은 빼고 10-27~10-31: 하루 약 61경기)
+    assert eta_days(hist, 300, 300) is None and eta_days(hist, 301, 300) is None          # 이미 닿았으면 없음
+    assert eta_days(hist[:1], 10, 300) is None                                            # 기록 하나로는 속도를 모름
+    assert eta_days([{"date": "2026-10-29", "graded_matches": 10}, {"date": "2026-10-30", "graded_matches": 40}], 40, 300) is None   # 3일 미만
+    assert eta_days([{"date": "2026-10-25", "graded_matches": 10}, {"date": "2026-10-30", "graded_matches": 10}], 10, 300) is None    # 안 늘었음
+    assert eta_days(None, 10, 300) is None

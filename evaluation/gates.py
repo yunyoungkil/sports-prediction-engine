@@ -24,6 +24,7 @@ TEST 한 구간의 CI 대신 ①(TEST를 포함한 다섯 구간)을 쓰는 이�
 """
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -55,6 +56,19 @@ def stage_history(wf: Optional[Dict[str, Any]]) -> Dict[str, Any]:
              if ok else f"지난 경기 {n:,}개로 다시 시험했지만, AI가 배당보다 낫다고 **확실히 말할 수 없어요**.")
     return {"name": name, "ok": ok, "n": n, "need": None, "plain": plain,
             "detail": f"워크포워드 {n:,}경기 · LL 차이 {s['ll_diff']:+.4f} [{ci[0]:+.4f}, {ci[1]:+.4f}]"}
+
+
+def eta_days(history: Optional[list], n: int, target: int = 300) -> Optional[float]:
+    """성적표 history(날짜별 채점 경기 수)에서 쌓이는 속도로 목표까지 남은 일수. 근거가 부족하면(기록 2개 미만 · 3일 미만 · 안 늘었음) None.
+    이미 목표에 닿았으면 None (화면이 '판정이 나왔어요'를 보여 줌)."""
+    hist = [h for h in (history or []) if h.get("graded_matches")]
+    if n >= target or len(hist) < 2:
+        return None
+    days = (datetime.fromisoformat(hist[-1]["date"]) - datetime.fromisoformat(hist[0]["date"])).days
+    gained = hist[-1]["graded_matches"] - hist[0]["graded_matches"]
+    if days < 3 or gained <= 0:
+        return None
+    return (target - n) / (gained / days)
 
 
 def roi_range_text(n: int, lo: Optional[float], hi: Optional[float], unit: str = "") -> str:
