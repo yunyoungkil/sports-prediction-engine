@@ -1954,6 +1954,162 @@
       "ai_note": "복권 · 잔고 100,000원 중 2,000원(2.0%) · 경기당 AI 우위 +11.1% → 판돈 ×2.5 · AI 기대수익 -6.0% (정상 모드)",
       "gm_ts": "260129",
       "created_at": "2026-10-30T08:21:09+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "1433",
+          "key": "away_win",
+          "odds": 1.32,
+          "match_time": "26.10.31 (토) 14:00",
+          "home_team": "미토 홀리호크",
+          "away_team": "산프레체 히로시마",
+          "league": "일본 J1리그"
+        },
+        {
+          "seq": "1958",
+          "key": "away_win",
+          "odds": 1.15,
+          "match_time": "26.11.02 (월) 00:15",
+          "home_team": "라싱 산탄데르",
+          "away_team": "레알 마드리드",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.6,
+      "stake": 2900,
+      "ev_ai": -0.0556,
+      "p_ai": 0.5902,
+      "edge": 0.088,
+      "stake_mult": 2.14,
+      "wallet_before": 100000,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:1433a+1958a",
+      "ai_note": "주력 · 이번 달 밑천 70,000원 · 잔고 100,000원 중 2,900원 · 경기당 AI 우위 +8.8% → 판돈 ×2.1 · AI 기대수익 -5.6% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70000,
+      "gm_ts": "260129",
+      "created_at": "2026-10-31T04:44:51+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "1561",
+          "key": "draw",
+          "odds": 3.35,
+          "match_time": "26.10.31 (토) 21:30",
+          "home_team": "스토크 시티",
+          "away_team": "프레스턴 노스엔드",
+          "league": "잉글랜드 챔피언십"
+        },
+        {
+          "seq": "1544",
+          "key": "draw",
+          "odds": 3.35,
+          "match_time": "26.10.31 (토) 17:40",
+          "home_team": "맥아서FC",
+          "away_team": "웨스턴시드니 원더러스",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 11.3,
+      "stake": 1400,
+      "ev_ai": -0.0598,
+      "p_ai": 0.0832,
+      "edge": 0.1113,
+      "stake_mult": 2.5,
+      "wallet_before": 100000,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:1561d+1544d",
+      "ai_note": "복권 · 이번 달 밑천 70,000원 · 잔고 100,000원 중 1,400원 · 경기당 AI 우위 +11.1% → 판돈 ×2.5 · AI 기대수익 -6.0% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70000,
+      "gm_ts": "260129",
+      "created_at": "2026-10-31T04:44:51+00:00"
+    },
+    {
+      "strategy": "G_instinct",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "1433",
+          "key": "away_win",
+          "odds": 1.32,
+          "match_time": "26.10.31 (토) 14:00",
+          "home_team": "미토 홀리호크",
+          "away_team": "산프레체 히로시마",
+          "league": "일본 J1리그"
+        },
+        {
+          "seq": "1958",
+          "key": "away_win",
+          "odds": 1.15,
+          "match_time": "26.11.02 (월) 00:15",
+          "home_team": "라싱 산탄데르",
+          "away_team": "레알 마드리드",
+          "league": "스페인 라리가"
+        }
+      ],
+      "combined_odds": 1.6,
+      "stake": 2900,
+      "ev_ai": -0.0556,
+      "p_ai": 0.5902,
+      "edge": 0.088,
+      "stake_mult": 2.14,
+      "wallet_before": 100000,
+      "mode": "normal",
+      "bet_id": "G_instinct:1433a+1958a",
+      "ai_note": "주력 · 이번 달 밑천 70,000원 · 잔고 100,000원 중 2,900원 · 경기당 AI 우위 +8.8% → 판돈 ×2.1 · AI 기대수익 -5.6% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70000,
+      "boost": 1.0,
+      "instinct": "",
+      "gm_ts": "260129",
+      "created_at": "2026-10-31T04:44:51+00:00"
+    },
+    {
+      "strategy": "G_instinct",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "1561",
+          "key": "draw",
+          "odds": 3.35,
+          "match_time": "26.10.31 (토) 21:30",
+          "home_team": "스토크 시티",
+          "away_team": "프레스턴 노스엔드",
+          "league": "잉글랜드 챔피언십"
+        },
+        {
+          "seq": "1544",
+          "key": "draw",
+          "odds": 3.35,
+          "match_time": "26.10.31 (토) 17:40",
+          "home_team": "맥아서FC",
+          "away_team": "웨스턴시드니 원더러스",
+          "league": "호주 A리그"
+        }
+      ],
+      "combined_odds": 11.3,
+      "stake": 1400,
+      "ev_ai": -0.0598,
+      "p_ai": 0.0832,
+      "edge": 0.1113,
+      "stake_mult": 2.5,
+      "wallet_before": 100000,
+      "mode": "normal",
+      "bet_id": "G_instinct:1561d+1544d",
+      "ai_note": "복권 · 이번 달 밑천 70,000원 · 잔고 100,000원 중 1,400원 · 경기당 AI 우위 +11.1% → 판돈 ×2.5 · AI 기대수익 -6.0% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70000,
+      "boost": 1.0,
+      "instinct": "",
+      "gm_ts": "260129",
+      "created_at": "2026-10-31T04:44:51+00:00"
     }
   ],
   "f_plan": {
