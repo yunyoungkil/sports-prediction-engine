@@ -100,6 +100,7 @@ sports-prediction-engine/
 | `evaluation/clv.py` | 마감 배당 비교 (평가 전용) |
 | `evaluation/stale_odds.py` · `evaluation/sharp_vs_betman.py` | 지연 배당 측정 · 해외 배당 검증 |
 | `evaluation/walk_forward.py` · `evaluation/portfolio_backtest.py` · `evaluation/g_instinct_backtest.py` | 워크포워드 백테스트 · F 전략 과거 재현 · G 원칙형 vs G-본능 과거 재현 (기본: 옛 잔고 밑천 · `--month`: 월 밑천제) |
+| `evaluation/congestion_pretest.py` | [7.10] 일정 밀집도(컵·유럽대회 포함) 사전 시험 — 5대 리그, Pinnacle 마감 배당 대비 반기 워크포워드 (결과: 채택 안 함, 2026-10-31) |
 | `evaluation/market_scan.py` · `evaluation/market_model.py` · `evaluation/metrics.py` · `evaluation/config.py` | 유형별 마진표 · 시장 기준선 · 지표(부트스트랩 포함) · 학습/튜닝/시험 분할 고정 |
 | `evaluation/gates.py` | 추천 잠금: 검증 3단계 통과한 기능만 켬 |
 | `evaluation/health_check.py` | 운영 점검(수집·갱신 시각·채점 감소·데이터 계약 오류) → 경고 시 실행 실패 표시·텔레그램 |
@@ -131,7 +132,7 @@ sports-prediction-engine/
 | `data/health_report.json` · `data/health_state.json` | 운영 점검 결과 · 직전 상태 | pipeline·results |
 | `data/contract_report.json` | 데이터 계약 점검 결과 | pipeline (5-1) |
 | `data/calibration_experiment.json` | 사후 보정 실험 결과 (기록용) | 수동 |
-| `data/odds_moves_report.json` · `data/vote_bias_report.json` · `data/portfolio_backtest.json` · `data/g_instinct_backtest.json` · `data/g_month_backtest.json` · `data/value_engine_replay.json` | 배당 변경·구매 쏠림 시험(둘 다 효과 없음) · F 전략 · G 원칙형 vs 본능형 과거 재현 결과 (이 PC에만, 커밋 안 함) | 수동 |
+| `data/odds_moves_report.json` · `data/vote_bias_report.json` · `data/portfolio_backtest.json` · `data/g_instinct_backtest.json` · `data/g_month_backtest.json` · `data/value_engine_replay.json` · `data/congestion_pretest.json` | 배당 변경·구매 쏠림 시험(둘 다 효과 없음) · F 전략 · G 원칙형 vs 본능형 과거 재현 · 일정 밀집도 시험(효과 없음) 결과 (이 PC에만, 커밋 안 함) | 수동 |
 | `data/last_archive_sync.txt` · `data/last_retrain.txt` | 아카이브 갱신·재학습 마지막 날짜 (아카이브는 모든 회차를 받았을 때만 적음 · `betman_archive --strict`) | pipeline |
 
 `data/history/`: `prediction_log/`(경기 전 고정 예측) · `odds_history/` · `paper_bets/` · `sharp_snapshots/` · `betman_markets/`(전 유형 아카이브) · `betman_recent_results.json`(최근 회차 결과) · `betman_soccer_1x2.csv`(학습·폼 아카이브) · `betman_archive_rounds.json` · `all_historical_matches.csv`와 `E0/D1/I1/SP1/F1_*.csv`(유럽 데이터).
