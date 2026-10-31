@@ -14,6 +14,7 @@ Claude Code 세션 시작 훅(.claude/settings.local.json)이 실행하고, 출�
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -87,6 +88,35 @@ def read_json(rel: str) -> Optional[Dict[str, Any]]:
         return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
     except Exception:
         return None
+
+
+def read_text(rel: str) -> Optional[str]:
+    """read_json과 같은 순서(origin/master → 로컬 파일)로 텍스트 파일을 읽는다 — 로컬이 뒤처진 PC에서도 최신 TODO가 보이게"""
+    r = _run(["git", "show", f"origin/master:{rel}"])
+    if r and r.returncode == 0 and r.stdout.strip():
+        return r.stdout
+    try:
+        p = ROOT / rel
+        return p.read_text(encoding="utf-8") if p.exists() else None
+    except Exception:
+        return None
+
+
+# TODO.md의 열린 항목(`- [ ] **제목**`) 줄에 이 표시를 붙이면 대화 시작 브리핑이 보여 준다 (다른 PC·다음 대화에서 바로 이어 갈 일)
+HANDOFF_MARK = "📌 이어서"
+
+
+def handoff_lines(todo_text: Optional[str]) -> List[str]:
+    """TODO.md에서 '📌 이어서' 표시가 붙은 열린 항목의 제목만 뽑는다 (없으면 빈 목록)"""
+    titles = []
+    for line in (todo_text or "").splitlines():
+        m = re.match(r"^- \[ \] \*\*(.+?)\*\*", line)
+        if m and HANDOFF_MARK in line:
+            titles.append(m.group(1))
+    if not titles:
+        return []
+    return ["📌 이어서 할 일 (TODO.md — 사용자가 다른 PC·다음 대화에서 이어 가기로 해 둔 일. 세부 내용은 해당 항목을 읽고, 먼저 사용자에게 이어 갈지 묻는다):"
+            ] + [f"   - {t}" for t in titles]
 
 
 def runs_status(now: Optional[datetime] = None) -> List[str]:
@@ -324,6 +354,9 @@ def main(argv: Optional[List[str]] = None) -> None:
     args = ap.parse_args(argv)
     print(f"📋 [대화 시작 브리핑] {datetime.now(KST):%Y-%m-%d %H:%M} KST")
     print(git_sync())
+    handoff = handoff_lines(read_text("TODO.md"))
+    if handoff:
+        print("\n".join(handoff))
     if not args.no_tests:
         print(run_tests())
     print("\n".join(runs_status()))

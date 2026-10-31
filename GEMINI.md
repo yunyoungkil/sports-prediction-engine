@@ -82,6 +82,7 @@
 - **추천 픽 0건이 정상**(보정 폭 < 마진 약 15%). 가상 베팅 7전략(A~G) 모두 표본 부족, 기준선 E −19.1%(43건). G(자율 AI 베터)는 2026-10-30 개편: 월 10만 원 지갑, 매 회차 주력(안정)+소액 복권을 사고 판돈은 AI 우위·잔고로 정함, "판돈 조절 효과"는 300건부터 판정 (TODO 7.6). G-본능(비교용, 이기면 판돈 ×1.4 · 지면 고배당 · 수익 보호 없음)도 G와 나란히 실전 기록 — 과거 28개월 재현 G −62만 vs 본능 −136만 (TODO 7.7).
 - **운영**: cron-job.org 정시 호출 + GitHub 예약 보험(7번), 결과 수집 실패 시 기존 결과 유지, pandera 데이터 계약, 운영 점검, 대화 시작 브리핑.
 - **다음 큰 일**: 실전 AI 300경기 판정 → `shin_mkt` 교체 + R17·R18 피처 켜기(TODO 7.1, REVIEW R17~R18). 그 전에는 모델·피처를 더 얹지 않는다.
+- **이어서 할 일 (2026-10-31, 다른 PC에서)**: TODO 7.8 — G 판돈의 밑천(잔고 비율 vs 월 예산 상한 vs 정액)·손실 한도 결정과 구현. 사람 같은 행동(이기면 키움·지면 만회)이 돈을 더 잃는다는 건 7.7(G-본능)이 확인했고 G는 원칙형으로 둔다. 비교 숫자는 `python -m evaluation.staking_simulation`으로 재현.
 - 이 절의 숫자는 날짜와 함께 갱신한다 (아래 8번 규칙).
 
 ## 6. 여러 PC에서 작업할 때
@@ -96,7 +97,7 @@
 - cron-job.org 작업 2개 (시간대 Asia/Seoul): `sports pipeline` = `pipeline.yml` 매일 09:30·18:30 (`30 9,18 * * *`), `sports results` = `results.yml` 2시간마다 (`0 */2 * * *`). 둘 다 `POST https://api.github.com/repos/yunyoungkil/sports-prediction-engine/actions/workflows/<파일>/dispatches`, 본문 `{"ref":"master"}`.
 - 인증: GitHub fine-grained 토큰 `sports-engine-scheduler` (이 저장소 하나, Actions 읽기·쓰기만). **토큰 값은 cron-job.org 헤더에만 있고 저장소·채팅·로그에 쓰지 않는다.**
 - **토큰 만료일: 2027-10-28.** 브리핑(`evaluation/briefing.py`의 `SCHEDULER_TOKEN_EXPIRES`)이 30일 전부터 경고, 7일 전부터 긴급으로 알린다. 갱신: GitHub Settings → Personal access tokens → `sports-engine-scheduler` → Regenerate token(만료 1년) → cron-job.org 두 작업의 `Authorization: Bearer <새 토큰>` 교체 → `SCHEDULER_TOKEN_EXPIRES` 날짜 수정.
-- **대화 시작 브리핑이 매번 확인하는 것** (`python -m evaluation.briefing`): ① 외부 스케줄러가 제때 호출하고 있는지(24시간 횟수·마지막 호출 시각, 늦으면 ⚠️) ② 토큰 만료까지 남은 일수 ③ **데이터 수집 점검**(경기 수·회차·빈 회차·배당 이상·예측/결과 갱신 시각·채점 회차의 결과가 비지 않았는지). ⚠️가 있으면 사용자에게 먼저 알린다. ④ **문서 동기화**(ARCHITECTURE.md에 없는 모듈·워크플로·데이터 파일, 코드보다 뒤처진 문서) ⑤ **데이터 계약**(pandera) 점검 결과.
+- **대화 시작 브리핑이 매번 확인하는 것** (`python -m evaluation.briefing`): ① 외부 스케줄러가 제때 호출하고 있는지(24시간 횟수·마지막 호출 시각, 늦으면 ⚠️) ② 토큰 만료까지 남은 일수 ③ **데이터 수집 점검**(경기 수·회차·빈 회차·배당 이상·예측/결과 갱신 시각·채점 회차의 결과가 비지 않았는지). ⚠️가 있으면 사용자에게 먼저 알린다. ④ **문서 동기화**(ARCHITECTURE.md에 없는 모듈·워크플로·데이터 파일, 코드보다 뒤처진 문서) ⑤ **데이터 계약**(pandera) 점검 결과. ⑥ **이어서 할 일**(TODO.md 열린 항목 중 `📌 이어서`가 붙은 것 — 사용자가 다른 PC·다음 대화에서 이어 가기로 해 둔 일이므로 해당 항목을 읽고 먼저 이어 갈지 묻는다).
 - `gh`가 없는 PC에서는 "못 가져옴"으로 나온다. `winget install GitHub.cli` 후 `gh auth login`.
 
 ## 8. 문서 최신화 규칙 (자동으로 한다)

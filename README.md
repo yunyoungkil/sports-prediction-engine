@@ -116,7 +116,7 @@
 ```bash
 pip install -r requirements.txt
 git pull --rebase origin master          # 봇이 data/를 자주 커밋하므로 먼저 최신화
-python -m evaluation.briefing            # 대화 시작 브리핑: 동기화·테스트·자동 실행·스케줄러·데이터·판정 진행
+python -m evaluation.briefing            # 대화 시작 브리핑: 동기화·테스트·자동 실행·스케줄러·데이터·판정 진행·이어서 할 일(TODO의 📌)
 streamlit run dashboard/app.py           # 대시보드 (localhost:8501)
 
 # 직접 돌려 보기 (data/ 파일이 바뀌므로 커밋하지 말 것 — GEMINI.md 참고)

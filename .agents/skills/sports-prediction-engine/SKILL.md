@@ -59,6 +59,7 @@ Docs go stale silently (ARCHITECTURE.md described the v1 design for 5 days while
 | New `REVIEW.md` R-item or `TODO.md` item/phase | `README.md` 문서 table (R-range, Phase range) |
 | New rule, convention, secret, API limit, credential expiry date | `GEMINI.md` (and `SCHEDULER_TOKEN_EXPIRES` in `evaluation/briefing.py` for the token) |
 | New skill rule or workflow for the assistant | this file |
+| Work not finished here, or the user will continue it on another PC / next conversation | an open `TODO.md` item (`- [ ] **title**`) containing `📌 이어서` + context, dated numbers, decisions needed, start steps — the session-start briefing lists it |
 | Change to a core rule (the block between `CORE-RULES` markers) | BOTH `CLAUDE.md` and `GEMINI.md` identically — `tests/test_core_rules.py` fails otherwise |
 
 How to check: `python -m evaluation.docs_sync` (also printed in the session-start briefing as "📚 문서 동기화"). It flags any module / workflow / `data/` file that `ARCHITECTURE.md` never names, and docs far behind the code. **Zero ⚠️ before every commit that adds or removes a file.** If the briefing shows ⚠️ at session start, fix the docs first, then continue the task.

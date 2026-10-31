@@ -103,8 +103,9 @@ sports-prediction-engine/
 | `evaluation/gates.py` | 추천 잠금: 검증 3단계 통과한 기능만 켬 |
 | `evaluation/health_check.py` | 운영 점검(수집·갱신 시각·채점 감소·데이터 계약 오류) → 경고 시 실행 실패 표시·텔레그램 |
 | `evaluation/data_contracts.py` | **데이터 계약(pandera)**: 예측·결과·아카이브 스키마 + 결과 누락 교차 검사 → `contract_report.json` |
-| `evaluation/audit.py` · `evaluation/docs_sync.py` · `evaluation/briefing.py` · `evaluation/gh_cli.py` | 브리핑용 데이터 점검 · 문서 동기화 점검 · 대화 시작 브리핑 · gh 경로 찾기 |
+| `evaluation/audit.py` · `evaluation/docs_sync.py` · `evaluation/briefing.py` · `evaluation/gh_cli.py` | 브리핑용 데이터 점검 · 문서 동기화 점검 · 대화 시작 브리핑(TODO의 `📌 이어서` 항목 포함) · gh 경로 찾기 |
 | `evaluation/calibration_experiment.py` | 사후 보정 실험 (결과: 보정 불필요) |
+| `evaluation/staking_simulation.py` | 판돈 규칙 비교 시뮬레이션 — 원칙형·정액·손실 추격, 가정한 확률로 (TODO 7.8) |
 | `evaluation/odds_moves_test.py` · `evaluation/vote_bias.py` | 배당 변경·구매 쏠림 시험 |
 
 ### dashboard/ · notifier/

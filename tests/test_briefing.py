@@ -1,4 +1,4 @@
-from evaluation.briefing import paper_lines, verdict_lines
+from evaluation.briefing import handoff_lines, paper_lines, verdict_lines
 
 
 def test_verdict_lines_from_data():
@@ -65,6 +65,21 @@ def test_paper_lines_g_instinct_counts_and_comparison():
     text = "\n".join(paper_lines(reader={"data/paper_trading.json": {"strategies": {"G_ai_bettor": g, "G_instinct": gi}}}.get))
     assert "이긴 뒤 판돈 키움 1회차 · 진 뒤 고배당 2회차" in text
     assert "원칙 vs 본능 순손익: G -1,000원 vs G-본능 -3,000원" in text
+
+
+def test_handoff_lines_only_open_marked_items():
+    """TODO.md에서 '📌 이어서'가 붙은 열린 항목만 보여 준다 (끝난 항목·표시 없는 항목·본문 속 언급은 제외)"""
+    todo = "\n".join([
+        "- [ ] **9.1 예시 항목** 📌 이어서 (다른 PC에서)",
+        "- [x] **9.0 끝난 예시** 📌 이어서 (끝난 항목은 안 보임)",
+        "- [ ] **9.2 표시 없는 예시** (표시 없음)",
+        "  - [ ] 하위 항목 📌 이어서 (들여쓴 줄은 항목이 아님)",
+        "- [ ] **9.3 다른 예시** 설명 📌 이어서",
+    ])
+    out = handoff_lines(todo)
+    assert out[0].startswith("📌 이어서 할 일") and "먼저 사용자에게 이어 갈지 묻는다" in out[0]
+    assert out[1:] == ["   - 9.1 예시 항목", "   - 9.3 다른 예시"]
+    assert handoff_lines("- [ ] **9.2 표시 없는 예시**") == [] and handoff_lines("") == [] and handoff_lines(None) == []
 
 
 def _fake_runner(times_by_wf):
