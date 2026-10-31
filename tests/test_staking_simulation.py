@@ -32,3 +32,22 @@ def test_never_stakes_more_than_the_wallet():
         s = simulate_rule(hit, 2.0, rule, per_month=30, allowance=10_000)
         assert s["net_min"] >= -30_000, rule
         assert s["rest_months_mean"] >= 0
+
+
+def test_budget_cap_bounds_the_monthly_exposure():
+    """월 예산 상한: 한 달에 걸 수 있는 총액이 월 용돈의 35%를 넘지 않고, 잔고 비율 방식보다 훨씬 적게 건다. 손실률은 그대로"""
+    from evaluation.staking_simulation import ALLOWANCE, BUDGET_PCT, ROUNDS_PER_MONTH
+    res = compare(0.577, 1.6, n=3000)
+    b, d = res["budget"], res["disciplined"]
+    assert b["staked_mean"] <= 12 * BUDGET_PCT * ALLOWANCE
+    assert b["staked_mean"] < d["staked_mean"] / 2
+    assert b["loss_rate"] == pytest.approx(0.577 * 1.6 - 1.0, abs=0.02)
+    assert ROUNDS_PER_MONTH == 13
+
+
+def test_wallet_ratio_stake_grows_as_allowance_piles_up():
+    """잔고 비율 방식은 용돈이 쌓이면 1회 판돈이 계속 커진다 (첫 달 대비 12개월째 몇 배), 월 예산 상한은 커지지 않는다"""
+    res = compare(0.577, 1.6, n=3000)
+    d, b = res["disciplined"]["stake_by_month"], res["budget"]["stake_by_month"]
+    assert len(d) == 12 and d[11] > 4 * d[0]
+    assert max(b) <= 1.1 * 35_000 / 13        # 한 회차 평균이 예산을 회차 수로 나눈 금액 안
