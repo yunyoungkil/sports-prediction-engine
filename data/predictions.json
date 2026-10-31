@@ -51717,9 +51717,9 @@
     "home_team": "광주FC",
     "away_team": "김천상무 프로축구단",
     "betman_odds": {
-      "home_win": 2.65,
-      "draw": 3.15,
-      "away_win": 2.2
+      "home_win": 2.55,
+      "draw": 3.1,
+      "away_win": 2.3
     },
     "odds_changes": [
       {
@@ -51736,51 +51736,66 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-10-31 15:31:58",
+        "from": {
+          "home_win": 2.65,
+          "draw": 3.15,
+          "away_win": 2.2
+        },
+        "to": {
+          "home_win": 2.55,
+          "draw": 3.1,
+          "away_win": 2.3
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.2984,
-        "draw": 0.2938,
-        "away_win": 0.4078
+        "home_win": 0.3125,
+        "draw": 0.2998,
+        "away_win": 0.3877
       }
     },
     "prediction_odds": {
-      "home_win": 2.65,
-      "draw": 3.15,
-      "away_win": 2.2
+      "home_win": 2.55,
+      "draw": 3.1,
+      "away_win": 2.3
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3283,
-      "draw": 0.2762,
-      "away": 0.3955
+      "home": 0.3411,
+      "draw": 0.2806,
+      "away": 0.3782
     },
     "model_probabilities": {
-      "home_win": 0.3283,
-      "draw": 0.2762,
-      "away_win": 0.3955
+      "home_win": 0.3411,
+      "draw": 0.2806,
+      "away_win": 0.3782
     },
     "blended_probabilities": {
-      "home_win": 0.2957,
-      "draw": 0.295,
-      "away_win": 0.4093
+      "home_win": 0.3103,
+      "draw": 0.3012,
+      "away_win": 0.3885
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2164,
-        "draw": -0.0708,
-        "away_win": -0.0995
+        "home_win": -0.2087,
+        "draw": -0.0663,
+        "away_win": -0.1065
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0708,
-      "best_ev_pct": "-7.1%",
+      "best_ev": -0.0663,
+      "best_ev_pct": "-6.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -52033,48 +52048,64 @@
     "home_team": "광주FC",
     "away_team": "김천상무 프로축구단",
     "betman_odds": {
-      "home_win": 1.56,
-      "draw": 3.75,
-      "away_win": 4.15
+      "home_win": 1.48,
+      "draw": 4.1,
+      "away_win": 4.35
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 15:31:58",
+        "from": {
+          "home_win": 1.56,
+          "draw": 3.75,
+          "away_win": 4.15
+        },
+        "to": {
+          "home_win": 1.48,
+          "draw": 4.1,
+          "away_win": 4.35
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.56,
-      "draw": 3.75,
-      "away_win": 4.15
+      "home_win": 1.48,
+      "draw": 4.1,
+      "away_win": 4.35
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5581,
-      "draw": 0.2322,
-      "away": 0.2098
+      "home": 0.5878,
+      "draw": 0.2122,
+      "away": 0.2
     },
     "model_probabilities": {
-      "home_win": 0.5581,
-      "draw": 0.2322,
-      "away_win": 0.2098
+      "home_win": 0.5878,
+      "draw": 0.2122,
+      "away_win": 0.2
     },
     "blended_probabilities": {
-      "home_win": 0.5817,
-      "draw": 0.2279,
-      "away_win": 0.1905
+      "home_win": 0.6163,
+      "draw": 0.2043,
+      "away_win": 0.1794
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0925,
-        "draw": -0.1454,
-        "away_win": -0.2094
+        "home_win": -0.0879,
+        "draw": -0.1624,
+        "away_win": -0.2196
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 광주FC (+1.0) 승",
       "raw_selection_name": "광주FC (+1.0) 승",
-      "best_ev": -0.0925,
-      "best_ev_pct": "-9.2%",
+      "best_ev": -0.0879,
+      "best_ev_pct": "-8.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -57663,39 +57694,55 @@
     "home_team": "맥아서FC",
     "away_team": "웨스턴시드니 원더러스",
     "betman_odds": {
-      "home_win": 2.4,
-      "draw": 3.35,
-      "away_win": 2.3
+      "home_win": 2.6,
+      "draw": 3.25,
+      "away_win": 2.19
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 15:13:32",
+        "from": {
+          "home_win": 2.4,
+          "draw": 3.35,
+          "away_win": 2.3
+        },
+        "to": {
+          "home_win": 2.6,
+          "draw": 3.25,
+          "away_win": 2.19
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3101,
-        "draw": 0.2871,
-        "away_win": 0.4028
+        "home_win": 0.2805,
+        "draw": 0.2959,
+        "away_win": 0.4236
       }
     },
     "prediction_odds": {
-      "home_win": 2.4,
-      "draw": 3.35,
-      "away_win": 2.3
+      "home_win": 2.6,
+      "draw": 3.25,
+      "away_win": 2.19
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3623,
-      "draw": 0.2596,
-      "away": 0.3781
+      "home": 0.3348,
+      "draw": 0.2678,
+      "away": 0.3974
     },
     "model_probabilities": {
-      "home_win": 0.3623,
-      "draw": 0.2596,
-      "away_win": 0.3781
+      "home_win": 0.3348,
+      "draw": 0.2678,
+      "away_win": 0.3974
     },
     "blended_probabilities": {
-      "home_win": 0.3079,
-      "draw": 0.2883,
-      "away_win": 0.4038
+      "home_win": 0.2776,
+      "draw": 0.297,
+      "away_win": 0.4254
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -57740,15 +57787,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.261,
-        "draw": -0.0342,
-        "away_win": -0.0713
+        "home_win": -0.2782,
+        "draw": -0.0348,
+        "away_win": -0.0684
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0342,
-      "best_ev_pct": "-3.4%",
+      "best_ev": -0.0348,
+      "best_ev_pct": "-3.5%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -58001,48 +58048,64 @@
     "home_team": "맥아서FC",
     "away_team": "웨스턴시드니 원더러스",
     "betman_odds": {
-      "home_win": 1.48,
-      "draw": 4.0,
-      "away_win": 4.45
+      "home_win": 1.53,
+      "draw": 3.95,
+      "away_win": 4.1
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 15:13:32",
+        "from": {
+          "home_win": 1.48,
+          "draw": 4.0,
+          "away_win": 4.45
+        },
+        "to": {
+          "home_win": 1.53,
+          "draw": 3.95,
+          "away_win": 4.1
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.48,
-      "draw": 4.0,
-      "away_win": 4.45
+      "home_win": 1.53,
+      "draw": 3.95,
+      "away_win": 4.1
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5873,
-      "draw": 0.2173,
-      "away": 0.1953
+      "home": 0.568,
+      "draw": 0.22,
+      "away": 0.212
     },
     "model_probabilities": {
-      "home_win": 0.5873,
-      "draw": 0.2173,
-      "away_win": 0.1953
+      "home_win": 0.568,
+      "draw": 0.22,
+      "away_win": 0.212
     },
     "blended_probabilities": {
-      "home_win": 0.6155,
-      "draw": 0.21,
-      "away_win": 0.1745
+      "home_win": 0.5935,
+      "draw": 0.2138,
+      "away_win": 0.1927
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0891,
-        "draw": -0.16,
-        "away_win": -0.2235
+        "home_win": -0.0919,
+        "draw": -0.1555,
+        "away_win": -0.2099
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 맥아서FC (+1.0) 승",
       "raw_selection_name": "맥아서FC (+1.0) 승",
-      "best_ev": -0.0891,
-      "best_ev_pct": "-8.9%",
+      "best_ev": -0.0919,
+      "best_ev_pct": "-9.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -58295,48 +58358,64 @@
     "home_team": "맥아서FC",
     "away_team": "웨스턴시드니 원더러스",
     "betman_odds": {
-      "home_win": 2.18,
+      "home_win": 2.11,
       "draw": 0.0,
-      "away_win": 1.45
+      "away_win": 1.48
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 15:13:32",
+        "from": {
+          "home_win": 2.18,
+          "draw": 0.0,
+          "away_win": 1.45
+        },
+        "to": {
+          "home_win": 2.11,
+          "draw": 0.0,
+          "away_win": 1.48
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.18,
+      "home_win": 2.11,
       "draw": 0.0,
-      "away_win": 1.45
+      "away_win": 1.48
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3994,
+      "home": 0.4123,
       "draw": 0.0,
-      "away": 0.6006
+      "away": 0.5877
     },
     "model_probabilities": {
-      "home_win": 0.3994,
+      "home_win": 0.4123,
       "draw": 0.0,
-      "away_win": 0.6006
+      "away_win": 0.5877
     },
     "blended_probabilities": {
-      "home_win": 0.3878,
+      "home_win": 0.4021,
       "draw": 0.0,
-      "away_win": 0.6122
+      "away_win": 0.5979
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1546,
+        "home_win": -0.1516,
         "draw": -1.0,
-        "away_win": -0.1123
+        "away_win": -0.1151
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 2.5)",
       "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.1123,
-      "best_ev_pct": "-11.2%",
+      "best_ev": -0.1151,
+      "best_ev_pct": "-11.5%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
