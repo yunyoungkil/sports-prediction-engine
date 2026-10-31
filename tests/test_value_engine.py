@@ -160,8 +160,53 @@ def test_replay_decides_games_and_summarizes():
     assert sum(s["decisions"].values()) == 9 and s["decisions"]["BET"] == 1
     assert s["max_expected_ev"] == pytest.approx(0.46 * 2.5 - 1.0)
     assert s["closest_to_bet"][0]["decision"] == "BET" and s["max_conservative_ev"] == pytest.approx(0.46 * 2.5 - 1.0)
-    # 근거(표본 밖 예측)가 없으면 아무리 좋아 보여도 BET이 없다
+    # 근거(표본 밖 예측)가 없으면 기울기를 임의로 채우지 않고 전부 BLOCK — 아무리 좋아 보여도 BET이 없다
     none = summarize(decide_games(rows, probs, None))
-    assert none["bets"] == 0 and none["reasons"]["UNCALIBRATED"] == 1
+    assert none["bets"] == 0 and none["decisions"] == {"BLOCK": 9} and none["reasons"] == {"DATA_QUALITY_NO_CALIBRATION_HISTORY": 9}
     q, p, y, c = outcome_arrays(rows, probs)
     assert q.shape == p.shape == y.shape == c.shape == (9,) and y.reshape(3, 3).sum(axis=1).tolist() == [1, 1, 1]
+
+
+def test_single_purchase_check_blocks_only_would_be_bets():
+    """한경기(단통) 구매가 안 되는 경기: BET 조건까지 통과한 경우에만 BLOCK — 그 앞의 REJECT·WATCH 사유 코드는 그대로"""
+    blocked = _d(single_purchasable=False)
+    assert (blocked["decision"], blocked["reason"], blocked["stake"]) == ("BLOCK", "NOT_SINGLE_PURCHASABLE", 0)
+    assert blocked["expected_value"] == pytest.approx(0.155) and blocked["conservative_ev"] == pytest.approx(0.071)    # 숫자는 그대로 남음
+    assert _d(single_purchasable=True)["decision"] == "BET"
+    for kw in (dict(model=0.48, lower=0.45), dict(lower=0.485), dict(lower=0.43), dict(lower=None), dict(validated=False)):
+        assert _d(single_purchasable=False, **kw) == _d(**kw)                  # 기존 사유 코드·판정 기록 보존
+    assert "NOT_SINGLE_PURCHASABLE" in REASONS
+
+
+def test_replay_single_filter_and_variant_isolation():
+    from evaluation.value_engine_replay import decide_games, summarize
+    rows = [_row(1, (2.5, 3.2, 2.6), (0.36, 0.28, 0.36), 0, sgl=1), _row(1, (2.5, 3.2, 2.6), (0.36, 0.28, 0.36), 0, sgl=0)]
+    probs = np.array([[0.46, 0.27, 0.27], [0.46, 0.27, 0.27]])                 # 두 경기 모두 BET 조건을 통과하는 같은 예측
+    rel = {"slope": 1.0, "se": 0.0, "n": 6, "rounds": 50}
+    off = summarize(decide_games(rows, probs, rel, single_only=False))
+    on = summarize(decide_games(rows, probs, rel, single_only=True))
+    assert off["bets"] == 2 and on["bets"] == 1 and on["bets_single_eligible"] == 1
+    assert on["reasons"].get("NOT_SINGLE_PURCHASABLE") == 1 and on["decisions"]["BLOCK"] == 1
+    # 단통 필터를 켜도 BET이 아닌 선택지의 사유 코드·개수는 그대로
+    skip = ("NOT_SINGLE_PURCHASABLE", "POSITIVE_CONSERVATIVE_EV")
+    assert {k: v for k, v in on["reasons"].items() if k not in skip} == {k: v for k, v in off["reasons"].items() if k not in skip}
+
+
+def test_oof_reliability_uses_only_earlier_predictions_and_a_cutoff():
+    import pandas as pd
+    from evaluation.value_engine_replay import oof_reliability
+    assert oof_reliability([], []) is None                                       # 과거 예측이 없는 첫 구간
+    rng = np.random.default_rng(3)
+    rows, probs = [], []
+    for g in range(80):                                                         # 80회차 × 4경기, 앞 40회차는 2024, 뒤 40회차는 2025
+        for _ in range(4):
+            q = rng.dirichlet([6, 4, 5])
+            p = np.clip(q + rng.normal(0, 0.02, 3), 0.02, None)
+            r = _row(g, (2.5, 3.2, 2.6), q, int(rng.choice(3, p=q)))
+            r["kickoff"] = pd.Timestamp("2024-06-01", tz="UTC") + pd.Timedelta(days=5 * g)
+            rows.append(r)
+            probs.append(p / p.sum())
+    full = oof_reliability(rows, [np.array(probs)])
+    cut = oof_reliability(rows, [np.array(probs)], before=pd.Timestamp("2024-12-01", tz="UTC"))
+    assert full["rounds"] == 80 and cut["rounds"] < 80 and cut["rounds"] >= 30
+    assert oof_reliability(rows, [np.array(probs)], before=pd.Timestamp("2024-06-02", tz="UTC")) is None     # 컷오프 앞에 근거가 없으면 None

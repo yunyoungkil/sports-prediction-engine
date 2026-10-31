@@ -6,7 +6,7 @@ AI 확률이 시장·베트맨 배당에 비해 정말 유리한지, 불확실�
 기존 AI·수집·대시보드는 건드리지 않는 독립 모듈이다 (순수 함수 · numpy만 사용 · 같은 입력이면 항상 같은 결과).
 
 판정 (위에서부터 처음 걸리는 것):
-  BLOCK   데이터를 믿을 수 없음 — 지원하지 않는 유형 · 데이터 품질 불량 · 배당·확률 이상
+  BLOCK   데이터를 믿을 수 없거나 살 수 없음 — 지원하지 않는 유형 · 데이터 품질 불량 · 배당·확률 이상 · (BET이 됐을) 경기가 단일 구매 불가
   REJECT  가치 없음 — AI가 시장보다 낮게 봄(NO_EDGE_VS_MARKET) · 일반 EV < 0 · 일반 EV < 후보 기준 · 보수적 EV < 0
   WATCH   가치는 있으나 근거가 부족 — 확률 하한을 못 구함(UNCALIBRATED) · 보수적 EV < 기준 · 검증 미통과 · 경기당 1개 초과
   BET     일반 EV ≥ EV_CANDIDATE 이고 보수적 EV ≥ CEV_MIN 이고 검증 통과
@@ -45,6 +45,7 @@ REASONS = {
     "CONSERVATIVE_EV_BELOW_THRESHOLD": "WATCH: 보수적 EV가 기준(CEV_MIN)보다 낮음",
     "NOT_VALIDATED": "WATCH: 검증 단계를 통과하지 못함",
     "ONE_BET_PER_MATCH": "WATCH: 같은 경기에 BET이 더 좋은 선택지가 있음 (경기당 최대 1개)",
+    "NOT_SINGLE_PURCHASABLE": "BLOCK: BET 조건은 통과했지만 베트맨에서 한경기(단통) 구매가 안 되는 경기 — 단일 베팅 엔진의 대상이 아님",
     "POSITIVE_CONSERVATIVE_EV": "BET: 보수적 EV까지 기준을 넘음",
 }
 
@@ -84,8 +85,11 @@ def probability_lower(model_prob: float, market_prob: float, reliability: Option
 
 
 def decide(market_prob: float, model_prob: float, probability_lower: Optional[float], betman_odds: float,
-           market_type: str = "1X2", data_quality: str = "valid", validated: bool = True, stake: int = STAKE) -> Dict[str, Any]:
-    """선택지 하나를 판정한다. 반환: expected_value · conservative_ev · decision · reason · stake"""
+           market_type: str = "1X2", data_quality: str = "valid", validated: bool = True, stake: int = STAKE,
+           single_purchasable: bool = True) -> Dict[str, Any]:
+    """선택지 하나를 판정한다. 반환: expected_value · conservative_ev · decision · reason · stake
+    single_purchasable=False(한경기 구매 불가 경기)면 BET 조건까지 통과한 경우에만 BLOCK(NOT_SINGLE_PURCHASABLE)으로 바꾼다 —
+    그 앞의 REJECT·WATCH 사유 코드는 그대로 남는다."""
     out: Dict[str, Any] = {"expected_value": None, "conservative_ev": None, "decision": "BLOCK", "reason": "", "stake": 0}
 
     def done(decision: str, reason: str, bet: bool = False) -> Dict[str, Any]:
@@ -126,6 +130,8 @@ def decide(market_prob: float, model_prob: float, probability_lower: Optional[fl
         return done("WATCH", "CONSERVATIVE_EV_BELOW_THRESHOLD")
     if not validated:
         return done("WATCH", "NOT_VALIDATED")
+    if not single_purchasable:
+        return done("BLOCK", "NOT_SINGLE_PURCHASABLE")
     return done("BET", "POSITIVE_CONSERVATIVE_EV", bet=True)
 
 
