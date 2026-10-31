@@ -199,14 +199,15 @@ def build_enriched_soccer_rows(df: pd.DataFrame) -> List[Dict[str, Any]]:
     return rows
 
 
-def eval_custom_wf(rows: List[Dict[str, Any]], folds: List[Dict[str, Any]], match_feats: List[str], extra_per_keys=()) -> Dict[str, Any]:
-    """5구간 워크포워드 평가."""
+def eval_custom_wf(rows: List[Dict[str, Any]], folds: List[Dict[str, Any]], match_feats: List[str], extra_per_keys=(),
+                   per_outcome=("log_p_market",)) -> Dict[str, Any]:
+    """5구간 워크포워드 평가. per_outcome은 MarketCorrector 결과별 피처 이름 (예: 'x_diff' ← 행의 p_x, 7.12 경기 시각)"""
     g_cols = [f"g_{g}" for g in GROUP_NAMES]
 
     if not extra_per_keys:
         fs_name = "_tmp_exp"
         FEATURE_SETS[fs_name] = {
-            "per_outcome": ["log_p_market"],
+            "per_outcome": list(per_outcome),
             "match": list(match_feats) + g_cols,
         }
         all_rows, all_probs = [], []
