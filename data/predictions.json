@@ -46117,7 +46117,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "멜버른 시티",
     "away_team": "시드니FC",
@@ -46173,45 +46173,7 @@
       "away_win": 0.2636
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "387df7ecc8128908ff3a4e1bdd5ca068",
-      "home_team": "Melbourne City",
-      "away_team": "Sydney FC",
-      "commence_time": "2026-10-31T06:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.05,
-        "draw": 3.68,
-        "away_win": 3.69
-      },
-      "sharp_probs": {
-        "home_win": 0.4733,
-        "draw": 0.2637,
-        "away_win": 0.263
-      },
-      "consensus_probs": {
-        "home_win": 0.46195,
-        "draw": 0.269275,
-        "away_win": 0.268775
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_single",
-      "prob_distance": 0.0686,
-      "sport_key": "soccer_australia_aleague",
-      "betman_odds": {
-        "home_win": 1.98,
-        "draw": 3.15,
-        "away_win": 3.05
-      },
-      "betman_home": "멜버른 시티",
-      "betman_away": "시드니FC",
-      "match_time": "26.10.31 (토) 15:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.0629,
-        "draw": -0.1693,
-        "away_win": -0.1978
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
@@ -46471,7 +46433,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "멜버른 시티",
     "away_team": "시드니FC",
@@ -46781,7 +46743,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "멜버른 시티",
     "away_team": "시드니FC",
@@ -47075,7 +47037,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "멜버른 시티",
     "away_team": "시드니FC",
@@ -47369,7 +47331,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시마 앤틀러스",
     "away_team": "세레소 오사카",
@@ -47425,45 +47387,7 @@
       "away_win": 0.1942
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "35da9f35867b19383c7de0a551765104",
-      "home_team": "Kashima Antlers",
-      "away_team": "Cerezo Osaka",
-      "commence_time": "2026-10-31T06:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 1.76,
-        "draw": 4.24,
-        "away_win": 4.37
-      },
-      "sharp_probs": {
-        "home_win": 0.5501,
-        "draw": 0.2283,
-        "away_win": 0.2216
-      },
-      "consensus_probs": {
-        "home_win": 0.5470777777777778,
-        "draw": 0.2347,
-        "away_win": 0.21816666666666668
-      },
-      "n_bookmakers": 9,
-      "match_method": "time_odds",
-      "prob_distance": 0.0342,
-      "sport_key": "soccer_japan_j_league",
-      "betman_odds": {
-        "home_win": 1.63,
-        "draw": 3.6,
-        "away_win": 3.85
-      },
-      "betman_home": "가시마 앤틀러스",
-      "betman_away": "세레소 오사카",
-      "match_time": "26.10.31 (토) 15:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1033,
-        "draw": -0.1781,
-        "away_win": -0.1468
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
@@ -47723,7 +47647,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시마 앤틀러스",
     "away_team": "세레소 오사카",
@@ -48033,14 +47957,14 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시마 앤틀러스",
     "away_team": "세레소 오사카",
     "betman_odds": {
-      "home_win": 2.2,
+      "home_win": 2.09,
       "draw": 0.0,
-      "away_win": 1.44
+      "away_win": 1.49
     },
     "odds_changes": [
       {
@@ -48057,45 +47981,60 @@
         },
         "line_from": 2.5,
         "line_to": 2.5
+      },
+      {
+        "at": "2026-10-31 14:39:21",
+        "from": {
+          "home_win": 2.2,
+          "draw": 0.0,
+          "away_win": 1.44
+        },
+        "to": {
+          "home_win": 2.09,
+          "draw": 0.0,
+          "away_win": 1.49
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.2,
+      "home_win": 2.09,
       "draw": 0.0,
-      "away_win": 1.44
+      "away_win": 1.49
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3956,
+      "home": 0.4162,
       "draw": 0.0,
-      "away": 0.6044
+      "away": 0.5838
     },
     "model_probabilities": {
-      "home_win": 0.3956,
+      "home_win": 0.4162,
       "draw": 0.0,
-      "away_win": 0.6044
+      "away_win": 0.5838
     },
     "blended_probabilities": {
-      "home_win": 0.3835,
+      "home_win": 0.4065,
       "draw": 0.0,
-      "away_win": 0.6165
+      "away_win": 0.5935
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1563,
+        "home_win": -0.1504,
         "draw": -1.0,
-        "away_win": -0.1122
+        "away_win": -0.1157
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 2.5)",
       "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.1122,
-      "best_ev_pct": "-11.2%",
+      "best_ev": -0.1157,
+      "best_ev_pct": "-11.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -48343,7 +48282,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "가시마 앤틀러스",
     "away_team": "세레소 오사카",
@@ -48637,7 +48576,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "비셀 고베",
     "away_team": "나고야 그램퍼스",
@@ -48953,7 +48892,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "비셀 고베",
     "away_team": "나고야 그램퍼스",
@@ -49263,7 +49202,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "비셀 고베",
     "away_team": "나고야 그램퍼스",
@@ -49573,7 +49512,7 @@
     "kickoff_ts": 1793426400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "비셀 고베",
     "away_team": "나고야 그램퍼스",
@@ -49872,39 +49811,55 @@
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
     "betman_odds": {
-      "home_win": 1.98,
-      "draw": 3.35,
-      "away_win": 2.9
+      "home_win": 2.06,
+      "draw": 3.25,
+      "away_win": 2.8
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 14:51:05",
+        "from": {
+          "home_win": 1.98,
+          "draw": 3.35,
+          "away_win": 2.9
+        },
+        "to": {
+          "home_win": 2.06,
+          "draw": 3.25,
+          "away_win": 2.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.472,
-        "draw": 0.2364,
-        "away_win": 0.2916
+        "home_win": 0.451,
+        "draw": 0.245,
+        "away_win": 0.304
       }
     },
     "prediction_odds": {
-      "home_win": 1.98,
-      "draw": 3.35,
-      "away_win": 2.9
+      "home_win": 2.06,
+      "draw": 3.25,
+      "away_win": 2.8
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4398,
-      "draw": 0.2599,
-      "away": 0.3003
+      "home": 0.422,
+      "draw": 0.2675,
+      "away": 0.3105
     },
     "model_probabilities": {
-      "home_win": 0.4398,
-      "draw": 0.2599,
-      "away_win": 0.3003
+      "home_win": 0.422,
+      "draw": 0.2675,
+      "away_win": 0.3105
     },
     "blended_probabilities": {
-      "home_win": 0.4739,
-      "draw": 0.2366,
-      "away_win": 0.2895
+      "home_win": 0.452,
+      "draw": 0.2457,
+      "away_win": 0.3023
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -49949,15 +49904,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0617,
-        "draw": -0.2074,
-        "away_win": -0.1605
+        "home_win": -0.0689,
+        "draw": -0.2015,
+        "away_win": -0.1536
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 가시와 레이솔 승",
       "raw_selection_name": "가시와 레이솔 승",
-      "best_ev": -0.0617,
-      "best_ev_pct": "-6.2%",
+      "best_ev": -0.0689,
+      "best_ev_pct": "-6.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -50149,48 +50104,64 @@
     "home_team": "가시와 레이솔",
     "away_team": "우라와 레드",
     "betman_odds": {
-      "home_win": 3.65,
-      "draw": 3.7,
-      "away_win": 1.65
+      "home_win": 4.05,
+      "draw": 3.65,
+      "away_win": 1.59
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 14:51:05",
+        "from": {
+          "home_win": 3.65,
+          "draw": 3.7,
+          "away_win": 1.65
+        },
+        "to": {
+          "home_win": 4.05,
+          "draw": 3.65,
+          "away_win": 1.59
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 3.65,
-      "draw": 3.7,
-      "away_win": 1.65
+      "home_win": 4.05,
+      "draw": 3.65,
+      "away_win": 1.59
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2382,
-      "draw": 0.235,
-      "away": 0.5269
+      "home": 0.2147,
+      "draw": 0.2383,
+      "away": 0.547
     },
     "model_probabilities": {
-      "home_win": 0.2382,
-      "draw": 0.235,
-      "away_win": 0.5269
+      "home_win": 0.2147,
+      "draw": 0.2383,
+      "away_win": 0.547
     },
     "blended_probabilities": {
-      "home_win": 0.2119,
-      "draw": 0.2293,
-      "away_win": 0.5588
+      "home_win": 0.1867,
+      "draw": 0.2321,
+      "away_win": 0.5813
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2266,
-        "draw": -0.1516,
-        "away_win": -0.078
+        "home_win": -0.2439,
+        "draw": -0.1528,
+        "away_win": -0.0757
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 우라와 레드 반대승",
       "raw_selection_name": "우라와 레드 반대승",
-      "best_ev": -0.078,
-      "best_ev_pct": "-7.8%",
+      "best_ev": -0.0757,
+      "best_ev_pct": "-7.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -51274,9 +51245,9 @@
     "home_team": "GS칼텍스 서울Kixx",
     "away_team": "한국도로공사 하이패스",
     "betman_odds": {
-      "home_win": 1.87,
+      "home_win": 2.0,
       "draw": 0.0,
-      "away_win": 1.63
+      "away_win": 1.54
     },
     "odds_changes": [
       {
@@ -51308,45 +51279,60 @@
         },
         "line_from": 183.5,
         "line_to": 183.5
+      },
+      {
+        "at": "2026-10-31 14:57:55",
+        "from": {
+          "home_win": 1.87,
+          "draw": 0.0,
+          "away_win": 1.63
+        },
+        "to": {
+          "home_win": 2.0,
+          "draw": 0.0,
+          "away_win": 1.54
+        },
+        "line_from": 183.5,
+        "line_to": 183.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.87,
+      "home_win": 2.0,
       "draw": 0.0,
-      "away_win": 1.63
+      "away_win": 1.54
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4657,
+      "home": 0.435,
       "draw": 0.0,
-      "away": 0.5343
+      "away": 0.565
     },
     "model_probabilities": {
-      "home_win": 0.4657,
+      "home_win": 0.435,
       "draw": 0.0,
-      "away_win": 0.5343
+      "away_win": 0.565
     },
     "blended_probabilities": {
-      "home_win": 0.4657,
+      "home_win": 0.435,
       "draw": 0.0,
-      "away_win": 0.5343
+      "away_win": 0.565
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1291,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.1291
+        "away_win": -0.1299
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 언더 (< 183.5)",
-      "raw_selection_name": "언더 (< 183.5)",
-      "best_ev": -0.1291,
-      "best_ev_pct": "-12.9%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 오버 (> 183.5)",
+      "raw_selection_name": "오버 (> 183.5)",
+      "best_ev": -0.1299,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -69095,39 +69081,55 @@
     "home_team": "묀헨글라트바흐",
     "away_team": "파더보른07",
     "betman_odds": {
-      "home_win": 1.87,
-      "draw": 3.55,
-      "away_win": 3.0
+      "home_win": 1.93,
+      "draw": 3.5,
+      "away_win": 2.9
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 14:32:30",
+        "from": {
+          "home_win": 1.87,
+          "draw": 3.55,
+          "away_win": 3.0
+        },
+        "to": {
+          "home_win": 1.93,
+          "draw": 3.5,
+          "away_win": 2.9
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.4755,
-        "draw": 0.2458,
-        "away_win": 0.2787
+        "home_win": 0.459,
+        "draw": 0.2505,
+        "away_win": 0.2906
       }
     },
     "prediction_odds": {
-      "home_win": 1.87,
-      "draw": 3.55,
-      "away_win": 3.0
+      "home_win": 1.93,
+      "draw": 3.5,
+      "away_win": 2.9
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4651,
-      "draw": 0.245,
-      "away": 0.2899
+      "home": 0.4511,
+      "draw": 0.2487,
+      "away": 0.3002
     },
     "model_probabilities": {
-      "home_win": 0.4651,
-      "draw": 0.245,
-      "away_win": 0.2899
+      "home_win": 0.4511,
+      "draw": 0.2487,
+      "away_win": 0.3002
     },
     "blended_probabilities": {
-      "home_win": 0.4781,
-      "draw": 0.2465,
-      "away_win": 0.2753
+      "home_win": 0.4612,
+      "draw": 0.2513,
+      "away_win": 0.2875
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -69172,15 +69174,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.106,
-        "draw": -0.1249,
-        "away_win": -0.1741
+        "home_win": -0.1099,
+        "draw": -0.1204,
+        "away_win": -0.1663
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 묀헨글라트바흐 승",
       "raw_selection_name": "묀헨글라트바흐 승",
-      "best_ev": -0.106,
-      "best_ev_pct": "-10.6%",
+      "best_ev": -0.1099,
+      "best_ev_pct": "-11.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -69370,48 +69372,64 @@
     "home_team": "묀헨글라트바흐",
     "away_team": "파더보른07",
     "betman_odds": {
-      "home_win": 3.25,
-      "draw": 3.75,
-      "away_win": 1.74
+      "home_win": 3.4,
+      "draw": 4.15,
+      "away_win": 1.63
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-10-31 14:32:30",
+        "from": {
+          "home_win": 3.25,
+          "draw": 3.75,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 3.4,
+          "draw": 4.15,
+          "away_win": 1.63
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 3.25,
-      "draw": 3.75,
-      "away_win": 1.74
+      "home_win": 3.4,
+      "draw": 4.15,
+      "away_win": 1.63
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2678,
-      "draw": 0.2321,
-      "away": 0.5002
+      "home": 0.2561,
+      "draw": 0.2098,
+      "away": 0.5341
     },
     "model_probabilities": {
-      "home_win": 0.2678,
-      "draw": 0.2321,
-      "away_win": 0.5002
+      "home_win": 0.2561,
+      "draw": 0.2098,
+      "away_win": 0.5341
     },
     "blended_probabilities": {
-      "home_win": 0.2444,
-      "draw": 0.2272,
-      "away_win": 0.5283
+      "home_win": 0.2309,
+      "draw": 0.2008,
+      "away_win": 0.5683
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2057,
-        "draw": -0.148,
-        "away_win": -0.0808
+        "home_win": -0.2149,
+        "draw": -0.1667,
+        "away_win": -0.0737
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 파더보른07 반대승",
       "raw_selection_name": "파더보른07 반대승",
-      "best_ev": -0.0808,
-      "best_ev_pct": "-8.1%",
+      "best_ev": -0.0737,
+      "best_ev_pct": "-7.4%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
