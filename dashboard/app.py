@@ -325,7 +325,7 @@ def odds_change_table_html(m, keys, labels) -> str:
     th = "padding:4px 10px;font-size:12px;color:#94a3b8;text-align:center"
     td = "padding:4px 10px;font-size:13px;text-align:center;border-top:1px solid rgba(148,163,184,.15)"
     rows = "".join(
-        f"<tr><td style='{td};white-space:nowrap'><b>{name}</b> <span style='opacity:.6;font-size:11px'>{when}</span></td>"
+        f"<tr><td style='{td};white-space:nowrap'><b>{name}</b> <span style='opacity:.6;font-size:12px'>{when}</span></td>"
         + "".join(f"<td style='{td}'>{cell(o, snaps[i - 1][2] if i else None, k)}</td>" for k in keys) + "</tr>"
         for i, (name, when, o) in reversed(list(enumerate(snaps))))
     return ("<div style='padding-bottom:10px'><div style='font-size:14px;font-weight:700;margin:6px 0 4px'>"
@@ -881,7 +881,7 @@ def line_chip(m) -> str:
     return ""
 
 
-ONE_GAME_TAG = ("<span style='padding:1px 6px;border-radius:5px;font-size:11px;font-weight:700;white-space:nowrap;"
+ONE_GAME_TAG = ("<span style='padding:1px 6px;border-radius:5px;font-size:12px;font-weight:700;white-space:nowrap;"
                 "background:rgba(245,158,11,.18);color:#f59e0b'>한경기</span>")
 
 
@@ -1711,7 +1711,7 @@ with tab1:
             ok = pick == actual
             return f"<span style='color:{'#10b981' if ok else '#ef4444'}'>{'✅' if ok else '❌'}</span>"
 
-        cap = "<div style='font-size:11px;color:#94a3b8'>{}</div>"
+        cap = "<div style='font-size:12px;color:#94a3b8'>{}</div>"
         section_shown = set()
 
         # 대진 머리줄의 최종 점수: 핸디캡이 더해지지 않은 유형(승무패 → 홀짝 → 언더오버)의 점수
@@ -1835,7 +1835,7 @@ with tab1:
                 if ai_k and ai_k == mk_k:
                     delta = (ai_p - _prob(mk_probs, ai_k)) * 100
                     arrow = "▲" if delta >= 0.5 else ("▼" if delta <= -0.5 else "")
-                    ai_body = f"<b>{labels[ai_k]}</b> {ai_p * 100:.0f}% <span style='font-size:11px;color:#94a3b8'>{arrow}{abs(delta):.0f}</span>" if arrow \
+                    ai_body = f"<b>{labels[ai_k]}</b> {ai_p * 100:.0f}% <span style='font-size:12px;color:#94a3b8'>{arrow}{abs(delta):.0f}</span>" if arrow \
                         else f"<b>{labels[ai_k]}</b> {ai_p * 100:.0f}%"
                 elif ai_k:
                     ai_body = f"<span style='color:#f59e0b'>⚠️ <b>{labels[ai_k]}</b> {ai_p * 100:.0f}% 다름</span>"
@@ -2690,12 +2690,12 @@ with tab2:
             event = st.dataframe(
                 df_t2, hide_index=True, width="stretch", height=min(38 + 35 * len(df_t2), 422),
                 on_select="rerun", selection_mode="single-row", key=f"tab2_table_{t2_sig}",
-                column_config={"번호": st.column_config.TextColumn(width=52),
+                column_config={"번호": st.column_config.TextColumn(width=48),
                                "시간": st.column_config.TextColumn(
-                                   width=185, help="🟢 발매 중 · 🔒 마감 · ▶ 경기 중 · ✅ 종료. "
+                                   width=210, help="🟢 발매 중 · 🔒 마감 · ▶ 경기 중 · ✅ 종료. "
                                                    "'· 전날 23:00 마감' = 시작보다 일찍 마감하는 경기 (유럽 새벽 경기)"),
-                               "경기": st.column_config.TextColumn(width=192),
-                               "유형": st.column_config.TextColumn(width=104),
+                               "경기": st.column_config.TextColumn(width=212),
+                               "유형": st.column_config.TextColumn(width=98),
                                "승 (언더·홀)": st.column_config.TextColumn(
                                    width=70, help="홈 승 배당 (언더오버는 언더, 홀짝은 홀, 핸디캡은 핸디 적용 승). "
                                                        "⭐ = AI 1순위 · 🏁 = 실제 결과"),
@@ -2706,7 +2706,7 @@ with tab2:
                                    width=128, help="AI 1순위와 확률. ▲ = 배당보다 높게 본 정도(%p), "
                                                         "⚠️ = AI와 배당의 1순위가 다름. '배당 기준' = AI가 적용되지 않는 유형"),
                                "결과": st.column_config.TextColumn(
-                                   width=78, help="점수 · 결과. ⭕/❌ = 경기 전에 저장한 AI 1순위가 맞았는지")})
+                                   width=74, help="점수 · 결과. ⭕/❌ = 경기 전에 저장한 AI 1순위가 맞았는지")})
             picked_rows = list(event.selection.rows) if event is not None else []
             if picked_rows and picked_rows[0] < len(t_rows):
                 st.session_state["t2_selected_seq"] = str(t_rows[picked_rows[0]]["m"].get("match_seq", ""))
@@ -2804,7 +2804,7 @@ with tab2:
                 for k in a["opts"]:
                     c1, c2, c3, c4 = st.columns([1.1, 3.6, 0.9, 1.1], vertical_alignment="center")
                     mv = odds_move(a["m"], k)   # 배당이 바뀌었으면 숫자 아래에 '2.75→2.60 · 21:58'
-                    mv_html = (f"<div style='font-size:11px;color:{'#ef4444' if mv[1] > mv[0] else '#3b82f6'}'>"
+                    mv_html = (f"<div style='font-size:12px;color:{'#ef4444' if mv[1] > mv[0] else '#3b82f6'}'>"
                                f"{'↑' if mv[1] > mv[0] else '↓'} {mv[0]:.2f}→{mv[1]:.2f} · {mv[2]}</div>") if mv else ""
                     c1.markdown(f"<div style='font-size:15px'><b>{lab[k]}</b> <span style='opacity:.8'>{float(odds[k]):.2f}</span>"
                                 f"{' 💎' if k in a['gems'] else ''}</div>{mv_html}", unsafe_allow_html=True)
@@ -2812,10 +2812,10 @@ with tab2:
                     if a["ai"]:
                         dd = a["d"][k]
                         bars += _bar("AI", prob_of(a["ai"], k) * 100, "#3b82f6",
-                                     f" <span style='font-size:11px;opacity:.7'>{dd:+.1f}</span>")
+                                     f" <span style='font-size:12px;opacity:.7'>{dd:+.1f}</span>")
                     c2.markdown(bars, unsafe_allow_html=True)
                     ev_k = a["ev"][k] * 100
-                    c3.markdown(f"<div style='font-size:11px;color:#94a3b8'>기대가치</div>"
+                    c3.markdown(f"<div style='font-size:12px;color:#94a3b8'>기대가치</div>"
                                 f"<div style='font-size:14px;font-weight:700;color:{'#34d399' if ev_k > 0 else 'inherit'}'>"
                                 f"{ev_k:+.1f}%</div>", unsafe_allow_html=True)
                     in_cart = bool(cart_sel.get(SEL_KEY[k]))
@@ -2878,7 +2878,7 @@ with tab2:
 
                     def _pill(r):
                         txt, bg, fg = RES_STYLE.get(r, ("-", "rgba(148,163,184,.2)", "inherit"))
-                        return (f"<span style='display:inline-block;width:22px;text-align:center;border-radius:4px;font-size:11px;"
+                        return (f"<span style='display:inline-block;width:22px;text-align:center;border-radius:4px;font-size:12px;"
                                 f"font-weight:700;background:{bg};color:{fg}'>{txt}</span>")
 
                     def _ko(name):
@@ -2912,12 +2912,12 @@ with tab2:
                                 f"{league_chip(sd['league'])}<b style='font-size:15px'>{sd['pos']}위</b>"
                                 f"<span style='opacity:.7'>/ {sd['teams']}팀 · 승점 {sd['pts']} ({sd['played']}경기 {sd['w']}승 "
                                 f"{sd['d']}무 {sd['l']}패) · 시즌 경기당 득 <b>{sd['gf_pg']:.1f}</b> · 실 <b>{sd['ga_pg']:.1f}</b> "
-                                f"<span style='font-size:11px'>({until_note})</span></span></div>")
+                                f"<span style='font-size:12px'>({until_note})</span></span></div>")
 
                     def _team_card(icon, team, f):
                         head = (f"<div style='display:flex;justify-content:space-between;align-items:baseline;gap:8px'>"
                                 f"<span style='font-size:15px'>{icon} <b>{team}</b></span>"
-                                + (f"<span style='font-size:14px'><span style='font-size:11px;opacity:.65'>최근 5경기</span> "
+                                + (f"<span style='font-size:14px'><span style='font-size:12px;opacity:.65'>최근 5경기</span> "
                                    f"<b>{f.get('record_str', '')}</b></span>" if f.get("has_data") else "") + "</div>"
                                 + _standing_line(f.get("standing")))
                         if not f.get("has_data"):
@@ -2955,7 +2955,7 @@ with tab2:
 
                         def _side(name, pos=None):
                             nm = _ko(name)
-                            pos_txt = f" <span style='font-size:11px;opacity:.65'>{pos}위</span>" if pos else ""
+                            pos_txt = f" <span style='font-size:12px;opacity:.65'>{pos}위</span>" if pos else ""
                             return (f"<b>{nm}</b>" if nm == home_t else nm) + pos_txt
 
                         h_rows = "".join(
@@ -3140,7 +3140,7 @@ with tab3:
             "판정": h["verdict"]} for h in hyps]), hide_index=True, width="stretch")
     shadows = (card or {}).get("shadow") or {}
     if shadows:
-        st.markdown("**👥 차세대 AI 교체 후보 (그림자 비교, Phase 7.1)** — 정배·역배 마진 차이를 반영한 `shin_mkt` 모델을 실전 경기마다 뒤에서 같이 계산해 비교해요 "
+        st.markdown("**👥 차세대 AI 교체 후보 (뒤에서 같이 계산해 비교 중)** — 정배·역배 마진 차이를 반영한 새 방식 모델을 실전 경기마다 뒤에서 같이 계산해 비교해요 "
                     "(과거 5구간 시험 14,722경기 전승 · −0.00066). 공식 성적표 300경기 1차 판정 직후 자동 교체 예정이에요.")
         st.dataframe(pd.DataFrame([{
             "후보 모델": name, "같은 실전 경기": f"{sh['n']:,}경기",
@@ -3157,7 +3157,7 @@ with tab3:
     # ------------------------------------------------------------------
     st.divider()
     st.subheader("🏅 공식 AI 성적표", anchor="t3-scorecard")
-    st.caption("경기 시작 전에 저장해 둔 AI 확률(data/history/prediction_log)만 실제 결과로 채점해요. "
+    st.caption("경기 시작 전에 저장해 둔 AI 확률(경기 전 기록)만 실제 결과로 채점해요. "
                "학습에 쓰지 않은 진짜 실전 성적이라 AI 실력의 공식 지표예요.")
     if card and card.get("model_ll") is not None:
         ci = card.get("ll_diff_ci") or [0, 0]
@@ -3996,11 +3996,11 @@ with tab4:
                         p_mk, p_ai = _pick_probs_of(s, g, p)
                         prob_tag = ""
                         if p_mk is not None:
-                            prob_tag = (f" <span style='font-size:11px;opacity:.65'>(배당 {p_mk * 100:.0f}%"
+                            prob_tag = (f" <span style='font-size:12px;opacity:.65'>(배당 {p_mk * 100:.0f}%"
                                         + (f"·AI {p_ai * 100:.0f}%" if p_ai is not None else "") + ")</span>")
                         txt = f"{p['label']} {p['odds']:.2f} {BASIS_ICON.get(_pick_basis_of(s, g, p), '')}".strip() + prob_tag + mark
                         if (str(g["seq"]), p["key"]) not in act_keys_card:
-                            return f"<span style='opacity:.45;text-decoration:line-through'>{txt}</span> <span style='font-size:11px;opacity:.6'>(안 삼)</span>"
+                            return f"<span style='opacity:.45;text-decoration:line-through'>{txt}</span> <span style='font-size:12px;opacity:.6'>(안 삼)</span>"
                         return txt
 
                     picks_txt = " / ".join(_fmt_pick(p) for p in g["picks"])
@@ -4021,7 +4021,7 @@ with tab4:
                     else:   # 실제 결과만 (맞음·틀림은 고른 것 옆에)
                         res_txt = (f"<b>{labels_g.get(out_g, '?')}</b> "
                                    f"<span style='opacity:.7'>{score_g}</span>"
-                                   + (" <span style='font-size:11px;opacity:.6'>(산 기준값으로 채점)</span>" if regraded else ""))
+                                   + (" <span style='font-size:12px;opacity:.6'>(산 기준값으로 채점)</span>" if regraded else ""))
                     t_chip = line_chip({"game_type": g.get("game_type", ""), "line": g.get("line")})
                     when_g = short_when({"match_time": g.get("match_time", "")})
                     meta_g = " · ".join(x for x in [g.get("league", ""), when_g] if x)
@@ -4031,13 +4031,13 @@ with tab4:
                         f"<b>{g['seq']}</b><span style='word-break:keep-all'>{g['home']} <span style='opacity:.6'>vs</span> {g['away']}"
                         f" <span style='opacity:.7;font-size:12px'>{type_name({'game_type': g.get('game_type', '')})}</span>"
                         + (f" {t_chip}" if t_chip else "")
-                        + (f" <span style='opacity:.55;font-size:11px'>({meta_g})</span>" if meta_g else "")
+                        + (f" <span style='opacity:.55;font-size:12px'>({meta_g})</span>" if meta_g else "")
                         + f"</span><span>{picks_txt}</span><span>{res_txt}</span></div>")
                 st.markdown("<div style='padding-bottom:12px'>"
-                            + "<div style='display:grid;grid-template-columns:44px 1fr 230px 140px;gap:8px;font-size:11px;"
+                            + "<div style='display:grid;grid-template-columns:44px 1fr 230px 140px;gap:8px;font-size:12px;"
                               "opacity:.6;margin-top:4px'><span>번호</span><span>경기 (유형·기준선·일시)</span><span>고른 것 (기준·확률)</span><span>결과</span></div>"
                             + "".join(g_rows)
-                            + "<div style='font-size:11px;opacity:.55;margin-top:4px'>✅ ❌ = 고른 것이 맞았는지 · 기준: 🎯 배당·AI 둘 다 1순위 · "
+                            + "<div style='font-size:12px;opacity:.55;margin-top:4px'>✅ ❌ = 고른 것이 맞았는지 · 기준: 🎯 배당·AI 둘 다 1순위 · "
                               "📊 배당 1순위 · 🧠 AI 1순위 · 💡 1순위 아님 (저장한 순간 기준)</div></div>", unsafe_allow_html=True)
 
                 open_seqs4 = [
@@ -4091,7 +4091,7 @@ with st.sidebar:
             m = v["match"]
             closed = is_sale_closed(m, cart_now)
             n_closed += closed
-            tags = line_chip(m) + (" <span style='font-size:11px;color:#f87171'>🔒 마감</span>" if closed else "")
+            tags = line_chip(m) + (" <span style='font-size:12px;color:#f87171'>🔒 마감</span>" if closed else "")
             picks = "".join(f"<span style='{chip_css}'>{p['selection_name']} {p['odds']:.2f}</span>" for p in v["picks"])
             with st.container(border=True):
                 a, b = st.columns([7, 1], vertical_alignment="top")
