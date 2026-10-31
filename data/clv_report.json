@@ -1,29 +1,29 @@
 {
-  "updated_at": "2026-10-31T07:57:38+00:00",
+  "updated_at": "2026-10-31T09:01:08+00:00",
   "rounds": [
     260126,
     260127,
     260128,
     260129
   ],
-  "matches": 379,
-  "moved": 197,
-  "toward_ai": 90,
-  "away_from_ai": 107,
-  "toward_ai_pct": 45.7,
-  "fav_toward_pct": 44.2,
+  "matches": 382,
+  "moved": 201,
+  "toward_ai": 92,
+  "away_from_ai": 109,
+  "toward_ai_pct": 45.8,
+  "fav_toward_pct": 44.3,
   "mean_move_pp": {
-    "n": 379,
-    "mean": -0.54842,
+    "n": 382,
+    "mean": -0.54628,
     "ci": [
-      -1.00076,
-      -0.14609
+      -0.99053,
+      -0.13549
     ],
     "ci_iid": [
-      -1.00076,
-      -0.14852
+      -0.97245,
+      -0.13549
     ],
-    "clusters": 182,
+    "clusters": 183,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
@@ -51,21 +51,21 @@
     },
     "농구 승패": {
       "matches": 51,
-      "moved": 18,
-      "toward_ai": 7,
+      "moved": 19,
+      "toward_ai": 8,
       "away_from_ai": 11,
-      "toward_ai_pct": 38.9,
-      "fav_toward_pct": 22.2,
+      "toward_ai_pct": 42.1,
+      "fav_toward_pct": 26.3,
       "mean_move_pp": {
         "n": 51,
-        "mean": -0.91759,
+        "mean": -0.8869,
         "ci": [
-          -2.24456,
-          0.12247
+          -2.22698,
+          0.16298
         ],
         "ci_iid": [
-          -2.24456,
-          0.09965
+          -2.22698,
+          0.12949
         ],
         "clusters": 51,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
@@ -94,68 +94,68 @@
       }
     },
     "축구 승무패": {
-      "matches": 131,
-      "moved": 82,
-      "toward_ai": 48,
+      "matches": 132,
+      "moved": 83,
+      "toward_ai": 49,
       "away_from_ai": 34,
-      "toward_ai_pct": 58.5,
-      "fav_toward_pct": 52.4,
+      "toward_ai_pct": 59.0,
+      "fav_toward_pct": 53.0,
       "mean_move_pp": {
-        "n": 131,
-        "mean": 0.16557,
+        "n": 132,
+        "mean": 0.17054,
         "ci": [
-          -0.35282,
-          0.70629
+          -0.33773,
+          0.69405
         ],
         "ci_iid": [
-          -0.35282,
-          0.70629
+          -0.33773,
+          0.67811
         ],
-        "clusters": 131,
+        "clusters": 132,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 언더오버": {
-      "matches": 37,
-      "moved": 11,
+      "matches": 38,
+      "moved": 12,
       "toward_ai": 2,
-      "away_from_ai": 9,
-      "toward_ai_pct": 18.2,
-      "fav_toward_pct": 18.2,
+      "away_from_ai": 10,
+      "toward_ai_pct": 16.7,
+      "fav_toward_pct": 16.7,
       "mean_move_pp": {
-        "n": 37,
-        "mean": -0.28802,
+        "n": 38,
+        "mean": -0.31414,
         "ci": [
-          -0.61766,
-          0.03422
+          -0.64371,
+          0.00619
         ],
         "ci_iid": [
-          -0.61766,
-          0.00701
+          -0.64371,
+          -0.00958
         ],
-        "clusters": 37,
+        "clusters": 38,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 핸디캡": {
-      "matches": 120,
-      "moved": 82,
+      "matches": 121,
+      "moved": 83,
       "toward_ai": 33,
-      "away_from_ai": 49,
-      "toward_ai_pct": 40.2,
-      "fav_toward_pct": 43.9,
+      "away_from_ai": 50,
+      "toward_ai_pct": 39.8,
+      "fav_toward_pct": 43.4,
       "mean_move_pp": {
-        "n": 120,
-        "mean": -1.38617,
+        "n": 121,
+        "mean": -1.39068,
         "ci": [
-          -2.56503,
-          -0.38527
+          -2.56164,
+          -0.40178
         ],
         "ci_iid": [
-          -2.55243,
-          -0.40646
+          -2.56164,
+          -0.42763
         ],
-        "clusters": 104,
+        "clusters": 105,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     }
@@ -191,27 +191,27 @@
       ]
     },
     "E_market_fav": {
-      "n": 60,
-      "mean": 0.14541,
+      "n": 61,
+      "mean": 0.22537,
       "ci": [
-        -1.46978,
-        1.75175
+        -1.34943,
+        1.83604
       ]
     },
     "G_ai_bettor": {
-      "n": 1,
-      "mean": 0.0,
+      "n": 2,
+      "mean": 1.53846,
       "ci": [
         0.0,
-        0.0
+        3.07692
       ]
     },
     "G_instinct": {
-      "n": 1,
-      "mean": 0.0,
+      "n": 2,
+      "mean": 1.53846,
       "ci": [
         0.0,
-        0.0
+        3.07692
       ]
     },
     "G_real_stable": {
@@ -220,6 +220,14 @@
       "ci": [
         4.54545,
         4.54545
+      ]
+    },
+    "H_real_highodds": {
+      "n": 1,
+      "mean": 3.07692,
+      "ci": [
+        3.07692,
+        3.07692
       ]
     }
   },
