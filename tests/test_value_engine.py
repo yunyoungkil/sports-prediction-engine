@@ -158,6 +158,7 @@ def test_replay_decides_games_and_summarizes():
     s = summarize(games)
     assert s["games"] == 3 and s["outcomes"] == 9 and s["bets"] == 1 and s["bets_single_eligible"] == 1 and s["bet_hits"] == 1
     assert sum(s["decisions"].values()) == 9 and s["decisions"]["BET"] == 1
+    assert s["max_expected_ev"] == pytest.approx(0.46 * 2.5 - 1.0)
     assert s["closest_to_bet"][0]["decision"] == "BET" and s["max_conservative_ev"] == pytest.approx(0.46 * 2.5 - 1.0)
     # 근거(표본 밖 예측)가 없으면 아무리 좋아 보여도 BET이 없다
     none = summarize(decide_games(rows, probs, None))

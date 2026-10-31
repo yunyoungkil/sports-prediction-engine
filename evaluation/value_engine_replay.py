@@ -70,6 +70,7 @@ def summarize(games: List[Dict[str, Any]]) -> Dict[str, Any]:
     cands = []        # 모든 선택지 (보수적 EV가 있는 것)
     ev_candidates = 0
     ev_pos_top = ev_pos_top_single = 0
+    max_ev = None
     for g in games:
         r = g["row"]
         evs = []
@@ -78,6 +79,7 @@ def summarize(games: List[Dict[str, Any]]) -> Dict[str, Any]:
             reasons[d["reason"]] += 1
             if d["expected_value"] is not None:
                 evs.append(d["expected_value"])
+                max_ev = d["expected_value"] if max_ev is None else max(max_ev, d["expected_value"])
                 ev_candidates += d["expected_value"] >= EV_CANDIDATE
                 if d["conservative_ev"] is not None:
                     cands.append((d["conservative_ev"], g, d))
@@ -105,7 +107,7 @@ def summarize(games: List[Dict[str, Any]]) -> Dict[str, Any]:
             "ev_candidates": int(ev_candidates), "ev_positive_top_games": int(ev_pos_top), "ev_positive_top_single_games": int(ev_pos_top_single),
             "bets": len(bets), "bets_single_eligible": int(singles), "bet_hits": int(sum(1 for x in rets if x > 0)),
             "bet_roi_pct": roi[0], "bet_roi_ci": [roi[1], roi[2]],
-            "max_conservative_ev": max((c[0] for c in cands), default=None), "closest_to_bet": top}
+            "max_expected_ev": max_ev, "max_conservative_ev": max((c[0] for c in cands), default=None), "closest_to_bet": top}
 
 
 def run(starts: List[str] = FOLD_STARTS) -> Dict[str, Any]:
@@ -121,7 +123,7 @@ def run(starts: List[str] = FOLD_STARTS) -> Dict[str, Any]:
         all_games += games
         s = summarize(games)
         per_fold.append({"fold": f["name"], "lambda": lam, "reliability": rel, "tune_games": len(f["inner_tune"]), **{
-            k: s[k] for k in ("games", "decisions", "ev_candidates", "ev_positive_top_games", "bets", "max_conservative_ev")}})
+            k: s[k] for k in ("games", "decisions", "ev_candidates", "ev_positive_top_games", "bets", "max_expected_ev", "max_conservative_ev")}})
     total = summarize(all_games)
     verdict = ("검증할 수 없는 규모 (BET 30건 미만 — 300건 게이트 기준으로 도달 불가)" if total["bets"] < MIN_BETS_TO_JUDGE
                else "표본이 있음 — 수익률과 범위를 본다 (수익 입증은 300건·하한 > 0)")
@@ -137,11 +139,11 @@ if __name__ == "__main__":
     for f in rep["folds"]:
         rel = f["reliability"]
         r = f"기울기 {rel['slope']:.2f} ± {rel['se']:.2f} (회차 {rel['rounds']})" if rel else "기울기 없음"
-        print(f"  {f['fold']}: 경기 {f['games']} · {r} · BET {f['bets']} · 일반 EV ≥ 5% 선택지 {f['ev_candidates']} · 최고 보수적 EV {f['max_conservative_ev']}")
+        print(f"  {f['fold']}: 경기 {f['games']} · {r} · BET {f['bets']} · 일반 EV ≥ 5% 선택지 {f['ev_candidates']} · 최고 일반 EV {f['max_expected_ev']:+.3f} · 최고 보수적 EV {f['max_conservative_ev']:+.3f}")
     print(f"합계: 경기 {t['games']} · 선택지 {t['outcomes']} · 판정 {t['decisions']}")
     print(f"이유: {t['reasons']}")
     print(f"BET {t['bets']}건 (단통 가능 {t['bets_single_eligible']}) · 적중 {t['bet_hits']} · 수익률 {t['bet_roi_pct']:+.1f}% {t['bet_roi_ci']}")
-    print(f"비교: AI 기준 EV>0 최고 선택지(기존 A 💎와 같은 규칙) {t['ev_positive_top_games']}경기 (단통 가능 {t['ev_positive_top_single_games']}) · 최고 보수적 EV {t['max_conservative_ev']}")
+    print(f"비교: AI 기준 EV>0 최고 선택지(기존 A 💎와 같은 규칙) {t['ev_positive_top_games']}경기 (단통 가능 {t['ev_positive_top_single_games']}) · 최고 일반 EV {t['max_expected_ev']:+.3f} · 최고 보수적 EV {t['max_conservative_ev']:+.3f}")
     for c in t["closest_to_bet"]:
         print(f"  BET에 가장 가까웠던: {c['match']} {c['pick']} 배당 {c['odds']:.2f} EV {c['ev']:+.3f} 보수적 EV {c['conservative_ev']:+.3f} → {c['decision']} {c['reason']} (적중 {c['hit']})")
     print("판정:", rep["verdict"])
