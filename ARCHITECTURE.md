@@ -49,7 +49,7 @@ sports-prediction-engine/
 ├── dashboard/  notifier/      # 화면 · 알림
 ├── data/                      # 봇이 커밋하는 결과 (아래 4번)
 ├── tests/                     # pytest
-└── CLAUDE.md  GEMINI.md  README.md  TODO.md  REVIEW.md  ROADMAP.md  ARCHITECTURE.md  .agents/skills/sports-prediction-engine/SKILL.md
+└── CLAUDE.md  GEMINI.md  README.md  TODO.md  REVIEW.md  ROADMAP.md  ARCHITECTURE.md  HYPOTHESIS_TESTS.md  .agents/skills/sports-prediction-engine/SKILL.md
     # CLAUDE.md = 매 세션 자동으로 읽는 짧은 핵심 규칙 (GEMINI.md 맨 위 블록과 같은 내용, 테스트가 일치 확인)
 ```
 
@@ -110,6 +110,7 @@ sports-prediction-engine/
 | `evaluation/value_engine_replay.py` | 가치 판정 엔진을 워크포워드 5구간으로 재현 — "BET이 몇 건이었나" (TODO 7.9; 기울기는 엄격 독립이 기본, 변형별 집계: 원래·기울기 정정·단통 검사·정정 결과·앞 구간 누적) |
 | `evaluation/staking_simulation.py` | 판돈 규칙 비교 시뮬레이션 — 원칙형·정액·손실 추격, 가정한 확률로 (TODO 7.8) |
 | `evaluation/odds_moves_test.py` · `evaluation/vote_bias.py` | 배당 변경·구매 쏠림 시험 |
+| `evaluation/new_hypotheses_test.py` | [7.11] 폼·무승부·핸디캡 가설 5종(시즌 리셋/감쇠·직전 대승·무승부율·핸무·홈/원정 폼) 워크포워드 시험 — 3번은 같은 코드의 0 피처 대조군과 비교 (결과: 5종 모두 효과 없음, 2026-11-01) |
 
 ### dashboard/ · notifier/
 - `dashboard/app.py`: Streamlit 4탭 — ① 맞춤조건구매(경기 카드·조합 계산) ② AI 경기 분석(상태·점수·결과 필터) ③ 성과 검증(공식 성적표·보정 지표·CLV·가상 베팅 리그) ④ 내 베팅 기록
