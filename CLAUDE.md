@@ -15,7 +15,7 @@
 7. **Secret·API:** 토큰·키를 코드·커밋·문서·채팅에 쓰지 않는다. The Odds API는 월 500크레딧이라 개발 중 반복 호출하지 않는다.
 8. **문서 최신화:** 코드·워크플로·`data/` 파일을 만들거나 바꾸면 **같은 커밋에서** 문서를 고친다(표는 SKILL.md의 Documentation Sync Rule). `python -m evaluation.docs_sync`가 ⚠️ 0개여야 한다.
 9. **검증:** 변경 뒤 `python -m pytest -q`를 통과시킨다. 화면을 바꿨으면 실제로 띄워 확인하고, 못 했으면 못 했다고 말한다.
-10. **환경:** GitHub Actions는 Python 3.10이고 `results.yml`은 numpy만 설치한다 — 그쪽 경로에 pandas·pandera를 import하지 않고, f-string 안에 같은 종류의 따옴표를 중첩하지 않는다. 사용자는 Windows·한국어를 쓴다.
+10. **환경:** GitHub Actions는 Python 3.10이고 `results.yml`은 numpy만 설치한다 — 그쪽 경로에 pandas·pandera를 import하지 않고, f-string 안에 같은 종류의 따옴표를 중첩하지 않는다. 사용자는 Windows를 쓴다. **답변은 처음부터 끝까지 한국어로 쓴다**(표 앞뒤 설명·목록·마무리 문장 포함 — 코드·파일 이름·커밋 메시지만 예외).
 <!-- CORE-RULES:END -->
 
 ## 어디에 무엇이 있나
