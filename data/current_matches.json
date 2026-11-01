@@ -19280,12 +19280,27 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-01 15:36:47",
+        "from": {
+          "home_win": 2.5,
+          "draw": 3.6,
+          "away_win": 2.12
+        },
+        "to": {
+          "home_win": 2.5,
+          "draw": 3.9,
+          "away_win": 2.03
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "odds": {
       "home_win": 2.5,
-      "draw": 3.6,
-      "away_win": 2.12
+      "draw": 3.9,
+      "away_win": 2.03
     },
     "gm_ts": 260129
   },
@@ -19378,7 +19393,7 @@
     "match_time": "26.11.01 (일) 16:00",
     "close_time": 1793516400000,
     "kickoff_ts": 1793516400000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -19407,7 +19422,7 @@
     "match_time": "26.11.01 (일) 16:00",
     "close_time": 1793516400000,
     "kickoff_ts": 1793516400000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -19436,7 +19451,7 @@
     "match_time": "26.11.01 (일) 16:00",
     "close_time": 1793516400000,
     "kickoff_ts": 1793516400000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -19761,7 +19776,7 @@
     "match_time": "26.11.01 (일) 16:30",
     "close_time": 1793518200000,
     "kickoff_ts": 1793518200000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",

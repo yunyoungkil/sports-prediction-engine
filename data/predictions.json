@@ -140824,8 +140824,8 @@
     "away_team": "감바 오사카",
     "betman_odds": {
       "home_win": 2.5,
-      "draw": 3.6,
-      "away_win": 2.12
+      "draw": 3.9,
+      "away_win": 2.03
     },
     "odds_changes": [
       {
@@ -140887,45 +140887,60 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-01 15:36:47",
+        "from": {
+          "home_win": 2.5,
+          "draw": 3.6,
+          "away_win": 2.12
+        },
+        "to": {
+          "home_win": 2.5,
+          "draw": 3.9,
+          "away_win": 2.03
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
       "home_win": 2.5,
-      "draw": 3.6,
-      "away_win": 2.12
+      "draw": 3.9,
+      "away_win": 2.03
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.348,
-      "draw": 0.2417,
-      "away": 0.4104
+      "home": 0.3481,
+      "draw": 0.2232,
+      "away": 0.4287
     },
     "model_probabilities": {
-      "home_win": 0.348,
-      "draw": 0.2417,
-      "away_win": 0.4104
+      "home_win": 0.3481,
+      "draw": 0.2232,
+      "away_win": 0.4287
     },
     "blended_probabilities": {
-      "home_win": 0.3363,
-      "draw": 0.2408,
-      "away_win": 0.423
+      "home_win": 0.3361,
+      "draw": 0.219,
+      "away_win": 0.4449
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1593,
-        "draw": -0.1331,
-        "away_win": -0.1032
+        "home_win": -0.1597,
+        "draw": -0.1459,
+        "away_win": -0.0969
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 감바 오사카 반대승",
       "raw_selection_name": "감바 오사카 반대승",
-      "best_ev": -0.1032,
-      "best_ev_pct": "-10.3%",
+      "best_ev": -0.0969,
+      "best_ev_pct": "-9.7%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -141742,7 +141757,7 @@
     "match_time": "26.11.01 (일) 16:00",
     "close_time": 1793516400000,
     "kickoff_ts": 1793516400000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -141900,7 +141915,7 @@
     "match_time": "26.11.01 (일) 16:00",
     "close_time": 1793516400000,
     "kickoff_ts": 1793516400000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -142058,7 +142073,7 @@
     "match_time": "26.11.01 (일) 16:00",
     "close_time": 1793516400000,
     "kickoff_ts": 1793516400000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -143697,7 +143712,7 @@
     "match_time": "26.11.01 (일) 16:30",
     "close_time": 1793518200000,
     "kickoff_ts": 1793518200000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
