@@ -168472,48 +168472,64 @@
     "home_team": "리버풀",
     "away_team": "아스널",
     "betman_odds": {
-      "home_win": 1.52,
+      "home_win": 1.47,
       "draw": 3.75,
-      "away_win": 4.45
+      "away_win": 4.95
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 18:39:56",
+        "from": {
+          "home_win": 1.52,
+          "draw": 3.75,
+          "away_win": 4.45
+        },
+        "to": {
+          "home_win": 1.47,
+          "draw": 3.75,
+          "away_win": 4.95
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.52,
+      "home_win": 1.47,
       "draw": 3.75,
-      "away_win": 4.45
+      "away_win": 4.95
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5724,
-      "draw": 0.232,
-      "away": 0.1955
+      "home": 0.5921,
+      "draw": 0.2321,
+      "away": 0.1758
     },
     "model_probabilities": {
-      "home_win": 0.5724,
-      "draw": 0.232,
-      "away_win": 0.1955
+      "home_win": 0.5921,
+      "draw": 0.2321,
+      "away_win": 0.1758
     },
     "blended_probabilities": {
-      "home_win": 0.5979,
-      "draw": 0.2272,
-      "away_win": 0.1749
+      "home_win": 0.6198,
+      "draw": 0.2264,
+      "away_win": 0.1538
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0912,
-        "draw": -0.148,
-        "away_win": -0.2217
+        "home_win": -0.0889,
+        "draw": -0.151,
+        "away_win": -0.2387
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 리버풀 (+1.0) 승",
       "raw_selection_name": "리버풀 (+1.0) 승",
-      "best_ev": -0.0912,
-      "best_ev_pct": "-9.1%",
+      "best_ev": -0.0889,
+      "best_ev_pct": "-8.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,

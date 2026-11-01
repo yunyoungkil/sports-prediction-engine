@@ -22838,11 +22838,27 @@
     "match_state": "2",
     "home_team": "리버풀",
     "away_team": "아스널",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 18:39:56",
+        "from": {
+          "home_win": 1.52,
+          "draw": 3.75,
+          "away_win": 4.45
+        },
+        "to": {
+          "home_win": 1.47,
+          "draw": 3.75,
+          "away_win": 4.95
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.52,
+      "home_win": 1.47,
       "draw": 3.75,
-      "away_win": 4.45
+      "away_win": 4.95
     },
     "gm_ts": 260129
   },
