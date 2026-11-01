@@ -154583,9 +154583,9 @@
     "home_team": "헤타페",
     "away_team": "세비야",
     "betman_odds": {
-      "home_win": 2.95,
+      "home_win": 3.05,
       "draw": 2.8,
-      "away_win": 2.21
+      "away_win": 2.15
     },
     "odds_changes": [
       {
@@ -154602,36 +154602,51 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-01 21:50:05",
+        "from": {
+          "home_win": 2.95,
+          "draw": 2.8,
+          "away_win": 2.21
+        },
+        "to": {
+          "home_win": 3.05,
+          "draw": 2.8,
+          "away_win": 2.15
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.2794,
-        "draw": 0.3237,
-        "away_win": 0.3969
+        "home_win": 0.2679,
+        "draw": 0.323,
+        "away_win": 0.409
       }
     },
     "prediction_odds": {
-      "home_win": 2.95,
+      "home_win": 3.05,
       "draw": 2.8,
-      "away_win": 2.21
+      "away_win": 2.15
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2951,
-      "draw": 0.3109,
-      "away": 0.3939
+      "home": 0.2851,
+      "draw": 0.3105,
+      "away": 0.4044
     },
     "model_probabilities": {
-      "home_win": 0.2951,
-      "draw": 0.3109,
-      "away_win": 0.3939
+      "home_win": 0.2851,
+      "draw": 0.3105,
+      "away_win": 0.4044
     },
     "blended_probabilities": {
-      "home_win": 0.2766,
-      "draw": 0.3261,
-      "away_win": 0.3973
+      "home_win": 0.265,
+      "draw": 0.3253,
+      "away_win": 0.4097
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -154676,15 +154691,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.184,
-        "draw": -0.0869,
-        "away_win": -0.122
+        "home_win": -0.1917,
+        "draw": -0.0892,
+        "away_win": -0.1191
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0869,
-      "best_ev_pct": "-8.7%",
+      "best_ev": -0.0892,
+      "best_ev_pct": "-8.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -154935,9 +154950,9 @@
     "home_team": "헤타페",
     "away_team": "세비야",
     "betman_odds": {
-      "home_win": 1.52,
-      "draw": 3.4,
-      "away_win": 5.1
+      "home_win": 1.57,
+      "draw": 3.3,
+      "away_win": 4.8
     },
     "odds_changes": [
       {
@@ -154954,45 +154969,60 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-01 21:50:05",
+        "from": {
+          "home_win": 1.52,
+          "draw": 3.4,
+          "away_win": 5.1
+        },
+        "to": {
+          "home_win": 1.57,
+          "draw": 3.3,
+          "away_win": 4.8
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.52,
-      "draw": 3.4,
-      "away_win": 5.1
+      "home_win": 1.57,
+      "draw": 3.3,
+      "away_win": 4.8
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.573,
-      "draw": 0.2562,
-      "away": 0.1708
+      "home": 0.5547,
+      "draw": 0.2639,
+      "away": 0.1814
     },
     "model_probabilities": {
-      "home_win": 0.573,
-      "draw": 0.2562,
-      "away_win": 0.1708
+      "home_win": 0.5547,
+      "draw": 0.2639,
+      "away_win": 0.1814
     },
     "blended_probabilities": {
-      "home_win": 0.5968,
-      "draw": 0.2545,
-      "away_win": 0.1487
+      "home_win": 0.5758,
+      "draw": 0.2642,
+      "away_win": 0.1601
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0929,
-        "draw": -0.1347,
-        "away_win": -0.2416
+        "home_win": -0.096,
+        "draw": -0.1281,
+        "away_win": -0.2315
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 헤타페 (+1.0) 승",
       "raw_selection_name": "헤타페 (+1.0) 승",
-      "best_ev": -0.0929,
-      "best_ev_pct": "-9.3%",
+      "best_ev": -0.096,
+      "best_ev_pct": "-9.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -155243,48 +155273,64 @@
     "home_team": "헤타페",
     "away_team": "세비야",
     "betman_odds": {
-      "home_win": 1.38,
+      "home_win": 1.42,
       "draw": 0.0,
-      "away_win": 2.35
+      "away_win": 2.25
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 21:50:05",
+        "from": {
+          "home_win": 1.38,
+          "draw": 0.0,
+          "away_win": 2.35
+        },
+        "to": {
+          "home_win": 1.42,
+          "draw": 0.0,
+          "away_win": 2.25
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.38,
+      "home_win": 1.42,
       "draw": 0.0,
-      "away_win": 2.35
+      "away_win": 2.25
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.63,
+      "home": 0.6131,
       "draw": 0.0,
-      "away": 0.37
+      "away": 0.3869
     },
     "model_probabilities": {
-      "home_win": 0.63,
+      "home_win": 0.6131,
       "draw": 0.0,
-      "away_win": 0.37
+      "away_win": 0.3869
     },
     "blended_probabilities": {
-      "home_win": 0.646,
+      "home_win": 0.6272,
       "draw": 0.0,
-      "away_win": 0.354
+      "away_win": 0.3728
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1085,
+        "home_win": -0.1094,
         "draw": -1.0,
-        "away_win": -0.1681
+        "away_win": -0.1612
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 2.5)",
       "raw_selection_name": "언더 (< 2.5)",
-      "best_ev": -0.1085,
-      "best_ev_pct": "-10.8%",
+      "best_ev": -0.1094,
+      "best_ev_pct": "-10.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,

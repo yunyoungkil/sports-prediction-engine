@@ -21254,12 +21254,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-01 21:50:05",
+        "from": {
+          "home_win": 2.95,
+          "draw": 2.8,
+          "away_win": 2.21
+        },
+        "to": {
+          "home_win": 3.05,
+          "draw": 2.8,
+          "away_win": 2.15
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.95,
+      "home_win": 3.05,
       "draw": 2.8,
-      "away_win": 2.21
+      "away_win": 2.15
     },
     "gm_ts": 260129
   },
@@ -21299,12 +21314,27 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-01 21:50:05",
+        "from": {
+          "home_win": 1.52,
+          "draw": 3.4,
+          "away_win": 5.1
+        },
+        "to": {
+          "home_win": 1.57,
+          "draw": 3.3,
+          "away_win": 4.8
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 1.52,
-      "draw": 3.4,
-      "away_win": 5.1
+      "home_win": 1.57,
+      "draw": 3.3,
+      "away_win": 4.8
     },
     "gm_ts": 260129
   },
@@ -21329,11 +21359,27 @@
     "match_state": "2",
     "home_team": "헤타페",
     "away_team": "세비야",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 21:50:05",
+        "from": {
+          "home_win": 1.38,
+          "draw": 0.0,
+          "away_win": 2.35
+        },
+        "to": {
+          "home_win": 1.42,
+          "draw": 0.0,
+          "away_win": 2.25
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.38,
+      "home_win": 1.42,
       "draw": 0.0,
-      "away_win": 2.35
+      "away_win": 2.25
     },
     "gm_ts": 260129
   },
