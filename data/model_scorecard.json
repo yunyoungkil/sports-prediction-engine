@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T03:31:04+00:00",
+  "updated_at": "2026-11-01T03:58:02+00:00",
   "graded_matches": 542,
   "rounds": [
     260126,
@@ -26,8 +26,8 @@
   "gem_roi_ci_low": 0.0,
   "gem_roi_ci_high": 0.0,
   "prob_sources": {
-    "betman_corrector": 177,
-    "betman_markets": 365
+    "betman_markets": 365,
+    "betman_corrector": 177
   },
   "by_game_type": {
     "농구 SUM": {
@@ -110,6 +110,93 @@
     }
   },
   "fixtures": 231,
+  "by_model_version": [
+    {
+      "source": "betman_corrector",
+      "version": "betman:2026-10-25T11:43:22+00:00",
+      "family": "betman",
+      "trained_at": "2026-10-25T11:43:22+00:00",
+      "rounds": [
+        260126,
+        260127,
+        260128
+      ],
+      "n": 94,
+      "ll_diff": -0.0103,
+      "ll_diff_ci": [
+        -0.0239,
+        0.0046
+      ],
+      "fixtures": 94,
+      "ll_diff_ci_fixture": [
+        -0.0242,
+        0.0046
+      ]
+    },
+    {
+      "source": "betman_markets",
+      "version": "betman:2026-10-25T11:43:22+00:00",
+      "family": "betman",
+      "trained_at": "2026-10-25T11:43:22+00:00",
+      "rounds": [
+        260127,
+        260128
+      ],
+      "n": 108,
+      "ll_diff": 0.0013,
+      "ll_diff_ci": [
+        -0.0075,
+        0.0124
+      ],
+      "fixtures": 98,
+      "ll_diff_ci_fixture": [
+        -0.0089,
+        0.0123
+      ]
+    },
+    {
+      "source": "betman_corrector",
+      "version": "betman:2026-10-29T10:47:22+00:00",
+      "family": "betman",
+      "trained_at": "2026-10-29T10:47:22+00:00",
+      "rounds": [
+        260128,
+        260129
+      ],
+      "n": 83,
+      "ll_diff": -0.0039,
+      "ll_diff_ci": [
+        -0.0428,
+        0.0102
+      ],
+      "fixtures": 83,
+      "ll_diff_ci_fixture": [
+        -0.0176,
+        0.0107
+      ]
+    },
+    {
+      "source": "betman_markets",
+      "version": "betman:2026-10-29T10:47:22+00:00",
+      "family": "betman",
+      "trained_at": "2026-10-29T10:47:22+00:00",
+      "rounds": [
+        260128,
+        260129
+      ],
+      "n": 257,
+      "ll_diff": 0.0037,
+      "ll_diff_ci": [
+        -0.002,
+        0.0095
+      ],
+      "fixtures": 106,
+      "ll_diff_ci_fixture": [
+        -0.003,
+        0.0111
+      ]
+    }
+  ],
   "calibration_metrics": {
     "n": 542,
     "brier_ai": 0.5518,

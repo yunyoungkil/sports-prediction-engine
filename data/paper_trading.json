@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T03:31:04+00:00",
+  "updated_at": "2026-11-01T03:58:02+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -102,7 +102,7 @@
       "label": "E. 배당 1순위 단일 (기준선)",
       "bets": 95,
       "hits": 52,
-      "pending": 38,
+      "pending": 39,
       "staked": 95000,
       "returned": 84670,
       "profit": -10330,
@@ -467,6 +467,17 @@
     }
   },
   "details": [
+    {
+      "gm_ts": "260129",
+      "strategy": "E_market_fav",
+      "legs": "S알나스르 승(원정) 1.13",
+      "odds": 1.13,
+      "stake": 1000,
+      "kickoff": "2026-11-02T13:45:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
     {
       "gm_ts": "260129",
       "strategy": "E_market_fav",
