@@ -140445,7 +140445,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "FC마치다 젤비아",
     "away_team": "감바 오사카",
@@ -140795,7 +140795,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "FC마치다 젤비아",
     "away_team": "감바 오사카",
@@ -141154,7 +141154,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "FC마치다 젤비아",
     "away_team": "감바 오사카",
@@ -141453,7 +141453,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "FC마치다 젤비아",
     "away_team": "감바 오사카",
@@ -141736,7 +141736,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "4",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
@@ -141910,7 +141910,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
@@ -142084,7 +142084,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
@@ -142258,7 +142258,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
@@ -142416,7 +142416,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
@@ -142574,7 +142574,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "SOOP 수퍼스",
@@ -142767,7 +142767,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "SOOP 수퍼스",
@@ -143036,7 +143036,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "SOOP 수퍼스",
@@ -143260,7 +143260,7 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "SOOP 수퍼스",
@@ -163614,16 +163614,16 @@
     "match_time": "26.11.02 (월) 00:15",
     "close_time": 1793541600000,
     "kickoff_ts": 1793546100000,
-    "buy_reject": "1",
+    "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
     "home_team": "라싱 산탄데르",
     "away_team": "레알 마드리드",
     "betman_odds": {
-      "home_win": 2.55,
-      "draw": 3.95,
-      "away_win": 1.98
+      "home_win": 2.4,
+      "draw": 4.3,
+      "away_win": 2.0
     },
     "odds_changes": [
       {
@@ -163640,44 +163640,59 @@
         },
         "line_from": 2.0,
         "line_to": 2.0
+      },
+      {
+        "at": "2026-11-01 18:23:01",
+        "from": {
+          "home_win": 2.55,
+          "draw": 3.95,
+          "away_win": 1.98
+        },
+        "to": {
+          "home_win": 2.4,
+          "draw": 4.3,
+          "away_win": 2.0
+        },
+        "line_from": 2.0,
+        "line_to": 2.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.55,
-      "draw": 3.95,
-      "away_win": 1.98
+      "home_win": 2.4,
+      "draw": 4.3,
+      "away_win": 2.0
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3409,
-      "draw": 0.2201,
-      "away": 0.439
+      "home": 0.3626,
+      "draw": 0.2024,
+      "away": 0.4351
     },
     "model_probabilities": {
-      "home_win": 0.3409,
-      "draw": 0.2201,
-      "away_win": 0.439
+      "home_win": 0.3626,
+      "draw": 0.2024,
+      "away_win": 0.4351
     },
     "blended_probabilities": {
-      "home_win": 0.3276,
-      "draw": 0.2153,
-      "away_win": 0.4571
+      "home_win": 0.3524,
+      "draw": 0.1951,
+      "away_win": 0.4525
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1646,
-        "draw": -0.1496,
-        "away_win": -0.0949
+        "home_win": -0.1542,
+        "draw": -0.1611,
+        "away_win": -0.095
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 레알 마드리드 반대승",
       "raw_selection_name": "레알 마드리드 반대승",
-      "best_ev": -0.0949,
+      "best_ev": -0.095,
       "best_ev_pct": "-9.5%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
