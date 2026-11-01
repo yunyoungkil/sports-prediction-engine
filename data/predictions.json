@@ -123725,7 +123725,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "멜버른 빅토리",
     "away_team": "센트럴코스트 매리너스",
     "betman_odds": {
@@ -124041,7 +124041,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "멜버른 빅토리",
     "away_team": "센트럴코스트 매리너스",
     "betman_odds": {
@@ -124351,7 +124351,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "멜버른 빅토리",
     "away_team": "센트럴코스트 매리너스",
     "betman_odds": {
@@ -124645,7 +124645,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "멜버른 빅토리",
     "away_team": "센트럴코스트 매리너스",
     "betman_odds": {
@@ -124939,7 +124939,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "요코하마 F마리노스",
     "away_team": "가와사키 프론탈레",
     "betman_odds": {
@@ -125255,7 +125255,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "요코하마 F마리노스",
     "away_team": "가와사키 프론탈레",
     "betman_odds": {
@@ -125565,7 +125565,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "요코하마 F마리노스",
     "away_team": "가와사키 프론탈레",
     "betman_odds": {
@@ -125859,7 +125859,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "요코하마 F마리노스",
     "away_team": "가와사키 프론탈레",
     "betman_odds": {
@@ -140445,8 +140445,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "FC마치다 젤비아",
     "away_team": "감바 오사카",
     "betman_odds": {
@@ -140546,45 +140546,7 @@
       "away_win": 0.1788
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "79aa428a07ac9855ab1aae2b7395b6eb",
-      "home_team": "FC Machida Zelvia",
-      "away_team": "Gamba Osaka",
-      "commence_time": "2026-11-01T07:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 1.75,
-        "draw": 3.93,
-        "away_win": 4.8
-      },
-      "sharp_probs": {
-        "home_win": 0.5525,
-        "draw": 0.246,
-        "away_win": 0.2014
-      },
-      "consensus_probs": {
-        "home_win": 0.5477444444444444,
-        "draw": 0.2513444444444445,
-        "away_win": 0.2008777777777778
-      },
-      "n_bookmakers": 9,
-      "match_method": "time_single",
-      "prob_distance": 0.0642,
-      "sport_key": "soccer_japan_j_league",
-      "betman_odds": {
-        "home_win": 1.67,
-        "draw": 3.35,
-        "away_win": 3.95
-      },
-      "betman_home": "FC마치다 젤비아",
-      "betman_away": "감바 오사카",
-      "match_time": "26.11.01 (일) 16:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.0773,
-        "draw": -0.1759,
-        "away_win": -0.2045
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
@@ -140833,8 +140795,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "FC마치다 젤비아",
     "away_team": "감바 오사카",
     "betman_odds": {
@@ -141192,8 +141154,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "FC마치다 젤비아",
     "away_team": "감바 오사카",
     "betman_odds": {
@@ -141491,8 +141453,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "FC마치다 젤비아",
     "away_team": "감바 오사카",
     "betman_odds": {
@@ -141774,8 +141736,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
     "betman_odds": {
@@ -141948,8 +141910,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
     "betman_odds": {
@@ -142122,8 +142084,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
     "betman_odds": {
@@ -142296,8 +142258,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
     "betman_odds": {
@@ -142454,8 +142416,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "KB 스타즈",
     "away_team": "BNK 썸",
     "betman_odds": {
@@ -142612,8 +142574,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "SOOP 수퍼스",
     "betman_odds": {
@@ -142805,8 +142767,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "SOOP 수퍼스",
     "betman_odds": {
@@ -143074,8 +143036,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "SOOP 수퍼스",
     "betman_odds": {
@@ -143298,8 +143260,8 @@
     "kickoff_ts": 1793516400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "3",
+    "match_state": "3",
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "SOOP 수퍼스",
     "betman_odds": {
@@ -150749,7 +150711,7 @@
     "match_time": "26.11.01 (일) 16:30",
     "close_time": 1793518200000,
     "kickoff_ts": 1793518200000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -150952,7 +150914,7 @@
     "match_time": "26.11.01 (일) 16:30",
     "close_time": 1793518200000,
     "kickoff_ts": 1793518200000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -151365,9 +151327,9 @@
     "home_team": "퍼스 글로리",
     "away_team": "애들레이드 유나이티드",
     "betman_odds": {
-      "home_win": 2.45,
-      "draw": 3.25,
-      "away_win": 2.31
+      "home_win": 2.14,
+      "draw": 3.35,
+      "away_win": 2.6
     },
     "odds_changes": [
       {
@@ -151384,36 +151346,51 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-01 16:14:10",
+        "from": {
+          "home_win": 2.45,
+          "draw": 3.25,
+          "away_win": 2.31
+        },
+        "to": {
+          "home_win": 2.14,
+          "draw": 3.35,
+          "away_win": 2.6
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3212,
-        "draw": 0.2852,
-        "away_win": 0.3935
+        "home_win": 0.3786,
+        "draw": 0.2766,
+        "away_win": 0.3448
       }
     },
     "prediction_odds": {
-      "home_win": 2.45,
-      "draw": 3.25,
-      "away_win": 2.31
+      "home_win": 2.14,
+      "draw": 3.35,
+      "away_win": 2.6
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3553,
-      "draw": 0.2678,
-      "away": 0.3768
+      "home": 0.4062,
+      "draw": 0.2595,
+      "away": 0.3343
     },
     "model_probabilities": {
-      "home_win": 0.3553,
-      "draw": 0.2678,
-      "away_win": 0.3768
+      "home_win": 0.4062,
+      "draw": 0.2595,
+      "away_win": 0.3343
     },
     "blended_probabilities": {
-      "home_win": 0.3195,
-      "draw": 0.2862,
-      "away_win": 0.3943
+      "home_win": 0.3786,
+      "draw": 0.2777,
+      "away_win": 0.3438
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -151458,14 +151435,14 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2172,
-        "draw": -0.0698,
-        "away_win": -0.0892
+        "home_win": -0.1898,
+        "draw": -0.0697,
+        "away_win": -0.1061
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0698,
+      "best_ev": -0.0697,
       "best_ev_pct": "-7.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -151701,14 +151678,14 @@
     "league": "호주 A리그",
     "game_type": "축구 핸디캡",
     "category": "핸디캡",
-    "category_label": "핸디캡 (+1.0)",
+    "category_label": "핸디캡 (-1.0)",
     "selection_labels": {
-      "home_win": "퍼스 글로리 (+1.0) 승",
+      "home_win": "퍼스 글로리 (-1.0) 승",
       "draw": "핸디캡 무승부",
       "away_win": "애들레이드 유나이티드 반대승"
     },
     "is_single": true,
-    "line": 1.0,
+    "line": -1.0,
     "match_time": "26.11.01 (일) 17:00",
     "close_time": 1793520000000,
     "kickoff_ts": 1793520000000,
@@ -151719,9 +151696,9 @@
     "home_team": "퍼스 글로리",
     "away_team": "애들레이드 유나이티드",
     "betman_odds": {
-      "home_win": 1.48,
-      "draw": 3.8,
-      "away_win": 4.75
+      "home_win": 4.15,
+      "draw": 3.85,
+      "away_win": 1.54
     },
     "odds_changes": [
       {
@@ -151738,45 +151715,60 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-01 16:14:10",
+        "from": {
+          "home_win": 1.48,
+          "draw": 3.8,
+          "away_win": 4.75
+        },
+        "to": {
+          "home_win": 4.15,
+          "draw": 3.85,
+          "away_win": 1.54
+        },
+        "line_from": 1.0,
+        "line_to": -1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.48,
-      "draw": 3.8,
-      "away_win": 4.75
+      "home_win": 4.15,
+      "draw": 3.85,
+      "away_win": 1.54
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5879,
-      "draw": 0.229,
-      "away": 0.1832
+      "home": 0.2095,
+      "draw": 0.2259,
+      "away": 0.5646
     },
     "model_probabilities": {
-      "home_win": 0.5879,
-      "draw": 0.229,
-      "away_win": 0.1832
+      "home_win": 0.2095,
+      "draw": 0.2259,
+      "away_win": 0.5646
     },
     "blended_probabilities": {
-      "home_win": 0.6154,
-      "draw": 0.2231,
-      "away_win": 0.1616
+      "home_win": 0.1809,
+      "draw": 0.2173,
+      "away_win": 0.6018
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0892,
-        "draw": -0.1522,
-        "away_win": -0.2324
+        "home_win": -0.2493,
+        "draw": -0.1634,
+        "away_win": -0.0732
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 퍼스 글로리 (+1.0) 승",
-      "raw_selection_name": "퍼스 글로리 (+1.0) 승",
-      "best_ev": -0.0892,
-      "best_ev_pct": "-8.9%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 애들레이드 유나이티드 반대승",
+      "raw_selection_name": "애들레이드 유나이티드 반대승",
+      "best_ev": -0.0732,
+      "best_ev_pct": "-7.3%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -152029,48 +152021,64 @@
     "home_team": "퍼스 글로리",
     "away_team": "애들레이드 유나이티드",
     "betman_odds": {
-      "home_win": 2.02,
+      "home_win": 2.07,
       "draw": 0.0,
-      "away_win": 1.53
+      "away_win": 1.5
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 16:14:10",
+        "from": {
+          "home_win": 2.02,
+          "draw": 0.0,
+          "away_win": 1.53
+        },
+        "to": {
+          "home_win": 2.07,
+          "draw": 0.0,
+          "away_win": 1.5
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.02,
+      "home_win": 2.07,
       "draw": 0.0,
-      "away_win": 1.53
+      "away_win": 1.5
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.431,
+      "home": 0.4202,
       "draw": 0.0,
-      "away": 0.569
+      "away": 0.5798
     },
     "model_probabilities": {
-      "home_win": 0.431,
+      "home_win": 0.4202,
       "draw": 0.0,
-      "away_win": 0.569
+      "away_win": 0.5798
     },
     "blended_probabilities": {
-      "home_win": 0.423,
+      "home_win": 0.4109,
       "draw": 0.0,
-      "away_win": 0.577
+      "away_win": 0.5891
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1455,
+        "home_win": -0.1494,
         "draw": -1.0,
-        "away_win": -0.1172
+        "away_win": -0.1164
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 2.5)",
       "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.1172,
-      "best_ev_pct": "-11.7%",
+      "best_ev": -0.1164,
+      "best_ev_pct": "-11.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
