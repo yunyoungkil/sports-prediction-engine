@@ -1,6 +1,6 @@
 # 🏛️ 시스템 아키텍처 (ARCHITECTURE)
 
-> 최종 갱신: 2026-10-30. **새 모듈·워크플로·`data/` 파일을 만들면 같은 커밋에서 이 문서에 한 줄을 넣는다** — `python -m evaluation.docs_sync`가 빠진 항목을 찾고 대화 시작 브리핑이 알려 준다.
+> 최종 갱신: 2026-11-01. **새 모듈·워크플로·`data/` 파일을 만들면 같은 커밋에서 이 문서에 한 줄을 넣는다** — `python -m evaluation.docs_sync`가 빠진 항목을 찾고 대화 시작 브리핑이 알려 준다.
 > 초기 설계(v1: Dixon-Coles·`poisson_model.py`)는 시장보다 나빠서 폐기했다. 설계 기록은 [ROADMAP.md](./ROADMAP.md), 작업·결과는 [TODO.md](./TODO.md), 검증 리뷰는 [REVIEW.md](./REVIEW.md).
 
 ## 1. 전체 흐름
@@ -124,6 +124,8 @@ sports-prediction-engine/
 - `notifier/telegram_bot.py`: 추천 픽·운영 경고 알림 (Secret 미등록, 선택)
 
 ## 4. 데이터 파일 (`data/`)
+
+원천 데이터의 **열 이름 전부·기간·행 수·없는 데이터**는 [DATA.md](./DATA.md)에 있다. 이 표는 파일마다 무엇을 하고 어디서 만드는지만 적는다. 시험 결과 목록은 [EXPERIMENTS.md](./EXPERIMENTS.md).
 
 | 파일 | 내용 | 만드는 곳 |
 |---|---|---|

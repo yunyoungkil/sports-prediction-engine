@@ -26,6 +26,8 @@
 | 평가 규칙·컴포넌트·Known Issues·문서 최신화 표·로드맵 | `.agents/skills/sports-prediction-engine/SKILL.md` |
 | 실행 흐름·워크플로·모듈·`data/` 파일·예측 스키마 | `ARCHITECTURE.md` |
 | 해야 할 일·각 실험의 결과·수치 | `TODO.md` (필요한 항목만 `grep`) |
+| 시험한 아이디어 목록 (새 아이디어는 먼저 여기서 찾기) | `EXPERIMENTS.md` |
+| 데이터 파일마다 열 이름·기간·행 수 | `DATA.md` |
 | 검증에서 찾은 문제(R1~R20)와 조치 | `REVIEW.md` (필요한 R만 `grep`) |
 | 사용법·현재 상태 | `README.md` |
 

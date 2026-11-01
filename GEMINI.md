@@ -102,6 +102,7 @@
 
 ## 8. 문서 최신화 규칙 (자동으로 한다)
 
-- 코드·워크플로·`data/` 파일을 만들거나 바꾸면 **같은 커밋에서** 문서를 고친다. 표는 `.agents/skills/sports-prediction-engine/SKILL.md`의 **Documentation Sync Rule**: 새 모듈·워크플로·데이터 파일 → `ARCHITECTURE.md`, 대시보드 변경·판정/수치 변화 → `README.md` 현재 상태·사용법, 규칙·Secret·만료일 → 이 문서.
+- 코드·워크플로·`data/` 파일을 만들거나 바꾸면 **같은 커밋에서** 문서를 고친다. 표는 `.agents/skills/sports-prediction-engine/SKILL.md`의 **Documentation Sync Rule**: 새 모듈·워크플로·데이터 파일 → `ARCHITECTURE.md`, 대시보드 변경·판정/수치 변화 → `README.md` 현재 상태·사용법, 규칙·Secret·만료일 → 이 문서, **새 시험(사전 등록·결과) → `EXPERIMENTS.md` 한 줄 + `TODO.md` 항목**, **새 데이터 원천·열·수집 파일 → `DATA.md`**.
+- 새 아이디어(제미나이·사용자·외부 글)를 받으면 시험 전에 `EXPERIMENTS.md`에서 같은 생각을 이미 닫았는지 먼저 찾는다. 닫은 아이디어는 새 근거나 새 데이터가 없으면 다시 시험하지 않는다.
 - 확인: `python -m evaluation.docs_sync`가 ⚠️ 0개여야 한다. 브리핑의 "📚 문서 동기화"가 ⚠️면 작업보다 먼저 문서를 고친다.
 - 숫자는 파일이나 실행 결과에서 읽은 것만 쓰고 날짜를 붙인다. 낡은 문서를 발견하면 묻지 말고 그 자리에서 고친다.

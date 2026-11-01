@@ -57,6 +57,8 @@ Docs go stale silently (ARCHITECTURE.md described the v1 design for 5 days while
 | Dashboard tab / filter / metric added or removed | `README.md` 대시보드 사용법 |
 | A verdict, live number or decision moved (scorecard n/300, CLV, stale odds, calibration, paper-bet league, a Phase finished) | `README.md` 현재 상태 table (+ date), `GEMINI.md` §5, `TODO.md` progress table / item |
 | New `REVIEW.md` R-item or `TODO.md` item/phase | `README.md` 문서 table (R-range, Phase range) |
+| An experiment pre-registered, finished, or an idea discarded/parked | one row in `EXPERIMENTS.md` (date · idea · result · verdict · TODO link · code) — details stay in the `TODO.md` item. Before testing any new idea, search `EXPERIMENTS.md` first; don't re-test a closed idea on the same data without new evidence |
+| New data source, new column, new collected file in `data/history/`, or a column first used in a test | `DATA.md` (columns, period, row count with date, refresh timing, "아직 안 쓴 열") |
 | New rule, convention, secret, API limit, credential expiry date | `GEMINI.md` (and `SCHEDULER_TOKEN_EXPIRES` in `evaluation/briefing.py` for the token) |
 | New skill rule or workflow for the assistant | this file |
 | Work not finished here, or the user will continue it on another PC / next conversation | an open `TODO.md` item (`- [ ] **title**`) containing `📌 이어서` + context, dated numbers, decisions needed, start steps — the session-start briefing lists it |
