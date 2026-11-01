@@ -21603,11 +21603,27 @@
     "match_state": "2",
     "home_team": "프로시노네",
     "away_team": "토리노",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 17:35:16",
+        "from": {
+          "home_win": 2.02,
+          "draw": 3.6,
+          "away_win": 2.65
+        },
+        "to": {
+          "home_win": 1.86,
+          "draw": 3.75,
+          "away_win": 2.9
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.02,
-      "draw": 3.6,
-      "away_win": 2.65
+      "home_win": 1.86,
+      "draw": 3.75,
+      "away_win": 2.9
     },
     "gm_ts": 260129
   },
@@ -21632,11 +21648,27 @@
     "match_state": "2",
     "home_team": "프로시노네",
     "away_team": "토리노",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 17:35:16",
+        "from": {
+          "home_win": 3.6,
+          "draw": 4.0,
+          "away_win": 1.61
+        },
+        "to": {
+          "home_win": 3.15,
+          "draw": 3.85,
+          "away_win": 1.75
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 3.6,
-      "draw": 4.0,
-      "away_win": 1.61
+      "home_win": 3.15,
+      "draw": 3.85,
+      "away_win": 1.75
     },
     "gm_ts": 260129
   },
@@ -21661,11 +21693,27 @@
     "match_state": "2",
     "home_team": "프로시노네",
     "away_team": "토리노",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 17:35:16",
+        "from": {
+          "home_win": 1.64,
+          "draw": 0.0,
+          "away_win": 1.85
+        },
+        "to": {
+          "home_win": 1.71,
+          "draw": 0.0,
+          "away_win": 1.77
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.64,
+      "home_win": 1.71,
       "draw": 0.0,
-      "away_win": 1.85
+      "away_win": 1.77
     },
     "gm_ts": 260129
   },
@@ -23315,12 +23363,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-01 17:38:03",
+        "from": {
+          "home_win": 2.22,
+          "draw": 3.05,
+          "away_win": 2.7
+        },
+        "to": {
+          "home_win": 2.12,
+          "draw": 3.0,
+          "away_win": 2.9
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.22,
-      "draw": 3.05,
-      "away_win": 2.7
+      "home_win": 2.12,
+      "draw": 3.0,
+      "away_win": 2.9
     },
     "gm_ts": 260129
   },
@@ -23360,12 +23423,27 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-01 17:38:03",
+        "from": {
+          "home_win": 4.6,
+          "draw": 3.65,
+          "away_win": 1.52
+        },
+        "to": {
+          "home_win": 4.15,
+          "draw": 3.7,
+          "away_win": 1.57
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "odds": {
-      "home_win": 4.6,
-      "draw": 3.65,
-      "away_win": 1.52
+      "home_win": 4.15,
+      "draw": 3.7,
+      "away_win": 1.57
     },
     "gm_ts": 260129
   },

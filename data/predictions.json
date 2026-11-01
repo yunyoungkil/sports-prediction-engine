@@ -157951,39 +157951,55 @@
     "home_team": "프로시노네",
     "away_team": "토리노",
     "betman_odds": {
-      "home_win": 2.02,
-      "draw": 3.6,
-      "away_win": 2.65
+      "home_win": 1.86,
+      "draw": 3.75,
+      "away_win": 2.9
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 17:35:16",
+        "from": {
+          "home_win": 2.02,
+          "draw": 3.6,
+          "away_win": 2.65
+        },
+        "to": {
+          "home_win": 1.86,
+          "draw": 3.75,
+          "away_win": 2.9
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.4315,
-        "draw": 0.2464,
-        "away_win": 0.322
+        "home_win": 0.4753,
+        "draw": 0.2349,
+        "away_win": 0.2899
       }
     },
     "prediction_odds": {
-      "home_win": 2.02,
-      "draw": 3.6,
-      "away_win": 2.65
+      "home_win": 1.86,
+      "draw": 3.75,
+      "away_win": 2.9
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4304,
-      "draw": 0.2415,
-      "away": 0.3281
+      "home": 0.4679,
+      "draw": 0.2321,
+      "away": 0.3001
     },
     "model_probabilities": {
-      "home_win": 0.4304,
-      "draw": 0.2415,
-      "away_win": 0.3281
+      "home_win": 0.4679,
+      "draw": 0.2321,
+      "away_win": 0.3001
     },
     "blended_probabilities": {
-      "home_win": 0.4329,
-      "draw": 0.2477,
-      "away_win": 0.3193
+      "home_win": 0.4781,
+      "draw": 0.2357,
+      "away_win": 0.2861
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -158028,15 +158044,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1255,
-        "draw": -0.1083,
-        "away_win": -0.1539
+        "home_win": -0.1107,
+        "draw": -0.1161,
+        "away_win": -0.1703
       },
-      "best_selection": "draw",
-      "best_selection_name": "[단통 ⚡] 무승부",
-      "raw_selection_name": "무승부",
-      "best_ev": -0.1083,
-      "best_ev_pct": "-10.8%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 프로시노네 승",
+      "raw_selection_name": "프로시노네 승",
+      "best_ev": -0.1107,
+      "best_ev_pct": "-11.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -158265,48 +158281,64 @@
     "home_team": "프로시노네",
     "away_team": "토리노",
     "betman_odds": {
-      "home_win": 3.6,
-      "draw": 4.0,
-      "away_win": 1.61
+      "home_win": 3.15,
+      "draw": 3.85,
+      "away_win": 1.75
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 17:35:16",
+        "from": {
+          "home_win": 3.6,
+          "draw": 4.0,
+          "away_win": 1.61
+        },
+        "to": {
+          "home_win": 3.15,
+          "draw": 3.85,
+          "away_win": 1.75
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 3.6,
-      "draw": 4.0,
-      "away_win": 1.61
+      "home_win": 3.15,
+      "draw": 3.85,
+      "away_win": 1.75
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2418,
-      "draw": 0.2176,
-      "away": 0.5406
+      "home": 0.2764,
+      "draw": 0.2261,
+      "away": 0.4975
     },
     "model_probabilities": {
-      "home_win": 0.2418,
-      "draw": 0.2176,
-      "away_win": 0.5406
+      "home_win": 0.2764,
+      "draw": 0.2261,
+      "away_win": 0.4975
     },
     "blended_probabilities": {
-      "home_win": 0.2154,
-      "draw": 0.2093,
-      "away_win": 0.5753
+      "home_win": 0.2539,
+      "draw": 0.2206,
+      "away_win": 0.5255
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2246,
-        "draw": -0.1628,
-        "away_win": -0.0738
+        "home_win": -0.2002,
+        "draw": -0.1507,
+        "away_win": -0.0804
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 토리노 반대승",
       "raw_selection_name": "토리노 반대승",
-      "best_ev": -0.0738,
-      "best_ev_pct": "-7.4%",
+      "best_ev": -0.0804,
+      "best_ev_pct": "-8.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -158535,48 +158567,64 @@
     "home_team": "프로시노네",
     "away_team": "토리노",
     "betman_odds": {
-      "home_win": 1.64,
+      "home_win": 1.71,
       "draw": 0.0,
-      "away_win": 1.85
+      "away_win": 1.77
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 17:35:16",
+        "from": {
+          "home_win": 1.64,
+          "draw": 0.0,
+          "away_win": 1.85
+        },
+        "to": {
+          "home_win": 1.71,
+          "draw": 0.0,
+          "away_win": 1.77
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.64,
+      "home_win": 1.71,
       "draw": 0.0,
-      "away_win": 1.85
+      "away_win": 1.77
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5301,
+      "home": 0.5086,
       "draw": 0.0,
-      "away": 0.4699
+      "away": 0.4914
     },
     "model_probabilities": {
-      "home_win": 0.5301,
+      "home_win": 0.5086,
       "draw": 0.0,
-      "away_win": 0.4699
+      "away_win": 0.4914
     },
     "blended_probabilities": {
-      "home_win": 0.5344,
+      "home_win": 0.5103,
       "draw": 0.0,
-      "away_win": 0.4656
+      "away_win": 0.4897
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1236,
+        "home_win": -0.1274,
         "draw": -1.0,
-        "away_win": -0.1386
+        "away_win": -0.1332
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 언더 (< 3.5)",
       "raw_selection_name": "언더 (< 3.5)",
-      "best_ev": -0.1236,
-      "best_ev_pct": "-12.4%",
+      "best_ev": -0.1274,
+      "best_ev_pct": "-12.7%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -173383,9 +173431,9 @@
     "home_team": "유벤투스",
     "away_team": "SSC나폴리",
     "betman_odds": {
-      "home_win": 2.22,
-      "draw": 3.05,
-      "away_win": 2.7
+      "home_win": 2.12,
+      "draw": 3.0,
+      "away_win": 2.9
     },
     "odds_changes": [
       {
@@ -173402,36 +173450,51 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-01 17:38:03",
+        "from": {
+          "home_win": 2.22,
+          "draw": 3.05,
+          "away_win": 2.7
+        },
+        "to": {
+          "home_win": 2.12,
+          "draw": 3.0,
+          "away_win": 2.9
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3807,
-        "draw": 0.3018,
-        "away_win": 0.3175
+        "home_win": 0.4013,
+        "draw": 0.3074,
+        "away_win": 0.2913
       }
     },
     "prediction_odds": {
-      "home_win": 2.22,
-      "draw": 3.05,
-      "away_win": 2.7
+      "home_win": 2.12,
+      "draw": 3.0,
+      "away_win": 2.9
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3921,
-      "draw": 0.2854,
-      "away": 0.3224
+      "home": 0.4102,
+      "draw": 0.2899,
+      "away": 0.2999
     },
     "model_probabilities": {
-      "home_win": 0.3921,
-      "draw": 0.2854,
-      "away_win": 0.3224
+      "home_win": 0.4102,
+      "draw": 0.2899,
+      "away_win": 0.2999
     },
     "blended_probabilities": {
-      "home_win": 0.3806,
-      "draw": 0.3039,
-      "away_win": 0.3155
+      "home_win": 0.4017,
+      "draw": 0.3094,
+      "away_win": 0.2889
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -173476,15 +173539,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1551,
-        "draw": -0.0731,
-        "away_win": -0.1481
+        "home_win": -0.1484,
+        "draw": -0.0718,
+        "away_win": -0.1622
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0731,
-      "best_ev_pct": "-7.3%",
+      "best_ev": -0.0718,
+      "best_ev_pct": "-7.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -173735,9 +173798,9 @@
     "home_team": "유벤투스",
     "away_team": "SSC나폴리",
     "betman_odds": {
-      "home_win": 4.6,
-      "draw": 3.65,
-      "away_win": 1.52
+      "home_win": 4.15,
+      "draw": 3.7,
+      "away_win": 1.57
     },
     "odds_changes": [
       {
@@ -173754,45 +173817,60 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-01 17:38:03",
+        "from": {
+          "home_win": 4.6,
+          "draw": 3.65,
+          "away_win": 1.52
+        },
+        "to": {
+          "home_win": 4.15,
+          "draw": 3.7,
+          "away_win": 1.57
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 4.6,
-      "draw": 3.65,
-      "away_win": 1.52
+      "home_win": 4.15,
+      "draw": 3.7,
+      "away_win": 1.57
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.1892,
-      "draw": 0.2384,
-      "away": 0.5725
+      "home": 0.2099,
+      "draw": 0.2354,
+      "away": 0.5547
     },
     "model_probabilities": {
-      "home_win": 0.1892,
-      "draw": 0.2384,
-      "away_win": 0.5725
+      "home_win": 0.2099,
+      "draw": 0.2354,
+      "away_win": 0.5547
     },
     "blended_probabilities": {
-      "home_win": 0.1598,
-      "draw": 0.2308,
-      "away_win": 0.6095
+      "home_win": 0.1814,
+      "draw": 0.2284,
+      "away_win": 0.5901
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2649,
-        "draw": -0.1576,
-        "away_win": -0.0736
+        "home_win": -0.2472,
+        "draw": -0.1549,
+        "away_win": -0.0735
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] SSC나폴리 반대승",
       "raw_selection_name": "SSC나폴리 반대승",
-      "best_ev": -0.0736,
-      "best_ev_pct": "-7.4%",
+      "best_ev": -0.0735,
+      "best_ev_pct": "-7.3%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
