@@ -1,41 +1,41 @@
 {
-  "updated_at": "2026-10-31T23:01:07+00:00",
+  "updated_at": "2026-11-01T00:36:33+00:00",
   "rounds": [
     260126,
     260127,
     260128,
     260129
   ],
-  "matches": 545,
-  "moved": 260,
+  "matches": 557,
+  "moved": 263,
   "toward_ai": 125,
-  "away_from_ai": 135,
-  "toward_ai_pct": 48.1,
-  "fav_toward_pct": 45.4,
+  "away_from_ai": 138,
+  "toward_ai_pct": 47.5,
+  "fav_toward_pct": 44.9,
   "mean_move_pp": {
-    "n": 545,
-    "mean": -0.33008,
+    "n": 557,
+    "mean": -0.33888,
     "ci": [
-      -0.64899,
-      -0.02657
+      -0.65262,
+      -0.05905
     ],
     "ci_iid": [
-      -0.63609,
-      -0.02657
+      -0.65262,
+      -0.07141
     ],
-    "clusters": 232,
+    "clusters": 236,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
     "농구 SUM": {
-      "matches": 23,
+      "matches": 27,
       "moved": 0,
       "toward_ai": 0,
       "away_from_ai": 0,
       "toward_ai_pct": null,
       "fav_toward_pct": null,
       "mean_move_pp": {
-        "n": 23,
+        "n": 27,
         "mean": 0.0,
         "ci": [
           0.0,
@@ -45,51 +45,51 @@
           0.0,
           0.0
         ],
-        "clusters": 23,
+        "clusters": 27,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "농구 승패": {
-      "matches": 54,
-      "moved": 20,
+      "matches": 58,
+      "moved": 23,
       "toward_ai": 9,
-      "away_from_ai": 11,
-      "toward_ai_pct": 45.0,
-      "fav_toward_pct": 30.0,
+      "away_from_ai": 14,
+      "toward_ai_pct": 39.1,
+      "fav_toward_pct": 26.1,
       "mean_move_pp": {
-        "n": 54,
-        "mean": -0.79275,
+        "n": 58,
+        "mean": -0.89084,
         "ci": [
-          -2.12766,
-          0.22524
+          -2.11947,
+          0.0517
         ],
         "ci_iid": [
-          -2.06665,
-          0.22524
+          -2.09424,
+          0.05061
         ],
-        "clusters": 54,
+        "clusters": 58,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "농구 언더오버": {
-      "matches": 23,
+      "matches": 27,
       "moved": 4,
       "toward_ai": 0,
       "away_from_ai": 4,
       "toward_ai_pct": 0.0,
       "fav_toward_pct": 50.0,
       "mean_move_pp": {
-        "n": 23,
-        "mean": -0.24988,
+        "n": 27,
+        "mean": -0.21286,
         "ci": [
-          -0.49975,
-          -0.06247
+          -0.42571,
+          -0.05321
         ],
         "ci_iid": [
-          -0.49975,
-          -0.06247
+          -0.42571,
+          -0.05321
         ],
-        "clusters": 23,
+        "clusters": 27,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
