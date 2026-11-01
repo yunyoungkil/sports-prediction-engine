@@ -3515,7 +3515,8 @@ with tab3:
                 stg_sel = h3.selectbox("전략", ["전체"] + sorted(ddf.loc[~retired, "전략명"].unique()) + sorted(ddf.loc[retired, "전략명"].unique()),
                                        key="pt_strategy", help="폐기한 전략(지금 G에 합쳐진 G′·H′ 등)의 베팅은 여기서 골랐을 때만 보여요")
                 ddf = ddf[ddf["전략명"] == stg_sel] if stg_sel != "전체" else ddf[~retired]
-                res_sel = h4.selectbox("결과", ["전체", "적중", "미적중", "대기"], key="pt_status")
+                res_sel = h4.selectbox("결과", ["전체", "적중", "미적중", "적중특례", "대기"], key="pt_status",
+                                       help="적중특례 = 고른 경기가 모두 취소·결과 미확정이라 건 돈을 그대로 돌려받은 베팅 (일부만 취소되면 그 경기를 1.0배로 치고 나머지로 정산)")
                 if res_sel != "전체":
                     ddf = ddf[ddf["status"] == res_sel]
                 settled = ddf[ddf["status"] != "대기"]
@@ -3523,7 +3524,7 @@ with tab3:
                     st.caption(f"표시 {len(ddf):,}건 · 끝난 베팅 {len(settled):,}건 · 적중 {int((settled['status'] == '적중').sum()):,}건 · "
                                f"손익 {int(settled['profit'].sum()):+,}원 (수익률 {settled['profit'].sum() / settled['stake'].sum() * 100:+.1f}%)"
                                + (" — '전체'는 실시간과 과거 재현을 합친 값이라 따로 보는 게 정확해요." if src_sel == "전체" and ddf["구분"].nunique() > 1 else ""))
-                mark = {"적중": "✅ 적중", "미적중": "❌ 미적중", "대기": "⏳ 대기"}
+                mark = {"적중": "✅ 적중", "미적중": "❌ 미적중", "적중특례": "↩️ 적중특례(환불)", "대기": "⏳ 대기"}
                 done_mask = ddf["status"] != "대기"
                 # 환급 = 돌려받은 돈(적중 시 배당 × 금액, 미적중 0), 손익 = 환급 − 건 돈 (적중 1.62배 × 1,000원 → 환급 1,620 · 손익 +620)
                 view = pd.DataFrame({

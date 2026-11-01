@@ -20,6 +20,8 @@ __all__ = [
     "combined_odds",
     "calculate_payout",
     "expected_payout",
+    "settle_legs",
+    "VOID",
     "is_tax_free",
     "validate_combo",
     "expand_combinations"
@@ -81,6 +83,32 @@ def calculate_payout(odds: float, stake: int) -> int:
 
 # alias for standard naming in TODO.md
 expected_payout = calculate_payout
+
+
+VOID = "void"   # 적중특례(경기 취소·결과 미확정) — 그 경기는 배당 1.0배 (베트맨 이용가이드 · tracker/my_slips.py와 같은 규칙)
+
+
+def settle_legs(legs: List[Dict[str, Any]], outcomes: List[Any], combined_odds: float, stake: int) -> Union[Dict[str, Any], None]:
+    """
+    한 장(단일·조합)을 베트맨 규칙대로 정산한다. outcomes[i] = i번째 경기의 결과 키(home_win/draw/away_win) · VOID · None(아직).
+    - 하나라도 None이면 None (결과 대기 — 가상 베팅은 모든 경기 결과가 나온 뒤 정산한다)
+    - 무효가 아닌 경기 중 하나라도 틀리면 미적중 (환급 0)
+    - 무효(VOID) 경기는 배당 1.0으로 치고 나머지 경기 배당으로 조합 배당을 다시 계산한다 (곱 → 절사 → 절상).
+      모든 경기가 무효면 1.0배 = 건 돈을 그대로 돌려받는다 (status 'void')
+    반환: {"status": "hit" | "miss" | "void", "odds": 적용 배당, "payout": 환급금}
+    """
+    if len(outcomes) != len(legs) or any(o is None for o in outcomes):
+        return None
+    if any(o != VOID and o != leg["key"] for o, leg in zip(outcomes, legs)):
+        return {"status": "miss", "odds": float(combined_odds), "payout": 0}
+    voids = [o == VOID for o in outcomes]
+    if not any(voids):
+        odds = float(combined_odds)
+    elif len(legs) == 1:
+        odds = 1.0
+    else:
+        odds = calculate_combined_odds([1.0 if v else float(leg["odds"]) for v, leg in zip(voids, legs)])
+    return {"status": "void" if all(voids) else "hit", "odds": odds, "payout": calculate_payout(odds, int(stake))}
 
 
 def is_tax_free(odds: float, payout: int) -> bool:

@@ -315,3 +315,48 @@ def test_h_interim_check_uses_first_100_bets_once():
     assert _summarize({"H_two_leg_trail": lose[:99]}, {}, STRATEGIES)["H_two_leg_trail"]["verdict"].startswith("판단 보류")
     late_win = lose[:100] + rows(150, 1, 2.0, start=1000)    # 앞 100건이 정한 판정은 뒤에 이겨도 바뀌지 않음
     assert _summarize({"H_two_leg_trail": late_win}, {}, STRATEGIES)["H_two_leg_trail"]["verdict"].startswith("접기")
+
+
+def test_settle_legs_follows_betman_void_rule():
+    """적중특례(경기 취소·결과 미확정): 그 경기는 1.0배, 나머지 경기로 조합 배당을 다시 계산 (곱 → 절사 → 절상)"""
+    from models.combo_builder import VOID, calculate_combined_odds, settle_legs
+    single = [{"key": "home_win", "odds": 2.4}]
+    assert settle_legs(single, [VOID], 2.4, 1000) == {"status": "void", "odds": 1.0, "payout": 1000}   # 건 돈 그대로 돌려받음
+    legs = [{"key": "home_win", "odds": 1.85}, {"key": "draw", "odds": 1.62}]
+    full = calculate_combined_odds([1.85, 1.62])
+    assert settle_legs(legs, ["home_win", "draw"], full, 1000)["odds"] == full                    # 무효 없으면 산 배당 그대로
+    one_void = settle_legs(legs, [VOID, "draw"], full, 1000)
+    assert one_void["status"] == "hit" and one_void["odds"] == calculate_combined_odds([1.0, 1.62]) == 1.7
+    assert one_void["payout"] == 1700
+    assert settle_legs(legs, [VOID, "away_win"], full, 1000) == {"status": "miss", "odds": full, "payout": 0}
+    assert settle_legs(legs, [VOID, None], full, 1000) is None                                     # 남은 경기 결과 대기
+    assert settle_legs(legs, [VOID, VOID], full, 1000)["payout"] == 1000
+
+
+def test_cancelled_match_is_settled_not_left_pending(tmp_path):
+    """결과 코드 4(무효)가 오면 가상 베팅이 '대기'로 남지 않고 베트맨 규칙대로 정산된다 (리그 표 · 내역 · G 지갑)"""
+    from models.ai_bettor import MonthlyWallet
+
+    def leg(seq, key, odds):
+        return {"seq": seq, "key": key, "odds": odds, "match_time": "26.12.01 (화) 20:00",
+                "home_team": f"H{seq}", "away_team": f"A{seq}", "league": "L"}
+    bets = {"gm_ts": 9, "bets": [
+        {"strategy": "E_market_fav", "legs": [leg("1", "home_win", 1.5)], "combined_odds": 1.5, "stake": 1000, "bet_id": "e"},
+        {"strategy": "B_fav_double", "legs": [leg("1", "home_win", 1.3), leg("2", "home_win", 1.25)],
+         "combined_odds": 1.7, "stake": 1000, "bet_id": "b"}]}
+    (tmp_path / "9.json").write_text(json.dumps(bets), encoding="utf-8")
+    rpath = tmp_path.parent / f"{tmp_path.name}_void_res.json"
+    _write_results(rpath, 9, {"1": "4", "2": "0"})     # 1번 경기 취소(무효) · 2번 홈승
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json")
+    e, b = s["strategies"]["E_market_fav"], s["strategies"]["B_fav_double"]
+    assert (e["bets"], e["hits"], e["pending"], e["profit"]) == (1, 0, 0, 0)          # 1.0배 환불 — 적중 횟수로는 안 셈
+    assert (b["bets"], b["hits"], b["pending"], b["profit"]) == (1, 1, 0, 300)        # 1.0 × 1.25 → 1.3배 (절상) × 1,000
+    status = {d["strategy"]: d for d in s["details"]}
+    assert status["E_market_fav"]["status"] == "적중특례" and "[적중특례 1.0배]" in status["E_market_fav"]["legs"]
+    assert status["B_fav_double"]["status"] == "적중" and status["B_fav_double"]["odds"] == 1.3
+
+    g = MonthlyWallet(allowance=100000).calculate_wallet(
+        [{"gm_ts": "9", "stake": 1400, "combined_odds": 3.0, "created_at": "2026-11-01T00:00:00+00:00",
+          "legs": [{"seq": "1", "key": "home_win", "odds": 1.5}, {"seq": "2", "key": "home_win", "odds": 2.0}]}],
+        {("9", "1"): "void", ("9", "2"): "home_win"}, current_time=NOW)
+    assert g["pending_stakes"] == 0 and g["settled_profit"] == 1400                   # 1.0 × 2.0 = 2.0배 × 1,400 − 1,400

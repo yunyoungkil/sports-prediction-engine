@@ -7,12 +7,16 @@ evaluation/docs_sync.py
 - undocumented(): ARCHITECTURE.md에 이름이 한 번도 안 나오는 모듈(collector/models/evaluation/tracker/notifier/dashboard),
   워크플로(.github/workflows/*.yml), data/ 바로 아래 파일
 - stale_docs(): 문서의 마지막 수정 이후 코드 커밋이 너무 많이 쌓였는지 (git 이력, 문서마다 한도)
+- broken_todo_links(): EXPERIMENTS.md의 TODO 줄 번호 링크(`[TODO 7.17](./TODO.md#L731)`)가 그 항목 줄을 안 가리키는 것
+  (TODO에 항목이 늘면 줄 번호가 밀린다 — `--fix`가 항목 번호로 다시 찾아 고친다, 2026-11-01)
 브리핑(`python -m evaluation.briefing`)이 매번 알려 준다. 표준 라이브러리만 쓴다.
 
 실행:
-    python -m evaluation.docs_sync
+    python -m evaluation.docs_sync          # 점검
+    python -m evaluation.docs_sync --fix    # 밀린 TODO 링크 줄 번호 고치기
 """
 
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -79,17 +83,83 @@ def stale_docs(root: Path = ROOT, limits: Dict[str, int] = STALE_LIMITS) -> List
     return out
 
 
+LINKED_DOCS = ["EXPERIMENTS.md"]   # TODO 항목으로 가는 줄 번호 링크를 쓰는 문서
+_TODO_LINK = re.compile(r"\[([^\]]*?)\]\(\./TODO\.md#L(\d+)\)")
+_TODO_ITEM = re.compile(r"- \[[ x]\] \*\*(\d+\.\d+) ")
+PHASE6 = "Phase 6 결론"
+
+
+def _todo_item_lines(todo_text: str) -> Dict[str, int]:
+    """TODO 항목 번호 → 줄 번호 ('- [x] **7.17 …' 줄) + 'Phase 6 결론' 절"""
+    out: Dict[str, int] = {}
+    for i, line in enumerate(todo_text.splitlines(), 1):
+        m = _TODO_ITEM.match(line)
+        if m and m.group(1) not in out:
+            out[m.group(1)] = i
+        if f"**{PHASE6}" in line and PHASE6 not in out:
+            out[PHASE6] = i
+    return out
+
+
+def _link_target(label: str, items: Dict[str, int]) -> Optional[int]:
+    """링크 글자가 가리키려는 줄: 'Phase 6 …'은 Phase 6 결론, 그 밖에는 글자 속 항목 번호(범위 '5.6~5.7'이면 뒤 번호)"""
+    if "Phase 6" in label:
+        return items.get(PHASE6)
+    nums = re.findall(r"\d+\.\d+", label)
+    return items.get(nums[-1]) if nums else None
+
+
+def broken_todo_links(root: Path = ROOT) -> List[Dict[str, object]]:
+    """LINKED_DOCS 안 TODO 링크 중 그 항목 줄을 안 가리키는 것 (항목을 못 찾는 링크는 건너뜀)"""
+    items = _todo_item_lines(_read("TODO.md", root))
+    out = []
+    for doc in LINKED_DOCS:
+        for m in _TODO_LINK.finditer(_read(doc, root)):
+            want = _link_target(m.group(1), items)
+            if want and want != int(m.group(2)):
+                out.append({"doc": doc, "label": m.group(1), "line": int(m.group(2)), "want": want})
+    return out
+
+
+def fix_todo_links(root: Path = ROOT) -> int:
+    """밀린 TODO 링크 줄 번호를 항목 번호로 다시 찾아 고친다 (줄 끝 형식은 그대로). 고친 링크 수"""
+    items = _todo_item_lines(_read("TODO.md", root))
+    fixed = 0
+    for doc in LINKED_DOCS:
+        p = root / doc
+        if not p.exists():
+            continue
+        text = p.read_bytes().decode("utf-8")
+
+        def repl(m: "re.Match[str]") -> str:
+            nonlocal fixed
+            want = _link_target(m.group(1), items)
+            if want and want != int(m.group(2)):
+                fixed += 1
+                return f"[{m.group(1)}](./TODO.md#L{want})"
+            return m.group(0)
+
+        new = _TODO_LINK.sub(repl, text)
+        if new != text:
+            p.write_bytes(new.encode("utf-8"))
+    return fixed
+
+
 def sync_lines(root: Path = ROOT) -> List[str]:
     """브리핑용 한 블록"""
-    missing, stale = undocumented(root), stale_docs(root)
-    if not missing and not stale:
+    missing, stale, links = undocumented(root), stale_docs(root), broken_todo_links(root)
+    if not missing and not stale and not links:
         return ["📚 문서 동기화: ✅ ARCHITECTURE.md에 모든 모듈·워크플로·데이터 파일이 있고, 문서가 코드보다 많이 뒤처지지 않았어요"]
     n_missing = sum(len(v) for v in missing.values())
-    out = [f"📚 문서 동기화: ⚠️ 문서에 없는 항목 {n_missing}개 · 오래된 문서 {len(stale)}개 — 지금 최신화하세요 (SKILL.md '문서 최신화 규칙')"]
+    out = [f"📚 문서 동기화: ⚠️ 문서에 없는 항목 {n_missing}개 · 오래된 문서 {len(stale)}개 · 밀린 TODO 링크 {len(links)}개"
+           " — 지금 최신화하세요 (SKILL.md '문서 최신화 규칙')"]
     for kind, names in missing.items():
         out.append(f"   - ARCHITECTURE.md에 없는 {kind}: {', '.join(names[:8])}" + (f" 외 {len(names) - 8}개" if len(names) > 8 else ""))
     for s in stale:
         out.append(f"   - {s['doc']}: 마지막 수정 뒤 코드 커밋 {s['commits']}개 (한도 {s['limit']})")
+    if links:
+        out.append(f"   - {', '.join(sorted({str(x['doc']) for x in links}))}의 TODO 링크 {len(links)}개가 다른 줄을 가리킴"
+                   f" (예: '{links[0]['label']}' L{links[0]['line']} → L{links[0]['want']}) → `python -m evaluation.docs_sync --fix`")
     return out
 
 
@@ -99,4 +169,6 @@ if __name__ == "__main__":
             sys.stdout.reconfigure(encoding="utf-8")
         except Exception:
             pass
+    if "--fix" in sys.argv:
+        print(f"🔗 밀린 TODO 링크 {fix_todo_links()}개를 고쳤어요")
     print("\n".join(sync_lines()))

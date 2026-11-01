@@ -28,7 +28,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 from collector.betman_sharp import parse_betman_kickoff
-from models.combo_builder import calculate_combined_odds, calculate_payout, validate_combo
+from models.combo_builder import calculate_combined_odds, calculate_payout, settle_legs, validate_combo
 
 KST = timezone(timedelta(hours=9))
 MONTHLY_ALLOWANCE = 100_000   # 매월 1일 충전되는 취미 예산
@@ -181,12 +181,11 @@ class MonthlyWallet:
             stake = int(b.get("stake") or 0)
             ts = str(b.get("gm_ts", ""))
             outs = [results_idx.get((ts, str(leg["seq"]))) for leg in b["legs"]]
-            if any(o is None for o in outs):
+            s = settle_legs(b["legs"], outs, b["combined_odds"], stake)   # 무효 경기는 1.0배 (적중특례)
+            if s is None:
                 pending_stakes += stake      # 아직 결과 대기 중 — 묶인 돈
             else:
-                hit = all(o == leg["key"] for o, leg in zip(outs, b["legs"]))
-                payout = calculate_payout(b["combined_odds"], stake) if hit else 0
-                settled_profit += payout - stake
+                settled_profit += s["payout"] - stake
 
         # 지갑은 빚을 질 수 없음 (최소 0원)
         current_cash = max(0, total_deposited + settled_profit - pending_stakes)
@@ -252,11 +251,11 @@ def month_capital(bets_history: List[Dict[str, Any]], results_idx: Dict[Tuple[st
         if bm is not None and bm > cur:
             continue
         outs = [results_idx.get((str(b.get("gm_ts", "")), str(leg["seq"]))) for leg in b["legs"]]
-        if any(o is None for o in outs):
-            continue
         stake = int(b.get("stake") or 0)
-        hit = all(o == leg["key"] for o, leg in zip(outs, b["legs"]))
-        proven += (calculate_payout(b["combined_odds"], stake) if hit else 0) - stake
+        s = settle_legs(b["legs"], outs, b["combined_odds"], stake)   # 무효 경기는 1.0배 (적중특례)
+        if s is None:
+            continue
+        proven += s["payout"] - stake
     capital = frozen if frozen is not None else month_capital_value(proven, allowance, protect)
     return {"capital": capital, "month": cur, "frozen": frozen is not None, "proven_profit": proven}
 
@@ -474,12 +473,14 @@ def decide_autonomous_stakes(slips: List[Dict[str, Any]], wallet_cash: int, boos
 def sizing_effect(rows: List[Dict[str, Any]], flat_stake: int, min_for_verdict: int,
                   n_bootstrap: int = 2000, seed: int = 42) -> Optional[Dict[str, Any]]:
     """AI 판돈 조절 효과 = (AI가 정한 금액의 수익률) − (같은 베팅을 flat_stake 고정으로 걸었을 때의 수익률), %p.
-    rows: 끝난 베팅 [{gm_ts, odds, stake, hit}]. 신뢰구간은 회차 단위로 다시 뽑는다 (같은 회차의 두 장은 독립이 아님)."""
+    rows: 끝난 베팅 [{gm_ts, odds, stake, hit, paid?}]. 신뢰구간은 회차 단위로 다시 뽑는다 (같은 회차의 두 장은 독립이 아님).
+    paid(돈을 돌려받았나 — 적중 + 전부 무효 1.0배 환불)가 없으면 hit을 쓴다. odds는 무효 경기를 1.0으로 친 적용 배당."""
     if not rows:
         return None
     stake = np.array([r["stake"] for r in rows], dtype=float)
-    pay = np.array([calculate_payout(r["odds"], r["stake"]) if r["hit"] else 0 for r in rows], dtype=float)
-    flat_pay = np.array([calculate_payout(r["odds"], flat_stake) if r["hit"] else 0 for r in rows], dtype=float)
+    paid = [r.get("paid", r["hit"]) for r in rows]
+    pay = np.array([calculate_payout(r["odds"], r["stake"]) if p else 0 for r, p in zip(rows, paid)], dtype=float)
+    flat_pay = np.array([calculate_payout(r["odds"], flat_stake) if p else 0 for r, p in zip(rows, paid)], dtype=float)
 
     def gain(idx) -> Tuple[float, float, float]:
         a = pay[idx].sum() / stake[idx].sum() - 1.0

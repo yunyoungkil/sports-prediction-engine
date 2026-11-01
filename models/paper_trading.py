@@ -40,7 +40,7 @@ import numpy as np
 
 from collector.betman_sharp import parse_betman_kickoff
 from evaluation.metrics import cluster_roi_confidence_interval
-from models.combo_builder import calculate_combined_odds, calculate_payout, validate_combo
+from models.combo_builder import VOID, calculate_combined_odds, calculate_payout, settle_legs, validate_combo
 from models.combo_finder import candidate_legs, find_combos
 from models.ai_bettor import (MonthlyWallet, decide_autonomous_stakes, find_ai_autonomous_combos, g_breakdown, instinct_plan,
                               is_retired_g, month_capital, retired_g_key)
@@ -52,6 +52,8 @@ STAKE = 1000
 KEYS = ("home_win", "draw", "away_win")
 AI_SOURCES = ("betman_corrector", "market_corrector")
 RESULT_CODE_TO_KEY = {"0": "home_win", "1": "draw", "2": "away_win"}
+VOID_CODE = "4"   # 베트맨 결과 코드 4 = 무효·적중특례 → 그 경기는 1.0배 (tracker/my_slips.py와 같음)
+STATUS_TEXT = {"hit": "적중", "miss": "미적중", "void": "적중특례"}   # 'void' = 모든 경기가 무효라 건 돈을 그대로 돌려받음
 STRATEGIES = {
     "A_gem_single": "A. 💎 단일",
     "B_fav_double": "B. 강팀 2폴더 (≤1.3배·AI▲)",
@@ -190,12 +192,8 @@ def _strategy_bankroll(strategy_key: str, start_bank: float, bets_dir: Path = BE
             if b["strategy"] != strategy_key:
                 continue
             outs = [res.get((ts, leg["seq"])) for leg in b["legs"]]
-            if any(o is None for o in outs):
-                bank -= b["stake"]
-            elif all(o == leg["key"] for o, leg in zip(outs, b["legs"])):
-                bank += calculate_payout(b["combined_odds"], b["stake"]) - b["stake"]
-            else:
-                bank -= b["stake"]
+            s = settle_legs(b["legs"], outs, b["combined_odds"], b["stake"])
+            bank += -b["stake"] if s is None else s["payout"] - b["stake"]   # 결과 대기 = 묶인 돈
     return bank
 
 
@@ -249,8 +247,7 @@ def g_last_round_net(strategy: str, bets_dir: Path = BETS_DIR,
         outs = [[res.get((ts, leg["seq"])) for leg in b["legs"]] for b in bets]
         if not bets or any(o is None for os_ in outs for o in os_):
             continue
-        return sum((calculate_payout(b["combined_odds"], b["stake"]) if all(o == leg["key"] for o, leg in zip(os_, b["legs"])) else 0)
-                   - b["stake"] for b, os_ in zip(bets, outs))
+        return sum(settle_legs(b["legs"], os_, b["combined_odds"], b["stake"])["payout"] - b["stake"] for b, os_ in zip(bets, outs))
     return 0
 
 
@@ -341,7 +338,8 @@ def _results_index(results_path: Path) -> Dict[tuple, str]:
     idx = {}
     for r in json.loads(results_path.read_text(encoding="utf-8")):
         if r.get("game_type") == "축구 승무패":
-            k = RESULT_CODE_TO_KEY.get(str(r.get("game_result")))
+            code = str(r.get("game_result"))
+            k = VOID if code == VOID_CODE else RESULT_CODE_TO_KEY.get(code)
             if k:
                 idx[(str(r.get("gm_ts")), str(r.get("match_seq")))] = k
     return idx
@@ -414,23 +412,27 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
             last_ko = max((parse_betman_kickoff(leg["match_time"]) for leg in b["legs"]), default=None)
             if b.get("instinct") in instinct_rounds:
                 instinct_rounds[b["instinct"]].add(ts)
-            row = {"gm_ts": ts, "strategy": skey, "legs": " × ".join(_leg_text(leg) for leg in b["legs"]),
+            row = {"gm_ts": ts, "strategy": skey,
+                   "legs": " × ".join(_leg_text(leg) + (" [적중특례 1.0배]" if o == VOID else "") for o, leg in zip(outcomes, b["legs"])),
                    "odds": b["combined_odds"], "stake": b["stake"], "kickoff": last_ko.isoformat() if last_ko else ""}
-            if any(o is None for o in outcomes):
+            settled = settle_legs(b["legs"], outcomes, b["combined_odds"], b["stake"])
+            if settled is None:
                 if in_league:
                     pending[b["strategy"]] += 1
                 details.append({**row, "status": "대기", "payout": None, "profit": None})
                 continue
-            hit = all(o == leg["key"] for o, leg in zip(outcomes, b["legs"]))
-            payout = calculate_payout(b["combined_odds"], b["stake"]) if hit else 0
-            details.append({**row, "status": "적중" if hit else "미적중", "payout": payout, "profit": payout - b["stake"]})
+            # 무효 경기가 낀 조합은 그 경기를 1.0배로 치고 남은 경기로 다시 계산한 배당이 적용된다 (베트맨 적중특례)
+            hit, payout = settled["status"] == "hit", settled["payout"]
+            details.append({**row, "odds": settled["odds"], "status": STATUS_TEXT[settled["status"]],
+                            "payout": payout, "profit": payout - b["stake"]})
             if not in_league:
                 continue
             per[b["strategy"]].append({"gm_ts": ts, "hit": hit, "stake": b["stake"], "payout": payout,
                                        "settled_at": row["kickoff"]})
             if b["strategy"] in g_rows:
-                g_rows[b["strategy"]].append({"gm_ts": ts, "slip": b.get("slip") or "main", "odds": b["combined_odds"],
-                                              "stake": b["stake"], "hit": hit, "payout": payout})
+                # paid = 돈을 돌려받았나 (적중 + 전부 무효 1.0배 환불) — 판돈 조절 효과(g_breakdown)는 paid일 때 odds로 환급을 다시 계산
+                g_rows[b["strategy"]].append({"gm_ts": ts, "slip": b.get("slip") or "main", "odds": settled["odds"],
+                                              "stake": b["stake"], "hit": hit, "paid": settled["status"] != "miss", "payout": payout})
     strategies = _summarize(per, pending, STRATEGIES)
     plans = [json.loads(f.read_text(encoding="utf-8")).get("f_plan") for f in sorted(bets_dir.glob("*.json"))]
     plans = [p for p in plans if p]

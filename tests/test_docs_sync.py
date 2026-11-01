@@ -47,3 +47,18 @@ def test_real_repo_docs_are_in_sync():
 
 def test_stale_docs_handles_missing_git(tmp_path):
     assert stale_docs(tmp_path, {"nonexistent.md": 1}) == []
+
+
+def test_todo_links_are_checked_and_fixed_by_item_number(tmp_path):
+    """EXPERIMENTS.md의 TODO 줄 번호 링크가 밀리면 점검이 잡고, --fix가 항목 번호로 다시 찾아 고친다 (줄 끝 형식 유지)"""
+    from evaluation.docs_sync import broken_todo_links, fix_todo_links
+    root = _mini_repo(tmp_path, "`models/alpha.py` `.github/workflows/run.yml` `data/out.json`")
+    (root / "TODO.md").write_bytes("# TODO\r\n- [x] **5.6 a**\r\n- [x] **5.7 b**\r\n✅ **Phase 6 결론 (x):**\r\n- [ ] **7.2 c**\r\n".encode("utf-8"))
+    (root / "EXPERIMENTS.md").write_bytes(
+        "| [TODO 5.6~5.7](./TODO.md#L3) · [Phase 6 결론](./TODO.md#L9) · [7.2](./TODO.md#L2) · [없는 9.9](./TODO.md#L1) |\r\n".encode("utf-8"))
+    bad = broken_todo_links(root)
+    assert {(b["label"], b["want"]) for b in bad} == {("Phase 6 결론", 4), ("7.2", 5)}   # 5.6~5.7은 뒤 번호(5.7, L3)라 맞음
+    assert any("밀린 TODO 링크 2개" in line for line in sync_lines(root))
+    assert fix_todo_links(root) == 2 and broken_todo_links(root) == []
+    text = (root / "EXPERIMENTS.md").read_bytes().decode("utf-8")
+    assert "(./TODO.md#L4)" in text and "(./TODO.md#L5)" in text and "\r\n" in text and "[없는 9.9](./TODO.md#L1)" in text

@@ -78,7 +78,7 @@ sports-prediction-engine/
 | `models/evaluator.py` | 기대가치(EV)·등급 |
 | `models/league_groups.py` | 리그 그룹 (`league_group` 운영용 · `league_group_v2` 바로잡은 판, 가설 판정용) |
 | `models/form_analyzer.py` | 표시용 최근 폼·상대 전적·순위 (AI 학습 피처와 별개) |
-| `models/combo_builder.py` · `models/combo_finder.py` | 베트맨 맞춤조건구매 규칙(배당 절삭·올림·한도)과 조합 후보 |
+| `models/combo_builder.py` · `models/combo_finder.py` | 베트맨 맞춤조건구매 규칙(배당 절삭·올림·한도)과 조합 후보 · `settle_legs`: 한 장 정산(무효·적중특례 경기는 1.0배로 치고 조합 배당을 다시 계산) — 가상 베팅 리그·G 지갑이 모두 이 함수로 정산 |
 | `models/strategy_backtest.py` | 조합 방식을 과거에 반복했다면 |
 | `models/paper_trading.py` · `models/portfolio.py` | 가상 베팅 리그(전략 A~H + G-본능) · F 전략(AI 조합 묶음 + 켈리) |
 | `models/two_leg.py` | 홈·원정 두 경기 토너먼트 찾기 — 2차전의 1차전 득실을 과거 기록 CSV에서 (pandas 없이) · H 전략과 7.13 시험이 같은 규칙을 씀 |
