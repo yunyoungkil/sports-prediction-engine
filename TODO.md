@@ -909,6 +909,17 @@
     1. 보류 두 개 닫음: **야구 선발 투수**(Phase 6 데이터 목록 · 2027 시즌 전 재검토 계획) · **낮 경기 축구 라인업**
     2. 7.2는 계획대로 진행하되 기대치(정확도만, 돈은 기대 낮음)와 그쪽 함정을 7.2 항목에 적음
     3. EXPERIMENTS.md AI 안내에 **3-4 외부 독립 연구** 표 · 6번 시험 규칙에 '버린 행 확인 · 방향 뒤집기 · 무작위 대조 · 3갈래 계산 확인'
+- [ ] **7.26 저장소 비공개 전환 — GitHub Actions 사용량이 한 달 2,000분 안으로 들어오면** (📌 이어서 · 사용자 결정 2026-11-01: "그냥 이대로 공개로 했다가 … 한도 안으로 들어오면 비공개로 하자")
+  - 사실 (2026-11-01 확인): 저장소는 **이미 공개**(만든 날 2026-10-23, 별 0 · 포크 0). 커밋 412개 전체에서 비밀 키 형태 0건(키는 GitHub Secrets에만 있음). 공개된 것: 커밋의 개인 이메일 2개 · 문서 3개(SKILL.md·GEMINI.md·TODO.md)의 개인 폴더 경로 · 외부 데이터(베트맨 기록 약 6MB, The Odds API 스냅샷, football-data CSV — 재배포 약관은 확인 안 함)
+  - 왜 바로 못 바꾸나: 공개 저장소는 Actions가 무료 무제한, 비공개는 무료 계정 기준 **한 달 2,000분**. 최근 3.2일 실측으로 한 달 **약 3,300~4,000분**(실행마다 분 단위 올림) →
+    파이프라인 하루 약 20회(cron-job.org 2 · GitHub 예약 1~2 · **대시보드 깨우기 13~17**) × 약 4분 · 결과 갱신 약 16회 × 1~2분 · 테스트 약 20회(개발 커밋마다) × 1분.
+    그대로 바꾸면 20일 전후에 한도를 넘어 실행이 멈춘다(기본 설정)
+  - 사용량을 줄이는 방법 (사용자가 원할 때만): 대시보드 깨우기 간격 30분 → 3시간(`dashboard/app.py` `wake_pipeline`, 가장 큼 약 −1,200분) · 테스트를 코드가 바뀐 커밋에서만(`test.yml` paths) · 결과 갱신의 GitHub 예약 보험 빼기 → 약 1,600~1,800분 예상
+  - 재는 법: `gh run list -L 200 --json workflowName,createdAt,updatedAt,status` 로 최근 실행 시간을 모아 하루 평균 × 30 (실행마다 분 단위 올림), 또는 GitHub 설정 → Billing의 Actions 사용량
+  - 바꿀 때 할 일: ① 사용량이 2,000분 안인지 확인 ② `gh repo edit yunyoungkil/sports-prediction-engine --visibility private --accept-visibility-change-consequences` (또는 GitHub 설정 화면)
+    ③ 휴대폰 대시보드(Streamlit Community Cloud)를 쓰면 Streamlit에 비공개 저장소 접근 권한을 다시 준다 ④ 다음 cron-job.org 정시 실행이 성공했는지 확인(토큰은 이 저장소 전용이라 계속 동작할 것)
+    ⑤ GitHub 링크로 공유하던 문서는 막힘 → EXPERIMENTS.md는 파일로 첨부. 이미 공개됐던 내용은 비공개로 바꿔도 되돌릴 수 없다
+  - 끝나면: `[x]`로 바꾸고 `📌 이어서`를 지운다
 - [ ] **7.2 해외 샤프 배당(`sharp_diff`)과 `BetmanCorrector` 2단계 통합**
   - 배경: 유럽 과거 데이터(`models/market_corrector.py`)에서 가장 강력한 피처는 해외 샤프 배당과의 차이($\beta = 1.32$)였으나, 현재 실전 1순위인 `BetmanCorrector`는 베트맨 자체 피처만 사용 중
   - 내용: 누적된 `data/history/sharp_snapshots/` 표본(300경기 이상)을 바탕으로, 해외 배당 매칭 경기에는 `log(p_sharp) - log(p_betman)` 보정을 결합하고 미매칭 리그(K리그·J2 등)는 기존 `BetmanCorrector`로 폴백하는 계층형 모델 검증
