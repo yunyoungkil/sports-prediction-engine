@@ -3233,6 +3233,23 @@ with tab3:
                     hide_index=True, width="stretch")
                 st.caption("같은 경기의 승무패·핸디캡은 따로 세어져서 '채점한 경기'가 '서로 다른 대진'보다 많아요. 유형마다 AI 모델이 달라서 "
                            "전체 평균 하나로 판단하지 말고 유형별로 보세요.")
+        versions = card.get("by_model_version") or []
+        if len(versions) > 1:
+            with st.expander("AI 버전별 성적 (재학습·모델 교체 전후를 나눠 보기)"):
+                src_name = {"betman_corrector": "축구 승무패 AI", "betman_markets": "전 종목 보정 AI",
+                            "market_corrector": "유럽 보정 AI"}
+                st.dataframe(commas(pd.DataFrame([
+                    {"AI": src_name.get(v.get("source"), v.get("source") or "-"),
+                     "학습한 날": (v.get("trained_at") or "-")[:10] if v.get("version") else "기록 없음",
+                     "모델 종류": v.get("family") or "-",
+                     "회차": ", ".join(str(g) for g in v["rounds"]),
+                     "채점한 경기": v["n"], "서로 다른 대진": v.get("fixtures", v["n"]),
+                     "AI − 배당 (음수 = AI 우세)": signed(v["ll_diff"], 4),
+                     "95% 범위": f"[{signed(v['ll_diff_ci'][0], 4)}, {signed(v['ll_diff_ci'][1], 4)}]"}
+                    for v in versions]), "채점한 경기", "서로 다른 대진"), hide_index=True, width="stretch")
+                st.caption("AI는 재학습할 때마다(그리고 모델을 바꿀 때) 버전이 달라져요. 위 전체 판정은 모든 버전을 합친 값이고, "
+                           "이 표는 버전마다 따로 본 값이에요. 경기는 킥오프 전 마지막 예측을 낸 버전으로 세어요. "
+                           "버전 하나가 한두 회차뿐이면 범위가 넓고 다른 회차에서 같을지 알 수 없어서, 표본이 작은 줄은 참고만 하세요.")
     else:
         st.info(f"⏳ 아직 채점할 경기가 없어요 (현재 {n_g}경기). 2026-10-25부터 경기 전 예측을 기록하기 시작했고, "
                 f"기록된 경기가 끝날 때마다 자동으로 채점돼요. {SCORE_MIN}경기가 쌓이면 판정해요.")

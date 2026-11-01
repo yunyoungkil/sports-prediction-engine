@@ -248,6 +248,22 @@ def shadow_compare(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     return out
 
 
+def by_model_version(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """AI 버전(재학습·모델 교체)별 성적 — 어느 버전이 낸 예측을 채점한 표본인지 나눠 본다 (표시 전용, 공식 판정에는 안 씀).
+    버전은 경기 전 기록의 `model_version`('가족:학습시각', run_pipeline.py)이고 경기별로는 킥오프 전 마지막 예측의 버전이다.
+    출처(prob_source)별로 따로 묶는다 — 전 종목 보정 행의 버전 이름은 승무패 AI의 학습 시각을 같이 쓰기 때문.
+    범위(회차 단위·경기 단위 중 넓은 쪽)는 표본이 작으면 넓게 나온다. 시간 순(처음 채점된 회차 순)으로 돌려준다."""
+    groups: Dict[tuple, List[Dict[str, Any]]] = {}
+    for r in rows:
+        groups.setdefault((r.get("source"), r.get("version")), []).append(r)
+    out = []
+    for (source, version), sub in groups.items():
+        family, _, trained_at = (version or "").partition(":")
+        out.append({"source": source, "version": version, "family": family or None, "trained_at": trained_at or None,
+                    "rounds": sorted({r["gm_ts"] for r in sub}), **_ll_block_fixtures(sub)})
+    return sorted(out, key=lambda b: (b["rounds"][0], str(b["source"]), str(b["version"])))
+
+
 def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/history/betman_recent_results.json")) -> Dict[str, Any]:
     results = load_graded_by_line(results_path)
     rows: List[Dict[str, Any]] = []
@@ -265,6 +281,7 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
                          "odds": np.array([float(e["betman_odds"][k]) for k in KEYS]),
                          "source": e.get("prob_source"), "game_type": e.get("game_type") or "축구 승무패",
                          "league": e.get("league") or "", "kickoff": parse_betman_kickoff(e.get("match_time")),
+                         "version": e.get("model_version"),
                          "shadow": {k: _vec(v) for k, v in (e.get("shadow_probs") or {}).items() if v}})
 
     card: Dict[str, Any] = {"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -303,6 +320,8 @@ def build_scorecard(log_dir: Path = LOG_DIR, results_path: Path = Path("data/his
         "by_game_type": {gt: _ll_block_fixtures([r for r in rows if r["game_type"] == gt])
                          for gt in sorted({r["game_type"] for r in rows})},
         "fixtures": len({r["fixture"] for r in rows}),   # '300경기'는 게임번호 기준 — 독립적인 대진 수를 옆에 병기
+        # 재학습·모델 교체로 표본이 섞이는 것을 나눠 보기 위한 버전별 성적 (공식 판정은 위 전체 값 그대로 — 사전 등록)
+        "by_model_version": by_model_version(rows),
         "calibration_metrics": calibration_metrics(rows),
         "calibration_by_game_type": {gt: calibration_metrics([r for r in rows if r["game_type"] == gt])
                                      for gt in sorted({r["game_type"] for r in rows})

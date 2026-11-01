@@ -97,7 +97,7 @@ sports-prediction-engine/
 ### evaluation/ — 평가·점검
 | 파일 | 역할 |
 |---|---|
-| `evaluation/scorecard.py` | **공식 AI 성적표**: 경기 전 예측만 결과로 채점 (LL·Brier·ECE, 유형별·대진 수, 사전 가설 H1·H2) |
+| `evaluation/scorecard.py` | **공식 AI 성적표**: 경기 전 예측만 결과로 채점 (LL·Brier·ECE, 유형별·대진 수, AI 버전별 `by_model_version`, 사전 가설 H1·H2) |
 | `evaluation/clv.py` | 마감 배당 비교 (평가 전용) |
 | `evaluation/stale_odds.py` · `evaluation/sharp_vs_betman.py` | 지연 배당 측정 · 해외 배당 검증 |
 | `evaluation/walk_forward.py` · `evaluation/portfolio_backtest.py` · `evaluation/g_instinct_backtest.py` | 워크포워드 백테스트 · F 전략 과거 재현 · G 원칙형 vs G-본능 과거 재현 (기본: 옛 잔고 밑천 · `--month`: 월 밑천제) |
@@ -162,7 +162,7 @@ sports-prediction-engine/
 - `gm_ts`(회차)가 비면 경기 전 기록·가상 베팅이 빠진다 → 데이터 계약이 막는다. `match_state`는 새 회차 직후 몇 시간 0일 수 있다(정상).
 
 ### `data/history/prediction_log/{회차}.json`
-`matches.{경기번호}`에 `model_probs`/`market_probs`(경기 전 마지막 값)와 `first_*`(처음 값, 불변), `prob_source`, `model_version`, `logged_at`, `shadow_probs`. 킥오프 이후에는 기록하지 않는다.
+`matches.{경기번호}`에 `model_probs`/`market_probs`(경기 전 마지막 값)와 `first_*`(처음 값, 불변), `prob_source`, `model_version`(`가족:학습시각`, 예 `betman:2026-10-29T10:47:22+00:00` — 경기별로는 킥오프 전 마지막 예측의 버전, 성적표 `by_model_version`이 이 값으로 재학습·모델 교체 전후를 나눠 본다), `logged_at`, `shadow_probs`. 킥오프 이후에는 기록하지 않는다.
 
 ### `data/history/paper_bets/{회차}.json`
 `{"gm_ts", "bets": [...], "f_plan"}` — 한 번 만든 베팅은 고치지 않는다. 베팅 한 건: `strategy`, `legs`(`seq`·`key`·`odds`·`match_time`·팀·리그), `combined_odds`, `stake`, `bet_id`, `created_at`(UTC), `ev_ai`.

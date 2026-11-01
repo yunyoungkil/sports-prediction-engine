@@ -55,6 +55,35 @@ def test_scorecard_grades_logged_predictions(tmp_path):
     assert (cal["20~30%"]["n"], cal["20~30%"]["happened_pct"]) == (20, 20.0)
 
 
+def test_scorecard_splits_by_model_version(tmp_path):
+    """재학습·모델 교체로 섞인 표본을 버전별로 나눠 본다: 경기별로는 킥오프 전 '마지막' 예측의 버전, 전체 판정 값은 그대로"""
+    log_dir = tmp_path / "log"
+    now = datetime(2026, 10, 24, 0, 0, tzinfo=timezone.utc)
+    probs = {"home_win": 0.6, "draw": 0.2, "away_win": 0.2}
+    old = "betman:2026-10-25T11:43:22+00:00"
+    new = "betman_shin:2026-11-04T01:00:00+00:00"
+    save_prediction_log(260200, [_pred(str(i), "26.10.25 (일) 20:00", probs) for i in range(5)], model_version=old, log_dir=log_dir, now=now)
+    # 같은 회차의 경기 3·4는 킥오프 전에 새 버전으로 다시 예측됨 → 그 경기는 새 버전으로 센다
+    save_prediction_log(260200, [_pred(str(i), "26.10.25 (일) 20:00", probs) for i in (3, 4)], model_version=new, log_dir=log_dir, now=now)
+    # 다음 회차는 전부 새 버전, 이 회차의 한 경기는 버전 기록이 없는 옛 형식
+    save_prediction_log(260201, [_pred(str(i), "26.10.26 (월) 20:00", probs) for i in range(4)], model_version=new, log_dir=log_dir, now=now)
+    save_prediction_log(260202, [_pred("0", "26.10.27 (화) 20:00", probs)], model_version=None, log_dir=log_dir, now=now)
+    results = [{"gm_ts": g, "match_seq": str(i), "game_type": "축구 승무패", "home_score": 1 if i % 2 == 0 else 0, "away_score": 0}
+               for g, n in ((260200, 5), (260201, 4), (260202, 1)) for i in range(n)]
+    rpath = tmp_path / "results.json"
+    rpath.write_text(json.dumps(results), encoding="utf-8")
+
+    card = build_scorecard(log_dir=log_dir, results_path=rpath)
+    blocks = card["by_model_version"]
+    assert [(b["version"], b["n"]) for b in blocks] == [(old, 3), (new, 6), (None, 1)]
+    assert sum(b["n"] for b in blocks) == card["graded_matches"] == 10     # 공식 전체 값은 그대로, 합이 맞음
+    assert blocks[0]["rounds"] == [260200] and blocks[1]["rounds"] == [260200, 260201]
+    assert (blocks[0]["family"], blocks[0]["trained_at"]) == ("betman", "2026-10-25T11:43:22+00:00")
+    assert blocks[1]["family"] == "betman_shin" and blocks[2]["family"] is None and blocks[2]["trained_at"] is None
+    # _pred는 팀 이름이 같아 회차마다 1대진으로 센다: 새 버전 6경기는 두 회차(260200 · 260201)에 걸쳐 2대진
+    assert blocks[1]["fixtures"] == 2 and blocks[1]["ll_diff_ci"][0] <= blocks[1]["ll_diff"] <= blocks[1]["ll_diff_ci"][1]
+
+
 def test_hypotheses_count_only_registered_groups_after_registration(tmp_path):
     """[6.5] 사전 가설은 등록(2026-10-28 00:00 KST) 이후 킥오프한 해당 그룹 축구 승무패만 센다"""
     log_dir = tmp_path / "log"
