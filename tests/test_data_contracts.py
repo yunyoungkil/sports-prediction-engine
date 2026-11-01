@@ -99,7 +99,7 @@ def test_check_all_writes_ok_report_for_clean_files(tmp_path):
     p, r = tmp_path / "p.json", tmp_path / "r.json"
     p.write_text(json.dumps([_pred("1")]), encoding="utf-8")
     r.write_text(json.dumps([_res("1")]), encoding="utf-8")
-    rep = check_all(p, r, tmp_path / "none.csv", tmp_path / "nolog")
+    rep = check_all(p, r, tmp_path / "none.csv", tmp_path / "nolog", tmp_path / "nomarkets")
     assert rep["ok"] and rep["rows"] == {"predictions": 1, "results": 1}
 
 
@@ -120,3 +120,36 @@ def test_briefing_contract_lines():
     bad = {**ok, "errors": [{"message": "결과 파일: 260127회차 결과가 하나도 없어요"}]}
     assert "⚠️ 오류 1종" in "\n".join(contract_lines({"data/contract_report.json": bad}.get, now))
     assert "보고서 없음" in contract_lines(lambda rel: None, now)[0]
+
+
+def _mk(sport, typ, handi_val, line, score, result, draw="0.0", home="A", away="B", ko="1700000000000"):
+    return {"gm_ts": "260101", "match_seq": "1", "kickoff_ms": ko, "sport": sport, "bettyp_nm": typ, "handi_val": handi_val,
+            "line": line, "home_team": home, "away_team": away, "odds_win": "1.9", "odds_draw": draw, "odds_lose": "1.9",
+            "score": score, "result": result}
+
+
+def test_markets_archive_result_codes_match_scores_by_type():
+    """[7.22] 전 종목 아카이브: 정답 코드가 점수·기준선과 맞으면 통과, 다르면 유형별 오류 (핸디캡 점수는 핸디캡을 더한 값, 언더오버·SUM은 합계)"""
+    from evaluation.data_contracts import check_markets_archive, expected_result
+    good = [_mk("SC", "축구 승무패", "0", "0.0", "1:1", "1", draw="3.2"),
+            _mk("SC", "축구 핸디캡", "2", "1.0", "2:2", "1", draw="3.4"),        # 핸디캡 더한 점수 2:2 → 핸무
+            _mk("BK", "농구 언더오버", "9", "217.5", "208:0", "0"),               # 합계 208 < 217.5 → 언더(앞)
+            _mk("SC", "축구 SUM", "27", "0.0", "3:0", "0"),                        # 합계 3 = 홀(앞)
+            _mk("BS", "야구 승1패", "13", "0.0", "5:5", "1", draw="3.0"),          # 무승부도 가운데
+            _mk("BK", "농구 승5패", "14", "0.0", "69:56", "0", draw="4.0"),
+            _mk("BS", "야구 승패", "21", "0.0", "3:4", "4"),                       # 무효는 건너뜀
+            _mk("SC", "축구 승부식 기타", "22", "0.0", "2:1", "2", draw="7.0")]     # 계산 규칙 모르는 유형은 건너뜀
+    rep = check_markets_archive(good)
+    assert rep["errors"] == [] and rep["checked"] == 6
+    assert expected_result("야구 전반 언더오버", 6, 0, 4.5) == 2
+    bad = check_markets_archive([_mk("BK", "농구 핸디캡", "23", "-13.5", "83.5:111", "0")])   # 실제로는 원정 승(2)
+    assert len(bad["errors"]) == 1 and "농구 핸디캡" in bad["errors"][0]["message"]
+
+
+def test_markets_archive_flags_restored_type_collisions():
+    """이름 없는 옛 행 두 개가 같은 경기·같은 복원 유형·같은 기준선이면 (전반·전체가 섞였을 수 있음) 오류"""
+    from evaluation.data_contracts import check_markets_archive
+    rows = [_mk("SC", "", "0", "0.0", "1:0", "0", draw="3.2"), _mk("SC", "", "0", "0.0", "0:0", "1", draw="3.1")]
+    rep = check_markets_archive(rows)
+    assert any(e["check"] == "restored_type_collision" for e in rep["errors"])
+    assert check_markets_archive(rows[:1])["errors"] == []

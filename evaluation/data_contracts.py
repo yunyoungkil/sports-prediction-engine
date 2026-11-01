@@ -2,6 +2,7 @@
 evaluation/data_contracts.py
 ============================
 데이터 계약 — 예측 파일 · 결과 파일 · 과거 아카이브가 '이래야 한다'는 모양을 pandera 스키마로 정해 두고 어기면 알린다.
+(2026-11-01 추가: 전 종목·전 유형 아카이브의 정답 코드가 점수·기준선과 맞는지, 유형 이름 복원이 겹치지 않는지)
 (2026-10-30 도입: 회차(gm_ts)가 빈 예측 파일, 결과 수집 실패로 결과가 통째로 사라진 사고처럼 '모양이 깨진 데이터'를 저장 직후 잡는다)
 
 - errors: 있으면 안 되는 것 (운영 점검 health_check가 읽어 경고 → Actions 실행을 실패로 표시)
@@ -36,6 +37,7 @@ REPORT_PATH = ROOT / "data" / "contract_report.json"
 PRED_PATH = ROOT / "data" / "predictions.json"
 RESULTS_PATH = ROOT / "data" / "history" / "betman_recent_results.json"
 ARCHIVE_PATH = ROOT / "data" / "history" / "betman_soccer_1x2.csv"
+MARKETS_DIR = ROOT / "data" / "history" / "betman_markets"   # 전 종목·전 유형 아카이브 ({yy}.csv.gz)
 
 SPORTS = ["SC", "BK", "BS", "VL"]
 PROB_SOURCES = ["market", "betman_corrector", "market_corrector", "betman_markets"]
@@ -209,6 +211,80 @@ def check_archive(df: pd.DataFrame) -> Dict[str, Any]:
     return {"errors": _validate("과거 아카이브", ARCHIVE_SCHEMA, d), "notes": [], "rows": int(len(d))}
 
 
+# ── 전 종목·전 유형 아카이브 (data/history/betman_markets/*.csv.gz) ─────────
+# 정답 코드(result)가 점수·기준선으로 계산한 값과 같은지 + 유형 이름 복원(canonical_type)이 겹치지 않는지 (2026-11-01 도입, TODO 7.22)
+# 점수 칸 형식: 핸디캡은 핸디캡을 더한 점수('18.5:9'), 언더오버·SUM은 '합계:0'. 처음 점검(192,410행)에서 어긋남 0건
+
+def expected_result(game_type: str, home: float, away: float, line: float) -> Optional[int]:
+    """점수·기준선으로 계산한 베트맨 정답 코드 (0 앞 · 1 가운데 · 2 뒤). 계산 규칙을 모르는 유형은 None (점검에서 건너뜀)"""
+    base = game_type.replace("전반 ", "")
+    if base.endswith("언더오버"):
+        return None if home == line else (0 if home < line else 2)          # 언더 = 앞
+    if base.endswith("SUM"):
+        return 0 if int(round(home)) % 2 == 1 else 2                         # 홀 = 앞
+    d = home - away
+    if base.endswith("승1패"):
+        return 1 if abs(d) <= 1 else (0 if d > 0 else 2)                     # 1점 차·무승부 = 가운데 (야구)
+    if base.endswith("승5패"):
+        return 1 if abs(d) <= 5 else (0 if d > 0 else 2)                     # 5점 차 이내 = 가운데 (농구)
+    if base.endswith(("승무패", "핸디캡", "승패")):
+        return 0 if d > 0 else (1 if d == 0 else 2)
+    return None
+
+
+def _load_markets(markets_dir: Path) -> List[Dict[str, Any]]:
+    import csv
+    import gzip
+    rows: List[Dict[str, Any]] = []
+    for p in sorted(markets_dir.glob("*.csv.gz")):
+        with gzip.open(p, "rt", encoding="utf-8-sig", newline="") as f:
+            rows.extend(csv.DictReader(f))
+    return rows
+
+
+def check_markets_archive(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    from models.betman_markets import canonical_type
+    mism: Dict[str, List[str]] = {}
+    groups: Dict[tuple, int] = {}
+    checked = unknown = 0
+    for r in rows:
+        try:
+            has_draw = float(r.get("odds_draw") or 0) > 1.0
+        except ValueError:
+            has_draw = False
+        named = bool(r.get("bettyp_nm"))
+        t = canonical_type(r.get("sport", ""), r.get("bettyp_nm") or "", r.get("handi_val"), has_draw)
+        if not t:
+            unknown += 1
+            continue
+        if not named:   # 이름 없는 옛 행: 같은 경기·같은 복원 유형·같은 기준선이 둘이면 전반·전체 등이 섞였다는 뜻
+            k = (t, r.get("home_team"), r.get("away_team"), r.get("kickoff_ms"), r.get("line"))
+            groups[k] = groups.get(k, 0) + 1
+        res, score = str(r.get("result", "")), str(r.get("score", ""))
+        if res in ("", "4") or ":" not in score:
+            continue
+        try:
+            h, a = (float(x) for x in score.split(":"))
+            e = expected_result(t, h, a, float(r.get("line") or 0))
+        except ValueError:
+            continue
+        if e is None:
+            continue
+        checked += 1
+        if str(e) != res:
+            mism.setdefault(t, []).append(f"{r.get('gm_ts')}-{r.get('match_seq')} 점수 {score} 기준 {r.get('line')} 정답 {res} (계산 {e})")
+    errors = [{"dataset": "전 종목 아카이브", "column": "result", "check": f"result_matches_score:{t}", "count": len(v),
+               "message": f"전 종목 아카이브: {t} 정답 코드가 점수·기준선과 다름 {len(v)}건 (예: {', '.join(v[:2])})"}
+              for t, v in sorted(mism.items())]
+    dup = sum(1 for n in groups.values() if n > 1)
+    if dup:
+        errors.append({"dataset": "전 종목 아카이브", "column": "handi_val", "check": "restored_type_collision", "count": dup,
+                       "message": f"전 종목 아카이브: 이름 없는 옛 행에서 같은 경기·같은 복원 유형·같은 기준선이 둘 이상 {dup}건 "
+                                  "(전반·전체처럼 다른 유형이 같은 이름으로 복원됐을 수 있음 — models/betman_markets.py canonical_type)"})
+    notes = [f"전 종목 아카이브: 유형을 알 수 없는 행 {unknown}건은 점검에서 뺐어요 (예: 축구 승부식 기타)"] if unknown else []
+    return {"errors": errors, "notes": notes, "rows": int(len(rows)), "checked": checked}
+
+
 LOG_DIR = ROOT / "data" / "history" / "prediction_log"
 RESULT_GRACE_H = 6.0   # 킥오프 뒤 이 시간이 지난 경기가 있는데 그 회차의 결과 행이 하나도 없으면 결과 수집이 빠진 것
 
@@ -233,8 +309,8 @@ def check_result_coverage(results_rows: List[Dict[str, Any]], log_dir: Path = LO
 
 
 def check_all(pred_path: Path = PRED_PATH, results_path: Path = RESULTS_PATH, archive_path: Path = ARCHIVE_PATH,
-              log_dir: Path = LOG_DIR) -> Dict[str, Any]:
-    """세 데이터셋을 점검해 보고서를 만든다 (파일이 없으면 그 항목은 건너뜀)"""
+              log_dir: Path = LOG_DIR, markets_dir: Path = MARKETS_DIR) -> Dict[str, Any]:
+    """네 데이터셋을 점검해 보고서를 만든다 (파일이 없으면 그 항목은 건너뜀)"""
     errors: List[Dict[str, Any]] = []
     notes: List[str] = []
     rows: Dict[str, int] = {}
@@ -248,6 +324,9 @@ def check_all(pred_path: Path = PRED_PATH, results_path: Path = RESULTS_PATH, ar
     if archive_path.exists():
         r = check_archive(pd.read_csv(archive_path, encoding="utf-8-sig"))
         errors += r["errors"]; notes += r["notes"]; rows["archive"] = r["rows"]
+    if markets_dir.exists() and any(markets_dir.glob("*.csv.gz")):
+        r = check_markets_archive(_load_markets(markets_dir))
+        errors += r["errors"]; notes += r["notes"]; rows["markets_archive"] = r["rows"]
     return {"checked_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "rows": rows,
             "errors": errors, "notes": notes, "ok": not errors}
 
