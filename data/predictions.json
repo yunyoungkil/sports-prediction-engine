@@ -122716,45 +122716,7 @@
       "away_win": 0.3265
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "2796eacc32eabe705d1bfc436673b36e",
-      "home_team": "Colorado Rapids",
-      "away_team": "Chicago Fire",
-      "commence_time": "2026-11-01T01:30:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.32,
-        "draw": 3.65,
-        "away_win": 3.02
-      },
-      "sharp_probs": {
-        "home_win": 0.416,
-        "draw": 0.2644,
-        "away_win": 0.3196
-      },
-      "consensus_probs": {
-        "home_win": 0.41401111111111116,
-        "draw": 0.2607222222222222,
-        "away_win": 0.3252555555555555
-      },
-      "n_bookmakers": 9,
-      "match_method": "time_single",
-      "prob_distance": 0.0052,
-      "sport_key": "soccer_usa_mls",
-      "betman_odds": {
-        "home_win": 2.1,
-        "draw": 3.3,
-        "away_win": 2.7
-      },
-      "betman_home": "콜로라도 래피즈",
-      "betman_away": "시카고 파이어FC",
-      "match_time": "26.11.01 (일) 10:30",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1264,
-        "draw": -0.1275,
-        "away_win": -0.1371
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
