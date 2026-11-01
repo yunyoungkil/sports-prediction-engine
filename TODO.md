@@ -886,6 +886,16 @@
     - B '마감 직전 스팀 무브 × 구매현황 쏠림 괴리' = ⛔. 재료 둘 다 이미 효과 없음(구매현황 덜 산 쪽 307건 · 배당 변경 내린 쪽 781건 −9.1%) · 지연 배당 0/93.
       필요한 데이터가 없고 모을 수 없음: `betman_votes/samples.jsonl` 461개는 경기마다 **한 번** 잰 값(2026-10-28~29 수집, 같은 경기 여러 번 0) — 실시간 변화가 아님.
       마감 직전 구매현황을 여러 번 받으면 베트맨 방화벽 위험, 마감 직전 해외 배당은 월 500크레딧(회차당 20시간에 1번)으로 불가. '베트맨이 투표율에 따라 기계적으로 깎는다'는 근거 없는 주장(배당 변경 시험은 반대 — 고칠 때 충분히 고침)
+- [x] **7.24 GitHub 오픈 소스 조사 — 우리 프로그램에 적용할 만한 것** (사용자 요청 2026-11-01: "우리 프로그램에 맞는 깃허브 키워드를 사용해 … 적용하면 좋은 오픈 소스 찾아봐" · **결과: 적용할 것 없음, 후보 둘은 사용자가 폐기**)
+  - 검색어: sports-betting · betting · odds · implied probability · Shin · overround · value betting · closing line value · Dixon-Coles · Kelly · football-data · xG · betman · sports toto · KBO
+    → 베트맨·한국 토토 전용 오픈 소스는 없음 (이름만 같은 다른 프로그램)
+  - 확인한 것: `mberk/shin`(Shin 방식 표준 구현, MIT) README 예시 [2.6, 2.4, 4.3]과 우리 `models/phase7_experiments.py` `fair_probs_shin` 결과 차이 6.9e-13 → **우리 Shin 계산이 맞음** (7.16 교체 전 확인).
+    전체 경기 대조는 외부 패키지 설치가 권한 설정에서 막혀 하지 않음
+  - 후보와 결정:
+    - 마진 제거 방식 넓히기(`martineastwood/penaltyblog`·`gotoConversion/goto_conversion`의 방식을 7.1 틀로 비교) → ⛔ **사용자 폐기 (2026-11-01: 기대 효과가 작음 — Shin이 지금 AI 대비 −0.00066)**
+    - `jordantete/OddsHarvester`(oddsportal 과거·현재 배당 수집 → 베트맨 리그의 과거 해외 배당으로 7.2를 과거 시험) → ⛔ **사용자 폐기 (2026-11-01: 수집 방식을 바꾸는 위험을 감수하지 않음)**.
+      참고로 걸렸던 점: 브라우저 자동 수집(약관 미확인) · 과거 기록은 대부분 마감 배당(미래 정보) · Python 3.12 필요
+    - 필요 없음: `probberechts/soccerdata`·`amosbastian/understat`(공개 xG — 거름망 1 실패, 7.3 기각) · `georgedouzas/sports-betting`·`sedemmler/WagerBrain`(이미 더 엄격한 도구가 있음) · 차익거래·자동 베팅 봇(원칙과 안 맞음)
 - [ ] **7.2 해외 샤프 배당(`sharp_diff`)과 `BetmanCorrector` 2단계 통합**
   - 배경: 유럽 과거 데이터(`models/market_corrector.py`)에서 가장 강력한 피처는 해외 샤프 배당과의 차이($\beta = 1.32$)였으나, 현재 실전 1순위인 `BetmanCorrector`는 베트맨 자체 피처만 사용 중
   - 내용: 누적된 `data/history/sharp_snapshots/` 표본(300경기 이상)을 바탕으로, 해외 배당 매칭 경기에는 `log(p_sharp) - log(p_betman)` 보정을 결합하고 미매칭 리그(K리그·J2 등)는 기존 `BetmanCorrector`로 폴백하는 계층형 모델 검증
