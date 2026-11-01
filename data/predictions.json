@@ -152582,7 +152582,7 @@
     "kickoff_ts": 1793531700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "PEC즈볼러",
     "away_team": "ADO덴하흐",
@@ -152622,45 +152622,7 @@
       "away_win": 0.3074
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "016bdfefaa570d0fcaeffc5a1cb3625f",
-      "home_team": "FC Zwolle",
-      "away_team": "ADO Den Haag",
-      "commence_time": "2026-11-01T11:15:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.32,
-        "draw": 3.78,
-        "away_win": 2.98
-      },
-      "sharp_probs": {
-        "home_win": 0.418,
-        "draw": 0.2566,
-        "away_win": 0.3254
-      },
-      "consensus_probs": {
-        "home_win": 0.41633333333333333,
-        "draw": 0.25897777777777775,
-        "away_win": 0.32471111111111106
-      },
-      "n_bookmakers": 9,
-      "match_method": "time_single",
-      "prob_distance": 0.0184,
-      "sport_key": "soccer_netherlands_eredivisie",
-      "betman_odds": {
-        "home_win": 2.05,
-        "draw": 3.35,
-        "away_win": 2.75
-      },
-      "betman_home": "PEC즈볼러",
-      "betman_away": "ADO덴하흐",
-      "match_time": "26.11.01 (일) 20:15",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1431,
-        "draw": -0.1404,
-        "away_win": -0.1051
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
@@ -152859,7 +152821,7 @@
     "kickoff_ts": 1793531700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "PEC즈볼러",
     "away_team": "ADO덴하흐",
@@ -153092,7 +153054,7 @@
     "kickoff_ts": 1793531700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "PEC즈볼러",
     "away_team": "ADO덴하흐",
@@ -153325,7 +153287,7 @@
     "kickoff_ts": 1793531700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "PEC즈볼러",
     "away_team": "ADO덴하흐",
@@ -153866,48 +153828,64 @@
     "home_team": "코모1907",
     "away_team": "베네치아",
     "betman_odds": {
-      "home_win": 1.76,
-      "draw": 3.6,
-      "away_win": 3.3
+      "home_win": 1.7,
+      "draw": 4.0,
+      "away_win": 3.2
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 19:49:26",
+        "from": {
+          "home_win": 1.76,
+          "draw": 3.6,
+          "away_win": 3.3
+        },
+        "to": {
+          "home_win": 1.7,
+          "draw": 4.0,
+          "away_win": 3.2
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.76,
-      "draw": 3.6,
-      "away_win": 3.3
+      "home_win": 1.7,
+      "draw": 4.0,
+      "away_win": 3.2
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4945,
-      "draw": 0.2418,
-      "away": 0.2637
+      "home": 0.5112,
+      "draw": 0.2173,
+      "away": 0.2716
     },
     "model_probabilities": {
-      "home_win": 0.4945,
-      "draw": 0.2418,
-      "away_win": 0.2637
+      "home_win": 0.5112,
+      "draw": 0.2173,
+      "away_win": 0.2716
     },
     "blended_probabilities": {
-      "home_win": 0.5081,
-      "draw": 0.2407,
-      "away_win": 0.2512
+      "home_win": 0.5281,
+      "draw": 0.2121,
+      "away_win": 0.2598
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1057,
-        "draw": -0.1335,
-        "away_win": -0.171
+        "home_win": -0.1022,
+        "draw": -0.1516,
+        "away_win": -0.1686
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 코모1907 (-1.0) 승",
       "raw_selection_name": "코모1907 (-1.0) 승",
-      "best_ev": -0.1057,
-      "best_ev_pct": "-10.6%",
+      "best_ev": -0.1022,
+      "best_ev_pct": "-10.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -154643,39 +154621,55 @@
     "home_team": "헤타페",
     "away_team": "세비야",
     "betman_odds": {
-      "home_win": 2.85,
-      "draw": 2.75,
-      "away_win": 2.3
+      "home_win": 2.95,
+      "draw": 2.8,
+      "away_win": 2.21
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 19:49:48",
+        "from": {
+          "home_win": 2.85,
+          "draw": 2.75,
+          "away_win": 2.3
+        },
+        "to": {
+          "home_win": 2.95,
+          "draw": 2.8,
+          "away_win": 2.21
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.2909,
-        "draw": 0.3304,
-        "away_win": 0.3786
+        "home_win": 0.2794,
+        "draw": 0.3237,
+        "away_win": 0.3969
       }
     },
     "prediction_odds": {
-      "home_win": 2.85,
-      "draw": 2.75,
-      "away_win": 2.3
+      "home_win": 2.95,
+      "draw": 2.8,
+      "away_win": 2.21
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3053,
-      "draw": 0.3164,
-      "away": 0.3783
+      "home": 0.2951,
+      "draw": 0.3109,
+      "away": 0.3939
     },
     "model_probabilities": {
-      "home_win": 0.3053,
-      "draw": 0.3164,
-      "away_win": 0.3783
+      "home_win": 0.2951,
+      "draw": 0.3109,
+      "away_win": 0.3939
     },
     "blended_probabilities": {
-      "home_win": 0.2883,
-      "draw": 0.3332,
-      "away_win": 0.3785
+      "home_win": 0.2766,
+      "draw": 0.3261,
+      "away_win": 0.3973
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -154720,15 +154714,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1783,
-        "draw": -0.0837,
-        "away_win": -0.1295
+        "home_win": -0.184,
+        "draw": -0.0869,
+        "away_win": -0.122
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0837,
-      "best_ev_pct": "-8.4%",
+      "best_ev": -0.0869,
+      "best_ev_pct": "-8.7%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -154979,48 +154973,64 @@
     "home_team": "헤타페",
     "away_team": "세비야",
     "betman_odds": {
-      "home_win": 1.48,
-      "draw": 3.5,
-      "away_win": 5.3
+      "home_win": 1.52,
+      "draw": 3.4,
+      "away_win": 5.1
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 19:49:48",
+        "from": {
+          "home_win": 1.48,
+          "draw": 3.5,
+          "away_win": 5.3
+        },
+        "to": {
+          "home_win": 1.52,
+          "draw": 3.4,
+          "away_win": 5.1
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.48,
-      "draw": 3.5,
-      "away_win": 5.3
+      "home_win": 1.52,
+      "draw": 3.4,
+      "away_win": 5.1
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5875,
-      "draw": 0.2484,
-      "away": 0.1641
+      "home": 0.573,
+      "draw": 0.2562,
+      "away": 0.1708
     },
     "model_probabilities": {
-      "home_win": 0.5875,
-      "draw": 0.2484,
-      "away_win": 0.1641
+      "home_win": 0.573,
+      "draw": 0.2562,
+      "away_win": 0.1708
     },
     "blended_probabilities": {
-      "home_win": 0.6134,
-      "draw": 0.245,
-      "away_win": 0.1416
+      "home_win": 0.5968,
+      "draw": 0.2545,
+      "away_win": 0.1487
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0922,
-        "draw": -0.1425,
-        "away_win": -0.2495
+        "home_win": -0.0929,
+        "draw": -0.1347,
+        "away_win": -0.2416
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 헤타페 (+1.0) 승",
       "raw_selection_name": "헤타페 (+1.0) 승",
-      "best_ev": -0.0922,
-      "best_ev_pct": "-9.2%",
+      "best_ev": -0.0929,
+      "best_ev_pct": "-9.3%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -161579,39 +161589,55 @@
     "home_team": "우니온 베를린",
     "away_team": "쾰른",
     "betman_odds": {
-      "home_win": 2.33,
-      "draw": 3.3,
-      "away_win": 2.4
+      "home_win": 2.36,
+      "draw": 3.15,
+      "away_win": 2.45
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 19:58:24",
+        "from": {
+          "home_win": 2.33,
+          "draw": 3.3,
+          "away_win": 2.4
+        },
+        "to": {
+          "home_win": 2.36,
+          "draw": 3.15,
+          "away_win": 2.45
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3548,
-        "draw": 0.2738,
-        "away_win": 0.3714
+        "home_win": 0.349,
+        "draw": 0.2891,
+        "away_win": 0.3619
       }
     },
     "prediction_odds": {
-      "home_win": 2.33,
-      "draw": 3.3,
-      "away_win": 2.4
+      "home_win": 2.36,
+      "draw": 3.15,
+      "away_win": 2.45
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3736,
-      "draw": 0.2638,
-      "away": 0.3627
+      "home": 0.3687,
+      "draw": 0.2762,
+      "away": 0.3551
     },
     "model_probabilities": {
-      "home_win": 0.3736,
-      "draw": 0.2638,
-      "away_win": 0.3627
+      "home_win": 0.3687,
+      "draw": 0.2762,
+      "away_win": 0.3551
     },
     "blended_probabilities": {
-      "home_win": 0.3532,
-      "draw": 0.2755,
-      "away_win": 0.3713
+      "home_win": 0.3473,
+      "draw": 0.2911,
+      "away_win": 0.3616
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -161656,15 +161682,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.177,
-        "draw": -0.0908,
-        "away_win": -0.1089
+        "home_win": -0.1804,
+        "draw": -0.083,
+        "away_win": -0.1141
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0908,
-      "best_ev_pct": "-9.1%",
+      "best_ev": -0.083,
+      "best_ev_pct": "-8.3%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -168168,39 +168194,55 @@
     "home_team": "리버풀",
     "away_team": "아스널",
     "betman_odds": {
-      "home_win": 2.65,
-      "draw": 3.15,
-      "away_win": 2.2
+      "home_win": 2.6,
+      "draw": 3.05,
+      "away_win": 2.29
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 19:50:00",
+        "from": {
+          "home_win": 2.65,
+          "draw": 3.15,
+          "away_win": 2.2
+        },
+        "to": {
+          "home_win": 2.6,
+          "draw": 3.05,
+          "away_win": 2.29
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3112,
-        "draw": 0.2888,
-        "away_win": 0.4
+        "home_win": 0.3182,
+        "draw": 0.3001,
+        "away_win": 0.3817
       }
     },
     "prediction_odds": {
-      "home_win": 2.65,
-      "draw": 3.15,
-      "away_win": 2.2
+      "home_win": 2.6,
+      "draw": 3.05,
+      "away_win": 2.29
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3283,
-      "draw": 0.2762,
-      "away": 0.3955
+      "home": 0.3347,
+      "draw": 0.2853,
+      "away": 0.38
     },
     "model_probabilities": {
-      "home_win": 0.3283,
-      "draw": 0.2762,
-      "away_win": 0.3955
+      "home_win": 0.3347,
+      "draw": 0.2853,
+      "away_win": 0.38
     },
     "blended_probabilities": {
-      "home_win": 0.3089,
-      "draw": 0.2907,
-      "away_win": 0.4004
+      "home_win": 0.3162,
+      "draw": 0.3023,
+      "away_win": 0.3815
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -168245,15 +168287,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1814,
-        "draw": -0.0843,
-        "away_win": -0.1191
+        "home_win": -0.1779,
+        "draw": -0.078,
+        "away_win": -0.1264
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0843,
-      "best_ev_pct": "-8.4%",
+      "best_ev": -0.078,
+      "best_ev_pct": "-7.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -172390,39 +172432,55 @@
     "home_team": "엘체",
     "away_team": "발렌시아",
     "betman_odds": {
-      "home_win": 2.19,
-      "draw": 3.1,
-      "away_win": 2.7
+      "home_win": 2.21,
+      "draw": 2.95,
+      "away_win": 2.8
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 19:58:36",
+        "from": {
+          "home_win": 2.19,
+          "draw": 3.1,
+          "away_win": 2.7
+        },
+        "to": {
+          "home_win": 2.21,
+          "draw": 2.95,
+          "away_win": 2.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3851,
-        "draw": 0.2995,
-        "away_win": 0.3155
+        "home_win": 0.3806,
+        "draw": 0.3175,
+        "away_win": 0.3019
       }
     },
     "prediction_odds": {
-      "home_win": 2.19,
-      "draw": 3.1,
-      "away_win": 2.7
+      "home_win": 2.21,
+      "draw": 2.95,
+      "away_win": 2.8
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3972,
-      "draw": 0.2806,
-      "away": 0.3222
+      "home": 0.3939,
+      "draw": 0.2951,
+      "away": 0.3109
     },
     "model_probabilities": {
-      "home_win": 0.3972,
-      "draw": 0.2806,
-      "away_win": 0.3222
+      "home_win": 0.3939,
+      "draw": 0.2951,
+      "away_win": 0.3109
     },
     "blended_probabilities": {
-      "home_win": 0.3853,
-      "draw": 0.3016,
-      "away_win": 0.3132
+      "home_win": 0.3807,
+      "draw": 0.3199,
+      "away_win": 0.2994
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -172467,15 +172525,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1562,
-        "draw": -0.065,
-        "away_win": -0.1544
+        "home_win": -0.1587,
+        "draw": -0.0563,
+        "away_win": -0.1617
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.065,
-      "best_ev_pct": "-6.5%",
+      "best_ev": -0.0563,
+      "best_ev_pct": "-5.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -176044,39 +176102,55 @@
     "home_team": "아틀레틱 빌바오",
     "away_team": "레알 소시에다드",
     "betman_odds": {
-      "home_win": 1.99,
-      "draw": 3.25,
-      "away_win": 2.95
+      "home_win": 1.91,
+      "draw": 3.15,
+      "away_win": 3.25
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 19:48:43",
+        "from": {
+          "home_win": 1.99,
+          "draw": 3.25,
+          "away_win": 2.95
+        },
+        "to": {
+          "home_win": 1.91,
+          "draw": 3.15,
+          "away_win": 3.25
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.4502,
-        "draw": 0.2681,
-        "away_win": 0.2817
+        "home_win": 0.4714,
+        "draw": 0.2781,
+        "away_win": 0.2505
       }
     },
     "prediction_odds": {
-      "home_win": 1.99,
-      "draw": 3.25,
-      "away_win": 2.95
+      "home_win": 1.91,
+      "draw": 3.15,
+      "away_win": 3.25
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4373,
-      "draw": 0.2677,
-      "away": 0.295
+      "home": 0.4558,
+      "draw": 0.2764,
+      "away": 0.2679
     },
     "model_probabilities": {
-      "home_win": 0.4373,
-      "draw": 0.2677,
-      "away_win": 0.295
+      "home_win": 0.4558,
+      "draw": 0.2764,
+      "away_win": 0.2679
     },
     "blended_probabilities": {
-      "home_win": 0.4521,
-      "draw": 0.2691,
-      "away_win": 0.2788
+      "home_win": 0.4738,
+      "draw": 0.2788,
+      "away_win": 0.2474
     },
     "prob_source": "betman_corrector",
     "sharp": {
@@ -176121,15 +176195,15 @@
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1003,
-        "draw": -0.1254,
-        "away_win": -0.1775
+        "home_win": -0.095,
+        "draw": -0.1218,
+        "away_win": -0.1959
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 아틀레틱 빌바오 승",
       "raw_selection_name": "아틀레틱 빌바오 승",
-      "best_ev": -0.1003,
-      "best_ev_pct": "-10.0%",
+      "best_ev": -0.095,
+      "best_ev_pct": "-9.5%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -176380,48 +176454,64 @@
     "home_team": "아틀레틱 빌바오",
     "away_team": "레알 소시에다드",
     "betman_odds": {
-      "home_win": 3.75,
+      "home_win": 3.4,
       "draw": 3.6,
-      "away_win": 1.65
+      "away_win": 1.73
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-01 19:48:43",
+        "from": {
+          "home_win": 3.75,
+          "draw": 3.6,
+          "away_win": 1.65
+        },
+        "to": {
+          "home_win": 3.4,
+          "draw": 3.6,
+          "away_win": 1.73
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 3.75,
+      "home_win": 3.4,
       "draw": 3.6,
-      "away_win": 1.65
+      "away_win": 1.73
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2318,
-      "draw": 0.2414,
-      "away": 0.5268
+      "home": 0.2558,
+      "draw": 0.2416,
+      "away": 0.5027
     },
     "model_probabilities": {
-      "home_win": 0.2318,
-      "draw": 0.2414,
-      "away_win": 0.5268
+      "home_win": 0.2558,
+      "draw": 0.2416,
+      "away_win": 0.5027
     },
     "blended_probabilities": {
-      "home_win": 0.205,
-      "draw": 0.2366,
-      "away_win": 0.5583
+      "home_win": 0.2313,
+      "draw": 0.2379,
+      "away_win": 0.5308
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.2313,
-        "draw": -0.1482,
-        "away_win": -0.0788
+        "home_win": -0.2136,
+        "draw": -0.1436,
+        "away_win": -0.0817
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 레알 소시에다드 반대승",
       "raw_selection_name": "레알 소시에다드 반대승",
-      "best_ev": -0.0788,
-      "best_ev_pct": "-7.9%",
+      "best_ev": -0.0817,
+      "best_ev_pct": "-8.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -178399,7 +178489,7 @@
     "match_time": "26.11.02 (월) 05:30",
     "close_time": 1793541600000,
     "kickoff_ts": 1793565000000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
