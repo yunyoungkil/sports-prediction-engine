@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02T09:01:29+00:00",
+  "updated_at": "2026-11-02T09:19:10+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -534,6 +534,21 @@
     },
     "H_two_leg_trail": {
       "label": "H. 2차전 뒤진 팀 (토너먼트 1차전 2골 차 이상 · 확인용)",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "cum_staked": [],
+      "verdict": "판단 보류 (표본 부족)"
+    },
+    "I_least_loss": {
+      "label": "I. 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀)",
       "bets": 0,
       "hits": 0,
       "pending": 0,

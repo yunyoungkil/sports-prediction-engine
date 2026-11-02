@@ -698,6 +698,42 @@
       "instinct": "win_boost",
       "gm_ts": "260130",
       "created_at": "2026-11-02T00:36:38+00:00"
+    },
+    {
+      "strategy": "I_least_loss",
+      "legs": [
+        {
+          "seq": "2334",
+          "key": "home_win",
+          "odds": 1.18,
+          "match_time": "26.11.04 (수) 05:00",
+          "home_team": "바르셀로나",
+          "away_team": "애스턴 빌라",
+          "league": "UEFA 챔피언스리그"
+        }
+      ],
+      "combined_odds": 1.18,
+      "stake": 1000,
+      "bet_id": "I_least_loss:2334h",
+      "created_at": "2026-11-02T09:19:13+00:00"
+    },
+    {
+      "strategy": "I_least_loss",
+      "legs": [
+        {
+          "seq": "2080",
+          "key": "home_win",
+          "odds": 1.2,
+          "match_time": "26.11.03 (화) 01:00",
+          "home_team": "알와슬",
+          "away_team": "에어포스 알쿠와알자위야",
+          "league": "AFC 챔피언스리그 엘리트"
+        }
+      ],
+      "combined_odds": 1.2,
+      "stake": 1000,
+      "bet_id": "I_least_loss:2080h",
+      "created_at": "2026-11-02T09:19:13+00:00"
     }
   ],
   "f_plan": {
