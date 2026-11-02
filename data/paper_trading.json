@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02T09:19:10+00:00",
+  "updated_at": "2026-11-02T09:32:18+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -551,7 +551,7 @@
       "label": "I. 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀)",
       "bets": 0,
       "hits": 0,
-      "pending": 0,
+      "pending": 2,
       "staked": 0,
       "returned": 0,
       "profit": 0,
@@ -742,6 +742,17 @@
     },
     {
       "gm_ts": "260130",
+      "strategy": "I_least_loss",
+      "legs": "바르셀로나 승 1.18",
+      "odds": 1.18,
+      "stake": 1000,
+      "kickoff": "2026-11-03T20:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260130",
       "strategy": "E_market_fav",
       "legs": "스포르팅CP 승(원정) 1.86",
       "odds": 1.86,
@@ -855,6 +866,17 @@
       "strategy": "E_market_fav",
       "legs": "트락토르 승 2.03",
       "odds": 2.03,
+      "stake": 1000,
+      "kickoff": "2026-11-02T16:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260130",
+      "strategy": "I_least_loss",
+      "legs": "알와슬 승 1.20",
+      "odds": 1.2,
       "stake": 1000,
       "kickoff": "2026-11-02T16:00:00+00:00",
       "status": "대기",
