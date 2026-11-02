@@ -29,6 +29,10 @@ models/paper_trading.py
                      합계로 뒤진 팀 승리 단일(단통 가능 경기만, 1,000원). 과거 166경기 +15.8% [−17.0, +51.2]였지만 앞 104경기는 −1.7%라
                      운과 구분이 안 돼(7.13 탈락) 앞으로의 경기로만 확인한다. 1차전은 models/two_leg.py가 과거 기록에서 찾는다.
                      판정: 100건째에 한 번 중간 점검(앞 100건 수익률 0% 이하 → 접기 · 95% 범위 아래 끝 > 0 → 중간 통과), 300건에 최종.
+- I_least_loss     : '덜 잃기 원칙' (2026-11-02, 대화에서 Claude가 '나라면 이렇게 산다'고 한 규칙을 그대로 고정). AI를 쓰지 않는다.
+                     회차당 한 번, 단통 가능 축구 승무패의 배당 1순위가 1.15~1.50배인 경기 중 배당이 가장 낮은 2경기(같으면 킥오프 빠른 순)를
+                     단일로 1,000원씩. 근거: 이 구간이 과거 실제 환급률이 가장 높음(data/market_scan.json). 이기는 전략이 아니라
+                     '가장 덜 잃는 사는 법'이 E(배당 1순위 전부)보다 실제로 덜 잃는지 확인용. 과거 재현에도 같은 규칙.
 """
 
 import json
@@ -64,7 +68,10 @@ STRATEGIES = {
     "G_ai_bettor": "G. 자율 AI 베터 (월 10만 원 · 주력 안정 + 소액 복권)",
     "G_instinct": "G-본능 (G와 같은 경기 · 이기면 판돈 키우고 지면 고배당, 비교용)",
     "H_two_leg_trail": "H. 2차전 뒤진 팀 (토너먼트 1차전 2골 차 이상 · 확인용)",
+    "I_least_loss": "I. 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀)",
 }
+I_BAND = (1.15, 1.50)   # I: 배당 1순위가 이 범위인 경기만 (양 끝 포함)
+I_PER_ROUND = 2         # I: 회차당 단일 개수
 G_WALLETS = ("G_ai_bettor", "G_instinct")      # 월 10만 원 지갑을 쓰는 전략
 INSTINCT_NOTE = {"win_boost": "본능: 지난 회차를 이겨서 판돈 ×1.4 · ", "chase": "본능: 지난 회차를 져서 고배당 복권 · "}
 # 폐기한 전략의 베팅은 기록(파일)에는 남지만 전략 표·지갑·판정에는 넣지 않고, 내역에서만 이 이름으로 보여 준다.
@@ -104,6 +111,19 @@ def _leg(m, k):
     return {"seq": str(m["match_seq"]), "key": k, "odds": float(m["betman_odds"][k]),
             "match_time": m.get("match_time"), "home_team": m.get("home_team"), "away_team": m.get("away_team"),
             "league": m.get("league")}
+
+
+def least_loss_picks(cands: List[tuple]) -> List[tuple]:
+    """I 규칙: cands = [(경기, 단통 가능, {선택지: 배당}, 킥오프 정렬 키)] → 고른 [(경기, 선택지)] (실전·과거 재현 공통)"""
+    pool = []
+    for m, single, odds, ko in cands:
+        if not single:
+            continue
+        k = min(KEYS, key=lambda x: odds[x])
+        if I_BAND[0] <= odds[k] <= I_BAND[1]:
+            pool.append((odds[k], ko, m, k))
+    pool.sort(key=lambda x: (x[0], x[1]))
+    return [(m, k) for _, _, m, k in pool[:I_PER_ROUND]]
 
 
 def propose_bets(predictions: List[Dict[str, Any]], now: Optional[datetime] = None) -> List[Dict[str, Any]]:
@@ -150,6 +170,11 @@ def propose_bets(predictions: List[Dict[str, Any]], now: Optional[datetime] = No
         if m.get("is_single"):
             k = min(KEYS, key=lambda k: m["betman_odds"][k])
             bets.append({"strategy": "E_market_fav", "legs": [_leg(m, k)]})
+
+    # I: 덜 잃기 원칙 — 단통 가능 · 배당 1순위 1.15~1.50 중 가장 낮은 2경기 단일 (AI 안 씀, 회차당 한 번은 save_new_bets에서)
+    for m, k in least_loss_picks([(m, bool(m.get("is_single")), {x: float(m["betman_odds"][x]) for x in KEYS},
+                                   str(parse_betman_kickoff(m.get("match_time")) or "")) for m in ms]):
+        bets.append({"strategy": "I_least_loss", "legs": [_leg(m, k)]})
 
     for bt in bets:
         bt["combined_odds"] = calculate_combined_odds([x["odds"] for x in bt["legs"]]) if len(bt["legs"]) > 1 else bt["legs"][0]["odds"]
@@ -281,7 +306,7 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
         data = json.loads(path.read_text(encoding="utf-8"))
     current = [b for b in data["bets"] if not is_retired_g(b)]      # 폐기한 G 세대(첫 버전·잔고 밑천 버전) 베팅은 없는 것으로 본다 → 지금 세대 G가 같은 회차에 새로 산다
     have_ids = {b["bet_id"] for b in current}
-    have_once = {b["strategy"] for b in current if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", *G_WALLETS)}
+    have_once = {b["strategy"] for b in current if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", "I_least_loss", *G_WALLETS)}   # I: 같은 실행에서 고른 2경기는 함께 남고, 다음 실행부터는 이 회차에 다시 고르지 않음
     used_matches = {(b["strategy"], leg["seq"]) for b in data["bets"] for leg in b["legs"]}
     added = {}
     for bt in propose_bets(predictions, now) + propose_two_leg_bets(predictions, now, two_leg_index):
@@ -475,6 +500,7 @@ BACKFILL_PATH = Path("data/paper_trading_backfill.json")
 BACKFILL_LABELS = {
     "D_banker_cover": "D. 축 2 + 전배 (과거 재현)",
     "E_market_fav": "E. 배당 1순위 단일 (과거 재현)",
+    "I_least_loss": "I. 덜 잃기 원칙 (과거 재현)",
 }
 
 
@@ -512,6 +538,9 @@ def backfill_from_archive(archive, since_ts: int = 260001, until_ts: int = 26012
             if row["sgl"] == 1:
                 k = min(KEYS, key=lambda x: row["o"][x])
                 add("E_market_fav", [leg(row, k)])
+        # I: 덜 잃기 원칙 (실전과 같은 함수)
+        for row, k in least_loss_picks([(r_, r_["sgl"] == 1, r_["o"], str(parse_betman_kickoff(r_["time"]) or "")) for r_ in rows]):
+            add("I_least_loss", [leg(row, k)])
         # D: 최저 배당 정배 2경기(≤1.5) + 가장 팽팽한 경기 전배
         favs = sorted(rows, key=lambda r_: min(r_["o"].values()))
         banks = [r_ for r_ in favs if min(r_["o"].values()) <= 1.5][:2]

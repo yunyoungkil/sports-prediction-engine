@@ -360,3 +360,22 @@ def test_cancelled_match_is_settled_not_left_pending(tmp_path):
           "legs": [{"seq": "1", "key": "home_win", "odds": 1.5}, {"seq": "2", "key": "home_win", "odds": 2.0}]}],
         {("9", "1"): "void", ("9", "2"): "home_win"}, current_time=NOW)
     assert g["pending_stakes"] == 0 and g["settled_profit"] == 1400                   # 1.0 × 2.0 = 2.0배 × 1,400 − 1,400
+
+
+def test_i_least_loss_picks_two_lowest_favorites_in_band_once_per_round(tmp_path):
+    """I 덜 잃기 원칙: 단통 가능 · 배당 1순위 1.15~1.50 중 가장 낮은 2경기 단일, 회차당 한 번 (AI 안 씀)"""
+    from models.paper_trading import least_loss_picks
+    ai = (0.4, 0.3, 0.3)
+    preds = [_m("1", (1.10, 6.0, 15.0), ai),                       # 1.10 → 범위 밖
+             _m("2", (1.40, 4.0, 6.5), ai, time="26.12.01 (화) 22:00"),
+             _m("3", (5.0, 4.0, 1.25), ai),                        # 원정 정배 1.25
+             _m("4", (1.30, 4.5, 8.0), ai, single=False),          # 단통 불가
+             _m("5", (1.40, 4.2, 6.0), ai, time="26.12.01 (화) 18:00"),   # 2번과 같은 1.40 → 킥오프 빠른 5번
+             _m("6", (2.0, 3.3, 3.6), ai)]
+    added = save_new_bets(1, preds, now=NOW, bets_dir=tmp_path)
+    assert added.get("I_least_loss") == 2
+    bets = [b for b in json.loads((tmp_path / "1.json").read_text(encoding="utf-8"))["bets"] if b["strategy"] == "I_least_loss"]
+    assert sorted((b["legs"][0]["seq"], b["legs"][0]["key"]) for b in bets) == [("3", "away_win"), ("5", "home_win")]
+    # 다음 실행에서 새 경기가 생겨도 이 회차에는 다시 고르지 않는다
+    assert "I_least_loss" not in save_new_bets(1, preds + [_m("7", (1.16, 5.0, 9.0), ai)], now=NOW, bets_dir=tmp_path)
+    assert least_loss_picks([("x", True, {"home_win": 1.50, "draw": 4, "away_win": 5}, "")]) == [("x", "home_win")]   # 양 끝 포함
