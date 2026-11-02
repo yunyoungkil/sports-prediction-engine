@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02T21:01:08+00:00",
+  "updated_at": "2026-11-02T23:01:09+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -100,15 +100,15 @@
     },
     "E_market_fav": {
       "label": "E. 배당 1순위 단일 (기준선)",
-      "bets": 134,
-      "hits": 75,
-      "pending": 21,
-      "staked": 134000,
-      "returned": 125240,
-      "profit": -8760,
-      "roi_pct": -6.54,
-      "roi_ci_low": -26.58,
-      "roi_ci_high": 8.93,
+      "bets": 145,
+      "hits": 81,
+      "pending": 10,
+      "staked": 145000,
+      "returned": 134510,
+      "profit": -10490,
+      "roi_pct": -7.23,
+      "roi_ci_low": -24.36,
+      "roi_ci_high": 7.13,
       "cum_profit": [
         550,
         770,
@@ -243,7 +243,18 @@
         -9150,
         -10150,
         -9390,
-        -8760
+        -8760,
+        -8630,
+        -8290,
+        -9290,
+        -9090,
+        -10090,
+        -8930,
+        -8540,
+        -9540,
+        -10540,
+        -11540,
+        -10490
       ],
       "cum_staked": [
         1000,
@@ -379,7 +390,18 @@
         131000,
         132000,
         133000,
-        134000
+        134000,
+        135000,
+        136000,
+        137000,
+        138000,
+        139000,
+        140000,
+        141000,
+        142000,
+        143000,
+        144000,
+        145000
       ],
       "verdict": "판단 보류 (표본 부족)"
     },
@@ -549,22 +571,26 @@
     },
     "I_least_loss": {
       "label": "I. Claude — 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀 · 월 10만 원)",
-      "bets": 0,
-      "hits": 0,
-      "pending": 2,
-      "staked": 0,
-      "returned": 0,
-      "profit": 0,
-      "roi_pct": 0.0,
-      "roi_ci_low": 0.0,
-      "roi_ci_high": 0.0,
-      "cum_profit": [],
-      "cum_staked": [],
+      "bets": 1,
+      "hits": 1,
+      "pending": 1,
+      "staked": 1000,
+      "returned": 1200,
+      "profit": 200,
+      "roi_pct": 20.0,
+      "roi_ci_low": 20.0,
+      "roi_ci_high": 20.0,
+      "cum_profit": [
+        200
+      ],
+      "cum_staked": [
+        1000
+      ],
       "verdict": "판단 보류 (표본 부족)",
-      "bankroll": 98000,
+      "bankroll": 99200,
       "total_deposited": 100000,
       "months_funded": 1,
-      "pending_stakes": 2000,
+      "pending_stakes": 1000,
       "is_broke": false,
       "can_bet": true,
       "mode": "normal",
@@ -600,18 +626,19 @@
     {
       "key": "I_least_loss",
       "name": "Claude (I)",
-      "bets": 0,
-      "pending": 2,
-      "staked": 0,
-      "profit": 0,
-      "roi_pct": 0.0,
+      "bets": 1,
+      "pending": 1,
+      "staked": 1000,
+      "profit": 200,
+      "roi_pct": 20.0,
       "roi_ci": [
-        0.0,
-        0.0
+        20.0,
+        20.0
       ],
-      "bankroll": 98000,
+      "bankroll": 99200,
       "total_deposited": 100000,
-      "ready": false
+      "ready": false,
+      "rank": 1
     },
     {
       "key": "G_ai_bettor",
@@ -628,7 +655,7 @@
       "bankroll": 195840,
       "total_deposited": 200000,
       "ready": false,
-      "rank": 1
+      "rank": 2
     },
     {
       "key": "J_gemini",
@@ -875,9 +902,9 @@
       "odds": 2.15,
       "stake": 1000,
       "kickoff": "2026-11-02T20:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260130",
@@ -886,9 +913,9 @@
       "odds": 2.05,
       "stake": 1000,
       "kickoff": "2026-11-02T20:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 2050,
+      "profit": 1050
     },
     {
       "gm_ts": "260130",
@@ -897,9 +924,9 @@
       "odds": 1.44,
       "stake": 1000,
       "kickoff": "2026-11-02T19:45:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260130",
@@ -908,9 +935,9 @@
       "odds": 1.39,
       "stake": 1000,
       "kickoff": "2026-11-02T18:15:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1390,
+      "profit": 390
     },
     {
       "gm_ts": "260130",
@@ -919,9 +946,9 @@
       "odds": 2.04,
       "stake": 1000,
       "kickoff": "2026-11-02T18:15:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260130",
@@ -930,9 +957,9 @@
       "odds": 2.16,
       "stake": 1000,
       "kickoff": "2026-11-02T17:30:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 2160,
+      "profit": 1160
     },
     {
       "gm_ts": "260130",
@@ -941,9 +968,9 @@
       "odds": 2.18,
       "stake": 1000,
       "kickoff": "2026-11-02T16:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260130",
@@ -952,9 +979,9 @@
       "odds": 1.2,
       "stake": 1000,
       "kickoff": "2026-11-02T16:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1200,
+      "profit": 200
     },
     {
       "gm_ts": "260130",
@@ -963,9 +990,9 @@
       "odds": 2.03,
       "stake": 1000,
       "kickoff": "2026-11-02T16:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260130",
@@ -974,9 +1001,9 @@
       "odds": 1.2,
       "stake": 1000,
       "kickoff": "2026-11-02T16:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1200,
+      "profit": 200
     },
     {
       "gm_ts": "260130",
@@ -985,9 +1012,9 @@
       "odds": 1.34,
       "stake": 1000,
       "kickoff": "2026-11-02T13:45:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1340,
+      "profit": 340
     },
     {
       "gm_ts": "260130",
@@ -1018,9 +1045,9 @@
       "odds": 1.13,
       "stake": 1000,
       "kickoff": "2026-11-02T13:45:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1130,
+      "profit": 130
     },
     {
       "gm_ts": "260129",
