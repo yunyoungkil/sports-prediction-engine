@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02T09:32:18+00:00",
+  "updated_at": "2026-11-02T10:02:23+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -548,7 +548,7 @@
       "verdict": "판단 보류 (표본 부족)"
     },
     "I_least_loss": {
-      "label": "I. 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀)",
+      "label": "I. Claude — 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀 · 월 10만 원)",
       "bets": 0,
       "hits": 0,
       "pending": 2,
@@ -560,9 +560,93 @@
       "roi_ci_high": 0.0,
       "cum_profit": [],
       "cum_staked": [],
-      "verdict": "판단 보류 (표본 부족)"
+      "verdict": "판단 보류 (표본 부족)",
+      "bankroll": 98000,
+      "total_deposited": 100000,
+      "months_funded": 1,
+      "pending_stakes": 2000,
+      "is_broke": false,
+      "can_bet": true,
+      "mode": "normal",
+      "mode_label": "정상",
+      "current_month": "2026-11"
+    },
+    "J_gemini": {
+      "label": "J. Gemini (다른 PC의 Gemini가 규칙을 넣음 · 월 10만 원)",
+      "bets": 0,
+      "hits": 0,
+      "pending": 0,
+      "staked": 0,
+      "returned": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci_low": 0.0,
+      "roi_ci_high": 0.0,
+      "cum_profit": [],
+      "cum_staked": [],
+      "verdict": "판단 보류 (표본 부족)",
+      "bankroll": 100000,
+      "total_deposited": 100000,
+      "months_funded": 1,
+      "pending_stakes": 0,
+      "is_broke": false,
+      "can_bet": true,
+      "mode": "normal",
+      "mode_label": "정상",
+      "current_month": "2026-11"
     }
   },
+  "competition": [
+    {
+      "key": "I_least_loss",
+      "name": "Claude (I)",
+      "bets": 0,
+      "pending": 2,
+      "staked": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci": [
+        0.0,
+        0.0
+      ],
+      "bankroll": 98000,
+      "total_deposited": 100000,
+      "ready": false
+    },
+    {
+      "key": "G_ai_bettor",
+      "name": "프로그램 AI (G)",
+      "bets": 2,
+      "pending": 2,
+      "staked": 4300,
+      "profit": 340,
+      "roi_pct": 7.91,
+      "roi_ci": [
+        7.91,
+        7.91
+      ],
+      "bankroll": 195840,
+      "total_deposited": 200000,
+      "ready": false,
+      "rank": 1
+    },
+    {
+      "key": "J_gemini",
+      "name": "Gemini (J)",
+      "bets": 0,
+      "pending": 0,
+      "staked": 0,
+      "profit": 0,
+      "roi_pct": 0.0,
+      "roi_ci": [
+        0.0,
+        0.0
+      ],
+      "bankroll": 100000,
+      "total_deposited": 100000,
+      "ready": false
+    }
+  ],
   "details": [
     {
       "gm_ts": "260130",

@@ -5500,7 +5500,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -5736,7 +5736,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -5987,7 +5987,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -6207,7 +6207,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -6458,7 +6458,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -6678,7 +6678,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -6836,7 +6836,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -7010,7 +7010,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -7184,7 +7184,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -7358,7 +7358,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -8410,54 +8410,70 @@
     "home_team": "알사드SC",
     "away_team": "알아흘리 사우디",
     "betman_odds": {
-      "home_win": 2.55,
+      "home_win": 2.7,
       "draw": 3.35,
-      "away_win": 2.18
+      "away_win": 2.08
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-02 18:38:45",
+        "from": {
+          "home_win": 2.55,
+          "draw": 3.35,
+          "away_win": 2.18
+        },
+        "to": {
+          "home_win": 2.7,
+          "draw": 3.35,
+          "away_win": 2.08
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.3398,
+        "home_win": 0.3177,
         "draw": 0.267,
-        "away_win": 0.3932
+        "away_win": 0.4153
       }
     },
     "prediction_odds": {
-      "home_win": 2.55,
+      "home_win": 2.7,
       "draw": 3.35,
-      "away_win": 2.18
+      "away_win": 2.08
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3412,
+      "home": 0.3222,
       "draw": 0.2597,
-      "away": 0.3991
+      "away": 0.4182
     },
     "model_probabilities": {
-      "home_win": 0.3412,
+      "home_win": 0.3222,
       "draw": 0.2597,
-      "away_win": 0.3991
+      "away_win": 0.4182
     },
     "blended_probabilities": {
-      "home_win": 0.3378,
-      "draw": 0.2683,
-      "away_win": 0.394
+      "home_win": 0.3151,
+      "draw": 0.2682,
+      "away_win": 0.4167
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1386,
-        "draw": -0.1012,
-        "away_win": -0.1411
+        "home_win": -0.1492,
+        "draw": -0.1015,
+        "away_win": -0.1333
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.1012,
-      "best_ev_pct": "-10.1%",
+      "best_ev": -0.1015,
+      "best_ev_pct": "-10.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -8638,48 +8654,64 @@
     "home_team": "알사드SC",
     "away_team": "알아흘리 사우디",
     "betman_odds": {
-      "home_win": 1.53,
-      "draw": 3.85,
-      "away_win": 4.25
+      "home_win": 1.56,
+      "draw": 3.8,
+      "away_win": 4.1
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-02 18:38:45",
+        "from": {
+          "home_win": 1.53,
+          "draw": 3.85,
+          "away_win": 4.25
+        },
+        "to": {
+          "home_win": 1.56,
+          "draw": 3.8,
+          "away_win": 4.1
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.53,
-      "draw": 3.85,
-      "away_win": 4.25
+      "home_win": 1.56,
+      "draw": 3.8,
+      "away_win": 4.1
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.569,
-      "draw": 0.2261,
-      "away": 0.2048
+      "home": 0.5583,
+      "draw": 0.2292,
+      "away": 0.2124
     },
     "model_probabilities": {
-      "home_win": 0.569,
-      "draw": 0.2261,
-      "away_win": 0.2048
+      "home_win": 0.5583,
+      "draw": 0.2292,
+      "away_win": 0.2124
     },
     "blended_probabilities": {
-      "home_win": 0.5944,
-      "draw": 0.2206,
-      "away_win": 0.185
+      "home_win": 0.5821,
+      "draw": 0.2245,
+      "away_win": 0.1934
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0906,
-        "draw": -0.1507,
-        "away_win": -0.2137
+        "home_win": -0.0919,
+        "draw": -0.1469,
+        "away_win": -0.2071
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 알사드SC (+1.0) 승",
       "raw_selection_name": "알사드SC (+1.0) 승",
-      "best_ev": -0.0906,
-      "best_ev_pct": "-9.1%",
+      "best_ev": -0.0919,
+      "best_ev_pct": "-9.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,

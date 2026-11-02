@@ -641,7 +641,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -686,7 +686,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -746,7 +746,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -775,7 +775,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -835,7 +835,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "대구한국가스공사 페가수스",
     "away_team": "안양정관장 레드부스터스",
@@ -864,7 +864,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -893,7 +893,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -938,7 +938,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -983,7 +983,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -1028,7 +1028,7 @@
     "kickoff_ts": 1793613600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "삼성생명 블루밍스",
     "away_team": "하나은행",
@@ -1240,11 +1240,27 @@
     "match_state": "2",
     "home_team": "알사드SC",
     "away_team": "알아흘리 사우디",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-02 18:38:45",
+        "from": {
+          "home_win": 2.55,
+          "draw": 3.35,
+          "away_win": 2.18
+        },
+        "to": {
+          "home_win": 2.7,
+          "draw": 3.35,
+          "away_win": 2.08
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.55,
+      "home_win": 2.7,
       "draw": 3.35,
-      "away_win": 2.18
+      "away_win": 2.08
     },
     "gm_ts": 260130
   },
@@ -1269,11 +1285,27 @@
     "match_state": "2",
     "home_team": "알사드SC",
     "away_team": "알아흘리 사우디",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-02 18:38:45",
+        "from": {
+          "home_win": 1.53,
+          "draw": 3.85,
+          "away_win": 4.25
+        },
+        "to": {
+          "home_win": 1.56,
+          "draw": 3.8,
+          "away_win": 4.1
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.53,
-      "draw": 3.85,
-      "away_win": 4.25
+      "home_win": 1.56,
+      "draw": 3.8,
+      "away_win": 4.1
     },
     "gm_ts": 260130
   },
