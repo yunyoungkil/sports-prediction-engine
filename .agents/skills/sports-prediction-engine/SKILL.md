@@ -67,6 +67,8 @@ Docs go stale silently (ARCHITECTURE.md described the v1 design for 5 days while
 How to check: `python -m evaluation.docs_sync` (also printed in the session-start briefing as "📚 문서 동기화"). It flags any module / workflow / `data/` file that `ARCHITECTURE.md` never names, docs far behind the code, and `EXPERIMENTS.md` links to `TODO.md#L…` that no longer land on their item (inserting a TODO item shifts later line numbers — run `python -m evaluation.docs_sync --fix` to re-point them by item number). **Zero ⚠️ before every commit that adds or removes a file.** If the briefing shows ⚠️ at session start, fix the docs first, then continue the task.
 Also: bump the "최종 갱신" date in `ARCHITECTURE.md`, keep numbers in README/GEMINI dated, and never write a number you did not read from a file or run output.
 
+**Claude Code project skill `/today-games`** (`.claude/skills/today-games/SKILL.md`, 2026-11-02): read-only daily check — runs `python -m evaluation.today_check` and summarizes in Korean (least-loss singles by historical return, longshots to avoid, AI vs market with AI-side EV, this month's real spend). Never says 'buy'/'recommend' while the recommendation lock is on; numbers only from the run output. Whether to add an in-dashboard Claude API version is the user's decision later (TODO A.32).
+
 ## Key Components
 
 - **`collector/`**

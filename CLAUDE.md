@@ -32,4 +32,4 @@
 | 사용법·현재 상태 | `README.md` |
 
 ## 자주 쓰는 명령
-`python -m evaluation.briefing` · `python -m evaluation.docs_sync` · `python -m evaluation.data_contracts` · `python -m pytest -q` · `streamlit run dashboard/app.py`
+`python -m evaluation.briefing` · `python -m evaluation.docs_sync` · `python -m evaluation.data_contracts` · `python -m pytest -q` · `streamlit run dashboard/app.py` · `python -m evaluation.today_check` (스킬 `/today-games`)

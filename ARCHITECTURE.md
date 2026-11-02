@@ -1,6 +1,6 @@
 # 🏛️ 시스템 아키텍처 (ARCHITECTURE)
 
-> 최종 갱신: 2026-11-01. **새 모듈·워크플로·`data/` 파일을 만들면 같은 커밋에서 이 문서에 한 줄을 넣는다** — `python -m evaluation.docs_sync`가 빠진 항목을 찾고 대화 시작 브리핑이 알려 준다.
+> 최종 갱신: 2026-11-02. **새 모듈·워크플로·`data/` 파일을 만들면 같은 커밋에서 이 문서에 한 줄을 넣는다** — `python -m evaluation.docs_sync`가 빠진 항목을 찾고 대화 시작 브리핑이 알려 준다.
 > 초기 설계(v1: Dixon-Coles·`poisson_model.py`)는 시장보다 나빠서 폐기했다. 설계 기록은 [ROADMAP.md](./ROADMAP.md), 작업·결과는 [TODO.md](./TODO.md), 검증 리뷰는 [REVIEW.md](./REVIEW.md).
 
 ## 1. 전체 흐름
@@ -103,6 +103,7 @@ sports-prediction-engine/
 | `evaluation/walk_forward.py` · `evaluation/portfolio_backtest.py` · `evaluation/g_instinct_backtest.py` | 워크포워드 백테스트 · F 전략 과거 재현 · G 원칙형 vs G-본능 과거 재현 (기본: 옛 잔고 밑천 · `--month`: 월 밑천제) |
 | `evaluation/congestion_pretest.py` | [7.10] 일정 밀집도(컵·유럽대회 포함) 사전 시험 — 5대 리그, Pinnacle 마감 배당 대비 반기 워크포워드 (결과: 채택 안 함, 2026-10-31) |
 | `tracker/discipline.py` | 지출 규율: 실제 구매 기록의 이번 달 예산 대비 지출 · 진 뒤 판돈·배당 키움(추격) 감지 (④ 탭·사이드바, 예산은 `user_data/discipline.json`) |
+| `evaluation/today_check.py` | 오늘의 점검표: 발매 중 회차의 덜 잃는 단일 선택지 · 피할 고배당 · AI vs 배당 차이 · 이번 달 지출 (Claude Code 스킬 `.claude/skills/today-games`가 읽음, 읽기 전용) |
 | `evaluation/pick_check.py` | 구매 전 점검: 담은 선택지의 과거 배당 구간별 실제 환급률로 조합의 1만 원당 환급·손해·경고 (대시보드 사이드바, 표시 전용) |
 | `evaluation/market_scan.py` · `evaluation/market_model.py` · `evaluation/metrics.py` · `evaluation/config.py` | 유형별 마진표 · 시장 기준선 · 지표(부트스트랩 포함) · 학습/튜닝/시험 분할 고정 |
 | `evaluation/gates.py` | 추천 잠금: 검증 3단계 통과한 기능만 켬 |
