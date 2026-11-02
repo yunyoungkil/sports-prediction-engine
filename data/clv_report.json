@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02T15:59:32+00:00",
+  "updated_at": "2026-11-02T17:01:18+00:00",
   "rounds": [
     260126,
     260127,
@@ -7,24 +7,24 @@
     260129,
     260130
   ],
-  "matches": 792,
-  "moved": 361,
-  "toward_ai": 173,
-  "away_from_ai": 188,
-  "toward_ai_pct": 47.9,
-  "fav_toward_pct": 45.7,
+  "matches": 801,
+  "moved": 366,
+  "toward_ai": 176,
+  "away_from_ai": 190,
+  "toward_ai_pct": 48.1,
+  "fav_toward_pct": 45.9,
   "mean_move_pp": {
-    "n": 792,
-    "mean": -0.28835,
+    "n": 801,
+    "mean": -0.28097,
     "ci": [
-      -0.56288,
-      -0.03589
+      -0.54704,
+      -0.03484
     ],
     "ci_iid": [
-      -0.54142,
-      -0.03589
+      -0.54704,
+      -0.04645
     ],
-    "clusters": 310,
+    "clusters": 313,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
@@ -95,68 +95,68 @@
       }
     },
     "축구 승무패": {
-      "matches": 238,
-      "moved": 141,
-      "toward_ai": 83,
-      "away_from_ai": 58,
-      "toward_ai_pct": 58.9,
-      "fav_toward_pct": 53.9,
+      "matches": 241,
+      "moved": 143,
+      "toward_ai": 84,
+      "away_from_ai": 59,
+      "toward_ai_pct": 58.7,
+      "fav_toward_pct": 53.8,
       "mean_move_pp": {
-        "n": 238,
-        "mean": 0.12001,
+        "n": 241,
+        "mean": 0.1185,
         "ci": [
-          -0.23326,
-          0.45208
+          -0.2272,
+          0.46292
         ],
         "ci_iid": [
-          -0.21766,
-          0.45208
+          -0.20513,
+          0.45806
         ],
-        "clusters": 238,
+        "clusters": 241,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 언더오버": {
-      "matches": 144,
-      "moved": 41,
-      "toward_ai": 12,
+      "matches": 147,
+      "moved": 42,
+      "toward_ai": 13,
       "away_from_ai": 29,
-      "toward_ai_pct": 29.3,
-      "fav_toward_pct": 26.8,
+      "toward_ai_pct": 31.0,
+      "fav_toward_pct": 28.6,
       "mean_move_pp": {
-        "n": 144,
-        "mean": -0.2354,
+        "n": 147,
+        "mean": -0.2192,
         "ci": [
-          -0.45969,
-          -0.01869
+          -0.42878,
+          -0.00033
         ],
         "ci_iid": [
-          -0.45008,
-          -0.02023
+          -0.42501,
+          -0.00033
         ],
-        "clusters": 144,
+        "clusters": 147,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 핸디캡": {
-      "matches": 256,
-      "moved": 146,
-      "toward_ai": 66,
-      "away_from_ai": 80,
-      "toward_ai_pct": 45.2,
+      "matches": 259,
+      "moved": 148,
+      "toward_ai": 67,
+      "away_from_ai": 81,
+      "toward_ai_pct": 45.3,
       "fav_toward_pct": 46.6,
       "mean_move_pp": {
-        "n": 256,
-        "mean": -0.74839,
+        "n": 259,
+        "mean": -0.73335,
         "ci": [
-          -1.43834,
-          -0.16401
+          -1.39781,
+          -0.15436
         ],
         "ci_iid": [
-          -1.3934,
-          -0.17091
+          -1.38127,
+          -0.17631
         ],
-        "clusters": 211,
+        "clusters": 214,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     }
@@ -168,11 +168,11 @@
   },
   "paper_strategies": {
     "B_fav_double": {
-      "n": 6,
-      "mean": -0.95923,
+      "n": 7,
+      "mean": -0.8222,
       "ci": [
-        -6.86103,
-        3.45
+        -5.88089,
+        2.95714
       ]
     },
     "C_finder_top": {
@@ -184,19 +184,19 @@
       ]
     },
     "D_banker_cover": {
-      "n": 27,
-      "mean": -0.69436,
+      "n": 30,
+      "mean": -0.62492,
       "ci": [
-        -3.15706,
-        1.5396
+        -2.95191,
+        1.43158
       ]
     },
     "E_market_fav": {
-      "n": 137,
-      "mean": 0.102,
+      "n": 140,
+      "mean": 0.10383,
       "ci": [
-        -0.85211,
-        1.05607
+        -0.82496,
+        1.05199
       ]
     },
     "G_ai_bettor": {
@@ -229,6 +229,14 @@
       "ci": [
         0.0,
         3.07692
+      ]
+    },
+    "I_least_loss": {
+      "n": 1,
+      "mean": 0.0,
+      "ci": [
+        0.0,
+        0.0
       ]
     }
   },
