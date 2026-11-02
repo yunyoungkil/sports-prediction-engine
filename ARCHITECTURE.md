@@ -102,6 +102,7 @@ sports-prediction-engine/
 | `evaluation/stale_odds.py` · `evaluation/sharp_vs_betman.py` | 지연 배당 측정 · 해외 배당 검증 |
 | `evaluation/walk_forward.py` · `evaluation/portfolio_backtest.py` · `evaluation/g_instinct_backtest.py` | 워크포워드 백테스트 · F 전략 과거 재현 · G 원칙형 vs G-본능 과거 재현 (기본: 옛 잔고 밑천 · `--month`: 월 밑천제) |
 | `evaluation/congestion_pretest.py` | [7.10] 일정 밀집도(컵·유럽대회 포함) 사전 시험 — 5대 리그, Pinnacle 마감 배당 대비 반기 워크포워드 (결과: 채택 안 함, 2026-10-31) |
+| `evaluation/pick_check.py` | 구매 전 점검: 담은 선택지의 과거 배당 구간별 실제 환급률로 조합의 1만 원당 환급·손해·경고 (대시보드 사이드바, 표시 전용) |
 | `evaluation/market_scan.py` · `evaluation/market_model.py` · `evaluation/metrics.py` · `evaluation/config.py` | 유형별 마진표 · 시장 기준선 · 지표(부트스트랩 포함) · 학습/튜닝/시험 분할 고정 |
 | `evaluation/gates.py` | 추천 잠금: 검증 3단계 통과한 기능만 켬 |
 | `evaluation/health_check.py` | 운영 점검(수집·갱신 시각·채점 감소·데이터 계약 오류) → 경고 시 실행 실패 표시·텔레그램 |

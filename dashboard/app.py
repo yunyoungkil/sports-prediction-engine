@@ -535,6 +535,40 @@ def won(pct: float) -> str:
     return f"{pct * 100:,.0f}원"
 
 
+def render_pick_check(active: dict):
+    """🧾 구매 전 점검: 담은 선택지가 과거에 1만 원당 얼마 돌아왔나(배당 구간별 실제 환급률)로 본 이 조합의 평균 손해와 경고.
+    AI 확률이 아니라 과거 실제 결과 기준이라 'AI 기대 손익'과 따로 보여 준다 (evaluation/pick_check.py · 표시 전용)"""
+    from evaluation.pick_check import check_slip
+    if not active:
+        return
+    matches = [{"label": f"{v['match'].get('home_team', '')}:{v['match'].get('away_team', '')}",
+                "game_type": v["match"].get("game_type") or "",
+                "picks": [{"name": p["selection_name"], "odds": p["odds"]} for p in v["picks"]]} for v in active.values()]
+    r = check_slip(matches, load_market_scan())
+    if r["slip_return_pct"] is None:
+        st.caption("🧾 구매 전 점검: 과거 환급률 표에 없는 선택지가 있어 계산하지 않았어요"
+                   + (f" ({', '.join(r['missing'][:2])})" if r["missing"] else "") + ".")
+        return
+    ret = r["slip_return_pct"]
+    col = "#34d399" if ret >= 90 else ("#fbbf24" if ret >= 75 else "#f87171")
+    body = (f"<b>🧾 구매 전 점검</b> <span style='opacity:.7'>(과거 실제 결과 기준)</span><br>"
+            f"1만 원당 평균 약 <b style='color:{col}'>{ret * 100:,.0f}원</b> 돌아와요 "
+            f"(<b>{r['loss_per_10k']:,}원</b> 손해)")
+    st.markdown(f"<div style='font-size:13px;line-height:1.6;padding:8px 10px;margin:2px 0 8px;border-radius:8px;"
+                f"background:rgba(148,163,184,.12)'>{body}</div>", unsafe_allow_html=True)
+    for w in r["warnings"]:
+        st.warning(w, icon="⚠️")
+    if r["without"] or r["legs"]:
+        with st.expander("점검 자세히 보기"):
+            for l in r["legs"]:
+                st.markdown(f"- {l['match']} **{l['pick']}** {l['odds']:.2f}배 → 배당대 {l['band']} · 1만 원당 약 {l['return_pct'] * 100:,.0f}원")
+            for w in r["without"]:
+                st.markdown(f"- **{w['label']}**을(를) 빼면 → 1만 원당 약 {w['return_pct'] * 100:,.0f}원")
+            st.caption("배당 구간마다 2024-07 이후 베트맨 경기에 단일로 걸었다면 실제로 돌아온 비율이에요(③ 탭 마진표와 같은 자료). "
+                       "조합은 경기끼리 독립이라고 보고 곱한 어림값이고, 한 경기에서 여러 개를 고르면 그 평균을 써요. "
+                       "평균일 뿐이라 이번 회차 결과를 예측하지는 않아요.")
+
+
 def bucket_summary(scan):
     """축구 승무패 배당대별 환급률에서 정배(1.30 이하)와 고배당(5.0 이상) 요약"""
     rows = ((scan or {}).get("buckets") or {}).get("축구 승무패") or []
@@ -4189,6 +4223,7 @@ with st.sidebar:
                 f"<div style='display:flex;justify-content:space-between'><span style='opacity:.75'>{k}</span><b>{val}</b></div>"
                 for k, val in rows) + "</div>", unsafe_allow_html=True)
         st.caption("조합당 금액은 STEP 02에서 바꿀 수 있어요. 여러 개를 고른 경기는 조합마다 배당이 달라 범위로 보여요.")
+        render_pick_check(cart["active"])   # 🧾 구매 전 점검 — 과거 실제 환급률 기준 (표시 전용)
         if total > 100_000:
             st.error("총 투표금액이 베트맨 1회차 구매 한도(100,000원)를 넘어요.")
         if n_closed:
