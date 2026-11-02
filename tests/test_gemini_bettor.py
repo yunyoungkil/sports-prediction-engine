@@ -1,7 +1,7 @@
 """
 tests/test_gemini_bettor.py
 ===========================
-Gemini (J) 선수 규칙(models/gemini_bettor.py) 및 paper_trading 인터페이스 검증 (TODO 7.29).
+Gemini (J) 선수 독자 모델 규칙(models/gemini_bettor.py) 및 paper_trading 인터페이스 검증 (TODO 7.29, j2).
 """
 
 from datetime import datetime, timezone
@@ -19,7 +19,9 @@ PAST_MS = NOW_MS - 3600 * 1000
 
 def _make_match(seq="1", is_single=True, close_time=FUTURE_MS, game_type="축구 승무패",
                 home_odds=1.35, draw_odds=4.0, away_odds=7.0,
-                p_ai=0.68, p_mkt=0.65, home="홈팀", away="원정팀"):
+                h_ppg=2.1, a_ppg=1.2, h_scored=2.0, h_conceded=0.8,
+                a_scored=1.0, a_conceded=1.5, home="홈팀", away="원정팀"):
+    """프로그램의 AI 예측(blended_probabilities) 없이 원천 데이터만으로 구성된 경기 생성"""
     return {
         "match_seq": str(seq),
         "is_single": is_single,
@@ -32,34 +34,52 @@ def _make_match(seq="1", is_single=True, close_time=FUTURE_MS, game_type="축구
             "draw": draw_odds,
             "away_win": away_odds,
         },
-        "blended_probabilities": {
-            "home_win": p_ai,
-            "draw": 0.20,
-            "away_win": 1.0 - p_ai - 0.20,
+        "home_form": {
+            "has_data": True,
+            "win_rate_pct": 80.0,
+            "avg_scored": h_scored,
+            "avg_conceded": h_conceded,
+            "standing": {"pts": int(h_ppg * 10), "played": 10},
         },
-        "market_implied_probs": {
-            "home_win": p_mkt,
-            "draw": 0.21,
-            "away_win": 1.0 - p_mkt - 0.21,
+        "away_form": {
+            "has_data": True,
+            "win_rate_pct": 40.0,
+            "avg_scored": a_scored,
+            "avg_conceded": a_conceded,
+            "standing": {"pts": int(a_ppg * 10), "played": 10},
         },
     }
 
 
 def test_rule_version():
-    """RULE_VERSION은 j1이어야 한다."""
-    assert gemini_bettor.RULE_VERSION == "j1"
+    """RULE_VERSION은 j2이어야 한다."""
+    assert gemini_bettor.RULE_VERSION == "j2"
+
+
+def test_gemini_operates_without_program_model():
+    """프로그램의 blended_probabilities나 model_probabilities가 전혀 없어도 Gemini 자체 모델로 분석한다."""
+    m = _make_match(seq="1", home_odds=1.25, draw_odds=5.0, away_odds=9.0)
+    # 프로그램 모델 키가 일체 없음
+    assert "blended_probabilities" not in m
+    assert "model_probabilities" not in m
+
+    wallet = {"current_cash": 100_000}
+    bets = gemini_bettor.propose([m], now=NOW, wallet=wallet)
+    assert len(bets) == 1
+    assert bets[0]["legs"] == [{"seq": "1", "key": "home_win"}]
+    assert "j2" in bets[0]["note"]
+    assert "Gemini확률" in bets[0]["note"]
 
 
 def test_propose_selects_top_single_candidate():
-    """조건을 만족하는 복수 경기 중 최우수 단통 1경기만 선택한다."""
-    m1 = _make_match(seq="1", home_odds=1.45, draw_odds=3.8, p_ai=0.60, p_mkt=0.60, home="팀A")
-    m2 = _make_match(seq="2", home_odds=1.20, draw_odds=5.0, p_ai=0.78, p_mkt=0.74, home="팀B")  # 더 높은 스코어
+    """조건을 만족하는 복수 경기 중 Gemini 자체 평가 스코어가 가장 높은 최우수 1경기만 선택한다."""
+    m1 = _make_match(seq="1", home_odds=1.45, draw_odds=3.6, h_ppg=1.5, a_ppg=1.4, home="팀A")
+    m2 = _make_match(seq="2", home_odds=1.20, draw_odds=5.2, h_ppg=2.4, a_ppg=0.8, home="팀B")  # 더 높은 전력차/승률
     wallet = {"current_cash": 100_000}
 
     bets = gemini_bettor.propose([m1, m2], now=NOW, wallet=wallet)
     assert len(bets) == 1
     assert bets[0]["legs"] == [{"seq": "2", "key": "home_win"}]
-    assert bets[0]["stake"] == 3000  # 잔고 10만 + edge 4%p -> 3,000원
     assert "팀B" in bets[0]["note"]
 
 
@@ -90,23 +110,14 @@ def test_propose_filters_draw_traps_and_away_favorites():
     assert gemini_bettor.propose([m_draw_trap, m_away_fav], now=NOW, wallet=wallet) == []
 
 
-def test_propose_filters_low_ai_confidence():
-    """AI 승리확률 50% 미만 또는 역우위(Edge < -2%p)는 제외한다."""
-    m_low_prob = _make_match(seq="1", p_ai=0.45, p_mkt=0.55)
-    m_negative_edge = _make_match(seq="2", p_ai=0.52, p_mkt=0.60)  # edge = -8%p
-    wallet = {"current_cash": 100_000}
-
-    assert gemini_bettor.propose([m_low_prob, m_negative_edge], now=NOW, wallet=wallet) == []
-
-
 def test_propose_adaptive_staking():
-    """지갑 잔고에 따라 판돈을 유연하게 조절한다 (단통 1,000원 단위 필수)."""
-    m = _make_match(seq="1", p_ai=0.65, p_mkt=0.64)  # edge 1%p (< 4%p)
+    """지갑 잔고 및 확신도에 따라 판돈을 유연하게 조절한다 (단통 1,000원 단위 필수)."""
+    m = _make_match(seq="1", home_odds=1.40, draw_odds=3.8, h_ppg=1.5, a_ppg=1.4)  # 일반 우위
 
     # 1. 잔고 1,000원 미만: 베팅 불가
     assert gemini_bettor.propose([m], now=NOW, wallet={"current_cash": 500}) == []
 
-    # 2. 잔고 위험 (< 30,000원): 1,000원
+    # 2. 잔고 위험 (< 30,000원): 1,000원 (자산 보호)
     b_low = gemini_bettor.propose([m], now=NOW, wallet={"current_cash": 25_000})
     assert b_low[0]["stake"] == 1000
 
@@ -114,9 +125,10 @@ def test_propose_adaptive_staking():
     b_mid = gemini_bettor.propose([m], now=NOW, wallet={"current_cash": 70_000})
     assert b_mid[0]["stake"] == 2000
 
-    # 4. 잔고 10만 + edge >= 4%p: 3,000원
-    m_edge = _make_match(seq="1", p_ai=0.70, p_mkt=0.65)
-    b_high = gemini_bettor.propose([m_edge], now=NOW, wallet={"current_cash": 100_000})
+    # 4. 잔고 10만 + 압도적 전력차(높은 Edge & P_Gemini >= 70%): 3,000원 (수익 극대화)
+    m_dom = _make_match(seq="2", home_odds=1.20, draw_odds=5.5, h_ppg=2.6, a_ppg=0.6,
+                        h_scored=2.8, h_conceded=0.4, a_scored=0.8, a_conceded=2.2)
+    b_high = gemini_bettor.propose([m_dom], now=NOW, wallet={"current_cash": 100_000})
     assert b_high[0]["stake"] == 3000
 
     # 5. 베트맨 1회차 한도(100,000원) 준수 확인
@@ -126,14 +138,14 @@ def test_propose_adaptive_staking():
 
 def test_gemini_bets_integration_with_paper_trading():
     """models.paper_trading.gemini_bets와의 전체 검사 연동 통과를 확인한다."""
-    m = _make_match(seq="100", home_odds=1.30, draw_odds=4.5, away_odds=8.0, p_ai=0.72, p_mkt=0.68)
+    m = _make_match(seq="100", home_odds=1.30, draw_odds=4.5, away_odds=8.0)
     wallet = {"current_cash": 100_000, "total_deposited": 100_000}
 
     bets = gemini_bets([m], now=NOW, wallet=wallet)
     assert len(bets) == 1
     b = bets[0]
     assert b["strategy"] == "J_gemini"
-    assert b["rule_version"] == "j1"
+    assert b["rule_version"] == "j2"
     assert b["stake"] % 1000 == 0
     assert b["legs"][0]["seq"] == "100"
     assert b["legs"][0]["key"] == "home_win"
