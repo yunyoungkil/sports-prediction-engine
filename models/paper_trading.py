@@ -72,6 +72,7 @@ STRATEGIES = {
 }
 I_BAND = (1.15, 1.50)   # I: 배당 1순위가 이 범위인 경기만 (양 끝 포함)
 I_PER_ROUND = 2         # I: 회차당 단일 개수
+I_RULE_VERSION = "v1"   # I 규칙 버전 — 월말 점검(evaluation/i_rule_review.py)에서 바꾸면 올리고, 버전마다 따로 채점 (TODO 7.27)
 G_WALLETS = ("G_ai_bettor", "G_instinct")      # 월 10만 원 지갑을 쓰는 전략
 INSTINCT_NOTE = {"win_boost": "본능: 지난 회차를 이겨서 판돈 ×1.4 · ", "chase": "본능: 지난 회차를 져서 고배당 복권 · "}
 # 폐기한 전략의 베팅은 기록(파일)에는 남지만 전략 표·지갑·판정에는 넣지 않고, 내역에서만 이 이름으로 보여 준다.
@@ -174,7 +175,7 @@ def propose_bets(predictions: List[Dict[str, Any]], now: Optional[datetime] = No
     # I: 덜 잃기 원칙 — 단통 가능 · 배당 1순위 1.15~1.50 중 가장 낮은 2경기 단일 (AI 안 씀, 회차당 한 번은 save_new_bets에서)
     for m, k in least_loss_picks([(m, bool(m.get("is_single")), {x: float(m["betman_odds"][x]) for x in KEYS},
                                    str(parse_betman_kickoff(m.get("match_time")) or "")) for m in ms]):
-        bets.append({"strategy": "I_least_loss", "legs": [_leg(m, k)]})
+        bets.append({"strategy": "I_least_loss", "legs": [_leg(m, k)], "rule_version": I_RULE_VERSION})
 
     for bt in bets:
         bt["combined_odds"] = calculate_combined_odds([x["odds"] for x in bt["legs"]]) if len(bt["legs"]) > 1 else bt["legs"][0]["odds"]

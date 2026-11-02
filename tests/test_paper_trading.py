@@ -379,3 +379,5 @@ def test_i_least_loss_picks_two_lowest_favorites_in_band_once_per_round(tmp_path
     # 다음 실행에서 새 경기가 생겨도 이 회차에는 다시 고르지 않는다
     assert "I_least_loss" not in save_new_bets(1, preds + [_m("7", (1.16, 5.0, 9.0), ai)], now=NOW, bets_dir=tmp_path)
     assert least_loss_picks([("x", True, {"home_win": 1.50, "draw": 4, "away_win": 5}, "")]) == [("x", "home_win")]   # 양 끝 포함
+    bets_v = json.loads((tmp_path / "1.json").read_text(encoding="utf-8"))["bets"]
+    assert all(b.get("rule_version") == "v1" for b in bets_v if b["strategy"] == "I_least_loss")   # 규칙 버전이 남는다
