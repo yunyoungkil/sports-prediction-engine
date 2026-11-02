@@ -569,6 +569,63 @@ def render_pick_check(active: dict):
                        "평균일 뿐이라 이번 회차 결과를 예측하지는 않아요.")
 
 
+DISCIPLINE_PATH = MY_DATA_DIR / "discipline.json"
+
+
+def _my_real_recs():
+    """사이드바용: 저장한 기록 전체를 ④ 탭과 같은 {slip, kind, grade} 형식으로"""
+    idx = results_index()
+    return [{"slip": s, "kind": slip_kind(s), "grade": grade_slip(s, _slip_result_of(s, idx))} for s in load_slips(MY_SLIPS_PATH)]
+
+
+def render_discipline(recs: list):
+    """④ 탭 🧭 지출 규율: 이번 달 예산(직접 정함, 이 컴퓨터에만 저장) 대비 실제로 건 돈 + 진 다음 회차에 판돈·배당을 키운 기록"""
+    from tracker.discipline import chase_rounds, load_settings, month_summary, round_history, save_settings, CHASE_RATIO
+    st.markdown("#### 🧭 지출 규율 (실제 구매만)")
+    settings = load_settings(DISCIPLINE_PATH)
+    c1, c2 = st.columns([1, 2.2], vertical_alignment="bottom")
+    with c1:
+        budget = st.number_input("이번 달 예산 (원)", min_value=0, step=10000, value=int(settings.get("monthly_budget") or 0),
+                                 key="disc_budget", help="0이면 예산 점검을 하지 않아요. 이 컴퓨터의 user_data 폴더에만 저장돼요.")
+    if int(budget) != int(settings.get("monthly_budget") or 0):
+        save_settings(DISCIPLINE_PATH, {**settings, "monthly_budget": int(budget)})
+    s = month_summary(recs, datetime.now().strftime("%Y-%m"), int(budget) or None)
+    with c2:
+        if s["budget"]:
+            col = {"ok": "#34d399", "warn": "#fbbf24", "over": "#f87171"}[s["level"]]
+            st.markdown(f"<div style='font-size:14px;line-height:1.6'>{s['month']}: <b style='color:{col}'>{s['spent']:,}원</b> / "
+                        f"{s['budget']:,}원 ({s['used_pct']:.0f}%) · 남은 예산 <b>{max(s['remaining'], 0):,}원</b>"
+                        f" · 결과 나온 손익 {s['settled_pnl']:+,}원</div>", unsafe_allow_html=True)
+            st.progress(min(1.0, s["spent"] / s["budget"]))
+        else:
+            st.caption(f"{s['month']}: 실제 구매 {s['slips']}건 · {s['spent']:,}원. 예산을 정하면 남은 금액과 초과 경고가 보여요.")
+    c = chase_rounds(round_history(recs))
+    if c["after_loss"]:
+        n = len(c["flagged"])
+        (st.warning if n else st.success)(
+            f"진 다음 회차 {c['after_loss']}번 중 판돈이나 평균 배당을 평소의 {CHASE_RATIO:.1f}배 이상으로 키운 회차: {n}번"
+            + (" — 진 뒤 키우면 손실률은 그대로이고 건 돈만 늘어요." if n else " — 잘 지키고 있어요."))
+        for f in c["flagged"][-5:]:
+            st.markdown(f"- {f['gm_ts']}회차: " + " · ".join(f["reasons"]))
+    st.caption("추격 기준: 바로 앞의 결과 나온 회차가 손해였는데, 이번 회차 판돈(또는 금액 가중 평균 배당)이 그 전 결과 나온 최근 5개 회차 "
+               "중앙값의 1.5배 이상. 과거 재현(TODO 7.8)에서 어떤 금액 규칙도 손실률을 바꾸지 못하고 건 돈만 바꿨어요.")
+
+
+def render_discipline_cart(total: int, picked: list, cart_round):
+    """사이드바: 지금 담은 금액이 이번 달 남은 예산을 넘는지 · 진 뒤 판돈·배당을 키우는 중인지 (예산·기록이 있을 때만)"""
+    from tracker.discipline import cart_warnings, load_settings, month_summary, round_history
+    if not total:
+        return
+    recs = _my_real_recs()
+    budget = int(load_settings(DISCIPLINE_PATH).get("monthly_budget") or 0) or None
+    if not recs and not budget:
+        return
+    odds = sum(o * s for o, s, _ in picked) / sum(s for _, s, _ in picked) if picked and sum(s for _, s, _ in picked) else 0.0
+    for w in cart_warnings(round_history(recs), month_summary(recs, datetime.now().strftime("%Y-%m"), budget),
+                           int(total), odds, cart_round):
+        st.warning("🧭 " + w, icon="⚠️")
+
+
 def bucket_summary(scan):
     """축구 승무패 배당대별 환급률에서 정배(1.30 이하)와 고배당(5.0 이상) 요약"""
     rows = ((scan or {}).get("buckets") or {}).get("축구 승무패") or []
@@ -3802,6 +3859,7 @@ with tab4:
         if len(kind_lines) > 1:
             st.markdown("<div style='padding-bottom:10px'><div style='font-size:14px'>💬 " + " · ".join(kind_lines) + "</div></div>",
                         unsafe_allow_html=True)
+        render_discipline(recs)   # 🧭 지출 규율 — 이번 달 예산 · 진 뒤 판돈 키움 (실제 구매만, 필터와 무관)
 
         # 📏 기준선과 비교: 내 수익률이 '그냥 배당 1순위를 단일로 산 것'(가상 기준선 E)보다 나은가
         from evaluation.metrics import cluster_roi_confidence_interval
@@ -4224,6 +4282,8 @@ with st.sidebar:
                 for k, val in rows) + "</div>", unsafe_allow_html=True)
         st.caption("조합당 금액은 STEP 02에서 바꿀 수 있어요. 여러 개를 고른 경기는 조합마다 배당이 달라 범위로 보여요.")
         render_pick_check(cart["active"])   # 🧾 구매 전 점검 — 과거 실제 환급률 기준 (표시 전용)
+        render_discipline_cart(total, picked if cart["combos"] <= MAX_SAVED_COMBOS else [],
+                               next((v["match"].get("gm_ts") for v in cart["active"].values() if v["match"].get("gm_ts")), None))
         if total > 100_000:
             st.error("총 투표금액이 베트맨 1회차 구매 한도(100,000원)를 넘어요.")
         if n_closed:
