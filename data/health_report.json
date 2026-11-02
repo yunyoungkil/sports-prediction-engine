@@ -1,13 +1,8 @@
 {
-  "checked_at": "2026-11-02T04:55:34+00:00",
-  "source": "pipeline",
-  "ok": false,
-  "warnings": [
-    {
-      "code": "contract_violation",
-      "message": "결과 파일: 260130회차 결과가 하나도 없어요 (예측 로그에 끝났을 경기 51건)"
-    }
-  ],
+  "checked_at": "2026-11-02T05:01:25+00:00",
+  "source": "results",
+  "ok": true,
+  "warnings": [],
   "matches": 189,
   "round": "260130",
   "graded": 704
