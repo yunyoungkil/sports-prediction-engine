@@ -21,7 +21,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "뉴잉글랜드 레벌루션",
     "away_team": "인터 마이애미CF",
     "betman_odds": {
@@ -321,7 +321,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "뉴잉글랜드 레벌루션",
     "away_team": "인터 마이애미CF",
     "betman_odds": {
@@ -615,7 +615,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "뉴잉글랜드 레벌루션",
     "away_team": "인터 마이애미CF",
     "betman_odds": {
@@ -909,7 +909,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "뉴잉글랜드 레벌루션",
     "away_team": "인터 마이애미CF",
     "betman_odds": {
@@ -1202,7 +1202,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "LAFC",
     "away_team": "미네소타 유나이티드FC",
@@ -1502,7 +1502,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "LAFC",
     "away_team": "미네소타 유나이티드FC",
@@ -1796,7 +1796,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "LAFC",
     "away_team": "미네소타 유나이티드FC",
@@ -2090,7 +2090,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "LAFC",
     "away_team": "미네소타 유나이티드FC",
@@ -2384,7 +2384,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "LAFC",
     "away_team": "미네소타 유나이티드FC",
@@ -2678,7 +2678,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "골든스테이트 워리어스",
     "away_team": "LA 클리퍼스",
@@ -2881,7 +2881,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "골든스테이트 워리어스",
     "away_team": "LA 클리퍼스",
@@ -3084,7 +3084,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "골든스테이트 워리어스",
     "away_team": "LA 클리퍼스",
@@ -3287,7 +3287,7 @@
     "kickoff_ts": 1793583000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "3",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "골든스테이트 워리어스",
     "away_team": "LA 클리퍼스",
@@ -34856,48 +34856,64 @@
     "home_team": "아틀레티코 마드리드",
     "away_team": "바이에른 뮌헨",
     "betman_odds": {
-      "home_win": 1.57,
-      "draw": 4.0,
-      "away_win": 3.8
+      "home_win": 1.5,
+      "draw": 4.2,
+      "away_win": 4.1
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-02 13:52:50",
+        "from": {
+          "home_win": 1.57,
+          "draw": 4.0,
+          "away_win": 3.8
+        },
+        "to": {
+          "home_win": 1.5,
+          "draw": 4.2,
+          "away_win": 4.1
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.57,
-      "draw": 4.0,
-      "away_win": 3.8
+      "home_win": 1.5,
+      "draw": 4.2,
+      "away_win": 4.1
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5538,
-      "draw": 0.2174,
-      "away": 0.2288
+      "home": 0.5804,
+      "draw": 0.2073,
+      "away": 0.2123
     },
     "model_probabilities": {
-      "home_win": 0.5538,
-      "draw": 0.2174,
-      "away_win": 0.2288
+      "home_win": 0.5804,
+      "draw": 0.2073,
+      "away_win": 0.2123
     },
     "blended_probabilities": {
-      "home_win": 0.5774,
-      "draw": 0.2112,
-      "away_win": 0.2113
+      "home_win": 0.6081,
+      "draw": 0.1991,
+      "away_win": 0.1929
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0935,
-        "draw": -0.1552,
-        "away_win": -0.1971
+        "home_win": -0.0878,
+        "draw": -0.1638,
+        "away_win": -0.2091
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 아틀레티코 마드리드 (+1.0) 승",
       "raw_selection_name": "아틀레티코 마드리드 (+1.0) 승",
-      "best_ev": -0.0935,
-      "best_ev_pct": "-9.3%",
+      "best_ev": -0.0878,
+      "best_ev_pct": "-8.8%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
