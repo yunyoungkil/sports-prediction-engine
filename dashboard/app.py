@@ -3534,7 +3534,7 @@ with tab3:
         # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용 1~5번, 대시보드 배경에서 검사 통과)
         import altair as alt
         STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181", "F": "#a855f7", "G": "#1aa3c4", "H": "#ec4899",
-                       "G_instinct": "#e66767"}   # A~G + G-본능: 어두운 화면(#0f172a) 기준 색 검사 통과 (2026-10-30)
+                       "I": "#84cc16", "J": "#f59e0b", "G_instinct": "#e66767"}   # A~G + G-본능: 어두운 화면(#0f172a) 기준 색 검사 통과 (2026-10-30)
 
         def _roi_chart(data_, title, min_bets=3):
             unit = (data_ or {}).get("stake_unit", 1000)

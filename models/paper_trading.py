@@ -68,12 +68,16 @@ STRATEGIES = {
     "G_ai_bettor": "G. 자율 AI 베터 (월 10만 원 · 주력 안정 + 소액 복권)",
     "G_instinct": "G-본능 (G와 같은 경기 · 이기면 판돈 키우고 지면 고배당, 비교용)",
     "H_two_leg_trail": "H. 2차전 뒤진 팀 (토너먼트 1차전 2골 차 이상 · 확인용)",
-    "I_least_loss": "I. 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀)",
+    "I_least_loss": "I. Claude — 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀 · 월 10만 원)",
+    "J_gemini": "J. Gemini (다른 PC의 Gemini가 규칙을 넣음 · 월 10만 원)",
 }
+# 경쟁 (TODO 7.29): Claude(I) · 이 프로그램의 AI(G) · Gemini(J) — 셋 다 월 10만 원 지갑, 수익률과 지갑으로 겨룸
+COMPETITORS = {"I_least_loss": "Claude (I)", "G_ai_bettor": "프로그램 AI (G)", "J_gemini": "Gemini (J)"}
 I_BAND = (1.15, 1.50)   # I: 배당 1순위가 이 범위인 경기만 (양 끝 포함)
 I_PER_ROUND = 2         # I: 회차당 단일 개수
 I_RULE_VERSION = "v1"   # I 규칙 버전 — 월말 점검(evaluation/i_rule_review.py)에서 바꾸면 올리고, 버전마다 따로 채점 (TODO 7.27)
-G_WALLETS = ("G_ai_bettor", "G_instinct")      # 월 10만 원 지갑을 쓰는 전략
+G_WALLETS = ("G_ai_bettor", "G_instinct")      # 월 10만 원 지갑 + AI 판돈 (models/ai_bettor.py)
+WALLET_STRATEGIES = G_WALLETS + ("I_least_loss", "J_gemini")   # 월 10만 원 지갑으로 집계하는 전략 전부
 INSTINCT_NOTE = {"win_boost": "본능: 지난 회차를 이겨서 판돈 ×1.4 · ", "chase": "본능: 지난 회차를 져서 고배당 복권 · "}
 # 폐기한 전략의 베팅은 기록(파일)에는 남지만 전략 표·지갑·판정에는 넣지 않고, 내역에서만 이 이름으로 보여 준다.
 # G_v1 = 2026-10-30 개편 전 G(첫 버전, `slip` 필드 없음), G_v2 = 판돈 밑천이 지갑 잔고였던 세대(`stake_basis` 없음) — models/ai_bettor.retired_g_key
@@ -295,6 +299,45 @@ def _f_bets(predictions, now, bankroll: float) -> Dict[str, Any]:
                                    "bankroll": round(bankroll), "staked": sum(b["stake"] for b in bets)}}
 
 
+def gemini_bets(predictions: List[Dict[str, Any]], now: datetime, wallet: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """J: models/gemini_bettor.propose()가 낸 베팅을 검사해 저장 형식으로 (마감 전 · 배당 있음 · 베트맨 규정 · 회차 합계 ≤ 잔고·10만 원).
+    Gemini 코드가 실패해도 파이프라인은 멈추지 않는다 (그 회차 J는 쉼)."""
+    try:
+        from models import gemini_bettor
+        raw = gemini_bettor.propose(predictions, now, wallet) or []
+        version = getattr(gemini_bettor, "RULE_VERSION", "")
+    except Exception as e:
+        print(f"⚠️ J(Gemini) 규칙 실행 실패: {e}")
+        return []
+    by_seq = {str(m.get("match_seq")): m for m in predictions}
+    now_ms = now.timestamp() * 1000
+    budget = min(float(wallet.get("current_cash") or 0), 100_000)
+    out, total = [], 0
+    for r in raw:
+        try:
+            legs_in, stake = r["legs"], int(r["stake"])
+            ms = [by_seq.get(str(l["seq"])) for l in legs_in]
+            if not legs_in or any(m is None for m in ms):
+                continue
+            if any(not m.get("close_time") or float(m["close_time"]) <= now_ms for m in ms):
+                continue                       # 마감 지난 경기
+            if any(float((m.get("betman_odds") or {}).get(l["key"]) or 0) <= 1.0 for m, l in zip(ms, legs_in)):
+                continue                       # 없는 선택지
+            ok, _ = validate_combo([{"match_seq": str(m["match_seq"]), "match_key": m.get("match_key")} for m in ms], stake=stake,
+                                   total_round_stake=total + stake, is_single_permitted=len(ms) == 1 and bool(ms[0].get("is_single")))
+            if not ok or total + stake > budget:
+                continue
+            legs = [{**_leg(m, l["key"]), "game_type": m.get("game_type")} for m, l in zip(ms, legs_in)]
+            odds = calculate_combined_odds([x["odds"] for x in legs]) if len(legs) > 1 else legs[0]["odds"]
+            out.append({"strategy": "J_gemini", "legs": legs, "combined_odds": odds, "stake": stake, "rule_version": version,
+                        "note": str(r.get("note", ""))[:200],
+                        "bet_id": "J_gemini:" + "+".join(f"{x['seq']}{x['key'][0]}" for x in legs) + f":{len(out)}"})
+            total += stake
+        except Exception:
+            continue
+    return out
+
+
 def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: Path = BETS_DIR,
                   results_path: Path = Path("data/history/betman_recent_results.json"),
                   two_leg_index: Optional[Dict[Any, Any]] = None) -> Dict[str, int]:
@@ -307,13 +350,17 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
         data = json.loads(path.read_text(encoding="utf-8"))
     current = [b for b in data["bets"] if not is_retired_g(b)]      # 폐기한 G 세대(첫 버전·잔고 밑천 버전) 베팅은 없는 것으로 본다 → 지금 세대 G가 같은 회차에 새로 산다
     have_ids = {b["bet_id"] for b in current}
-    have_once = {b["strategy"] for b in current if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", "I_least_loss", *G_WALLETS)}   # I: 같은 실행에서 고른 2경기는 함께 남고, 다음 실행부터는 이 회차에 다시 고르지 않음
+    have_once = {b["strategy"] for b in current if b["strategy"] in ("B_fav_double", "C_finder_top", "D_banker_cover", "I_least_loss", "J_gemini", *G_WALLETS)}   # I: 같은 실행에서 고른 2경기는 함께 남고, 다음 실행부터는 이 회차에 다시 고르지 않음
     used_matches = {(b["strategy"], leg["seq"]) for b in data["bets"] for leg in b["legs"]}
     added = {}
     for bt in propose_bets(predictions, now) + propose_two_leg_bets(predictions, now, two_leg_index):
         s = bt["strategy"]
         if bt["bet_id"] in have_ids or s in have_once:
             continue
+        if s == "I_least_loss":      # I도 월 10만 원 지갑 — 잔고(이번 실행에서 이미 산 I 포함)가 판돈보다 적으면 쉰다
+            i_cash = g_wallet(bets_dir, results_path, now=now, strategy=s)["current_cash"] - STAKE * added.get(s, 0)
+            if i_cash < bt["stake"]:
+                continue
         if s in ("A_gem_single", "E_market_fav", "H_two_leg_trail") and (s, bt["legs"][0]["seq"]) in used_matches:
             continue
         bt["created_at"] = now.isoformat(timespec="seconds")
@@ -354,6 +401,17 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
                     data["bets"].append(b)
                     have_ids.add(b["bet_id"])
                     added[strat] = added.get(strat, 0) + 1
+
+    # J: Gemini 전용 자리 (models/gemini_bettor.py) — 회차당 한 번, 검사를 통과한 베팅만 (TODO 7.29)
+    if "J_gemini" not in have_once:
+        w = g_wallet(bets_dir, results_path, now=now, strategy="J_gemini")
+        if w["can_bet"]:
+            for bt in gemini_bets(predictions, now, w):
+                if bt["bet_id"] not in have_ids:
+                    bt.update({"gm_ts": str(gm_ts), "created_at": now.isoformat(timespec="seconds")})
+                    data["bets"].append(bt)
+                    have_ids.add(bt["bet_id"])
+                    added["J_gemini"] = added.get("J_gemini", 0) + 1
 
     # 조합 전략은 이번 실행에서 처음 생겼다면 이후 실행에서 다시 만들지 않음
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -416,6 +474,22 @@ def _summarize(per: Dict[str, List[Dict[str, Any]]], pending: Dict[str, int], la
     return out
 
 
+def competition_table(strategies: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """경쟁표 (TODO 7.29): 끝난 베팅의 수익률·95% 범위 · 지갑·순손익. 순위는 수익률(건 돈 대비) — 안 걸면 이기는 일이 없게,
+    MIN_FOR_VERDICT건 전에는 '판단 보류'로 둔다 (지갑 잔고만으로는 덜 건 쪽이 유리해서 순위에 쓰지 않음)"""
+    rows = []
+    for k, name in COMPETITORS.items():
+        s = strategies.get(k) or {}
+        rows.append({"key": k, "name": name, "bets": s.get("bets", 0), "pending": s.get("pending", 0),
+                     "staked": s.get("staked", 0), "profit": s.get("profit", 0), "roi_pct": s.get("roi_pct"),
+                     "roi_ci": [s.get("roi_ci_low"), s.get("roi_ci_high")], "bankroll": s.get("bankroll"),
+                     "total_deposited": s.get("total_deposited"), "ready": s.get("bets", 0) >= MIN_FOR_VERDICT})
+    ranked = sorted([r for r in rows if r["bets"]], key=lambda r: -(r["roi_pct"] or -999))
+    for i, r in enumerate(ranked, 1):
+        r["rank"] = i
+    return rows
+
+
 def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/history/betman_recent_results.json"),
                          out_path: Path = SUMMARY_PATH, now: Optional[datetime] = None) -> Dict[str, Any]:
     now = now or datetime.now(timezone.utc)
@@ -466,10 +540,16 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
         strategies["F_portfolio_kelly"].update({
             "bankroll": round(f_bankroll(bets_dir, results_path)), "start_bankroll": F_START_BANKROLL,
             "rounds_planned": len(plans), "rounds_skipped": sum(1 for p in plans if not p["bets"])})
-    for gk in G_WALLETS:
+    for gk in WALLET_STRATEGIES:
         if gk not in strategies:
             continue
         w = g_wallet(bets_dir, results_path, now=now, strategy=gk)
+        strategies[gk].update({"bankroll": round(w["current_cash"]), "total_deposited": w["total_deposited"],
+                               "months_funded": w["months_funded"], "pending_stakes": w["pending_stakes"],
+                               "is_broke": w["is_broke"], "can_bet": w["can_bet"], "mode": w["mode"],
+                               "mode_label": w["mode_label"], "current_month": w["current_month"]})
+        if gk not in G_WALLETS:
+            continue
         mc = g_month_capital(bets_dir, results_path, now=now, strategy=gk)
         strategies[gk].update({
             "bankroll": round(w["current_cash"]),
@@ -487,7 +567,7 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
     if "G_instinct" in strategies:
         strategies["G_instinct"]["instinct_rounds"] = {k: len(v) for k, v in instinct_rounds.items()}
     summary = {"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "stake_unit": STAKE,
-               "strategies": strategies,
+               "strategies": strategies, "competition": competition_table(strategies),
                "details": sorted(details, key=lambda d: (d["gm_ts"], d["kickoff"]), reverse=True)}
     out_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     return summary

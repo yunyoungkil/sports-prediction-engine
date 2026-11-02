@@ -172,6 +172,16 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
             slips = " · ".join(f"{v['label']} {v['bets']}건 {v['roi_pct']:+.1f}%" for v in (s.get("by_slip") or {}).values() if v["bets"])
             out.append(f"       ↳ {slips} · 판돈 조절 효과 {z['gain_pp']:+.1f}%p "
                        f"(AI 금액 {z['roi_ai_pct']:+.1f}% vs 1,000원 고정 {z['roi_flat_pct']:+.1f}%) · {z['verdict']}")
+    comp = pt.get("competition") or []
+    if comp:                            # 경쟁 (TODO 7.29): Claude(I) · 프로그램 AI(G) · Gemini(J) — 셋 다 월 10만 원 지갑, 순위는 수익률
+        parts = []
+        for r in sorted(comp, key=lambda r: r.get("rank") or 99):
+            if r.get("bets"):
+                parts.append(f"{r.get('rank', '-')}위 {r['name']} {r['bets']}건 {r['roi_pct']:+.1f}%"
+                             + (f" · 지갑 {r['bankroll']:,}원" if r.get("bankroll") is not None else ""))
+            else:
+                parts.append(f"{r['name']} 채점 없음" + (f" (결과 대기 {r['pending']})" if r.get("pending") else ""))
+        out.append("   🏁 경쟁 (월 10만 원 지갑 · 순위는 수익률, 300건 전엔 판단 보류): " + " vs ".join(parts))
     g, gi = pt["strategies"].get("G_ai_bettor"), pt["strategies"].get("G_instinct")
     if g and gi:                        # 같은 경기, 다른 습관 — 원칙을 지킨 값 (과거 재현 28개월, 월 밑천제: G −44,870원 vs 본능 −64,140원)
         out.append(f"   ↳ 원칙 vs 본능 순손익: G {g.get('profit', 0):+,}원 vs G-본능 {gi.get('profit', 0):+,}원 "

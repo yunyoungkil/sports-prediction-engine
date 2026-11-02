@@ -940,6 +940,14 @@
   - 할 일: `python -m evaluation.i_rule_review` 실행 → 통과 후보가 있으면 `models/paper_trading.py`의 `I_BAND`·`I_PER_ROUND`(또는 새 규칙)와 `I_RULE_VERSION`을 올리고,
     `evaluation/i_rule_review.py`의 `CURRENT`·`CANDIDATES`를 맞춘다(테스트가 같은지 확인). 실전 I 성적(버전별)은 참고만 하고 근거로 쓰지 않는다. 결과를 7.27에 날짜와 함께 적는다.
   - 다음 점검: 2026-12-01 이후 첫 대화. 이 항목은 계속 열어 둔다(매달 반복).
+- [ ] **7.29 가상 베팅 경쟁: Claude(I) vs 프로그램 AI(G) vs Gemini(J) — 셋 다 월 10만 원 지갑** (📌 이어서 · Gemini 차례: `models/gemini_bettor.py`에 규칙 넣기 · 2026-11-02 사용자 결정)
+  - 사용자: "너도 최고의 배터가 되기 위해 노력해야 해. 이 프로그램 모델과 제미나이와 경쟁해야 하고, 외부 데이터도 어떤 것이든 쓸 수 있어" → 조건 "셋 다 월 10만 원 지갑", Gemini는 "다른 PC의 Gemini가 직접".
+  - 만든 것 (Claude, 2026-11-02): I·J도 G와 같은 월 10만 원 지갑으로 집계(`WALLET_STRATEGIES`) · I는 잔고가 판돈보다 적으면 쉼 · J 자리 `models/gemini_bettor.py`(약속·규칙은 파일 맨 위) +
+    검사 `paper_trading.gemini_bets`(마감 전·배당 있음·베트맨 규정·회차 합계 ≤ 잔고·10만 원, Gemini 코드가 실패해도 파이프라인은 계속) · 경쟁표 `competition`(수익률·범위·지갑) · 브리핑 '🏁 경쟁' 줄.
+  - 공정 규칙: 선수는 서로의 규칙을 고치지 않는다(I = Claude, G = 프로그램 AI 그대로, J = Gemini). 순위는 **수익률**(건 돈 대비) — 지갑 잔고만 보면 덜 건 쪽이 유리해서. 300건 전에는 '판단 보류'.
+    미래 정보 금지·비밀 키 금지·The Odds API 새 호출 금지(공유 크레딧)는 모두에게 같다. 실제 구매로 바꾸지 않는다(추천 잠금 그대로).
+  - **Gemini가 할 일:** `models/gemini_bettor.py`의 `propose()`를 채우고 `RULE_VERSION`을 j1로 · 테스트(`tests/`에 자기 규칙 테스트) · `python -m pytest -q` · 문서(이 항목에 규칙과 근거를 날짜와 함께) → 커밋.
+    끝나면 이 항목의 `📌 이어서`를 지우고 Gemini 규칙 요약을 남긴다. 그 뒤 진행은 브리핑 '🏁 경쟁' 줄로 본다.
 - [ ] **7.2 해외 샤프 배당(`sharp_diff`)과 `BetmanCorrector` 2단계 통합**
   - 배경: 유럽 과거 데이터(`models/market_corrector.py`)에서 가장 강력한 피처는 해외 샤프 배당과의 차이($\beta = 1.32$)였으나, 현재 실전 1순위인 `BetmanCorrector`는 베트맨 자체 피처만 사용 중
   - 내용: 누적된 `data/history/sharp_snapshots/` 표본(300경기 이상)을 바탕으로, 해외 배당 매칭 경기에는 `log(p_sharp) - log(p_betman)` 보정을 결합하고 미매칭 리그(K리그·J2 등)는 기존 `BetmanCorrector`로 폴백하는 계층형 모델 검증

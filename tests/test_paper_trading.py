@@ -381,3 +381,45 @@ def test_i_least_loss_picks_two_lowest_favorites_in_band_once_per_round(tmp_path
     assert least_loss_picks([("x", True, {"home_win": 1.50, "draw": 4, "away_win": 5}, "")]) == [("x", "home_win")]   # 양 끝 포함
     bets_v = json.loads((tmp_path / "1.json").read_text(encoding="utf-8"))["bets"]
     assert all(b.get("rule_version") == "v1" for b in bets_v if b["strategy"] == "I_least_loss")   # 규칙 버전이 남는다
+
+
+def test_j_gemini_slot_validates_bets_and_competition_table(tmp_path, monkeypatch):
+    """J: Gemini 규칙(models/gemini_bettor.propose)이 낸 베팅 중 규정을 지킨 것만 저장 · 경쟁표에 I·G·J가 나온다"""
+    from models import gemini_bettor
+    ai = (0.4, 0.3, 0.3)
+    close = (NOW.timestamp() + 3600) * 1000
+    preds = [{**_m("1", (1.30, 4.5, 8.0), ai), "close_time": close},
+             {**_m("2", (2.0, 3.3, 3.6), ai, single=False), "close_time": close},
+             {**_m("3", (1.8, 3.4, 4.0), ai), "close_time": NOW.timestamp() * 1000 - 1}]       # 마감 지남
+    calls = []
+
+    def fake(predictions, now, wallet):
+        calls.append(wallet["current_cash"])
+        return [{"legs": [{"seq": "1", "key": "home_win"}], "stake": 1000},                     # ✅ 단통 단일
+                {"legs": [{"seq": "2", "key": "home_win"}], "stake": 1000},                     # ❌ 단통 불가
+                {"legs": [{"seq": "1", "key": "draw"}, {"seq": "2", "key": "away_win"}], "stake": 500},   # ✅ 2폴더
+                {"legs": [{"seq": "3", "key": "home_win"}], "stake": 1000},                     # ❌ 마감
+                {"legs": [{"seq": "1", "key": "home_win"}], "stake": 1500},                     # ❌ 단일은 1,000원 단위
+                {"legs": [{"seq": "1", "key": "away_win"}], "stake": 200_000}]                  # ❌ 한도 초과
+    monkeypatch.setattr(gemini_bettor, "propose", fake)
+    added = save_new_bets(1, preds, now=NOW, bets_dir=tmp_path)
+    assert added.get("J_gemini") == 2 and calls == [100000]
+    assert "J_gemini" not in save_new_bets(1, preds, now=NOW, bets_dir=tmp_path)       # 회차당 한 번
+    rpath = tmp_path.parent / f"{tmp_path.name}_jres.json"
+    rpath.write_text(json.dumps([{"gm_ts": 1, "match_seq": "1", "game_type": "축구 승무패", "game_result": "0"},
+                                 {"gm_ts": 1, "match_seq": "2", "game_type": "축구 승무패", "game_result": "2"}]), encoding="utf-8")
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json", now=NOW)
+    j = s["strategies"]["J_gemini"]
+    assert (j["bets"], j["hits"], j["profit"]) == (2, 1, 300 - 1500 + 1000)              # 1.3배 적중 +300, 2폴더 미적중 −500
+    assert j["total_deposited"] == 100000 and "bankroll" in j
+    comp = {r["key"]: r for r in s["competition"]}
+    assert set(comp) == {"I_least_loss", "G_ai_bettor", "J_gemini"} and comp["J_gemini"]["bets"] == 2
+
+
+def test_j_gemini_failure_does_not_stop_pipeline(tmp_path, monkeypatch):
+    from models import gemini_bettor
+
+    def boom(*a, **k):
+        raise RuntimeError("bug")
+    monkeypatch.setattr(gemini_bettor, "propose", boom)
+    assert "J_gemini" not in save_new_bets(1, [_m("1", (1.3, 4.5, 8.0), (0.4, 0.3, 0.3))], now=NOW, bets_dir=tmp_path)

@@ -60,6 +60,10 @@
 - **Gemini:** TODO.md 항목 구현 (한 번에 한 항목, 항목별 커밋)
 - **Claude:** 검증. 문제가 있으면 REVIEW.md에 R 번호로 기록한다. 사용자가 요청하면 Claude가 직접 수정할 때도 있다 (R10~R13, Phase 5.1·5.4는 Claude가 구현).
 - **`dashboard/app.py` 맞춤조건구매 STEP 01 목록은 Claude가 카드형으로 다시 작성했다(2026-10-25).** 수정 전에 반드시 `git pull` 하고, 같은 영역을 고칠 때는 사용자에게 먼저 확인한다.
+- **가상 베팅 경쟁 (2026-11-02 사용자 결정, TODO 7.29):** Claude(I)·이 프로그램의 AI(G)·**Gemini(J)**가 같은 조건(월 10만 원 가상 지갑)으로 겨룬다.
+  Gemini의 규칙은 **`models/gemini_bettor.py`의 `propose()`에만** 넣는다(파일 맨 위 '약속'을 그대로 따름 · 규칙을 바꾸면 `RULE_VERSION`을 올림). Claude의 I 규칙(`models/paper_trading.py`의 I 부분·`evaluation/i_rule_review.py`)과 G는 고치지 않는다.
+  외부 데이터는 써도 되지만 자동 수집 금지 사이트·유료 API·비밀 키는 안 되고, The Odds API는 새로 부르지 않는다(월 500크레딧 공유 — `data/history/sharp_snapshots/`를 읽는다). 미래 정보(마감 배당·결과) 금지는 그대로다.
+  순위는 수익률(건 돈 대비)로 보고, 300건 전에는 '판단 보류'다. 진행은 브리핑의 '🏁 경쟁' 줄.
 - REVIEW.md에 미해결 항목이 있으면 그것부터 처리한다. 현재 Gemini에게 배정된 미해결 항목은 없다. R14·R15·5.2는 Claude가 처리했다.
 
 ## 4. 절대 규칙 (어기면 재작업)
