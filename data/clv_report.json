@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-03T05:23:36+00:00",
+  "updated_at": "2026-11-03T05:55:27+00:00",
   "rounds": [
     260126,
     260127,
@@ -7,24 +7,24 @@
     260129,
     260130
   ],
-  "matches": 899,
+  "matches": 902,
   "moved": 398,
   "toward_ai": 189,
   "away_from_ai": 209,
   "toward_ai_pct": 47.5,
   "fav_toward_pct": 45.2,
   "mean_move_pp": {
-    "n": 899,
-    "mean": -0.2675,
+    "n": 902,
+    "mean": -0.26661,
     "ci": [
-      -0.5027,
-      -0.04302
+      -0.49956,
+      -0.04805
     ],
     "ci_iid": [
-      -0.50041,
-      -0.04302
+      -0.4967,
+      -0.05239
     ],
-    "clusters": 344,
+    "clusters": 345,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
@@ -95,68 +95,68 @@
       }
     },
     "축구 승무패": {
-      "matches": 257,
+      "matches": 258,
       "moved": 151,
       "toward_ai": 90,
       "away_from_ai": 61,
       "toward_ai_pct": 59.6,
       "fav_toward_pct": 54.3,
       "mean_move_pp": {
-        "n": 257,
-        "mean": 0.1216,
+        "n": 258,
+        "mean": 0.12113,
         "ci": [
-          -0.20564,
-          0.43866
+          -0.20972,
+          0.45148
         ],
         "ci_iid": [
-          -0.18522,
-          0.41794
+          -0.20232,
+          0.42939
         ],
-        "clusters": 257,
+        "clusters": 258,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 언더오버": {
-      "matches": 163,
+      "matches": 164,
       "moved": 46,
       "toward_ai": 16,
       "away_from_ai": 30,
       "toward_ai_pct": 34.8,
       "fav_toward_pct": 32.6,
       "mean_move_pp": {
-        "n": 163,
-        "mean": -0.16968,
+        "n": 164,
+        "mean": -0.16865,
         "ci": [
-          -0.36583,
-          0.02888
+          -0.35933,
+          0.02144
         ],
         "ci_iid": [
-          -0.35836,
-          0.02888
+          -0.35868,
+          0.01806
         ],
-        "clusters": 163,
+        "clusters": 164,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 핸디캡": {
-      "matches": 280,
+      "matches": 281,
       "moved": 160,
       "toward_ai": 68,
       "away_from_ai": 92,
       "toward_ai_pct": 42.5,
       "fav_toward_pct": 44.4,
       "mean_move_pp": {
-        "n": 280,
-        "mean": -0.78733,
+        "n": 281,
+        "mean": -0.78453,
         "ci": [
-          -1.40325,
-          -0.24299
+          -1.43554,
+          -0.23651
         ],
         "ci_iid": [
-          -1.34957,
-          -0.24299
+          -1.3747,
+          -0.26698
         ],
-        "clusters": 230,
+        "clusters": 231,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     }

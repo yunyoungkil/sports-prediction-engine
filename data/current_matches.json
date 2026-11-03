@@ -6496,7 +6496,7 @@
     "kickoff_ts": 1793685000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "FC이마바리",
     "away_team": "콘사도레 삿포로",
@@ -6525,7 +6525,7 @@
     "kickoff_ts": 1793685000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "FC이마바리",
     "away_team": "콘사도레 삿포로",
@@ -6554,7 +6554,7 @@
     "kickoff_ts": 1793685000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "FC이마바리",
     "away_team": "콘사도레 삿포로",
@@ -6583,7 +6583,7 @@
     "kickoff_ts": 1793685000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "FC이마바리",
     "away_team": "콘사도레 삿포로",
@@ -7882,12 +7882,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-03 14:33:52",
+        "from": {
+          "home_win": 1.44,
+          "draw": 0.0,
+          "away_win": 2.2
+        },
+        "to": {
+          "home_win": 1.4,
+          "draw": 0.0,
+          "away_win": 2.3
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.44,
+      "home_win": 1.4,
       "draw": 0.0,
-      "away_win": 2.2
+      "away_win": 2.3
     },
     "gm_ts": 260130
   },
@@ -11119,12 +11134,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-03 14:39:56",
+        "from": {
+          "home_win": 3.55,
+          "draw": 3.95,
+          "away_win": 1.63
+        },
+        "to": {
+          "home_win": 3.1,
+          "draw": 3.7,
+          "away_win": 1.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 3.55,
-      "draw": 3.95,
-      "away_win": 1.63
+      "home_win": 3.1,
+      "draw": 3.7,
+      "away_win": 1.8
     },
     "gm_ts": 260130
   },
@@ -11164,12 +11194,27 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-03 14:39:56",
+        "from": {
+          "home_win": 1.93,
+          "draw": 3.65,
+          "away_win": 2.8
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 3.8,
+          "away_win": 3.05
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 1.93,
-      "draw": 3.65,
-      "away_win": 2.8
+      "home_win": 1.79,
+      "draw": 3.8,
+      "away_win": 3.05
     },
     "gm_ts": 260130
   },
@@ -11194,11 +11239,27 @@
     "match_state": "2",
     "home_team": "페예노르트",
     "away_team": "인테르나치오날레 밀라노",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:39:56",
+        "from": {
+          "home_win": 1.36,
+          "draw": 4.8,
+          "away_win": 4.85
+        },
+        "to": {
+          "home_win": 1.31,
+          "draw": 5.0,
+          "away_win": 5.4
+        },
+        "line_from": 2.0,
+        "line_to": 2.0
+      }
+    ],
     "odds": {
-      "home_win": 1.36,
-      "draw": 4.8,
-      "away_win": 4.85
+      "home_win": 1.31,
+      "draw": 5.0,
+      "away_win": 5.4
     },
     "gm_ts": 260130
   },
@@ -11223,11 +11284,27 @@
     "match_state": "2",
     "home_team": "페예노르트",
     "away_team": "인테르나치오날레 밀라노",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:39:56",
+        "from": {
+          "home_win": 1.64,
+          "draw": 0.0,
+          "away_win": 1.85
+        },
+        "to": {
+          "home_win": 1.7,
+          "draw": 0.0,
+          "away_win": 1.78
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.64,
+      "home_win": 1.7,
       "draw": 0.0,
-      "away_win": 1.85
+      "away_win": 1.78
     },
     "gm_ts": 260130
   },
@@ -11368,11 +11445,27 @@
     "match_state": "2",
     "home_team": "FK보되 글림트",
     "away_team": "릴OSC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:52:31",
+        "from": {
+          "home_win": 1.72,
+          "draw": 3.65,
+          "away_win": 3.4
+        },
+        "to": {
+          "home_win": 1.6,
+          "draw": 3.8,
+          "away_win": 3.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.72,
-      "draw": 3.65,
-      "away_win": 3.4
+      "home_win": 1.6,
+      "draw": 3.8,
+      "away_win": 3.8
     },
     "gm_ts": 260130
   },
@@ -11397,11 +11490,27 @@
     "match_state": "2",
     "home_team": "FK보되 글림트",
     "away_team": "릴OSC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:52:31",
+        "from": {
+          "home_win": 2.95,
+          "draw": 3.6,
+          "away_win": 1.88
+        },
+        "to": {
+          "home_win": 2.6,
+          "draw": 3.85,
+          "away_win": 1.98
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 2.95,
-      "draw": 3.6,
-      "away_win": 1.88
+      "home_win": 2.6,
+      "draw": 3.85,
+      "away_win": 1.98
     },
     "gm_ts": 260130
   },
@@ -11426,11 +11535,27 @@
     "match_state": "2",
     "home_team": "FK보되 글림트",
     "away_team": "릴OSC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:52:31",
+        "from": {
+          "home_win": 5.7,
+          "draw": 5.0,
+          "away_win": 1.29
+        },
+        "to": {
+          "home_win": 4.85,
+          "draw": 4.7,
+          "away_win": 1.37
+        },
+        "line_from": -2.0,
+        "line_to": -2.0
+      }
+    ],
     "odds": {
-      "home_win": 5.7,
-      "draw": 5.0,
-      "away_win": 1.29
+      "home_win": 4.85,
+      "draw": 4.7,
+      "away_win": 1.37
     },
     "gm_ts": 260130
   },
@@ -11455,11 +11580,27 @@
     "match_state": "2",
     "home_team": "FK보되 글림트",
     "away_team": "릴OSC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:52:31",
+        "from": {
+          "home_win": 1.53,
+          "draw": 0.0,
+          "away_win": 2.02
+        },
+        "to": {
+          "home_win": 1.57,
+          "draw": 0.0,
+          "away_win": 1.95
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.53,
+      "home_win": 1.57,
       "draw": 0.0,
-      "away_win": 2.02
+      "away_win": 1.95
     },
     "gm_ts": 260130
   },
@@ -11513,11 +11654,27 @@
     "match_state": "2",
     "home_team": "FK보되 글림트",
     "away_team": "릴OSC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:52:49",
+        "from": {
+          "home_win": 2.23,
+          "draw": 2.25,
+          "away_win": 3.9
+        },
+        "to": {
+          "home_win": 2.06,
+          "draw": 2.4,
+          "away_win": 4.05
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.23,
-      "draw": 2.25,
-      "away_win": 3.9
+      "home_win": 2.06,
+      "draw": 2.4,
+      "away_win": 4.05
     },
     "gm_ts": 260130
   },
@@ -11542,11 +11699,27 @@
     "match_state": "2",
     "home_team": "FK보되 글림트",
     "away_team": "릴OSC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:52:49",
+        "from": {
+          "home_win": 5.3,
+          "draw": 3.45,
+          "away_win": 1.49
+        },
+        "to": {
+          "home_win": 4.65,
+          "draw": 3.35,
+          "away_win": 1.57
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 5.3,
-      "draw": 3.45,
-      "away_win": 1.49
+      "home_win": 4.65,
+      "draw": 3.35,
+      "away_win": 1.57
     },
     "gm_ts": 260130
   },
@@ -11571,11 +11744,27 @@
     "match_state": "2",
     "home_team": "FK보되 글림트",
     "away_team": "릴OSC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:52:49",
+        "from": {
+          "home_win": 1.59,
+          "draw": 0.0,
+          "away_win": 1.92
+        },
+        "to": {
+          "home_win": 1.62,
+          "draw": 0.0,
+          "away_win": 1.88
+        },
+        "line_from": 1.5,
+        "line_to": 1.5
+      }
+    ],
     "odds": {
-      "home_win": 1.59,
+      "home_win": 1.62,
       "draw": 0.0,
-      "away_win": 1.92
+      "away_win": 1.88
     },
     "gm_ts": 260130
   },
@@ -12118,11 +12307,27 @@
     "match_state": "2",
     "home_team": "LASK",
     "away_team": "SK슬로반 브라티슬라바",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:23:26",
+        "from": {
+          "home_win": 1.81,
+          "draw": 2.45,
+          "away_win": 5.3
+        },
+        "to": {
+          "home_win": 1.65,
+          "draw": 2.7,
+          "away_win": 5.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.81,
-      "draw": 2.45,
-      "away_win": 5.3
+      "home_win": 1.65,
+      "draw": 2.7,
+      "away_win": 5.8
     },
     "gm_ts": 260130
   },
@@ -12147,11 +12352,27 @@
     "match_state": "2",
     "home_team": "LASK",
     "away_team": "SK슬로반 브라티슬라바",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:23:26",
+        "from": {
+          "home_win": 3.7,
+          "draw": 3.15,
+          "away_win": 1.78
+        },
+        "to": {
+          "home_win": 3.3,
+          "draw": 3.1,
+          "away_win": 1.91
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 3.7,
-      "draw": 3.15,
-      "away_win": 1.78
+      "home_win": 3.3,
+      "draw": 3.1,
+      "away_win": 1.91
     },
     "gm_ts": 260130
   },
@@ -12176,11 +12397,27 @@
     "match_state": "2",
     "home_team": "LASK",
     "away_team": "SK슬로반 브라티슬라바",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 14:23:26",
+        "from": {
+          "home_win": 1.68,
+          "draw": 0.0,
+          "away_win": 1.8
+        },
+        "to": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "line_from": 1.5,
+        "line_to": 1.5
+      }
+    ],
     "odds": {
-      "home_win": 1.68,
+      "home_win": 1.75,
       "draw": 0.0,
-      "away_win": 1.8
+      "away_win": 1.73
     },
     "gm_ts": 260130
   }
