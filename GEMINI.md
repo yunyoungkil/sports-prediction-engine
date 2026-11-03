@@ -5,7 +5,7 @@
 <!-- CORE-RULES:START -->
 ## 핵심 규칙 (어기면 사고가 난다)
 
-1. **대화를 시작하면** 첫 응답 전에 `python -m evaluation.briefing`을 실행해 요약하고, ⚠️가 있으면 그것부터 처리한다.
+1. **대화를 시작하면** 첫 응답 전에 `python -m evaluation.briefing`을 실행해 요약하고, ⚠️가 있으면 그것부터 처리한다. 같이 **대시보드를 연다**: `http://localhost:8501`이 응답하지 않으면 `streamlit run dashboard/app.py --server.port 8501`을 백그라운드로 띄운 뒤 브라우저로 연다(이미 떠 있으면 브라우저만).
 2. **Git:** 작업 전·푸시 전에 `git pull --rebase origin master`. 봇이 `data/`를 계속 커밋하므로 **로컬에서 만든 `data/` 파일은 커밋하지 않는다**(목록은 GEMINI.md 1번). `git add -A` 금지, 관련 파일만 스테이징. 충돌한 `data/` 파일은 원격(봇) 것을 쓴다.
 3. **되돌릴 수 없는 일**(`git checkout --`·`reset --hard`로 로컬 수정 버리기, 파일 삭제, force push)은 사용자 확인 없이 하지 않는다. 대신 `git stash`·파일 이동을 쓴다.
 4. **사전 등록한 판정 기준은 바꾸지 않는다:** 공식 성적표 300경기·LL·회차 단위 범위, 가설 H1·H2 정의, `shin_mkt` 교체 규칙, TODO.md의 "완료 기준". 바꿔야 하면 먼저 묻는다.
@@ -26,6 +26,7 @@
 - 다른 PC에서는 `.claude/settings.local.json`의 SessionStart 훅이 자동 실행하지만 그 파일은 개인 설정이라 저장소에 없다. **훅이 없는 PC에서는 이 규칙대로 직접 실행한다.**
 - `gh`가 없으면 GitHub 자동 실행 상태는 "못 가져옴"으로 나온다(정상). 필요하면 `gh auth login` 후 다시 실행하고, 급하면 Actions 탭을 직접 본다.
 - 로컬이 GitHub보다 뒤처졌다고 나오면 작업 전에 `git pull --rebase origin master`를 한다 (아래 1번).
+- **대시보드도 같이 연다** (사용자 요청 2026-11-03): `http://localhost:8501/_stcore/health`가 200이 아니면 `python -m streamlit run dashboard/app.py --server.port 8501 --server.headless true`를 백그라운드로 실행하고, 뜨면 브라우저로 `http://localhost:8501`을 연다(Windows: `Start-Process 'http://localhost:8501'`). 이미 떠 있으면 브라우저만 연다. 코드를 바꾼 뒤에는 서버를 다시 띄워야 새 코드가 반영된다.
 
 ## 1. Git: GitHub Actions 봇이 저장소에 직접 커밋한다
 
