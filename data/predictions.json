@@ -44558,7 +44558,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -44852,14 +44852,14 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
     "betman_odds": {
-      "home_win": 1.76,
-      "draw": 3.6,
-      "away_win": 3.3
+      "home_win": 1.71,
+      "draw": 3.9,
+      "away_win": 3.25
     },
     "odds_changes": [
       {
@@ -44921,39 +44921,54 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-03 17:50:40",
+        "from": {
+          "home_win": 1.76,
+          "draw": 3.6,
+          "away_win": 3.3
+        },
+        "to": {
+          "home_win": 1.71,
+          "draw": 3.9,
+          "away_win": 3.25
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.76,
-      "draw": 3.6,
-      "away_win": 3.3
+      "home_win": 1.71,
+      "draw": 3.9,
+      "away_win": 3.25
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4945,
-      "draw": 0.2418,
-      "away": 0.2637
+      "home": 0.509,
+      "draw": 0.2232,
+      "away": 0.2678
     },
     "model_probabilities": {
-      "home_win": 0.4945,
-      "draw": 0.2418,
-      "away_win": 0.2637
+      "home_win": 0.509,
+      "draw": 0.2232,
+      "away_win": 0.2678
     },
     "blended_probabilities": {
-      "home_win": 0.4945,
-      "draw": 0.2418,
-      "away_win": 0.2637
+      "home_win": 0.509,
+      "draw": 0.2232,
+      "away_win": 0.2678
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1297,
+        "home_win": -0.1296,
         "draw": -0.1295,
-        "away_win": -0.1298
+        "away_win": -0.1297
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
@@ -45146,7 +45161,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -45440,7 +45455,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -45673,7 +45688,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -45906,7 +45921,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -46200,7 +46215,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -46479,7 +46494,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -49515,40 +49530,56 @@
     "home_team": "부산KCC 이지스",
     "away_team": "고양소노 스카이거너스",
     "betman_odds": {
-      "home_win": 1.47,
+      "home_win": 1.43,
       "draw": 0.0,
-      "away_win": 2.13
+      "away_win": 2.22
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 18:08:45",
+        "from": {
+          "home_win": 1.47,
+          "draw": 0.0,
+          "away_win": 2.13
+        },
+        "to": {
+          "home_win": 1.43,
+          "draw": 0.0,
+          "away_win": 2.22
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.47,
+      "home_win": 1.43,
       "draw": 0.0,
-      "away_win": 2.13
+      "away_win": 2.22
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5917,
+      "home": 0.6082,
       "draw": 0.0,
-      "away": 0.4083
+      "away": 0.3918
     },
     "model_probabilities": {
-      "home_win": 0.5917,
+      "home_win": 0.6082,
       "draw": 0.0,
-      "away_win": 0.4083
+      "away_win": 0.3918
     },
     "blended_probabilities": {
-      "home_win": 0.5913,
+      "home_win": 0.6079,
       "draw": 0.0,
-      "away_win": 0.4087
+      "away_win": 0.3921
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1308,
+        "home_win": -0.1307,
         "draw": -1.0,
         "away_win": -0.1295
       },
@@ -49735,48 +49766,64 @@
     "home_team": "부산KCC 이지스",
     "away_team": "고양소노 스카이거너스",
     "betman_odds": {
-      "home_win": 2.06,
+      "home_win": 1.99,
       "draw": 2.7,
-      "away_win": 3.4
+      "away_win": 3.6
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 18:08:45",
+        "from": {
+          "home_win": 2.06,
+          "draw": 2.7,
+          "away_win": 3.4
+        },
+        "to": {
+          "home_win": 1.99,
+          "draw": 2.7,
+          "away_win": 3.6
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.06,
+      "home_win": 1.99,
       "draw": 2.7,
-      "away_win": 3.4
+      "away_win": 3.6
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4221,
-      "draw": 0.3221,
-      "away": 0.2558
+      "home": 0.4367,
+      "draw": 0.3219,
+      "away": 0.2414
     },
     "model_probabilities": {
-      "home_win": 0.4221,
-      "draw": 0.3221,
-      "away_win": 0.2558
+      "home_win": 0.4367,
+      "draw": 0.3219,
+      "away_win": 0.2414
     },
     "blended_probabilities": {
-      "home_win": 0.4221,
-      "draw": 0.3221,
-      "away_win": 0.2558
+      "home_win": 0.4367,
+      "draw": 0.3219,
+      "away_win": 0.2414
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1305,
-        "draw": -0.1303,
-        "away_win": -0.1303
+        "home_win": -0.131,
+        "draw": -0.1309,
+        "away_win": -0.131
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.1303,
-      "best_ev_pct": "-13.0%",
+      "best_ev": -0.1309,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -49955,33 +50002,49 @@
     "home_team": "부산KCC 이지스",
     "away_team": "고양소노 스카이거너스",
     "betman_odds": {
-      "home_win": 1.77,
+      "home_win": 1.72,
       "draw": 0.0,
-      "away_win": 1.71
+      "away_win": 1.76
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 18:08:45",
+        "from": {
+          "home_win": 1.77,
+          "draw": 0.0,
+          "away_win": 1.71
+        },
+        "to": {
+          "home_win": 1.72,
+          "draw": 0.0,
+          "away_win": 1.76
+        },
+        "line_from": -3.5,
+        "line_to": -3.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.77,
+      "home_win": 1.72,
       "draw": 0.0,
-      "away_win": 1.71
+      "away_win": 1.76
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4914,
+      "home": 0.5057,
       "draw": 0.0,
-      "away": 0.5086
+      "away": 0.4943
     },
     "model_probabilities": {
-      "home_win": 0.4914,
+      "home_win": 0.5057,
       "draw": 0.0,
-      "away_win": 0.5086
+      "away_win": 0.4943
     },
     "blended_probabilities": {
-      "home_win": 0.4914,
+      "home_win": 0.5057,
       "draw": 0.0,
-      "away_win": 0.5086
+      "away_win": 0.4943
     },
     "prob_source": "market",
     "sharp": null,
@@ -49990,12 +50053,12 @@
       "expected_values": {
         "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.1303
+        "away_win": -0.13
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 부산KCC 이지스 (-3.5) 승",
-      "raw_selection_name": "부산KCC 이지스 (-3.5) 승",
-      "best_ev": -0.1302,
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 고양소노 스카이거너스 반대승",
+      "raw_selection_name": "고양소노 스카이거너스 반대승",
+      "best_ev": -0.13,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -50157,14 +50220,14 @@
     "league": "KBL",
     "game_type": "농구 언더오버",
     "category": "언더오버",
-    "category_label": "언더/오버 (기준 181.5)",
+    "category_label": "언더/오버 (기준 183.5)",
     "selection_labels": {
-      "home_win": "언더 (< 181.5)",
+      "home_win": "언더 (< 183.5)",
       "draw": "-",
-      "away_win": "오버 (> 181.5)"
+      "away_win": "오버 (> 183.5)"
     },
     "is_single": true,
-    "line": 181.5,
+    "line": 183.5,
     "match_time": "26.11.03 (화) 19:00",
     "close_time": 1793700000000,
     "kickoff_ts": 1793700000000,
@@ -50179,7 +50242,23 @@
       "draw": 0.0,
       "away_win": 1.72
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 18:08:45",
+        "from": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "to": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "line_from": 181.5,
+        "line_to": 183.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
       "home_win": 1.76,
@@ -50213,8 +50292,8 @@
         "away_win": -0.1441
       },
       "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 언더 (< 181.5)",
-      "raw_selection_name": "언더 (< 181.5)",
+      "best_selection_name": "[단통 ⚡] 언더 (< 183.5)",
+      "raw_selection_name": "언더 (< 183.5)",
       "best_ev": -0.1158,
       "best_ev_pct": "-11.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
@@ -50983,9 +51062,9 @@
     "home_team": "한국전력 빅스톰",
     "away_team": "우리카드 우리WON",
     "betman_odds": {
-      "home_win": 1.79,
+      "home_win": 1.87,
       "draw": 0.0,
-      "away_win": 1.69
+      "away_win": 1.63
     },
     "odds_changes": [
       {
@@ -51002,45 +51081,60 @@
         },
         "line_from": 186.5,
         "line_to": 186.5
+      },
+      {
+        "at": "2026-11-03 17:56:44",
+        "from": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "to": {
+          "home_win": 1.87,
+          "draw": 0.0,
+          "away_win": 1.63
+        },
+        "line_from": 186.5,
+        "line_to": 186.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.79,
+      "home_win": 1.87,
       "draw": 0.0,
-      "away_win": 1.69
+      "away_win": 1.63
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4856,
+      "home": 0.4657,
       "draw": 0.0,
-      "away": 0.5144
+      "away": 0.5343
     },
     "model_probabilities": {
-      "home_win": 0.4856,
+      "home_win": 0.4657,
       "draw": 0.0,
-      "away_win": 0.5144
+      "away_win": 0.5343
     },
     "blended_probabilities": {
-      "home_win": 0.4856,
+      "home_win": 0.4657,
       "draw": 0.0,
-      "away_win": 0.5144
+      "away_win": 0.5343
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1308,
+        "home_win": -0.1291,
         "draw": -1.0,
-        "away_win": -0.1307
+        "away_win": -0.1291
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 오버 (> 186.5)",
-      "raw_selection_name": "오버 (> 186.5)",
-      "best_ev": -0.1307,
-      "best_ev_pct": "-13.1%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 언더 (< 186.5)",
+      "raw_selection_name": "언더 (< 186.5)",
+      "best_ev": -0.1291,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -51580,9 +51674,9 @@
     "home_team": "IBK기업은행 알토스",
     "away_team": "현대건설 힐스테이트",
     "betman_odds": {
-      "home_win": 1.82,
+      "home_win": 1.71,
       "draw": 0.0,
-      "away_win": 1.67
+      "away_win": 1.77
     },
     "odds_changes": [
       {
@@ -51614,45 +51708,60 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-03 17:56:10",
+        "from": {
+          "home_win": 1.82,
+          "draw": 0.0,
+          "away_win": 1.67
+        },
+        "to": {
+          "home_win": 1.71,
+          "draw": 0.0,
+          "away_win": 1.77
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.82,
+      "home_win": 1.71,
       "draw": 0.0,
-      "away_win": 1.67
+      "away_win": 1.77
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4785,
+      "home": 0.5086,
       "draw": 0.0,
-      "away": 0.5215
+      "away": 0.4914
     },
     "model_probabilities": {
-      "home_win": 0.4785,
+      "home_win": 0.5086,
       "draw": 0.0,
-      "away_win": 0.5215
+      "away_win": 0.4914
     },
     "blended_probabilities": {
-      "home_win": 0.4785,
+      "home_win": 0.5086,
       "draw": 0.0,
-      "away_win": 0.5215
+      "away_win": 0.4914
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1291,
+        "home_win": -0.1303,
         "draw": -1.0,
-        "away_win": -0.1291
+        "away_win": -0.1302
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] IBK기업은행 알토스 (-1.5) 승",
-      "raw_selection_name": "IBK기업은행 알토스 (-1.5) 승",
-      "best_ev": -0.1291,
-      "best_ev_pct": "-12.9%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 현대건설 힐스테이트 반대승",
+      "raw_selection_name": "현대건설 힐스테이트 반대승",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,

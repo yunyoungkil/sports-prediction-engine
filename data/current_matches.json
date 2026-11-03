@@ -6776,7 +6776,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -6866,7 +6866,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -6930,12 +6930,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-03 17:50:40",
+        "from": {
+          "home_win": 1.76,
+          "draw": 3.6,
+          "away_win": 3.3
+        },
+        "to": {
+          "home_win": 1.71,
+          "draw": 3.9,
+          "away_win": 3.25
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.76,
-      "draw": 3.6,
-      "away_win": 3.3
+      "home_win": 1.71,
+      "draw": 3.9,
+      "away_win": 3.25
     },
     "gm_ts": 260130
   },
@@ -6956,7 +6971,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -7046,7 +7061,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -7075,7 +7090,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -7104,7 +7119,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -7194,7 +7209,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -7269,7 +7284,7 @@
     "kickoff_ts": 1793698200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -7746,11 +7761,27 @@
     "match_state": "2",
     "home_team": "부산KCC 이지스",
     "away_team": "고양소노 스카이거너스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 18:08:45",
+        "from": {
+          "home_win": 1.47,
+          "draw": 0.0,
+          "away_win": 2.13
+        },
+        "to": {
+          "home_win": 1.43,
+          "draw": 0.0,
+          "away_win": 2.22
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.47,
+      "home_win": 1.43,
       "draw": 0.0,
-      "away_win": 2.13
+      "away_win": 2.22
     },
     "gm_ts": 260130
   },
@@ -7775,11 +7806,27 @@
     "match_state": "2",
     "home_team": "부산KCC 이지스",
     "away_team": "고양소노 스카이거너스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 18:08:45",
+        "from": {
+          "home_win": 2.06,
+          "draw": 2.7,
+          "away_win": 3.4
+        },
+        "to": {
+          "home_win": 1.99,
+          "draw": 2.7,
+          "away_win": 3.6
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.06,
+      "home_win": 1.99,
       "draw": 2.7,
-      "away_win": 3.4
+      "away_win": 3.6
     },
     "gm_ts": 260130
   },
@@ -7804,11 +7851,27 @@
     "match_state": "2",
     "home_team": "부산KCC 이지스",
     "away_team": "고양소노 스카이거너스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 18:08:45",
+        "from": {
+          "home_win": 1.77,
+          "draw": 0.0,
+          "away_win": 1.71
+        },
+        "to": {
+          "home_win": 1.72,
+          "draw": 0.0,
+          "away_win": 1.76
+        },
+        "line_from": -3.5,
+        "line_to": -3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.77,
+      "home_win": 1.72,
       "draw": 0.0,
-      "away_win": 1.71
+      "away_win": 1.76
     },
     "gm_ts": 260130
   },
@@ -7820,7 +7883,7 @@
     "game_type": "농구 언더오버",
     "category": "언더오버",
     "is_single": true,
-    "line": 181.5,
+    "line": 183.5,
     "win_txt": "언더",
     "draw_txt": "-",
     "lose_txt": "오버",
@@ -7833,7 +7896,23 @@
     "match_state": "2",
     "home_team": "부산KCC 이지스",
     "away_team": "고양소노 스카이거너스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 18:08:45",
+        "from": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "to": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "line_from": 181.5,
+        "line_to": 183.5
+      }
+    ],
     "odds": {
       "home_win": 1.76,
       "draw": 0.0,
@@ -7964,12 +8043,27 @@
         },
         "line_from": 186.5,
         "line_to": 186.5
+      },
+      {
+        "at": "2026-11-03 17:56:44",
+        "from": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "to": {
+          "home_win": 1.87,
+          "draw": 0.0,
+          "away_win": 1.63
+        },
+        "line_from": 186.5,
+        "line_to": 186.5
       }
     ],
     "odds": {
-      "home_win": 1.79,
+      "home_win": 1.87,
       "draw": 0.0,
-      "away_win": 1.69
+      "away_win": 1.63
     },
     "gm_ts": 260130
   },
@@ -8128,12 +8222,27 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-03 17:56:10",
+        "from": {
+          "home_win": 1.82,
+          "draw": 0.0,
+          "away_win": 1.67
+        },
+        "to": {
+          "home_win": 1.71,
+          "draw": 0.0,
+          "away_win": 1.77
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "odds": {
-      "home_win": 1.82,
+      "home_win": 1.71,
       "draw": 0.0,
-      "away_win": 1.67
+      "away_win": 1.77
     },
     "gm_ts": 260130
   },
