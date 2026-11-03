@@ -42,6 +42,7 @@
 ```
 sports-prediction-engine/
 ├── run_pipeline.py            # 수집 → 예측 → 채점 → 저장 1회 (메인 진입점)
+├── setup_skills.py            # 새 PC에서 한 번: 제미나이(Antigravity·Gemini CLI)에 공용 스킬 설치 (홈 폴더에만, Claude는 계정 플러그인)
 ├── collector/                 # 밖에서 데이터 가져오기
 ├── models/                    # 확률 계산·조합·가상 베팅
 ├── tracker/                   # 기록 (경기 전 예측·배당 변화·내 슬립)

@@ -123,6 +123,7 @@
 ## ⚙️ 로컬 실행
 ```bash
 pip install -r requirements.txt
+python setup_skills.py                   # 새 PC에서 한 번: 제미나이에 공용 스킬 설치 (Claude는 계정 플러그인이라 자동)
 git pull --rebase origin master          # 봇이 data/를 자주 커밋하므로 먼저 최신화
 python -m evaluation.briefing            # 대화 시작 브리핑: 동기화·테스트·자동 실행·스케줄러·데이터·판정 진행·이어서 할 일(TODO의 📌)
 streamlit run dashboard/app.py           # 대시보드 (localhost:8501)

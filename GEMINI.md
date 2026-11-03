@@ -99,6 +99,7 @@
 - 코드·문서는 GitHub에서 `git pull --rebase origin master`로 맞춘다. 내 선택·저장한 슬립(`user_data/`)은 `.gitignore`라 **PC마다 따로**다.
 - `user_data/`를 PC 간에 공유하려면 OneDrive 같은 동기화 폴더에 두고 환경변수 `SPE_USER_DATA_DIR`로 가리킨다 (`dashboard/app.py`가 지원). 두 PC에서 동시에 저장하면 덮어쓸 수 있으니 한 번에 한 PC에서만 쓴다.
 - 새 PC에서는 `pip install -r requirements.txt` 후 `ODDS_API_KEY`(필요할 때만)를 환경변수로 등록한다. 키는 코드·커밋에 쓰지 않는다.
+- **공용 스킬(Claude·제미나이 같은 것):** 한국어 맞춤법·문체(korean-skills), 화면 디자인(ui-ux-pro-max), karpathy-guidelines, superpowers, 동영상 보기(watch). Claude Code는 Claude 계정 플러그인이라 같은 계정으로 로그인하면 저절로 깔린다. **제미나이는 새 PC에서 `python setup_skills.py`를 한 번 실행**한다(Node.js 필요, `~/.agents/skills`=Gemini CLI·`~/.gemini/config/skills`=Antigravity에 설치). 저장소 안 `.agents/skills/`에는 이 프로젝트 스킬만 둔다 — 남의 스킬을 여기 깔거나 커밋하지 않는다(공개 저장소). agentmemory는 쓰지 않기로 했다(2026-11-03).
 
 ## 7. 외부 스케줄러 (cron-job.org) — GitHub 예약 실행이 늦거나 빠지는 문제 대응
 
