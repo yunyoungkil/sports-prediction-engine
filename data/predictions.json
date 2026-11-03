@@ -51674,9 +51674,9 @@
     "home_team": "IBK기업은행 알토스",
     "away_team": "현대건설 힐스테이트",
     "betman_odds": {
-      "home_win": 1.71,
+      "home_win": 1.64,
       "draw": 0.0,
-      "away_win": 1.77
+      "away_win": 1.85
     },
     "odds_changes": [
       {
@@ -51723,45 +51723,60 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-03 18:34:27",
+        "from": {
+          "home_win": 1.71,
+          "draw": 0.0,
+          "away_win": 1.77
+        },
+        "to": {
+          "home_win": 1.64,
+          "draw": 0.0,
+          "away_win": 1.85
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.71,
+      "home_win": 1.64,
       "draw": 0.0,
-      "away_win": 1.77
+      "away_win": 1.85
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5086,
+      "home": 0.5301,
       "draw": 0.0,
-      "away": 0.4914
+      "away": 0.4699
     },
     "model_probabilities": {
-      "home_win": 0.5086,
+      "home_win": 0.5301,
       "draw": 0.0,
-      "away_win": 0.4914
+      "away_win": 0.4699
     },
     "blended_probabilities": {
-      "home_win": 0.5086,
+      "home_win": 0.5301,
       "draw": 0.0,
-      "away_win": 0.4914
+      "away_win": 0.4699
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1303,
+        "home_win": -0.1306,
         "draw": -1.0,
-        "away_win": -0.1302
+        "away_win": -0.1307
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 현대건설 힐스테이트 반대승",
-      "raw_selection_name": "현대건설 힐스테이트 반대승",
-      "best_ev": -0.1302,
-      "best_ev_pct": "-13.0%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] IBK기업은행 알토스 (-1.5) 승",
+      "raw_selection_name": "IBK기업은행 알토스 (-1.5) 승",
+      "best_ev": -0.1306,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
