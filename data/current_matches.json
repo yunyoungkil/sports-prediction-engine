@@ -6496,7 +6496,7 @@
     "kickoff_ts": 1793685000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "FC이마바리",
     "away_team": "콘사도레 삿포로",
@@ -6525,7 +6525,7 @@
     "kickoff_ts": 1793685000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "FC이마바리",
     "away_team": "콘사도레 삿포로",
@@ -6554,7 +6554,7 @@
     "kickoff_ts": 1793685000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "FC이마바리",
     "away_team": "콘사도레 삿포로",
@@ -6583,7 +6583,7 @@
     "kickoff_ts": 1793685000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "50",
+    "proto_status": "4",
     "match_state": "3",
     "home_team": "FC이마바리",
     "away_team": "콘사도레 삿포로",
@@ -6825,12 +6825,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-03 17:12:14",
+        "from": {
+          "home_win": 1.36,
+          "draw": 0.0,
+          "away_win": 2.41
+        },
+        "to": {
+          "home_win": 1.39,
+          "draw": 0.0,
+          "away_win": 2.33
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.36,
+      "home_win": 1.39,
       "draw": 0.0,
-      "away_win": 2.41
+      "away_win": 2.33
     },
     "gm_ts": 260130
   },
@@ -6990,12 +7005,27 @@
         },
         "line_from": -2.5,
         "line_to": -2.5
+      },
+      {
+        "at": "2026-11-03 17:11:21",
+        "from": {
+          "home_win": 2.33,
+          "draw": 0.0,
+          "away_win": 1.39
+        },
+        "to": {
+          "home_win": 2.22,
+          "draw": 0.0,
+          "away_win": 1.43
+        },
+        "line_from": -2.5,
+        "line_to": -2.5
       }
     ],
     "odds": {
-      "home_win": 2.33,
+      "home_win": 2.22,
       "draw": 0.0,
-      "away_win": 1.39
+      "away_win": 1.43
     },
     "gm_ts": 260130
   },
@@ -7288,11 +7318,27 @@
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "대전 하나시티즌",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 17:48:54",
+        "from": {
+          "home_win": 1.46,
+          "draw": 3.8,
+          "away_win": 5.0
+        },
+        "to": {
+          "home_win": 1.35,
+          "draw": 4.35,
+          "away_win": 5.6
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.46,
-      "draw": 3.8,
-      "away_win": 5.0
+      "home_win": 1.35,
+      "draw": 4.35,
+      "away_win": 5.6
     },
     "gm_ts": 260130
   },
@@ -7317,11 +7363,27 @@
     "match_state": "2",
     "home_team": "가시와 레이솔",
     "away_team": "대전 하나시티즌",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 17:48:54",
+        "from": {
+          "home_win": 2.35,
+          "draw": 3.35,
+          "away_win": 2.35
+        },
+        "to": {
+          "home_win": 2.08,
+          "draw": 3.35,
+          "away_win": 2.7
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 2.35,
+      "home_win": 2.08,
       "draw": 3.35,
-      "away_win": 2.35
+      "away_win": 2.7
     },
     "gm_ts": 260130
   },
@@ -11043,11 +11105,27 @@
     "match_state": "2",
     "home_team": "맨체스터 유나이티드",
     "away_team": "AS로마",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-03 17:01:05",
+        "from": {
+          "home_win": 2.11,
+          "draw": 3.45,
+          "away_win": 2.6
+        },
+        "to": {
+          "home_win": 2.16,
+          "draw": 3.6,
+          "away_win": 2.45
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.11,
-      "draw": 3.45,
-      "away_win": 2.6
+      "home_win": 2.16,
+      "draw": 3.6,
+      "away_win": 2.45
     },
     "gm_ts": 260130
   },
