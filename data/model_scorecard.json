@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02T23:34:11+00:00",
+  "updated_at": "2026-11-03T00:36:46+00:00",
   "graded_matches": 773,
   "rounds": [
     260126,
@@ -27,8 +27,8 @@
   "gem_roi_ci_low": 0.0,
   "gem_roi_ci_high": 0.0,
   "prob_sources": {
-    "betman_corrector": 233,
-    "betman_markets": 540
+    "betman_markets": 540,
+    "betman_corrector": 233
   },
   "by_game_type": {
     "농구 SUM": {
@@ -591,6 +591,20 @@
     },
     {
       "date": "2026-11-02",
+      "graded_matches": 773,
+      "model_ll": 0.8632,
+      "market_ll": 0.8638,
+      "ll_diff": -0.0007,
+      "ll_diff_ci": [
+        -0.0075,
+        0.0031
+      ],
+      "roi_pct": 0.0,
+      "gem_bets": 0,
+      "gem_roi_pct": 0.0
+    },
+    {
+      "date": "2026-11-03",
       "graded_matches": 773,
       "model_ll": 0.8632,
       "market_ll": 0.8638,
