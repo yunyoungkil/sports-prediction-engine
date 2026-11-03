@@ -112,13 +112,28 @@ st.set_page_config(
 st.markdown("""
 <meta name="google" content="notranslate">
 <style>
+    /* 디자인 토큰 — 화면 공통 색 (어두운 배경 #0f172a·#1e293b 기준 글자 대비 4.5:1 이상 확인, 2026-11-03)
+       accent = .streamlit/config.toml primaryColor · muted = 보조 글자 · line = 옅은 테두리 */
+    :root {
+        --spe-accent: #3b82f6;
+        --spe-accent-soft: rgba(59, 130, 246, .14);
+        --spe-accent-hover: rgba(59, 130, 246, .08);
+        --spe-muted: #94a3b8;
+        --spe-line: rgba(148, 163, 184, .28);
+    }
     .notranslate { translate: no !important; }
+    /* 휴대폰: 큰 제목이 세 줄로 접혀 첫 화면을 다 차지하던 것 → 글자 크기만 줄임 (PC는 그대로) */
+    @media (max-width: 640px) {
+        .stApp h1 { font-size: 1.55rem !important; line-height: 1.3 !important; }
+        .stApp h2 { font-size: 1.3rem !important; }
+        .stApp h3 { font-size: 1.12rem !important; }
+    }
     /* 📉 배당 변경 버튼 = 이모지만 (tertiary 팝오버): 펼침 화살표를 숨기고 여백을 줄임 */
     button[data-testid="stPopoverButton"][kind="tertiary"] > div > div[aria-hidden="true"] { display: none; }
     button[data-testid="stPopoverButton"][kind="tertiary"] { padding-left: 0.25rem; padding-right: 0.25rem; min-width: 0; }
     .step-banner {
         background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
-        border-left: 4px solid #3b82f6;
+        border-left: 4px solid var(--spe-accent);
         padding: 12px 18px;
         border-radius: 8px;
         margin-bottom: 16px;
@@ -127,19 +142,21 @@ st.markdown("""
     .stButtonGroup > div { flex-wrap: wrap; row-gap: 6px; }
     /* ① 탭 숫자 카드: 카드 아무 데나 누르면 그 구간만 보기 — 카드 위에 투명 버튼을 덮어 둠 (key → st-key-… 이름표) */
     [class*="st-key-t1card_"] { position: relative; }
-    [class*="st-key-t1card_"]:hover { background: rgba(57, 135, 229, .08); border-radius: .5rem; }
+    [class*="st-key-t1card_"]:hover { background: var(--spe-accent-hover); border-radius: .5rem; }
+    /* 키보드(Tab 키)로 카드를 고를 때: 덮어 둔 투명 버튼 대신 카드 둘레에 선택 표시 */
+    [class*="st-key-t1card_"]:has(button:focus-visible) { outline: 2px solid var(--spe-accent); outline-offset: 2px; border-radius: .5rem; }
     /* Streamlit이 버튼 칸을 '내용 크기'(fit-content)로 잡아서 카드 왼쪽 위 일부만 덮던 문제 → 칸·버튼 모두 카드 크기로 */
     [class*="st-key-t1tile_"] { position: absolute !important; top: 0; left: 0; width: 100% !important; height: 100% !important;
                                 z-index: 2; margin: 0 !important; }
     [class*="st-key-t1tile_"] div, [class*="st-key-t1tile_"] button { width: 100% !important; height: 100% !important; }
     [class*="st-key-t1tile_"] button { opacity: 0; cursor: pointer; }
     [class*="st-key-t1tile_"] button:disabled { cursor: default; }
-    [class*="st-key-t1card_on_"] { border-color: #3987e5 !important; box-shadow: 0 0 0 1px #3987e5 !important;
-                         background: rgba(57, 135, 229, .14) !important; }   /* 테두리는 이 칸 자체가 그림 */
+    [class*="st-key-t1card_on_"] { border-color: var(--spe-accent) !important; box-shadow: 0 0 0 1px var(--spe-accent) !important;
+                         background: var(--spe-accent-soft) !important; }   /* 테두리는 이 칸 자체가 그림 */
     /* 대진 카드 머리줄 🔎 상세 분석 버튼: 머리줄 텍스트 높이에 맞춘 알약형 소형 버튼 */
     [class*="st-key-jump_t2_"] { display: flex; justify-content: flex-end; margin: 0 !important; }
     [class*="st-key-jump_t2_"] button { min-height: 1.65rem !important; height: 1.65rem !important; padding: 0 8px !important;
-                                        font-size: 12px !important; border: 1px solid rgba(148,163,184,.28) !important;
+                                        font-size: 12px !important; border: 1px solid var(--spe-line) !important;
                                         border-radius: 6px !important; white-space: nowrap !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -1361,8 +1378,9 @@ if _live_round and (_pred_round is None or _live_round > _pred_round):
 # 5. 메인 3대 탭 구성 (중복 요소 제거 및 직관적 분류)
 # key + on_change: 열린 탭을 코드에서 바꿀 수 있게 (사이드바 '조합 결과 보기' → ① 탭으로 이동).
 # 탭을 바꾸면 앱이 한 번 다시 실행되지만, 세 탭 내용은 그대로 모두 그려 필터·선택 상태를 유지한다
-MAIN_TABS = ["🛒 ① 맞춤조건구매 (시뮬레이터)", "🔍 ② AI 경기 분석 (조회 전용)", "📊 ③ 성과 검증 (실제 경기 대조 & 통계)",
-             "📒 ④ 내 베팅 기록"]
+# 탭 이름은 짧게 (휴대폰에서 탭 줄이 옆으로 잘려 ②·③ 이름이 안 보이던 것) — 괄호 설명은 각 탭 첫 안내 상자에 있음.
+# 다른 곳에서는 MAIN_TABS[번호]로만 가리키므로 글자를 바꿔도 됨
+MAIN_TABS = ["🛒 ① 맞춤조건구매", "🔍 ② AI 경기 분석", "📊 ③ 성과 검증", "📒 ④ 내 베팅 기록"]
 tab1, tab2, tab3, tab4 = st.tabs(MAIN_TABS, key="main_tab", on_change="rerun")
 
 # ==============================================================================
@@ -1373,7 +1391,7 @@ with tab1:
     <div class='step-banner'>
         <b>💡 맞춤조건구매 계산기</b><br>
         경기마다 승·무·패를 하나 이상 고르면, 만들어지는 모든 조합의 배당·환급금·비과세 여부를 자동으로 계산해요.<br>
-        <span style='font-size:12px; color:#64748b;'>※ 계산 전용입니다. 실제 구매는 베트맨에서 직접 하세요.</span>
+        <span style='font-size:12px; color:#94a3b8;'>※ 계산 전용입니다. 실제 구매는 베트맨에서 직접 하세요.</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -3468,7 +3486,9 @@ with tab3:
         for key, v in strategies.items():
             cv = clv_by_strategy.get(key, {}) if source == "실시간" else {}
             rows_.append({
-                "구분": source, "전략": v["label"], "끝난 베팅": v["bets"], "결과 대기": v["pending"],
+                # 표에는 짧은 이름만 (긴 괄호 설명 때문에 표가 옆으로 넘쳐 '판정' 칸이 잘렸음) — 설명은 표 위 안내문에 있음
+                "구분": source, "전략": v["label"] if "폐기" in v["label"] else v["label"].split(" (")[0],
+                "끝난 베팅": v["bets"], "결과 대기": v["pending"],
                 "적중률": f"{v['hits'] / v['bets'] * 100:.0f}%" if v["bets"] else "-",
                 "수익률": f"{v['roi_pct']:+.1f}%" if v["bets"] else "-",
                 "수익률 95% 범위": roi_range_text(v["bets"], v["roi_ci_low"], v["roi_ci_high"], "%"),
@@ -3549,15 +3569,22 @@ with tab3:
                      "(단통 가능 경기만). 과거 166경기는 +15.8%였지만 앞 104경기는 −1.7%이고 수익이 큰 역전승 몇 번에 몰려 있어 "
                      "운과 구분이 안 돼요. 그래서 앞으로의 경기로만 확인해요 (1년에 약 40건 · "
                      f"{H_INTERIM}건째에 한 번 중간 점검, 수익률 0% 이하면 접기 · 지금 {int(h_live.get('bets', 0))}/{H_INTERIM}건).")
-        if past_txt or f_wallet_txt or g_wallet_txt or h_txt:
+        if past_txt:
             st.markdown(
                 "<div style='padding-bottom:10px'><div style='font-size:14px;line-height:1.7'>"
-                + (f"💬 과거 회차로 재현해 보면 {past_txt}예요. 배당만 보고 고르는 방식은 베트맨 마진 때문에 오래 하면 손해예요. "
-                   f"AI 전략(A·B·C·F·G)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
-                   f"결과 대기 {live_wait:,}건)." if past_txt else "")
-                + f_wallet_txt + g_wallet_txt + h_txt
-                + "</div></div>", unsafe_allow_html=True)
-        st.dataframe(pd.DataFrame(league_rows), hide_index=True, width="stretch",
+                f"💬 과거 회차로 재현해 보면 {past_txt}예요. 배당만 보고 고르는 방식은 베트맨 마진 때문에 오래 하면 손해예요. "
+                f"AI 전략(A·B·C·F·G)은 실시간으로만 채점하고 있어요 (끝난 베팅 {sum(v['bets'] for v in live.values()):,}건 · "
+                f"결과 대기 {live_wait:,}건)."
+                "</div></div>", unsafe_allow_html=True)
+        detail_txt = f_wallet_txt + g_wallet_txt + h_txt
+        if detail_txt:
+            # 지갑·판돈 설명은 길어서(화면 한 쪽 분량) 접어 둠 — 요약은 위 한 줄과 아래 표
+            with st.expander("💼 전략별 지갑·판돈 자세히 (F·G·G-본능·H)", expanded=False):
+                st.markdown("<div style='font-size:14px;line-height:1.7'>" + detail_txt.removeprefix("<br>") + "</div>",
+                            unsafe_allow_html=True)
+        league_df = pd.DataFrame(league_rows)
+        st.dataframe(league_df, hide_index=True, width="stretch",
+                     height=min(35 * (len(league_df) + 1) + 3, 703),   # 모든 줄이 보이게 (예전엔 마지막 줄이 반쯤 잘려 스크롤해야 보였음)
                      column_config={"누적 손익(원)": st.column_config.NumberColumn(format="localized"),
                                     "판정": st.column_config.TextColumn(help="수익 입증 = 300건 이상 + 수익률 95% 범위 아래 끝 > 0 "
                                                                              f"(H는 {H_INTERIM}건째에 한 번 중간 점검)"),
@@ -3569,10 +3596,12 @@ with tab3:
                    "B와 C는 후보가 겹쳐 같은 베팅이 나올 수 있어요 (건수는 전략마다 따로 세요).")
         # 누적 수익률(%) 그래프 — 과거 재현과 실시간을 따로 (베팅 수가 수십 배 달라 한 축에 그리면 실시간 선이 묻힘)
         # 세로를 '원' 대신 '%'로: 베팅을 많이 한 전략이 더 크게 내려가 보이는 착시 없이 1건당 손익을 비교
-        # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용 1~5번, 대시보드 배경에서 검사 통과)
+        # 색은 전략에 고정 (dataviz 기준 색표 어두운 화면용, 대시보드 배경에서 검사 통과)
         import altair as alt
         STRAT_COLOR = {"A": "#3987e5", "B": "#d95926", "C": "#199e70", "D": "#c98500", "E": "#d55181", "F": "#a855f7", "G": "#1aa3c4", "H": "#ec4899",
-                       "I": "#84cc16", "J": "#f59e0b", "G_instinct": "#e66767"}   # A~G + G-본능: 어두운 화면(#0f172a) 기준 색 검사 통과 (2026-10-30)
+                       "I": "#008300", "J": "#9085e9", "G_instinct": "#e66767"}
+        # 2026-11-03 dataviz 색 검사기(validate_palette.js --mode dark --surface #0f172a)로 A·B·C·D·E·F·G·G-본능·I·J 10색 모두 통과.
+        # 예전 I(#84cc16)·J(#f59e0b)는 너무 밝고 색약에게 둘이 거의 같은 색(ΔE 1.5)이라 바꿈. H는 그래프에 안 그림(표만)
 
         def _roi_chart(data_, title, min_bets=3):
             unit = (data_ or {}).get("stake_unit", 1000)
@@ -4158,7 +4187,7 @@ with tab4:
                                         + (f"·AI {p_ai * 100:.0f}%" if p_ai is not None else "") + ")</span>")
                         txt = f"{p['label']} {p['odds']:.2f} {BASIS_ICON.get(_pick_basis_of(s, g, p), '')}".strip() + prob_tag + mark
                         if (str(g["seq"]), p["key"]) not in act_keys_card:
-                            return f"<span style='opacity:.45;text-decoration:line-through'>{txt}</span> <span style='font-size:12px;opacity:.6'>(안 삼)</span>"
+                            return f"<span style='opacity:.55;text-decoration:line-through'>{txt}</span> <span style='font-size:12px;opacity:.6'>(안 삼)</span>"
                         return txt
 
                     picks_txt = " / ".join(_fmt_pick(p) for p in g["picks"])

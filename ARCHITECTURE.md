@@ -127,7 +127,7 @@ sports-prediction-engine/
 | `evaluation/team_tendency_test.py` | [7.17] 팀 성향 시즌별 시험 — 시즌 S에 베트맨 예상보다 정배·무승부·역배가 10%p 이상 더 나온 팀(한 시즌 / 두 시즌 연속)의 다음 시즌 국내 리그 경기에 같은 결과를 건 수익률과 성향 지속 (결과: 수익 0/6, 연속 두 시즌 상관 ≈ 0 → 닫음, 2026-11-01) |
 
 ### dashboard/ · notifier/
-- `dashboard/app.py`: Streamlit 4탭 — ① 맞춤조건구매(경기 카드·조합 계산) ② AI 경기 분석(상태·점수·결과 필터) ③ 성과 검증(공식 성적표·보정 지표·CLV·가상 베팅 리그) ④ 내 베팅 기록
+- `dashboard/app.py`: Streamlit 4탭 — ① 맞춤조건구매(경기 카드·조합 계산) ② AI 경기 분석(상태·점수·결과 필터) ③ 성과 검증(공식 성적표·보정 지표·CLV·가상 베팅 리그) ④ 내 베팅 기록. 화면 공통 색은 맨 위 CSS의 `--spe-*` 토큰(어두운 배경 글자 대비 4.5:1 이상), 전략 그래프 색은 `STRAT_COLOR`(dataviz 색 검사 통과 색만 — 새 전략을 넣으면 검사기를 다시 돌린다)
 - `notifier/telegram_bot.py`: 추천 픽·운영 경고 알림 (Secret 미등록, 선택)
 
 ## 4. 데이터 파일 (`data/`)
