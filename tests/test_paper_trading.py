@@ -423,3 +423,68 @@ def test_j_gemini_failure_does_not_stop_pipeline(tmp_path, monkeypatch):
         raise RuntimeError("bug")
     monkeypatch.setattr(gemini_bettor, "propose", boom)
     assert "J_gemini" not in save_new_bets(1, [_m("1", (1.3, 4.5, 8.0), (0.4, 0.3, 0.3))], now=NOW, bets_dir=tmp_path)
+
+
+def test_leg_result_grades_every_type_by_the_purchase_line():
+    """[7.31] 다리 하나 채점 = '내 기록' 탭 규칙: 핸디캡·언더오버는 산 시점 기준값의 결과 줄, 야구·농구 승패 무승부는 1.0배, 옛 다리는 축구 승무패"""
+    from tracker.my_slips import leg_result, results_rows_index
+    rows = [{"gm_ts": 1, "match_seq": "5", "game_type": "축구 핸디캡", "handi_win": -1.0, "game_result": "2", "score": "1:1"},
+            {"gm_ts": 1, "match_seq": "5", "game_type": "축구 핸디캡", "handi_win": 1.0, "game_result": "0", "score": "3:1"},
+            {"gm_ts": 1, "match_seq": "6", "game_type": "축구 언더오버", "handi_win": 2.5, "game_result": "2", "score": "4:0"},
+            {"gm_ts": 1, "match_seq": "7", "game_type": "야구 승패", "game_result": "1", "score": "5:5"},
+            {"gm_ts": 1, "match_seq": "8", "game_type": "축구 승무패", "game_result": "1", "score": "0:0"}]
+    idx = results_rows_index(rows)
+    assert leg_result(idx, 1, {"seq": "5", "game_type": "축구 핸디캡", "line": 1.0}) == "home_win"
+    assert leg_result(idx, 1, {"seq": "5", "game_type": "축구 핸디캡", "line": -1.0}) == "away_win"
+    assert leg_result(idx, 1, {"seq": "6", "game_type": "축구 언더오버", "line": 2.5}) == "away_win"      # 오버
+    assert leg_result(idx, 1, {"seq": "7", "game_type": "야구 승패", "line": 0.0}) == "void"            # 규정 1-(7)
+    assert leg_result(idx, 1, {"seq": "8"}) == "draw"                                                    # 유형 없는 옛 다리
+    assert leg_result(idx, 1, {"seq": "99"}) is None
+    assert leg_result({("1", "8"): "home_win"}, 1, {"seq": "8"}) == "home_win"                         # 옛 형식 색인
+
+
+def _typed(seq, gt, key_odds, mk, line=0.0, single=True, close=4102444800000):
+    return {"match_seq": seq, "game_type": gt, "match_key": mk, "line": line, "is_single": single, "close_time": close,
+            "match_time": "26.12.01 (화) 20:00", "home_team": f"H{mk}", "away_team": f"A{mk}", "league": "L",
+            "betman_odds": key_odds, "selection_labels": {"home_win": "앞", "draw": "가운데", "away_win": "뒤"}}
+
+
+def test_j_accepts_every_type_and_cross_type_combos_but_not_two_types_of_one_match(monkeypatch):
+    """[7.31] J 입구 검사: 모든 유형·유형을 섞은 조합은 받고, 같은 경기의 다른 유형 둘을 한 조합에 넣으면 막는다 (베트맨 규정)"""
+    from models import gemini_bettor
+    from models.paper_trading import gemini_bets
+    preds = [_typed("1", "축구 핸디캡", {"home_win": 1.9, "draw": 3.6, "away_win": 3.1}, "m1", line=1.0),
+             _typed("2", "농구 승패", {"home_win": 1.5, "draw": 0.0, "away_win": 2.4}, "m2"),
+             _typed("3", "축구 승무패", {"home_win": 2.0, "draw": 3.3, "away_win": 3.5}, "m3"),
+             _typed("4", "축구 언더오버", {"home_win": 1.8, "draw": 0.0, "away_win": 1.9}, "m3", line=2.5)]
+    monkeypatch.setattr(gemini_bettor, "propose", lambda p, now, w: [
+        {"legs": [{"seq": "1", "key": "home_win"}], "stake": 1000},                                   # 핸디캡 단통
+        {"legs": [{"seq": "2", "key": "away_win"}, {"seq": "1", "key": "draw"}], "stake": 500},       # 농구 × 축구 핸디캡
+        {"legs": [{"seq": "3", "key": "home_win"}, {"seq": "4", "key": "away_win"}], "stake": 500},   # 같은 경기 두 유형 → 막힘
+        {"legs": [{"seq": "2", "key": "draw"}], "stake": 1000}])                                      # 없는 선택지 → 막힘
+    bets = gemini_bets(preds, NOW, {"current_cash": 100_000})
+    assert [[l["seq"] for l in b["legs"]] for b in bets] == [["1"], ["2", "1"]]
+    leg = bets[0]["legs"][0]
+    assert (leg["game_type"], leg["line"], leg["label"]) == ("축구 핸디캡", 1.0, "앞")
+
+
+def test_cross_type_combo_settles_by_type_and_line(tmp_path):
+    """[7.31] 농구 승패 × 축구 핸디캡(+1.0) 조합이 결과 대기로 남지 않고 기준값대로 정산된다 (기준값이 바뀐 줄은 무시)"""
+    def leg(seq, key, odds, gt, line):
+        return {"seq": seq, "key": key, "odds": odds, "match_time": "26.12.01 (화) 20:00", "home_team": f"H{seq}",
+                "away_team": f"A{seq}", "league": "L", "game_type": gt, "line": line, "label": "앞"}
+    bets = {"gm_ts": 9, "bets": [{"strategy": "J_gemini", "rule_version": "t", "stake": 1000, "bet_id": "j",
+                                   "legs": [leg("2", "away_win", 2.4, "농구 승패", 0.0), leg("1", "home_win", 1.9, "축구 핸디캡", 1.0)],
+                                   "combined_odds": 4.6}]}
+    (tmp_path / "9.json").write_text(json.dumps(bets), encoding="utf-8")
+    rpath = tmp_path.parent / f"{tmp_path.name}_typed_res.json"
+    rpath.write_text(json.dumps([
+        {"gm_ts": 9, "match_seq": "2", "game_type": "농구 승패", "game_result": "2", "score": "80:91"},
+        {"gm_ts": 9, "match_seq": "1", "game_type": "축구 핸디캡", "handi_win": -1.0, "game_result": "2", "score": "0:1"},
+        {"gm_ts": 9, "match_seq": "1", "game_type": "축구 핸디캡", "handi_win": 1.0, "game_result": "0", "score": "2:1"}]),
+        encoding="utf-8")
+    s = settle_and_summarize(bets_dir=tmp_path, results_path=rpath, out_path=tmp_path / "s.json")
+    j = s["strategies"]["J_gemini"]
+    assert (j["bets"], j["hits"], j["pending"], j["profit"]) == (1, 1, 0, 3600)                      # 4.6배 × 1,000 − 1,000
+    d = next(x for x in s["details"] if x["strategy"] == "J_gemini")
+    assert "농구 승패" in d["legs"] and "축구 핸디캡" in d["legs"]

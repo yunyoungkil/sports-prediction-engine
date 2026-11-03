@@ -184,6 +184,26 @@ def display_score(game: Dict[str, Any], rows: List[Dict[str, Any]]) -> str:
     return f"{fmt(sc[0])}:{fmt(sc[1])}"
 
 
+def results_rows_index(rows: List[Dict[str, Any]]) -> Dict[tuple, List[Dict[str, Any]]]:
+    """(회차, 경기번호) → 그 경기의 베트맨 결과 줄들 (모든 유형 · 핸디캡·언더오버는 기준값마다 줄이 여럿).
+    가상 베팅(models/paper_trading.py)·G 지갑·경쟁 리뷰가 이 색인과 leg_result를 써서 '내 기록' 탭과 같은 규칙으로 채점한다."""
+    idx: Dict[tuple, List[Dict[str, Any]]] = {}
+    for r in rows:
+        idx.setdefault((str(r.get("gm_ts")), str(r.get("match_seq"))), []).append(r)
+    return idx
+
+
+def leg_result(idx: Dict[tuple, Any], ts: Any, leg: Dict[str, Any]) -> Optional[str]:
+    """베팅 다리 하나의 결과 키(home_win/draw/away_win) · 'void'(1.0배) · None(아직).
+    다리에 남긴 유형(game_type)·산 시점 기준값(line)으로 outcome_from_rows를 부른다 — 유형이 없는 옛 다리는 축구 승무패.
+    색인 값이 결과 키 문자열이면(옛 형식) 그대로 돌려준다."""
+    v = idx.get((str(ts), str(leg["seq"])))
+    if v is None or isinstance(v, str):
+        return v
+    game = {"game_type": leg.get("game_type") or "축구 승무패", "line": leg.get("line") or 0.0}
+    return outcome_from_rows(game, v)
+
+
 def draw_is_void(game_type: str) -> bool:
     """베트맨 규정 1-(7): 야구·농구 일반 '승패' 유형은 무승부가 나면 배당 1.0배 (적중·미적중이 아니라 돌려받음)"""
     gt = str(game_type or "")

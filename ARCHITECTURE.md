@@ -92,7 +92,7 @@ sports-prediction-engine/
 | `tracker/odds_history.py` | 회차별 배당 변화 기록 |
 | `tracker/quick_results.py` | 결과 전용 가벼운 실행 |
 | `tracker/prob_view.py` | 화면·채점에 쓰는 확률(배당/AI)을 고르는 단일 규칙 |
-| `tracker/my_slips.py` | 내가 고른 경기 저장·불러오기·채점 (`user_data/`, 저장소에 올리지 않음) |
+| `tracker/my_slips.py` | 내가 고른 경기 저장·불러오기·채점 (`user_data/`, 저장소에 올리지 않음) · **채점 정본** `outcome_from_rows`·`results_rows_index`·`leg_result` — 가상 베팅·G 지갑·경쟁 리뷰도 이걸로 다리마다 채점 (모든 유형 · 핸디캡·언더오버는 산 시점 기준값 · 무효·야구·농구 승패 무승부 1.0배, 2026-11-03 TODO 7.31) |
 
 ### evaluation/ — 평가·점검
 | 파일 | 역할 |
@@ -104,7 +104,7 @@ sports-prediction-engine/
 | `evaluation/congestion_pretest.py` | [7.10] 일정 밀집도(컵·유럽대회 포함) 사전 시험 — 5대 리그, Pinnacle 마감 배당 대비 반기 워크포워드 (결과: 채택 안 함, 2026-10-31) |
 | `tracker/discipline.py` | 지출 규율: 실제 구매 기록의 이번 달 예산 대비 지출 · 진 뒤 판돈·배당 키움(추격) 감지 (④ 탭·사이드바, 예산은 `user_data/discipline.json`) |
 | `evaluation/bet_review.py` | 경쟁 선수 자기 점검 리뷰 — 결과가 나온 베팅의 결정의 질(규정·CLV·기대 대비 적중)과 미리 정한 기준의 점검 문장 → `data/bet_reviews.json` (결과 갱신 때, numpy만) |
-| `models/gemini_bettor.py` | 가상 베팅 J — Gemini 전용 자리 (`propose()`를 Gemini가 채움, 검사는 `paper_trading.gemini_bets`, TODO 7.29) |
+| `models/gemini_bettor.py` | 가상 베팅 J — Gemini 전용 자리 (`propose()`를 Gemini가 채움, 검사는 `paper_trading.gemini_bets`, TODO 7.29 · 2026-11-03부터 모든 유형·유형을 섞은 조합 가능, 같은 경기 두 유형은 금지, TODO 7.31) |
 | `evaluation/i_rule_review.py` | 가상 베팅 I '덜 잃기 원칙' 월말 점검: 아카이브 원자료로 규칙 후보 비교(앞·뒤 기간 + 회차 단위 범위, AI 모델 안 씀) |
 | `evaluation/today_check.py` | 오늘의 점검표: 발매 중 회차의 덜 잃는 단일 선택지 · 피할 고배당 · AI vs 배당 차이 · 이번 달 지출 (Claude Code 스킬 `.claude/skills/today-games`가 읽음, 읽기 전용) |
 | `evaluation/pick_check.py` | 구매 전 점검: 담은 선택지의 과거 배당 구간별 실제 환급률로 조합의 1만 원당 환급·손해·경고 (대시보드 사이드바, 표시 전용) |

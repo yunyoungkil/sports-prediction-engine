@@ -12,9 +12,11 @@ Claude(I '덜 잃기 원칙')·이 프로그램의 AI(G 자율 AI 베터)·Gemin
   - predictions: data/predictions.json의 경기 목록 (배당 `betman_odds`, 마감 `close_time`, 단통 `is_single`, 유형 `game_type`, `home_form`, `away_form` …)
   - wallet: {"current_cash": 지금 쓸 수 있는 돈, "total_deposited": 누적 입금, "mode": ...} (월 10만 원 · 매월 1일 충전)
   - 반환: [{"legs": [{"seq": "2080", "key": "home_win"}, ...], "stake": 1000, "note": "고른 이유(선택)"}, ...]
-    key는 home_win / draw / away_win (2갈래 유형은 home_win / away_win).
+    key는 home_win / draw / away_win (2갈래 유형은 home_win / away_win — 언더오버는 home_win = 언더, SUM은 home_win = 홀).
+  - 살 수 있는 상품: 모든 유형(축구 승무패·핸디캡·언더오버·SUM·전반·농구·야구·배구)과 유형을 섞은 조합 (2026-11-03, TODO 7.31).
+    채점은 '내 기록' 탭과 같은 규칙(핸디캡·언더오버는 산 시점 기준값 `line`, 야구·농구 승패 무승부는 1.0배).
 - 검사(통과 못 한 베팅은 버려짐): 마감 전 경기만 · 배당이 있는 선택지만 · 베트맨 규정(1경기는 단통 가능 경기만·1,000원 단위,
-  조합 2~10경기·100원 단위·같은 경기 중복 금지) · 회차 합계는 지갑 잔고와 100,000원(베트맨 1회차 한도) 이하.
+  조합 2~10경기·100원 단위·같은 경기 중복 금지 — 같은 경기의 다른 유형 둘도 한 조합에 넣을 수 없음) · 회차 합계는 지갑 잔고와 100,000원(베트맨 1회차 한도) 이하.
 - 채점은 다른 전략과 같다 (경기 전 고정, 결과 나오면 정산, 적중특례 1.0배).
 
 규칙 (CLAUDE.md·GEMINI.md 핵심 규칙과 같음):

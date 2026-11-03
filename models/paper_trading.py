@@ -49,6 +49,7 @@ from models.combo_finder import candidate_legs, find_combos
 from models.ai_bettor import (MonthlyWallet, decide_autonomous_stakes, find_ai_autonomous_combos, g_breakdown, instinct_plan,
                               is_retired_g, month_capital, retired_g_key)
 from models.two_leg import KO_MONTHS, LEAD, first_leg_margin, load_index as load_two_leg_index
+from tracker.my_slips import leg_result, results_rows_index   # 채점 정본 — '내 기록' 탭과 같은 규칙 (모든 유형·기준값·무효)
 
 BETS_DIR = Path("data/history/paper_bets")
 SUMMARY_PATH = Path("data/paper_trading.json")
@@ -113,9 +114,11 @@ def _open_soccer_1x2(predictions, now):
 
 
 def _leg(m, k):
+    """베팅 다리 — 유형·산 시점 기준값·선택지 이름도 남긴다 (핸디캡·언더오버는 기준값으로 채점, TODO 7.31)"""
     return {"seq": str(m["match_seq"]), "key": k, "odds": float(m["betman_odds"][k]),
             "match_time": m.get("match_time"), "home_team": m.get("home_team"), "away_team": m.get("away_team"),
-            "league": m.get("league")}
+            "league": m.get("league"), "game_type": m.get("game_type") or "축구 승무패", "line": m.get("line"),
+            "label": (m.get("selection_labels") or {}).get(k)}
 
 
 def least_loss_picks(cands: List[tuple]) -> List[tuple]:
@@ -221,7 +224,7 @@ def _strategy_bankroll(strategy_key: str, start_bank: float, bets_dir: Path = BE
         for b in data.get("bets", []):
             if b["strategy"] != strategy_key:
                 continue
-            outs = [res.get((ts, leg["seq"])) for leg in b["legs"]]
+            outs = [leg_result(res, ts, leg) for leg in b["legs"]]
             s = settle_legs(b["legs"], outs, b["combined_odds"], b["stake"])
             bank += -b["stake"] if s is None else s["payout"] - b["stake"]   # 결과 대기 = 묶인 돈
     return bank
@@ -274,7 +277,7 @@ def g_last_round_net(strategy: str, bets_dir: Path = BETS_DIR,
         data = json.loads(f.read_text(encoding="utf-8"))
         ts = str(data.get("gm_ts"))
         bets = [b for b in data.get("bets", []) if b.get("strategy") == strategy and not is_retired_g(b)]
-        outs = [[res.get((ts, leg["seq"])) for leg in b["legs"]] for b in bets]
+        outs = [[leg_result(res, ts, leg) for leg in b["legs"]] for b in bets]
         if not bets or any(o is None for os_ in outs for o in os_):
             continue
         return sum(settle_legs(b["legs"], os_, b["combined_odds"], b["stake"])["payout"] - b["stake"] for b, os_ in zip(bets, outs))
@@ -321,15 +324,15 @@ def gemini_bets(predictions: List[Dict[str, Any]], now: datetime, wallet: Dict[s
                 continue
             if any(not m.get("close_time") or float(m["close_time"]) <= now_ms for m in ms):
                 continue                       # 마감 지난 경기
-            if any(m.get("game_type") != "축구 승무패" for m in ms):
-                continue                       # 정산(_results_index)이 축구 승무패만 채점 — 다른 유형은 결과 대기로 남으므로 받지 않는다
+            # 모든 유형을 받는다 (2026-11-03 TODO 7.31): 채점이 '내 기록' 탭과 같은 leg_result라 핸디캡·언더오버(산 시점 기준값)·
+            # SUM·전반·농구·야구·배구까지 정산된다. 같은 경기의 다른 유형은 match_key가 같아 아래 validate_combo가 한 조합에서 막는다
             if any(float((m.get("betman_odds") or {}).get(l["key"]) or 0) <= 1.0 for m, l in zip(ms, legs_in)):
                 continue                       # 없는 선택지
             ok, _ = validate_combo([{"match_seq": str(m["match_seq"]), "match_key": m.get("match_key")} for m in ms], stake=stake,
                                    total_round_stake=total + stake, is_single_permitted=len(ms) == 1 and bool(ms[0].get("is_single")))
             if not ok or total + stake > budget:
                 continue
-            legs = [{**_leg(m, l["key"]), "game_type": m.get("game_type")} for m, l in zip(ms, legs_in)]
+            legs = [_leg(m, l["key"]) for m, l in zip(ms, legs_in)]
             odds = calculate_combined_odds([x["odds"] for x in legs]) if len(legs) > 1 else legs[0]["odds"]
             out.append({"strategy": "J_gemini", "legs": legs, "combined_odds": odds, "stake": stake, "rule_version": version,
                         "note": str(r.get("note", ""))[:200],
@@ -420,18 +423,15 @@ def save_new_bets(gm_ts, predictions, now: Optional[datetime] = None, bets_dir: 
     return added
 
 
-def _results_index(results_path: Path) -> Dict[tuple, str]:
-    idx = {}
-    for r in json.loads(results_path.read_text(encoding="utf-8")):
-        if r.get("game_type") == "축구 승무패":
-            code = str(r.get("game_result"))
-            k = VOID if code == VOID_CODE else RESULT_CODE_TO_KEY.get(code)
-            if k:
-                idx[(str(r.get("gm_ts")), str(r.get("match_seq")))] = k
-    return idx
+def _results_index(results_path: Path) -> Dict[tuple, List[Dict[str, Any]]]:
+    """(회차, 경기번호) → 결과 줄들 (모든 유형). 다리 하나의 결과는 leg_result(idx, 회차, 다리)로 읽는다 (2026-11-03까지는 축구 승무패만 담았음)"""
+    return results_rows_index(json.loads(results_path.read_text(encoding="utf-8")))
 
 
 def _leg_text(leg: Dict[str, Any]) -> str:
+    gt = leg.get("game_type") or "축구 승무패"
+    if gt != "축구 승무패":     # 핸디캡·언더오버·SUM·다른 종목은 선택지 이름(기준값 포함)을 그대로 쓴다
+        return f"{leg.get('home_team')} vs {leg.get('away_team')} {gt} {leg.get('label') or leg['key']} {leg['odds']:.2f}"
     if leg["key"] == "home_win":
         what = f"{leg.get('home_team')} 승"
     elif leg["key"] == "away_win":
@@ -510,7 +510,7 @@ def settle_and_summarize(bets_dir: Path = BETS_DIR, results_path: Path = Path("d
             # 폐기된 전략(G_real_stable·H_real_highodds·G 첫 버전)의 베팅은 내역에만 남기고 리그 표에는 올리지 않는다
             skey = retired_g_key(b) or b["strategy"]
             in_league = skey in STRATEGIES
-            outcomes = [res.get((ts, leg["seq"])) for leg in b["legs"]]
+            outcomes = [leg_result(res, ts, leg) for leg in b["legs"]]
             last_ko = max((parse_betman_kickoff(leg["match_time"]) for leg in b["legs"]), default=None)
             if b.get("instinct") in instinct_rounds:
                 instinct_rounds[b["instinct"]].add(ts)

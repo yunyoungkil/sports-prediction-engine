@@ -38,6 +38,7 @@ from evaluation.metrics import cluster_bootstrap_ci
 from evaluation.pick_check import leg_return
 from models.ai_bettor import is_retired_g
 from models.combo_builder import settle_legs
+from tracker.my_slips import leg_result
 from models.paper_trading import (BETS_DIR, COMPETITORS, I_BAND, I_RULE_VERSION, MIN_FOR_VERDICT, STATUS_TEXT,
                                   _results_index)
 
@@ -84,7 +85,7 @@ def review_bets(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/histo
             s = b.get("strategy")
             if s not in out or is_retired_g(b):      # 폐기한 G 세대는 가상 베팅 요약처럼 뺀다
                 continue
-            outcomes = [res.get((ts, l["seq"])) for l in b["legs"]]
+            outcomes = [leg_result(res, ts, l) for l in b["legs"]]
             st = settle_legs(b["legs"], outcomes, b["combined_odds"], b["stake"])
             if st is None:
                 continue
@@ -100,8 +101,11 @@ def review_bets(bets_dir: Path = BETS_DIR, results_path: Path = Path("data/histo
             clv_txt = f"마감 대비 {sum(clv) / len(clv):+.1f}%" if clv else "마감 배당 없음"
             exp_txt = f"이 배당대 과거 적중률 {p_exp * 100:.0f}%" if p_exp is not None else "과거 적중률 표 없음"
             pick_names = {"home_win": "홈승", "draw": "무", "away_win": "원정승"}
-            legs_txt = " × ".join("{}:{} {} {:.2f}".format(l.get("home_team"), l.get("away_team"), pick_names.get(l["key"], l["key"]),
-                                                            float(l["odds"])) for l in b["legs"])
+            legs_txt = " × ".join("{}:{} {} {:.2f}".format(
+                l.get("home_team"), l.get("away_team"),
+                pick_names.get(l["key"], l["key"]) if (l.get("game_type") or "축구 승무패") == "축구 승무패"
+                else f"{l.get('game_type')} {l.get('label') or l['key']}",
+                float(l["odds"])) for l in b["legs"])
             text = (f"{ts}회차 {legs_txt} · {int(b['stake']):,}원 → {STATUS_TEXT[st['status']]} {profit:+,}원 · {clv_txt} · {exp_txt}"
                     + (f" · ⚠️ {', '.join(issues)}" if issues else " · 규정 ✅"))
             out[s].append({"gm_ts": ts, "bet_id": b.get("bet_id"), "rule_version": b.get("rule_version"),

@@ -29,6 +29,7 @@ import numpy as np
 
 from collector.betman_sharp import parse_betman_kickoff
 from models.combo_builder import calculate_combined_odds, calculate_payout, settle_legs, validate_combo
+from tracker.my_slips import leg_result   # 다리 하나 채점 — 가상 베팅·'내 기록' 탭과 같은 규칙 (모든 유형·기준값·무효)
 
 KST = timezone(timedelta(hours=9))
 MONTHLY_ALLOWANCE = 100_000   # 매월 1일 충전되는 취미 예산
@@ -148,7 +149,7 @@ class MonthlyWallet:
                          current_time: Optional[datetime] = None) -> Dict[str, Any]:
         """
         :param bets_history: G 전략 베팅 전체 목록 (created_at, gm_ts 포함)
-        :param results_idx: (gm_ts, seq) -> 실제 결과 ('home_win', 'draw', 'away_win')
+        :param results_idx: (gm_ts, seq) -> 그 경기의 결과 줄들 (tracker.my_slips.results_rows_index) 또는 결과 키 문자열(옛 형식) — leg_result로 다리마다 채점
         :param current_time: 현재 시각
         :return: 가상 지갑 및 자금 관리 상태 딕셔너리
         """
@@ -180,7 +181,7 @@ class MonthlyWallet:
         for b in bets_history:
             stake = int(b.get("stake") or 0)
             ts = str(b.get("gm_ts", ""))
-            outs = [results_idx.get((ts, str(leg["seq"]))) for leg in b["legs"]]
+            outs = [leg_result(results_idx, ts, leg) for leg in b["legs"]]
             s = settle_legs(b["legs"], outs, b["combined_odds"], stake)   # 무효 경기는 1.0배 (적중특례)
             if s is None:
                 pending_stakes += stake      # 아직 결과 대기 중 — 묶인 돈
@@ -250,7 +251,7 @@ def month_capital(bets_history: List[Dict[str, Any]], results_idx: Dict[Tuple[st
             continue
         if bm is not None and bm > cur:
             continue
-        outs = [results_idx.get((str(b.get("gm_ts", "")), str(leg["seq"]))) for leg in b["legs"]]
+        outs = [leg_result(results_idx, b.get("gm_ts", ""), leg) for leg in b["legs"]]
         stake = int(b.get("stake") or 0)
         s = settle_legs(b["legs"], outs, b["combined_odds"], stake)   # 무효 경기는 1.0배 (적중특례)
         if s is None:
