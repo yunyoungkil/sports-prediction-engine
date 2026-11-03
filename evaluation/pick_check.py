@@ -36,6 +36,7 @@ def leg_return(game_type: str, odds: float, scan: Optional[Dict[str, Any]]) -> O
     for b in table or []:
         if b.get("range") == label:
             return {"band": label, "return_pct": float(b["return_pct"]), "ci": b.get("return_ci"), "n": b.get("n"),
+                    "hit_pct": float(b["hit_pct"]) if b.get("hit_pct") is not None else None,
                     "table": SOCCER_1X2 if game_type == SOCCER_1X2 else OTHER}
     return None
 

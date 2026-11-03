@@ -103,6 +103,7 @@ sports-prediction-engine/
 | `evaluation/walk_forward.py` · `evaluation/portfolio_backtest.py` · `evaluation/g_instinct_backtest.py` | 워크포워드 백테스트 · F 전략 과거 재현 · G 원칙형 vs G-본능 과거 재현 (기본: 옛 잔고 밑천 · `--month`: 월 밑천제) |
 | `evaluation/congestion_pretest.py` | [7.10] 일정 밀집도(컵·유럽대회 포함) 사전 시험 — 5대 리그, Pinnacle 마감 배당 대비 반기 워크포워드 (결과: 채택 안 함, 2026-10-31) |
 | `tracker/discipline.py` | 지출 규율: 실제 구매 기록의 이번 달 예산 대비 지출 · 진 뒤 판돈·배당 키움(추격) 감지 (④ 탭·사이드바, 예산은 `user_data/discipline.json`) |
+| `evaluation/bet_review.py` | 경쟁 선수 자기 점검 리뷰 — 결과가 나온 베팅의 결정의 질(규정·CLV·기대 대비 적중)과 미리 정한 기준의 점검 문장 → `data/bet_reviews.json` (결과 갱신 때, numpy만) |
 | `models/gemini_bettor.py` | 가상 베팅 J — Gemini 전용 자리 (`propose()`를 Gemini가 채움, 검사는 `paper_trading.gemini_bets`, TODO 7.29) |
 | `evaluation/i_rule_review.py` | 가상 베팅 I '덜 잃기 원칙' 월말 점검: 아카이브 원자료로 규칙 후보 비교(앞·뒤 기간 + 회차 단위 범위, AI 모델 안 씀) |
 | `evaluation/today_check.py` | 오늘의 점검표: 발매 중 회차의 덜 잃는 단일 선택지 · 피할 고배당 · AI vs 배당 차이 · 이번 달 지출 (Claude Code 스킬 `.claude/skills/today-games`가 읽음, 읽기 전용) |
@@ -137,6 +138,7 @@ sports-prediction-engine/
 | `data/current_matches.json` | 현재 회차 경기·배당 원본 (수집 실패 때 캐시로도 쓰임) | pipeline |
 | `data/predictions.json` | 경기별 AI 확률·기대가치·폼 (아래 스키마) | pipeline |
 | `data/model_scorecard.json` | 공식 AI 성적표 | pipeline·results |
+| `data/bet_reviews.json` | 경쟁 선수(I·G·J) 자기 점검 리뷰: 베팅별 규정·마감 대비 가격·기대 대비 적중, 누적 점검 문장 (`evaluation/bet_review.py`) | results |
 | `data/clv_report.json` | 마감 배당 비교 | pipeline·results |
 | `data/paper_trading.json` · `data/paper_trading_backfill.json` | 가상 베팅 리그 현황 · 과거 재현 | pipeline·results |
 | `data/betman_corrector.json` · `data/betman_markets.json` | 실전 AI(축구 승무패) · 유형별 보정 모델과 시험 보고 | 재학습 |

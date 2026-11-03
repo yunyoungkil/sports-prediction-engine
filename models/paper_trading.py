@@ -321,6 +321,8 @@ def gemini_bets(predictions: List[Dict[str, Any]], now: datetime, wallet: Dict[s
                 continue
             if any(not m.get("close_time") or float(m["close_time"]) <= now_ms for m in ms):
                 continue                       # 마감 지난 경기
+            if any(m.get("game_type") != "축구 승무패" for m in ms):
+                continue                       # 정산(_results_index)이 축구 승무패만 채점 — 다른 유형은 결과 대기로 남으므로 받지 않는다
             if any(float((m.get("betman_odds") or {}).get(l["key"]) or 0) <= 1.0 for m, l in zip(ms, legs_in)):
                 continue                       # 없는 선택지
             ok, _ = validate_combo([{"match_seq": str(m["match_seq"]), "match_key": m.get("match_key")} for m in ms], stake=stake,

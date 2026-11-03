@@ -411,6 +411,42 @@ def load_paper_backfill():
 
 
 @st.cache_data(ttl=60)
+def load_bet_reviews():
+    """경쟁 선수(I·G·J) 자기 점검 리뷰 (evaluation/bet_review.py · 결과 갱신 때 갱신)"""
+    path = project_root / "data" / "bet_reviews.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
+def render_competition(comp: list, reviews):
+    """🏁 경쟁표(수익률 순) + 선수별 📝 자기 점검 리뷰 — 리뷰는 매번 쌓이고 규칙은 월말 점검에서만 바뀜 (G는 고정된 기준 선수)"""
+    if not comp and not reviews:
+        return
+    st.markdown("**🏁 경쟁: Claude(I) vs 프로그램 AI(G) vs Gemini(J)** — 셋 다 월 10만 원 지갑 · 순위는 수익률(건 돈 대비) · 300건 전에는 판단 보류")
+    if comp:
+        st.dataframe(pd.DataFrame([{
+            "순위": str(r.get("rank", "-")), "선수": r["name"], "끝난 베팅": r["bets"], "결과 대기": r.get("pending", 0),
+            "수익률": f"{r['roi_pct']:+.1f}%" if r["bets"] else "-",
+            "95% 범위": roi_range_text(r["bets"], (r.get("roi_ci") or [None, None])[0], (r.get("roi_ci") or [None, None])[1], "%"),
+            "지갑": f"{int(r['bankroll']):,}원" if r.get("bankroll") is not None else "-",
+            "누적 입금": f"{int(r['total_deposited']):,}원" if r.get("total_deposited") else "-"}
+            for r in sorted(comp, key=lambda r: r.get("rank") or 99)]), hide_index=True, width="stretch")
+    players = (reviews or {}).get("players") or {}
+    if players:
+        with st.expander("📝 선수별 자기 점검 리뷰 (결과가 나올 때마다 자동 · 규칙은 월말 점검에서만 바꿈)"):
+            for p in players.values():
+                s = p.get("summary") or {}
+                st.markdown(f"**{p['name']}** — {s.get('bets', 0)}건 · 손익 {s.get('profit', 0):+,}원"
+                            + (f" · 마감 대비 {s['clv_mean_pct']:+.2f}% ({s['clv_legs']}다리)" if s.get("clv_mean_pct") is not None else "")
+                            + f" · 실제 적중 {s.get('hits', 0)} vs 기대 {s.get('expected_hits', 0)}")
+                for les in s.get("lessons", []):
+                    st.markdown(f"- {les}")
+                for x in (p.get("recent") or [])[:5]:
+                    st.caption(x["text"])
+            st.caption("'마감 대비'는 산 배당 ÷ 마감 배당 − 1이에요. 플러스면 마감보다 좋은 가격에 산 것이라, 결과와 상관없이 실력의 신호예요. "
+                       "'기대'는 같은 배당대의 과거 적중률로 계산한 적중 수예요. 실제가 기대 범위 안이면 지금 손익은 운으로 설명돼요. "
+                       f"갱신: {str((reviews or {}).get('updated_at', ''))[:16].replace('T', ' ')} UTC")
+
+
 def load_paper_trading():
     path = project_root / "data" / "paper_trading.json"
     if not path.exists():
@@ -3418,8 +3454,10 @@ with tab3:
                "F는 가상 지갑 10만 원에서 1/4 켈리로 최적 금액을 정하고 이득이 없으면 쉼, "
                "G는 월 10만 원 지갑으로 매 회차 안정 조합 1장 + 소액 복권 1장을 사람처럼 사고 금액은 AI가 정함, "
                "G-본능은 G와 같은 경기를 사되 이기면 판돈을 키우고 지면 고배당을 쫓는 비교용, "
-               "H는 토너먼트 2차전 확인용으로 1,000원 고정). "
+               "H는 토너먼트 2차전 확인용으로 1,000원 고정, I(Claude)·J(Gemini)는 G와 같은 월 10만 원 지갑으로 겨루는 경쟁 선수). "
                f"AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있고, {PAPER_MIN}건 이상에서 수익률 95% 범위 아래 끝이 0보다 커야 '수익 입증'이에요.")
+
+    render_competition((pt or {}).get("competition") or [], load_bet_reviews())   # 🏁 경쟁 + 📝 자기 점검 리뷰 (TODO 7.29·7.30)
 
     clv_by_strategy = clv.get("paper_strategies", {})
     VERDICT_MARK = {"수익 입증": "✅ 입증", "수익 미입증": "❌ 미입증", "판단 보류 (표본 부족)": "⏳ 표본 부족",

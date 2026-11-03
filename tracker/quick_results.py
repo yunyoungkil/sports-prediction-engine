@@ -100,6 +100,11 @@ def main() -> None:
     pt = settle_and_summarize()
     card = update_scorecard()
     clv = update_clv()
+    try:   # 📝 경쟁 선수(I·G·J) 자기 점검 리뷰 (TODO 7.30) — 실패해도 결과 갱신은 계속
+        from evaluation.bet_review import update as update_reviews
+        update_reviews()
+    except Exception as e:
+        print(f"⚠️ 자기 점검 리뷰 갱신 실패: {e}")
     settled = sum(v["bets"] for v in pt["strategies"].values())
     pending = sum(v["pending"] for v in pt["strategies"].values())
     print(f"✅ 결과 갱신: 회차 {ts} · 성적표 {card['graded_matches']}경기 · 가상 베팅 정산 {settled}건 / 대기 {pending}건 · 마감 배당 비교 {clv['verdict']}")

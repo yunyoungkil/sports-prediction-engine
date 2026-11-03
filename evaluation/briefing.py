@@ -182,6 +182,11 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
             else:
                 parts.append(f"{r['name']} 채점 없음" + (f" (결과 대기 {r['pending']})" if r.get("pending") else ""))
         out.append("   🏁 경쟁 (월 10만 원 지갑 · 순위는 수익률, 300건 전엔 판단 보류): " + " vs ".join(parts))
+        rv = (reader("data/bet_reviews.json") or {}).get("players") or {}
+        for p in rv.values():           # 📝 자기 점검 리뷰 (TODO 7.30): 결과가 아니라 결정의 질 — 마감 대비 가격 · 기대 대비 적중
+            les = [l for l in (p.get("summary") or {}).get("lessons", []) if not l.startswith("표본")]
+            if les:
+                out.append(f"       📝 {p['name']}: " + " · ".join(les))
     g, gi = pt["strategies"].get("G_ai_bettor"), pt["strategies"].get("G_instinct")
     if g and gi:                        # 같은 경기, 다른 습관 — 원칙을 지킨 값 (과거 재현 28개월, 월 밑천제: G −44,870원 vs 본능 −64,140원)
         out.append(f"   ↳ 원칙 vs 본능 순손익: G {g.get('profit', 0):+,}원 vs G-본능 {gi.get('profit', 0):+,}원 "
