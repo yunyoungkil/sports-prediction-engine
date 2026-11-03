@@ -30134,7 +30134,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "피닉스 선즈",
     "betman_odds": {
@@ -30391,7 +30391,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "피닉스 선즈",
     "betman_odds": {
@@ -30633,7 +30633,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "피닉스 선즈",
     "betman_odds": {
@@ -30860,7 +30860,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "피닉스 선즈",
     "betman_odds": {
@@ -31071,7 +31071,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 클리퍼스",
     "away_team": "토론토 랩터스",
     "betman_odds": {
@@ -31290,7 +31290,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 클리퍼스",
     "away_team": "토론토 랩터스",
     "betman_odds": {
@@ -31493,7 +31493,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 클리퍼스",
     "away_team": "토론토 랩터스",
     "betman_odds": {
@@ -31696,7 +31696,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 클리퍼스",
     "away_team": "토론토 랩터스",
     "betman_odds": {
@@ -31899,7 +31899,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "마이애미 히트",
     "betman_odds": {
@@ -32102,7 +32102,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "마이애미 히트",
     "betman_odds": {
@@ -32305,7 +32305,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "마이애미 히트",
     "betman_odds": {
@@ -32524,7 +32524,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "마이애미 히트",
     "betman_odds": {
@@ -45858,16 +45858,16 @@
     "match_time": "26.11.03 (화) 18:30",
     "close_time": 1793698200000,
     "kickoff_ts": 1793698200000,
-    "buy_reject": "2",
+    "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
     "betman_odds": {
-      "home_win": 1.58,
-      "draw": 6.0,
-      "away_win": 2.85
+      "home_win": 1.57,
+      "draw": 5.4,
+      "away_win": 3.05
     },
     "odds_changes": [
       {
@@ -45914,45 +45914,60 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-03 16:09:33",
+        "from": {
+          "home_win": 1.58,
+          "draw": 6.0,
+          "away_win": 2.85
+        },
+        "to": {
+          "home_win": 1.57,
+          "draw": 5.4,
+          "away_win": 3.05
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.58,
-      "draw": 6.0,
-      "away_win": 2.85
+      "home_win": 1.57,
+      "draw": 5.4,
+      "away_win": 3.05
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5501,
-      "draw": 0.1449,
-      "away": 0.305
+      "home": 0.5539,
+      "draw": 0.161,
+      "away": 0.2851
     },
     "model_probabilities": {
-      "home_win": 0.5501,
-      "draw": 0.1449,
-      "away_win": 0.305
+      "home_win": 0.5539,
+      "draw": 0.161,
+      "away_win": 0.2851
     },
     "blended_probabilities": {
-      "home_win": 0.5501,
-      "draw": 0.1449,
-      "away_win": 0.305
+      "home_win": 0.5539,
+      "draw": 0.161,
+      "away_win": 0.2851
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1308,
+        "home_win": -0.1304,
         "draw": -0.1306,
-        "away_win": -0.1308
+        "away_win": -0.1304
       },
-      "best_selection": "draw",
-      "best_selection_name": "[단통 ⚡] 전반 무승부",
-      "raw_selection_name": "전반 무승부",
-      "best_ev": -0.1306,
-      "best_ev_pct": "-13.1%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 전반 KT 위즈 승",
+      "raw_selection_name": "전반 KT 위즈 승",
+      "best_ev": -0.1304,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,

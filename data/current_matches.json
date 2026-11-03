@@ -4758,7 +4758,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "피닉스 선즈",
     "odds_changes": [
@@ -4833,7 +4833,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "피닉스 선즈",
     "odds_changes": [
@@ -4893,7 +4893,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "피닉스 선즈",
     "odds_changes": [
@@ -4938,7 +4938,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "피닉스 선즈",
     "odds_changes": [],
@@ -4967,7 +4967,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 클리퍼스",
     "away_team": "토론토 랩터스",
     "odds_changes": [
@@ -5012,7 +5012,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 클리퍼스",
     "away_team": "토론토 랩터스",
     "odds_changes": [],
@@ -5041,7 +5041,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 클리퍼스",
     "away_team": "토론토 랩터스",
     "odds_changes": [],
@@ -5070,7 +5070,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 클리퍼스",
     "away_team": "토론토 랩터스",
     "odds_changes": [],
@@ -5099,7 +5099,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "마이애미 히트",
     "odds_changes": [],
@@ -5128,7 +5128,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "마이애미 히트",
     "odds_changes": [],
@@ -5157,7 +5157,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "마이애미 히트",
     "odds_changes": [
@@ -5202,7 +5202,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "마이애미 히트",
     "odds_changes": [],
@@ -7056,7 +7056,7 @@
     "match_time": "26.11.03 (화) 18:30",
     "close_time": 1793698200000,
     "kickoff_ts": 1793698200000,
-    "buy_reject": "2",
+    "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -7107,12 +7107,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-03 16:09:33",
+        "from": {
+          "home_win": 1.58,
+          "draw": 6.0,
+          "away_win": 2.85
+        },
+        "to": {
+          "home_win": 1.57,
+          "draw": 5.4,
+          "away_win": 3.05
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.58,
-      "draw": 6.0,
-      "away_win": 2.85
+      "home_win": 1.57,
+      "draw": 5.4,
+      "away_win": 3.05
     },
     "gm_ts": 260130
   },
