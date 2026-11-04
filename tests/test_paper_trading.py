@@ -523,3 +523,46 @@ def test_i_and_j_ignore_program_ai_values():
     assert base[0] and base[1]                      # 둘 다 실제로 고르는 경우로 확인
     assert picks(build("flip")) == base
     assert picks(build("none")) == base
+
+
+def _code_refs(tree):
+    """AST에서 실제 코드가 쓰는 이름·가져오는 모듈·문자열(설명문 docstring·주석 제외)을 모은다"""
+    import ast
+    docs = set()
+    for n in ast.walk(tree):
+        if isinstance(n, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and n.body \
+                and isinstance(n.body[0], ast.Expr) and isinstance(getattr(n.body[0], "value", None), ast.Constant):
+            docs.add(id(n.body[0].value))
+    refs = []
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Import):
+            refs += [a.name for a in n.names]
+        elif isinstance(n, ast.ImportFrom):
+            refs += [n.module or ""] + [a.name for a in n.names]
+        elif isinstance(n, ast.Name):
+            refs.append(n.id)
+        elif isinstance(n, ast.Attribute):
+            refs.append(n.attr)
+        elif isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs:
+            refs.append(n.value)
+    return refs
+
+
+def test_players_do_not_read_each_others_rules_bets_or_reviews():
+    """독립 (사용자 2026-11-04, TODO 7.29 공정 규칙): J 코드는 다른 선수(I·G)의 규칙·베팅 기록·리뷰를 읽지 않고,
+    I 규칙 코드(least_loss_picks · evaluation/i_rule_review.py)는 J를 읽지 않는다. 검사는 자동 테스트로만 (A안 — Claude는 J 코드를 열지 않음)"""
+    import ast
+    import inspect
+    from pathlib import Path
+    from models import paper_trading
+    root = Path(__file__).resolve().parent.parent
+    j_tree = ast.parse((root / "models" / "gemini_bettor.py").read_text(encoding="utf-8"))
+    banned_for_j = ("paper_trading", "ai_bettor", "i_rule_review", "bet_review", "paper_bets",
+                    "least_loss", "I_BAND", "I_PER_ROUND", "G_ai_bettor", "G_instinct")
+    hits = [r for r in _code_refs(j_tree) if any(b in r for b in banned_for_j)]
+    assert not hits, f"J(gemini_bettor.py)가 다른 선수 자료를 읽음: {sorted(set(hits))}"
+
+    i_trees = [ast.parse(inspect.getsource(paper_trading.least_loss_picks)),
+               ast.parse((root / "evaluation" / "i_rule_review.py").read_text(encoding="utf-8"))]
+    hits = [r for t in i_trees for r in _code_refs(t) if "gemini" in r.lower() or "bet_review" in r]
+    assert not hits, f"I 규칙 코드가 J 자료를 읽음: {sorted(set(hits))}"

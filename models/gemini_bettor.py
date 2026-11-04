@@ -28,6 +28,8 @@ Claude(I '덜 잃기 원칙')·이 프로그램의 AI(G 자율 AI 베터)·Gemin
 - 규칙은 월말 점검 때만 바꾼다 (TODO 7.30). 2026-11-04 한 달 중간에 j1으로 되돌린 것은 사용자 지시로 j2로 복원했다.
 - 프로그램 AI가 분석한 값(AI 확률 `blended_probabilities`·`model_probabilities`·그림자 확률 등)은 쓰지 않는다.
   프로그램이 모은 데이터(배당·폼·순위·결과·과거 기록)는 써도 된다 (사용자 2026-11-04, Claude의 I도 같음).
+- 독립: 다른 선수(I·G)의 규칙 코드·베팅 기록·메모·리뷰를 보고 규칙을 만들지 않고, 이 파일도 그것을 읽지 않는다
+  (paper_bets·bet_reviews·paper_trading·ai_bettor를 읽으면 tests/test_paper_trading.py가 실패). Claude도 propose() 내용을 열어 보지 않는다 (사용자 2026-11-04).
 """
 
 from datetime import datetime
