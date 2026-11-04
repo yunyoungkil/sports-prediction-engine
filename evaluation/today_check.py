@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from evaluation.pick_check import LONGSHOT_RETURN, leg_return
+from evaluation.pick_check import LONGSHOT_RETURN, decision_months, leg_return
 from tracker.discipline import chase_rounds, load_settings, month_summary, round_history
 
 if sys.platform.startswith("win"):
@@ -121,6 +121,8 @@ def build(now: Optional[datetime] = None, data_dir: Path = Path("data"), udir: O
         recs.append({"slip": s, "kind": kind, "grade": {"state": "pending", "stake": stake, "payout": 0}})
     budget = int(load_settings(ud / "discipline.json").get("monthly_budget") or 0) or None
     month = month_summary(recs, datetime.now().strftime("%Y-%m"), budget)
+    dec = [d for d in decision_months(recs, scan, 1) if d["month"] == month["month"]]   # 결정 점수 (운을 뺀 기대 손실)
+    month["decision"] = dec[0] if dec else None
 
     rounds = sorted({str(o["gm_ts"]) for o in opts})
     return {
@@ -168,6 +170,11 @@ def render(d: Dict[str, Any]) -> str:
     lines.append(f"\n④ 이번 달 내 실제 구매: {m['slips']}건 · {m['spent']:,}원"
                  + (f" / 예산 {m['budget']:,}원 ({m['used_pct']:.0f}%) · 남은 {max(m['remaining'], 0):,}원" if m.get("budget") else " · 예산 미설정")
                  + f" (저장 기록 {d['my_records']}건)")
+    dz = m.get("decision")
+    if dz and dz.get("loss_per_10k") is not None and dz.get("best_per_10k") is not None:
+        lines.append(f"   📐 결정 점수(운을 뺀 기대 손실): 1만 원당 {dz['loss_per_10k']:,}원 · 이번 달 {dz['expected_loss']:,}원"
+                     f" (덜 잃는 방식이면 1만 원당 {dz['best_per_10k']:,}원 · "
+                     + (f"{dz['extra_loss']:,}원 더 잃는 구매)" if dz["extra_loss"] > 0 else f"{-dz['extra_loss']:,}원 덜 잃는 구매)"))
     if d["missing_return_band"]:
         lines.append(f"ℹ️ 과거 환급률 표에 없는 선택지 {d['missing_return_band']}개는 ①·②에서 뺐어요")
     return "\n".join(lines)

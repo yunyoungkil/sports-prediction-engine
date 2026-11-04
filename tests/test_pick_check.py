@@ -49,3 +49,31 @@ def test_many_folds_warning_and_missing_band():
     assert any("4경기를 묶어" in w for w in r["warnings"])
     bad = check_slip(legs + [{"label": "X", "game_type": "야구 승패", "picks": [{"name": "승", "odds": 1.2}]}], SCAN)
     assert bad["slip_return_pct"] is None and bad["missing"] == ["X 승"]
+
+
+def _rec(saved_at, combos, games, kind="real", state="pending", stake=0, payout=0):
+    return {"slip": {"saved_at": saved_at, "games": games, "combos": combos}, "kind": kind,
+            "grade": {"state": state, "stake": stake, "payout": payout}}
+
+
+def test_decision_score_is_expected_loss_by_month_against_best_practice():
+    """결정 점수: 산 것마다 과거 환급률로 기대 손실 — 실제 구매만, 덜 잃는 방식(축구 승무패 ≤1.30)과 비교"""
+    from evaluation.pick_check import best_practice_return, decision_months, slip_expected
+    g = [{"seq": "1", "game_type": "축구 승무패"}, {"seq": "2", "game_type": "축구 승무패"}, {"seq": "3", "game_type": "농구 승패"}]
+    single_fav = [{"legs": [["1", "home_win", 1.25]], "stake": 10000, "picked": True}]
+    longshot = [{"legs": [["2", "away_win", 6.0]], "stake": 10000, "picked": True}]
+    two_fold = [{"legs": [["1", "home_win", 1.25], ["3", "home_win", 2.0]], "stake": 10000, "picked": True},
+                {"legs": [["2", "draw", 2.0]], "stake": 5000, "picked": False}]                 # 체크 안 한 조합은 빼기
+    assert best_practice_return(SCAN) == 94.8
+    assert slip_expected({"games": g, "combos": single_fav}, SCAN) == {"stake": 10000.0, "expected_payout": 9480.0, "unknown_stake": 0.0}
+    e = slip_expected({"games": g, "combos": two_fold}, SCAN)
+    assert e["stake"] == 10000.0 and abs(e["expected_payout"] - 10000 * 0.948 * 0.874) < 1e-6
+    recs = [_rec("2026-11-02 10:00", single_fav, g), _rec("2026-11-03 10:00", longshot, g, state="miss", stake=10000, payout=0),
+            _rec("2026-11-03 11:00", single_fav, g, kind="paper"),                                   # 가상 구매는 빼기
+            _rec("2026-10-20 10:00", two_fold, g)]
+    m = decision_months(recs, SCAN)
+    assert [x["month"] for x in m] == ["2026-11", "2026-10"]
+    nov = m[0]
+    assert nov["slips"] == 2 and nov["stake"] == 20000 and nov["expected_loss"] == round(10000 * (1 - 0.948) + 10000 * (1 - 0.592))
+    assert nov["best_per_10k"] == 520 and nov["best_loss"] == 1040 and nov["extra_loss"] == nov["expected_loss"] - 1040
+    assert nov["loss_per_10k"] == round(10000 * nov["expected_loss"] / 20000, -1) and nov["settled_pnl"] == -10000

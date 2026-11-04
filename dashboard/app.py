@@ -631,6 +631,34 @@ def _my_real_recs():
     return [{"slip": s, "kind": slip_kind(s), "grade": grade_slip(s, _slip_result_of(s, idx))} for s in load_slips(MY_SLIPS_PATH)]
 
 
+def render_decision_score(recs: list):
+    """④ 탭 📐 결정 점수 — 운을 뺀 내 구매 점수: 산 것마다 그 배당대의 과거 환급률로 본 기대 손실 (실제 구매만, 2026-11-04)"""
+    from evaluation.pick_check import BEST_PRACTICE, decision_months
+    rows = decision_months(recs, load_market_scan())
+    st.markdown("#### 📐 결정 점수 (운을 뺀 내 구매 점수 · 실제 구매만)")
+    if not rows:
+        st.caption("실제 구매 기록이 생기면 달마다 '산 것들의 기대 손실'을 보여 줘요. 맞았는지 틀렸는지와 상관없이, 무엇을 샀는지로만 정해지는 점수예요.")
+        return
+    cur = rows[0]
+    if cur["loss_per_10k"] is not None and cur["best_per_10k"] is not None:
+        col = "#34d399" if cur["loss_per_10k"] <= cur["best_per_10k"] + 200 else ("#fbbf24" if cur["loss_per_10k"] <= 1500 else "#f87171")
+        gap = (f"덜 잃는 방식보다 <b>{cur['extra_loss']:,}원 더 잃는</b> 구매" if cur["extra_loss"] > 0
+               else f"덜 잃는 방식과 같거나 <b>{-cur['extra_loss']:,}원 덜 잃는</b> 구매")
+        st.markdown(f"<div style='font-size:14px;line-height:1.7'>{cur['month']} (기록이 있는 가장 최근 달): 산 것들의 1만 원당 기대 손실 "
+                    f"<b style='color:{col}'>{cur['loss_per_10k']:,}원</b> (덜 잃는 방식이면 {cur['best_per_10k']:,}원) · "
+                    f"그 달 기대 손실 합계 <b>{cur['expected_loss']:,}원</b> — {gap}</div>",
+                    unsafe_allow_html=True)
+    df = pd.DataFrame([{"달": r["month"], "실제 구매": r["slips"], "건 돈(원)": r["stake"], "기대 손실(원)": r["expected_loss"],
+                        "1만 원당 기대 손실(원)": r["loss_per_10k"], "덜 잃는 방식이면(원)": r["best_loss"],
+                        "결과 나온 손익(원)": r["settled_pnl"]} for r in rows])
+    num = st.column_config.NumberColumn(format="localized")
+    st.dataframe(df, hide_index=True, width="stretch", column_config={c: num for c in df.columns if c.endswith("(원)")})
+    unknown = sum(r["unknown_stake"] for r in rows)
+    st.caption("기대 손실 = 산 선택지마다 같은 유형·배당대가 과거(2024-07 이후)에 실제로 돌려준 비율로 계산한 평균 손해 (조합은 곱함). "
+               f"실제 손익은 운에 따라 몇 달씩 흔들리지만, 이 점수는 무엇을 샀는지로만 정해져요. 덜 잃는 방식 = {BEST_PRACTICE} (마진 장부 ①)."
+               + (f" 과거 표에 없는 선택지가 낀 조합 {unknown:,}원은 뺐어요." if unknown else ""))
+
+
 def render_discipline(recs: list):
     """④ 탭 🧭 지출 규율: 이번 달 예산(직접 정함, 이 컴퓨터에만 저장) 대비 실제로 건 돈 + 진 다음 회차에 판돈·배당을 키운 기록"""
     from tracker.discipline import chase_rounds, load_settings, month_summary, round_history, save_settings, CHASE_RATIO
@@ -3931,6 +3959,7 @@ with tab4:
             st.markdown("<div style='padding-bottom:10px'><div style='font-size:14px'>💬 " + " · ".join(kind_lines) + "</div></div>",
                         unsafe_allow_html=True)
         render_discipline(recs)   # 🧭 지출 규율 — 이번 달 예산 · 진 뒤 판돈 키움 (실제 구매만, 필터와 무관)
+        render_decision_score(recs)   # 📐 결정 점수 — 운을 뺀 기대 손실 (실제 구매만)
 
         # 📏 기준선과 비교: 내 수익률이 '그냥 배당 1순위를 단일로 산 것'(가상 기준선 E)보다 나은가
         from evaluation.metrics import cluster_roi_confidence_interval

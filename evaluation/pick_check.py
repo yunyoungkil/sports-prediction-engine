@@ -88,3 +88,77 @@ def check_slip(matches: List[Dict[str, Any]], scan: Optional[Dict[str, Any]]) ->
             rest = [x["return_pct"] for x in per_match if x is not w]
             out["without"].append({"label": w["label"], "return_pct": round(_product_return(rest), 1)})
     return out
+
+
+# ---------------------------------------------------------------------------
+# 결정 점수 (2026-11-04) — 운을 뺀 내 구매 점수: 산 것마다 그 배당대의 과거 환급률로 '기대 손실'을 매긴다.
+# 실제 손익은 운에 따라 몇 달씩 흔들리지만, 기대 손실은 무엇을 샀는지로만 정해져서 몇 주면 습관이 보인다.
+# 비교 기준 = 마진 장부 ① '축구 승무패 배당 ≤ 1.30 정배 단일' (EXPERIMENTS.md 2절). 표시 전용.
+# ---------------------------------------------------------------------------
+BEST_PRACTICE = "축구 승무패 배당 1.30 이하 정배 단일"
+BEST_BANDS = ("1.15 이하", "1.15~1.30")
+
+
+def best_practice_return(scan: Optional[Dict[str, Any]]) -> Optional[float]:
+    """덜 잃는 방식(축구 승무패 ≤1.30)의 과거 환급률 % — 두 배당대를 건수로 가중 평균"""
+    rows = [r for r in (((scan or {}).get("buckets") or {}).get(SOCCER_1X2) or []) if r.get("range") in BEST_BANDS]
+    n = sum(int(r.get("n") or 0) for r in rows)
+    return sum(float(r["return_pct"]) * int(r.get("n") or 0) for r in rows) / n if n else None
+
+
+def slip_expected(slip: Dict[str, Any], scan: Optional[Dict[str, Any]]) -> Dict[str, float]:
+    """저장한 기록 하나(체크한 조합만): 과거 환급률로 본 기대 환급. 표에 없는 선택지가 낀 조합은 '모름'으로 따로 센다"""
+    gtype = {str(g.get("seq")): g.get("game_type") or SOCCER_1X2 for g in slip.get("games", [])}
+    known = expected = unknown = 0.0
+    for c in slip.get("combos", []):
+        if not c.get("picked", True):
+            continue
+        stake = float(c.get("stake", 0) or 0)
+        rets: Optional[List[float]] = []
+        for s, _k, o in c.get("legs", []):
+            r = leg_return(gtype.get(str(s), SOCCER_1X2), o, scan)
+            if r is None:
+                rets = None
+                break
+            rets.append(r["return_pct"])
+        if not rets:
+            unknown += stake
+            continue
+        known += stake
+        expected += stake * _product_return(rets) / 100.0
+    return {"stake": known, "expected_payout": expected, "unknown_stake": unknown}
+
+
+def decision_months(recs: List[Dict[str, Any]], scan: Optional[Dict[str, Any]], months: int = 6) -> List[Dict[str, Any]]:
+    """recs: [{"slip", "kind", "grade"}] (④ 탭과 같은 형식) → 실제 구매만 월별 결정 점수 (최근 months개월, 최신 먼저)"""
+    best = best_practice_return(scan)
+    by: Dict[str, Dict[str, Any]] = {}
+    for r in recs:
+        if r.get("kind") != "real":
+            continue
+        m = str(r["slip"].get("saved_at") or "")[:7]
+        if len(m) != 7:
+            continue
+        e = slip_expected(r["slip"], scan)
+        d = by.setdefault(m, {"month": m, "slips": 0, "stake": 0.0, "expected_loss": 0.0, "unknown_stake": 0.0,
+                              "settled_stake": 0, "settled_pnl": 0})
+        d["slips"] += 1
+        d["stake"] += e["stake"]
+        d["expected_loss"] += e["stake"] - e["expected_payout"]
+        d["unknown_stake"] += e["unknown_stake"]
+        g = r.get("grade") or {}
+        if g.get("state") not in (None, "pending"):
+            d["settled_stake"] += int(g.get("stake") or 0)
+            d["settled_pnl"] += int(g.get("payout") or 0) - int(g.get("stake") or 0)
+    out = []
+    for m in sorted(by, reverse=True)[:months]:
+        d = by[m]
+        st = d["stake"]
+        d["loss_per_10k"] = int(round(10000 * d["expected_loss"] / st, -1)) if st else None
+        d["best_per_10k"] = int(round(10000 * (1 - best / 100.0), -1)) if best is not None else None
+        d["best_loss"] = int(round(st * (1 - best / 100.0))) if best is not None else None
+        d["extra_loss"] = int(round(d["expected_loss"] - d["best_loss"])) if best is not None else None
+        d["expected_loss"] = int(round(d["expected_loss"]))
+        d["stake"], d["unknown_stake"] = int(st), int(d["unknown_stake"])
+        out.append(d)
+    return out

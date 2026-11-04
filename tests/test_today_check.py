@@ -63,3 +63,19 @@ def test_match_filter_and_my_month(tmp_path):
     out = build(now=NOW, data_dir=d, udir=u, match="h2")
     assert out["open_matches"] == 1
     assert (out["my_month"]["spent"], out["my_month"]["remaining"], out["my_records"]) == (3000, 7000, 2)
+
+
+def test_decision_score_line_for_this_month(tmp_path):
+    """④ 아래 📐 결정 점수: 이번 달 실제 구매의 1만 원당 기대 손실 vs 덜 잃는 방식 (가상 구매는 빼기)"""
+    preds = [_m("1", (1.2, 4.0, 9.0), OPEN)]
+    month = datetime.now().strftime("%Y-%m")
+    games = [{"seq": "1", "game_type": "축구 승무패"}]
+    slips = [{"saved_at": f"{month}-02 10:00", "gm_ts": 260131, "kind": "real", "games": games,
+              "combos": [{"legs": [["1", "home_win", 1.2]], "stake": 10000, "picked": True}]},
+             {"saved_at": f"{month}-02 11:00", "gm_ts": 260131, "kind": "paper", "games": games,
+              "combos": [{"legs": [["1", "home_win", 1.2]], "stake": 50000, "picked": True}]}]
+    d, u = _setup(tmp_path, preds, slips)
+    out = build(now=NOW, data_dir=d, udir=u)
+    dz = out["my_month"]["decision"]
+    assert dz["stake"] == 10000 and dz["slips"] == 1
+    assert "📐 결정 점수" in render(out)

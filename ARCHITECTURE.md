@@ -113,7 +113,7 @@ sports-prediction-engine/
 | `models/gemini_bettor.py` | 가상 베팅 J — Gemini 전용 자리 (`propose()`를 Gemini가 채움, 검사는 `paper_trading.gemini_bets`, TODO 7.29 · 2026-11-03부터 모든 유형·유형을 섞은 조합 가능, 같은 경기 두 유형은 금지, TODO 7.31) |
 | `evaluation/i_rule_review.py` | 가상 베팅 I '덜 잃기 원칙' 월말 점검: 아카이브 원자료로 규칙 후보 비교(앞·뒤 기간 + 회차 단위 범위, AI 모델 안 씀) |
 | `evaluation/today_check.py` | 오늘의 점검표: 발매 중 회차의 덜 잃는 단일 선택지 · 피할 고배당 · AI vs 배당 차이 · 이번 달 지출 (Claude Code 스킬 `.claude/skills/today-games`가 읽음, 읽기 전용) |
-| `evaluation/pick_check.py` | 구매 전 점검: 담은 선택지의 과거 배당 구간별 실제 환급률로 조합의 1만 원당 환급·손해·경고 (대시보드 사이드바, 표시 전용) |
+| `evaluation/pick_check.py` | 구매 전 점검: 담은 선택지의 과거 배당 구간별 실제 환급률로 조합의 1만 원당 환급·손해·경고 (대시보드 사이드바, 표시 전용) · **결정 점수**(`decision_months`: 실제 구매를 달마다 과거 환급률로 본 기대 손실 vs 덜 잃는 방식, ④ 탭·점검표) |
 | `evaluation/market_scan.py` · `evaluation/market_model.py` · `evaluation/metrics.py` · `evaluation/config.py` | 유형별 마진표 · 시장 기준선 · 지표(부트스트랩 포함) · 학습/튜닝/시험 분할 고정 |
 | `evaluation/gates.py` | 추천 잠금: 검증 3단계 통과한 기능만 켬 |
 | `evaluation/health_check.py` | 운영 점검(수집·갱신 시각·채점 감소·데이터 계약 오류) → 경고 시 실행 실패 표시·텔레그램 |
