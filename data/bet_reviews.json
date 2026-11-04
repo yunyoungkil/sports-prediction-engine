@@ -1,29 +1,61 @@
 {
-  "updated_at": "2026-11-04T23:01:26+00:00",
+  "updated_at": "2026-11-04T23:42:07+00:00",
   "rule": "리뷰는 매 결과 갱신마다 쌓고, 규칙은 월말 점검에서만 바꾼다. G는 고정된 기준 선수(리뷰만 받음).",
   "players": {
     "I_least_loss": {
       "name": "Claude (I)",
       "summary": {
-        "bets": 2,
-        "staked": 2000,
-        "profit": 380,
-        "roi_pct": 19.0,
-        "clv_legs": 2,
-        "clv_mean_pct": 0.0,
+        "bets": 4,
+        "staked": 4000,
+        "profit": 740,
+        "roi_pct": 18.5,
+        "clv_legs": 4,
+        "clv_mean_pct": 0.66,
         "clv_ci": [
           0.0,
-          0.0
+          1.97
         ],
-        "hits": 2,
-        "expected_hits": 1.5,
+        "hits": 4,
+        "expected_hits": 3.1,
         "lessons": [
-          "마감 대비 가격: 아직 판단 못 함 (다리 2/30개, 평균 +0.00%)",
-          "적중 수는 기대 범위 안 (실제 2 vs 기대 1.5) — 지금 손익은 운의 흔들림으로 설명됨",
-          "표본 2/300건 — 수익률로 결론 내지 않음"
+          "마감 대비 가격: 아직 판단 못 함 (다리 4/30개, 평균 +0.66%)",
+          "적중 수는 기대 범위 안 (실제 4 vs 기대 3.1) — 지금 손익은 운의 흔들림으로 설명됨",
+          "표본 4/300건 — 수익률로 결론 내지 않음"
         ]
       },
       "recent": [
+        {
+          "gm_ts": "260131",
+          "bet_id": "I_least_loss:2526a",
+          "rule_version": "v1",
+          "stake": 1000,
+          "payout": 1190,
+          "profit": 190,
+          "status": "hit",
+          "clv_pct": [
+            0.0
+          ],
+          "p_expected": 0.769,
+          "issues": [],
+          "note": null,
+          "text": "260131회차 슬라비아 프라하:아스널 원정승 1.19 · 1,000원 → 적중 +190원 · 마감 대비 +0.0% · 이 배당대 과거 적중률 77% · 규정 ✅"
+        },
+        {
+          "gm_ts": "260131",
+          "bet_id": "I_least_loss:2465a",
+          "rule_version": "v1",
+          "stake": 1000,
+          "payout": 1170,
+          "profit": 170,
+          "status": "hit",
+          "clv_pct": [
+            2.63
+          ],
+          "p_expected": 0.769,
+          "issues": [],
+          "note": null,
+          "text": "260131회차 AEK아테네:레알 마드리드 원정승 1.17 · 1,000원 → 적중 +170원 · 마감 대비 +2.6% · 이 배당대 과거 적중률 77% · 규정 ✅"
+        },
         {
           "gm_ts": "260130",
           "bet_id": "I_least_loss:2080h",
