@@ -132,7 +132,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -192,7 +192,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -267,7 +267,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -327,7 +327,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -372,7 +372,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -401,7 +401,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -461,7 +461,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -490,7 +490,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -702,11 +702,27 @@
     "match_state": "0",
     "home_team": "포항 스틸러스",
     "away_team": "감바 오사카",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-04 18:26:23",
+        "from": {
+          "home_win": 3.2,
+          "draw": 3.25,
+          "away_win": 1.89
+        },
+        "to": {
+          "home_win": 3.1,
+          "draw": 3.4,
+          "away_win": 1.88
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 3.2,
-      "draw": 3.25,
-      "away_win": 1.89
+      "home_win": 3.1,
+      "draw": 3.4,
+      "away_win": 1.88
     },
     "gm_ts": 260131
   },
@@ -746,12 +762,27 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-04 18:26:23",
+        "from": {
+          "home_win": 1.77,
+          "draw": 3.4,
+          "away_win": 3.45
+        },
+        "to": {
+          "home_win": 1.63,
+          "draw": 3.4,
+          "away_win": 4.15
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 1.77,
+      "home_win": 1.63,
       "draw": 3.4,
-      "away_win": 3.45
+      "away_win": 4.15
     },
     "gm_ts": 260131
   },
@@ -1626,12 +1657,27 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-04 18:30:38",
+        "from": {
+          "home_win": 1.6,
+          "draw": 0.0,
+          "away_win": 1.91
+        },
+        "to": {
+          "home_win": 1.55,
+          "draw": 0.0,
+          "away_win": 1.98
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "odds": {
-      "home_win": 1.6,
+      "home_win": 1.55,
       "draw": 0.0,
-      "away_win": 1.91
+      "away_win": 1.98
     },
     "gm_ts": 260131
   },

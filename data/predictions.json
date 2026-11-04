@@ -970,7 +970,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -1254,7 +1254,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -1553,7 +1553,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -1837,7 +1837,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -2106,7 +2106,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -2359,7 +2359,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -2643,7 +2643,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -2896,7 +2896,7 @@
     "kickoff_ts": 1793784600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "KT 위즈",
     "away_team": "삼성 라이온즈",
@@ -4095,54 +4095,70 @@
     "home_team": "포항 스틸러스",
     "away_team": "감바 오사카",
     "betman_odds": {
-      "home_win": 3.2,
-      "draw": 3.25,
-      "away_win": 1.89
+      "home_win": 3.1,
+      "draw": 3.4,
+      "away_win": 1.88
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-04 18:26:23",
+        "from": {
+          "home_win": 3.2,
+          "draw": 3.25,
+          "away_win": 1.89
+        },
+        "to": {
+          "home_win": 3.1,
+          "draw": 3.4,
+          "away_win": 1.88
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": {
       "shin_mkt": {
-        "home_win": 0.2568,
-        "draw": 0.2784,
-        "away_win": 0.4648
+        "home_win": 0.2674,
+        "draw": 0.2642,
+        "away_win": 0.4685
       }
     },
     "prediction_odds": {
-      "home_win": 3.2,
-      "draw": 3.25,
-      "away_win": 1.89
+      "home_win": 3.1,
+      "draw": 3.4,
+      "away_win": 1.88
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2719,
-      "draw": 0.2677,
-      "away": 0.4604
+      "home": 0.2808,
+      "draw": 0.2561,
+      "away": 0.4631
     },
     "model_probabilities": {
-      "home_win": 0.2719,
-      "draw": 0.2677,
-      "away_win": 0.4604
+      "home_win": 0.2808,
+      "draw": 0.2561,
+      "away_win": 0.4631
     },
     "blended_probabilities": {
-      "home_win": 0.2533,
-      "draw": 0.279,
-      "away_win": 0.4676
+      "home_win": 0.2637,
+      "draw": 0.2647,
+      "away_win": 0.4715
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1894,
-        "draw": -0.0932,
-        "away_win": -0.1162
+        "home_win": -0.1825,
+        "draw": -0.1,
+        "away_win": -0.1136
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0932,
-      "best_ev_pct": "-9.3%",
+      "best_ev": -0.1,
+      "best_ev_pct": "-10.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -4362,9 +4378,9 @@
     "home_team": "포항 스틸러스",
     "away_team": "감바 오사카",
     "betman_odds": {
-      "home_win": 1.77,
+      "home_win": 1.63,
       "draw": 3.4,
-      "away_win": 3.45
+      "away_win": 4.15
     },
     "odds_changes": [
       {
@@ -4381,45 +4397,60 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-04 18:26:23",
+        "from": {
+          "home_win": 1.77,
+          "draw": 3.4,
+          "away_win": 3.45
+        },
+        "to": {
+          "home_win": 1.63,
+          "draw": 3.4,
+          "away_win": 4.15
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.77,
+      "home_win": 1.63,
       "draw": 3.4,
-      "away_win": 3.45
+      "away_win": 4.15
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4917,
-      "draw": 0.256,
-      "away": 0.2523
+      "home": 0.5341,
+      "draw": 0.2561,
+      "away": 0.2098
     },
     "model_probabilities": {
-      "home_win": 0.4917,
-      "draw": 0.256,
-      "away_win": 0.2523
+      "home_win": 0.5341,
+      "draw": 0.2561,
+      "away_win": 0.2098
     },
     "blended_probabilities": {
-      "home_win": 0.4917,
-      "draw": 0.256,
-      "away_win": 0.2523
+      "home_win": 0.5341,
+      "draw": 0.2561,
+      "away_win": 0.2098
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1297,
-        "draw": -0.1296,
-        "away_win": -0.1296
+        "home_win": -0.1294,
+        "draw": -0.1293,
+        "away_win": -0.1293
       },
       "best_selection": "draw",
       "best_selection_name": "[단통 ⚡] 핸디캡 무승부",
       "raw_selection_name": "핸디캡 무승부",
-      "best_ev": -0.1296,
-      "best_ev_pct": "-13.0%",
+      "best_ev": -0.1293,
+      "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -8193,9 +8224,9 @@
     "home_team": "흥국생명 핑크스파이더스",
     "away_team": "정관장 레드스파크스",
     "betman_odds": {
-      "home_win": 1.6,
+      "home_win": 1.55,
       "draw": 0.0,
-      "away_win": 1.91
+      "away_win": 1.98
     },
     "odds_changes": [
       {
@@ -8242,45 +8273,60 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-04 18:30:38",
+        "from": {
+          "home_win": 1.6,
+          "draw": 0.0,
+          "away_win": 1.91
+        },
+        "to": {
+          "home_win": 1.55,
+          "draw": 0.0,
+          "away_win": 1.98
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.6,
+      "home_win": 1.55,
       "draw": 0.0,
-      "away_win": 1.91
+      "away_win": 1.98
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5442,
+      "home": 0.5609,
       "draw": 0.0,
-      "away": 0.4558
+      "away": 0.4391
     },
     "model_probabilities": {
-      "home_win": 0.5442,
+      "home_win": 0.5609,
       "draw": 0.0,
-      "away_win": 0.4558
+      "away_win": 0.4391
     },
     "blended_probabilities": {
-      "home_win": 0.5442,
+      "home_win": 0.5609,
       "draw": 0.0,
-      "away_win": 0.4558
+      "away_win": 0.4391
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1293,
+        "home_win": -0.1306,
         "draw": -1.0,
-        "away_win": -0.1294
+        "away_win": -0.1306
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 흥국생명 핑크스파이더스 (-1.5) 승",
       "raw_selection_name": "흥국생명 핑크스파이더스 (-1.5) 승",
-      "best_ev": -0.1293,
-      "best_ev_pct": "-12.9%",
+      "best_ev": -0.1306,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
