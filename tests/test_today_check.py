@@ -49,6 +49,9 @@ def test_only_open_matches_and_ranking(tmp_path):
     assert top["seq"] == "1" and top["ai_ev_pct"] == round((0.8 * 1.2 - 1) * 100, 1)
     assert out["recommendation_unlocked"] in (True, False)
     assert "오늘의 점검표" in render(out)
+    # 구매 시점 한 줄 (TODO 7.33 통과) — 축구 승무패는 반대 방향이라 따로 적는다
+    txt = render(out)
+    assert "⏱ 구매 시점" in txt and "축구 승무패 정배는 반대로" in txt and out["timing"]["soccer_1x2_pct"] < 0 < out["timing"]["other_types_pct"]
 
 
 def test_match_filter_and_my_month(tmp_path):

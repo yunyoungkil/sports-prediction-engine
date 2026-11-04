@@ -34,6 +34,10 @@ if sys.platform.startswith("win"):
 PICK_KEYS = ("home_win", "draw", "away_win")
 AI_SOURCES = ("betman_corrector", "market_corrector", "betman_markets")
 MK_KEY = {"home_win": "home", "draw": "draw", "away_win": "away"}
+# 구매 시점 (TODO 7.33 사전 등록 시험 통과, 2026-11-04 · 베트맨 배당 변경 이력 260108~260125 18회차 · evaluation/timing_test.py)
+# 같은 정배(배당 1순위)를 처음 배당 대신 마감 배당에 샀을 때의 가격 차이 평균. 축구 승무패만 반대 방향 — 앞으로의 회차로 확인 중(7.34)
+TIMING = {"source": "TODO 7.33 · 18회차(260108~260125) · 2026-11-04",
+          "other_types_pct": 0.44, "band_1_15_1_50_pct": 0.58, "band_won_per_10k": 55, "soccer_1x2_pct": -0.84}
 
 
 def _load(path: Path, default: Any) -> Any:
@@ -133,6 +137,7 @@ def build(now: Optional[datetime] = None, data_dir: Path = Path("data"), udir: O
         "my_month": {**month, "note": "실제 구매 기록의 금액 합계(결과 대기 포함). 손익·추격 판정은 대시보드 ④ 탭"},
         "my_records": len(recs),
         "market_scan_updated_at": (scan or {}).get("updated_at"),
+        "timing": TIMING,
     }
 
 
@@ -150,6 +155,10 @@ def render(d: Dict[str, Any]) -> str:
     lines.append(f"🧠 성적표: {sc.get('graded')}경기 · {sc.get('verdict')}")
     lines.append("\n① 덜 잃는 단일 구매 선택지 (과거 실제 환급률 순)")
     lines += [f"  - {_fmt_opt(o)}" for o in d["least_loss_singles"]] or ["  - 없음"]
+    t = d.get("timing") or TIMING
+    lines.append(f"  ⏱ 구매 시점: 축구 승무패가 아닌 정배는 마감 가까이 사면 평균 {t['other_types_pct']:+.2f}% 좋은 가격"
+                 f"(1.15~1.50은 {t['band_1_15_1_50_pct']:+.2f}% · 1만 원당 약 +{t['band_won_per_10k']}원) · "
+                 f"축구 승무패 정배는 반대로 마감 때 평균 {t['soccer_1x2_pct']:+.2f}%라 일찍 사는 편이 나음(확인 중) — {t['source']}")
     ls = d["longshots"]
     lines.append(f"\n② 피할 고배당: 과거 환급 {ls['threshold_return_pct']:.0f}% 미만 선택지 {ls['count']}개 (마감 빠른 순 예시)")
     lines += [f"  - {_fmt_opt(o)}" for o in ls["examples"]]
