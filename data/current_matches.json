@@ -16,7 +16,7 @@
     "kickoff_ts": 1793778300000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "멜버른 빅토리",
     "away_team": "페르십 반둥",
@@ -45,7 +45,7 @@
     "kickoff_ts": 1793778300000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "멜버른 빅토리",
     "away_team": "페르십 반둥",
@@ -74,7 +74,7 @@
     "kickoff_ts": 1793778300000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "멜버른 빅토리",
     "away_team": "페르십 반둥",
@@ -103,7 +103,7 @@
     "kickoff_ts": 1793778300000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "0",
     "home_team": "멜버른 빅토리",
     "away_team": "페르십 반둥",
@@ -226,12 +226,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-04 17:10:27",
+        "from": {
+          "home_win": 2.3,
+          "draw": 3.25,
+          "away_win": 2.45
+        },
+        "to": {
+          "home_win": 2.22,
+          "draw": 3.35,
+          "away_win": 2.5
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.3,
-      "draw": 3.25,
-      "away_win": 2.45
+      "home_win": 2.22,
+      "draw": 3.35,
+      "away_win": 2.5
     },
     "gm_ts": 260131
   },
@@ -405,12 +420,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-04 17:09:45",
+        "from": {
+          "home_win": 1.96,
+          "draw": 5.4,
+          "away_win": 2.2
+        },
+        "to": {
+          "home_win": 2.0,
+          "draw": 4.9,
+          "away_win": 2.25
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.96,
-      "draw": 5.4,
-      "away_win": 2.2
+      "home_win": 2.0,
+      "draw": 4.9,
+      "away_win": 2.25
     },
     "gm_ts": 260131
   },
@@ -458,7 +488,7 @@
     "match_time": "26.11.04 (수) 18:30",
     "close_time": 1793784600000,
     "kickoff_ts": 1793784600000,
-    "buy_reject": "1",
+    "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "0",
@@ -479,12 +509,27 @@
         },
         "line_from": 4.5,
         "line_to": 4.5
+      },
+      {
+        "at": "2026-11-04 16:21:57",
+        "from": {
+          "home_win": 1.7,
+          "draw": 0.0,
+          "away_win": 1.78
+        },
+        "to": {
+          "home_win": 1.65,
+          "draw": 0.0,
+          "away_win": 1.84
+        },
+        "line_from": 4.5,
+        "line_to": 4.5
       }
     ],
     "odds": {
-      "home_win": 1.7,
+      "home_win": 1.65,
       "draw": 0.0,
-      "away_win": 1.78
+      "away_win": 1.84
     },
     "gm_ts": 260131
   },
