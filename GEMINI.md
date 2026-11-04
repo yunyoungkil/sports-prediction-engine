@@ -8,7 +8,7 @@
 1. **대화를 시작하면** 첫 응답 전에 `python -m evaluation.briefing`을 실행해 요약하고, ⚠️가 있으면 그것부터 처리한다. 같이 **대시보드를 연다**: `http://localhost:8501`이 응답하지 않으면 `streamlit run dashboard/app.py --server.port 8501`을 백그라운드로 띄운 뒤 브라우저로 연다(이미 떠 있으면 브라우저만).
 2. **Git:** 작업 전·푸시 전에 `git pull --rebase origin master`. 봇이 `data/`를 계속 커밋하므로 **로컬에서 만든 `data/` 파일은 커밋하지 않는다**(목록은 GEMINI.md 1번). `git add -A` 금지, 관련 파일만 스테이징. 충돌한 `data/` 파일은 원격(봇) 것을 쓴다.
 3. **되돌릴 수 없는 일**(`git checkout --`·`reset --hard`로 로컬 수정 버리기, 파일 삭제, force push)은 사용자 확인 없이 하지 않는다. 대신 `git stash`·파일 이동을 쓴다.
-4. **사전 등록한 판정 기준은 바꾸지 않는다:** 공식 성적표 300경기·LL·회차 단위 범위, 가설 H1·H2 정의, `shin_mkt` 교체 규칙, TODO.md의 "완료 기준". 바꿔야 하면 먼저 묻는다.
+4. **사전 등록한 판정 기준은 바꾸지 않는다:** 공식 성적표 300경기·LL·회차 단위 범위, 가설 H1·H2 정의, `shin_mkt` 교체 규칙, TODO.md·TODO_DONE.md의 "완료 기준". 바꿔야 하면 먼저 묻는다.
 5. **미래 정보 금지:** 마감 배당·결과는 평가 전용이다(피처·베팅 판단에 쓰지 않음). 가상 베팅 결과를 학습에 되먹이지 않는다. 운영 AI는 표본 중간에 바꾸지 않는다 — 옵션은 기본값을 유지하고, 교체는 300경기 판정 뒤.
 6. **수치와 완료 표시:** 숫자는 파일이나 실행 결과에서 읽은 것만 쓰고 날짜를 붙인다. `[x]`는 완료 기준을 실제로 실행해 통과했을 때만 표시한다.
 7. **Secret·API:** 토큰·키를 코드·커밋·문서·채팅에 쓰지 않는다. The Odds API는 월 500크레딧이라 개발 중 반복 호출하지 않는다.
@@ -18,7 +18,7 @@
 <!-- CORE-RULES:END -->
 
 > 상세 설계·평가 규칙: [.agents/skills/sports-prediction-engine/SKILL.md](./.agents/skills/sports-prediction-engine/SKILL.md)
-> 할 일: [TODO.md](./TODO.md) · 검증 리뷰: [REVIEW.md](./REVIEW.md)
+> 할 일: [TODO.md](./TODO.md) (끝난 Step 0~Phase 6: [TODO_DONE.md](./TODO_DONE.md)) · 검증 리뷰: [REVIEW.md](./REVIEW.md)
 
 ## 0. 대화를 시작하면 먼저 브리핑한다 (PC와 상관없이)
 
@@ -77,7 +77,7 @@
 
 ## 4. 절대 규칙 (어기면 재작업)
 
-- **TODO.md의 "완료 기준"을 바꾸지 않는다.** 바꿔야 하면 사용자에게 먼저 묻는다 (REVIEW R13).
+- **TODO.md·TODO_DONE.md의 "완료 기준"을 바꾸지 않는다.** 바꿔야 하면 사용자에게 먼저 묻는다 (REVIEW R13).
 - `[x]`는 완료 기준을 **실제로 실행해 통과했을 때만** 표시하고, 수치는 학습·튜닝에 쓰지 않은 기간의 결과만 적는다.
 - 미래 정보 금지: 마감 배당(`*C*` 컬럼, `BFEC*`, `PSC*`)을 베팅 판단·피처에 쓰지 않는다. 폼은 `as_of` 이전 기록만 쓴다 (REVIEW R10).
 - 계수·상수는 TRAIN으로 학습한 모델에 대해 TUNE에서 고르고, TEST에서만 보고한다 (REVIEW R11).

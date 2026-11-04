@@ -62,3 +62,20 @@ def test_todo_links_are_checked_and_fixed_by_item_number(tmp_path):
     assert fix_todo_links(root) == 2 and broken_todo_links(root) == []
     text = (root / "EXPERIMENTS.md").read_bytes().decode("utf-8")
     assert "(./TODO.md#L4)" in text and "(./TODO.md#L5)" in text and "\r\n" in text and "[없는 9.9](./TODO.md#L1)" in text
+
+
+def test_todo_links_follow_items_moved_to_todo_done(tmp_path):
+    """끝난 항목을 TODO_DONE.md로 옮기면 링크도 그 파일로 고친다 (2026-11-04) · 남은 항목은 TODO.md 그대로"""
+    from evaluation.docs_sync import broken_todo_links, fix_todo_links
+    root = _mini_repo(tmp_path, "`models/alpha.py` `.github/workflows/run.yml` `data/out.json`")
+    (root / "TODO.md").write_bytes("# TODO\r\n- [ ] **5.10 a**\r\n- [x] **7.2 c**\r\n".encode("utf-8"))
+    (root / "TODO_DONE.md").write_bytes("# DONE\r\n\r\n- [x] **5.7 b**\r\n✅ **Phase 6 결론 (x):**\r\n".encode("utf-8"))
+    (root / "EXPERIMENTS.md").write_bytes(
+        "| [TODO 5.7](./TODO.md#L3) · [Phase 6 결론](./TODO.md#L9) · [7.2](./TODO.md#L3) · [5.10](./TODO_DONE.md#L2) |\r\n".encode("utf-8"))
+    bad = broken_todo_links(root)
+    assert {(b["label"], b["want_file"], b["want"]) for b in bad} == {
+        ("TODO 5.7", "TODO_DONE.md", 3), ("Phase 6 결론", "TODO_DONE.md", 4), ("5.10", "TODO.md", 2)}   # 7.2는 맞음
+    assert fix_todo_links(root) == 3 and broken_todo_links(root) == []
+    text = (root / "EXPERIMENTS.md").read_bytes().decode("utf-8")
+    assert "[TODO 5.7](./TODO_DONE.md#L3)" in text and "[Phase 6 결론](./TODO_DONE.md#L4)" in text
+    assert "[5.10](./TODO.md#L2)" in text and "[7.2](./TODO.md#L3)" in text and "\r\n" in text

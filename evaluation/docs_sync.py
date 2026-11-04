@@ -9,6 +9,7 @@ evaluation/docs_sync.py
 - stale_docs(): 문서의 마지막 수정 이후 코드 커밋이 너무 많이 쌓였는지 (git 이력, 문서마다 한도)
 - broken_todo_links(): EXPERIMENTS.md의 TODO 줄 번호 링크(`[TODO 7.17](./TODO.md#L731)`)가 그 항목 줄을 안 가리키는 것
   (TODO에 항목이 늘면 줄 번호가 밀린다 — `--fix`가 항목 번호로 다시 찾아 고친다, 2026-11-01)
+  항목은 TODO.md와 TODO_DONE.md(끝난 Step 0~Phase 6 보관, 2026-11-04) 두 곳에서 찾고, 링크도 항목이 있는 파일로 고친다.
 브리핑(`python -m evaluation.briefing`)이 매번 알려 준다. 표준 라이브러리만 쓴다.
 
 실행:
@@ -20,7 +21,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 ROOT = Path(__file__).resolve().parent.parent
 CODE_DIRS = ["collector", "models", "evaluation", "tracker", "notifier", "dashboard"]
@@ -84,7 +85,8 @@ def stale_docs(root: Path = ROOT, limits: Dict[str, int] = STALE_LIMITS) -> List
 
 
 LINKED_DOCS = ["EXPERIMENTS.md"]   # TODO 항목으로 가는 줄 번호 링크를 쓰는 문서
-_TODO_LINK = re.compile(r"\[([^\]]*?)\]\(\./TODO\.md#L(\d+)\)")
+TODO_DOCS = ["TODO.md", "TODO_DONE.md"]   # 항목이 있는 곳 — 할 일 목록 · 끝난 Step 0~Phase 6 보관 (앞의 파일이 우선)
+_TODO_LINK = re.compile(r"\[([^\]]*?)\]\(\./(TODO(?:_DONE)?\.md)#L(\d+)\)")
 _TODO_ITEM = re.compile(r"- \[[ x]\] \*\*(\d+\.\d+) ")
 PHASE6 = "Phase 6 결론"
 
@@ -101,8 +103,17 @@ def _todo_item_lines(todo_text: str) -> Dict[str, int]:
     return out
 
 
-def _link_target(label: str, items: Dict[str, int]) -> Optional[int]:
-    """링크 글자가 가리키려는 줄: 'Phase 6 …'은 Phase 6 결론, 그 밖에는 글자 속 항목 번호(범위 '5.6~5.7'이면 뒤 번호)"""
+def _todo_items(root: Path = ROOT) -> Dict[str, Tuple[str, int]]:
+    """항목 번호 → (파일, 줄 번호) — TODO_DOCS를 차례로 읽어 처음 나온 곳"""
+    out: Dict[str, Tuple[str, int]] = {}
+    for doc in TODO_DOCS:
+        for key, line in _todo_item_lines(_read(doc, root)).items():
+            out.setdefault(key, (doc, line))
+    return out
+
+
+def _link_target(label: str, items: Dict[str, Tuple[str, int]]) -> Optional[Tuple[str, int]]:
+    """링크 글자가 가리키려는 (파일, 줄): 'Phase 6 …'은 Phase 6 결론, 그 밖에는 글자 속 항목 번호(범위 '5.6~5.7'이면 뒤 번호)"""
     if "Phase 6" in label:
         return items.get(PHASE6)
     nums = re.findall(r"\d+\.\d+", label)
@@ -111,19 +122,20 @@ def _link_target(label: str, items: Dict[str, int]) -> Optional[int]:
 
 def broken_todo_links(root: Path = ROOT) -> List[Dict[str, object]]:
     """LINKED_DOCS 안 TODO 링크 중 그 항목 줄을 안 가리키는 것 (항목을 못 찾는 링크는 건너뜀)"""
-    items = _todo_item_lines(_read("TODO.md", root))
+    items = _todo_items(root)
     out = []
     for doc in LINKED_DOCS:
         for m in _TODO_LINK.finditer(_read(doc, root)):
             want = _link_target(m.group(1), items)
-            if want and want != int(m.group(2)):
-                out.append({"doc": doc, "label": m.group(1), "line": int(m.group(2)), "want": want})
+            if want and want != (m.group(2), int(m.group(3))):
+                out.append({"doc": doc, "label": m.group(1), "file": m.group(2), "line": int(m.group(3)),
+                            "want_file": want[0], "want": want[1]})
     return out
 
 
 def fix_todo_links(root: Path = ROOT) -> int:
-    """밀린 TODO 링크 줄 번호를 항목 번호로 다시 찾아 고친다 (줄 끝 형식은 그대로). 고친 링크 수"""
-    items = _todo_item_lines(_read("TODO.md", root))
+    """밀린 TODO 링크 줄 번호를 항목 번호로 다시 찾아 고친다 (항목이 옮겨 간 파일로 · 줄 끝 형식은 그대로). 고친 링크 수"""
+    items = _todo_items(root)
     fixed = 0
     for doc in LINKED_DOCS:
         p = root / doc
@@ -134,9 +146,9 @@ def fix_todo_links(root: Path = ROOT) -> int:
         def repl(m: "re.Match[str]") -> str:
             nonlocal fixed
             want = _link_target(m.group(1), items)
-            if want and want != int(m.group(2)):
+            if want and want != (m.group(2), int(m.group(3))):
                 fixed += 1
-                return f"[{m.group(1)}](./TODO.md#L{want})"
+                return f"[{m.group(1)}](./{want[0]}#L{want[1]})"
             return m.group(0)
 
         new = _TODO_LINK.sub(repl, text)

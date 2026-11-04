@@ -10,7 +10,7 @@
 ## 🧭 문서
 | 문서 | 내용 |
 |---|---|
-| [TODO.md](./TODO.md) | 단계별 작업 목록과 각 실험의 결과·수치 (Step 0 ~ Phase 7, Feature A 대시보드·점검 작업 기록) |
+| [TODO.md](./TODO.md) | 단계별 작업 목록과 각 실험의 결과·수치 (열린 일 · Phase 7 · Feature A 대시보드·점검 작업 기록) — 끝난 Step 0 ~ Phase 6은 [TODO_DONE.md](./TODO_DONE.md) |
 | [EXPERIMENTS.md](./EXPERIMENTS.md) | **시험한 아이디어 한눈에 보기**: 날짜 · 결과 · 판정(채택·닫음·버림·보류) · TODO 항목 연결. 새 아이디어는 먼저 여기서 찾기 |
 | [DATA.md](./DATA.md) | **우리가 가진 데이터**: 파일마다 열 이름 전부 · 기간 · 행 수 · 갱신 시점 · 없는 데이터 · 아직 안 쓴 열 |
 | [REVIEW.md](./REVIEW.md) | 검증 리뷰 (R1~R20): 발견한 문제, 원인, 조치 · AI 모델·데이터 사용 점검(R17~R20) |
