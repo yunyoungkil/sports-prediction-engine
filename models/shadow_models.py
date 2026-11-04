@@ -10,6 +10,10 @@ models/shadow_models.py
 2026-10-29 미리 정함: 실전 AI 300경기 판정 직후 이 모델로 교체 — 단, 같은 실전 경기 비교(evaluation/scorecard.py
 'shadow')에서 100경기 이상이고 '지금 AI보다 나쁨'이 확실하면(회차 단위 95% 범위 하한 > 0) 교체하지 않는다.
 
+[TODO 7.16, 2026-11-04] 실전 AI가 Shin으로 바뀌면(모델 파일의 base_prob_key = p_shin, 2026-11-10 재학습부터) 그림자는 자동으로
+**옛 방식 prop_mkt(비례 마진 제거)**로 뒤집힌다 — 교체 뒤에도 같은 경기에서 새 AI와 옛 AI를 짝지어 계속 비교한다.
+어느 쪽을 그림자로 할지는 날짜가 아니라 실전 모델 파일을 본다(재학습 단계에서 betman_corrector가 먼저 학습됨).
+
 실행 (매주 재학습 · 파일이 없으면 파이프라인이 학습):
     python -m models.shadow_models
 """
@@ -29,21 +33,33 @@ if sys.platform.startswith("win"):
     except Exception:
         pass
 
-from models.betman_corrector import (ARCHIVE_CSV, HOLDOUT_START, TEST_START, TUNE_START, BetmanLivePredictor,
+from models.betman_corrector import (ARCHIVE_CSV, HOLDOUT_START, PARAMS_PATH, TEST_START, TUNE_START, BetmanLivePredictor,
                                      TimedTeamForm, _features, build_rows, load_archive_df)
 from models.market_corrector import LAMBDA_GRID, MarketCorrector, _fair_probs
-from models.phase7_experiments import FlexibleMarketCorrector, fair_probs_shin
+from models.shin_margin import FlexibleMarketCorrector, fair_probs_shin
 
 NAME = "shin_mkt"
 SHADOW_PATH = Path("data/shadow_shin_mkt.json")
 BASE_KEY = "p_shin"
+SPECS = {"p_market": ("shin_mkt", "p_shin", Path("data/shadow_shin_mkt.json")),     # 실전 = 비례 → 그림자 = Shin (교체 전)
+         "p_shin": ("prop_mkt", "p_market", Path("data/shadow_prop_mkt.json"))}     # 실전 = Shin → 그림자 = 옛 비례 (교체 뒤)
 
 
-def train(df: pd.DataFrame) -> FlexibleMarketCorrector:
-    """실전 AI(models/betman_corrector.run)와 같은 시간 분할 · λ 선택 · 최종 학습 — 출발 확률만 Shin"""
+def shadow_spec(params_path: Path = PARAMS_PATH) -> tuple:
+    """(그림자 이름, 출발 확률, 파일) — 실전 모델 파일의 출발 확률의 반대쪽"""
+    try:
+        base = json.loads(Path(params_path).read_text(encoding="utf-8")).get("base_prob_key", "p_market")
+    except Exception:
+        base = "p_market"
+    return SPECS.get(base, SPECS["p_market"])
+
+
+def train(df: pd.DataFrame, base_key: str = BASE_KEY, name: str = NAME) -> FlexibleMarketCorrector:
+    """실전 AI(models/betman_corrector.run)와 같은 시간 분할 · λ 선택 · 최종 학습 — 출발 확률만 다름"""
+    BASE_KEY, NAME = base_key, name      # 아래 본문이 그대로 쓰도록 지역 이름으로
     rows = build_rows(df)
     for r in rows:
-        r[BASE_KEY] = fair_probs_shin(r["odds"])
+        r["p_shin"] = fair_probs_shin(r["odds"])
     split = {
         "train": [r for r in rows if r["kickoff"] < TUNE_START],
         "tune": [r for r in rows if TUNE_START <= r["kickoff"] < TEST_START],
@@ -68,19 +84,28 @@ def train(df: pd.DataFrame) -> FlexibleMarketCorrector:
 class ShadowPredictor(BetmanLivePredictor):
     """실전 AI와 같은 방식(킥오프 이전 경기만으로 팀 폼)으로 예측 — 출발 확률만 Shin"""
 
+    name = NAME
+
     @classmethod
-    def load(cls, params_path: Path = SHADOW_PATH, archive_path: Path = ARCHIVE_CSV) -> Optional["ShadowPredictor"]:
+    def load(cls, params_path: Optional[Path] = None, archive_path: Path = ARCHIVE_CSV,
+             production_path: Path = PARAMS_PATH) -> Optional["ShadowPredictor"]:
+        spec_name, spec_base, spec_path = shadow_spec(production_path)
+        params_path = params_path or spec_path
         if not params_path.exists() or not archive_path.exists():
             return None
         d = json.loads(params_path.read_text(encoding="utf-8"))
-        m = FlexibleMarketCorrector("betman", d["lam"], d.get("base_prob_key", BASE_KEY))
+        if d.get("base_prob_key", spec_base) != spec_base:
+            return None      # 실전과 같은 방식인 옛 그림자 파일 → 비교 의미 없음 (다음 재학습에서 반대쪽이 학습됨)
+        m = FlexibleMarketCorrector("betman", d["lam"], d.get("base_prob_key", spec_base))
         m.beta, m.gamma, m.c = np.array(d["beta"]), np.array(d["gamma"]), np.array(d["c"])
         m.mu, m.sd = np.array(d["mu"]), np.array(d["sd"])
         m.report, m.is_fitted = d.get("report", {}), True
         form = TimedTeamForm()
         for r in load_archive_df(archive_path).itertuples(index=False):
             form.add(r.kickoff, r.home_team, r.away_team, int(r.home_score), int(r.away_score))
-        return cls(m, form)
+        obj = cls(m, form)
+        obj.name = spec_name
+        return obj
 
     def predict_proba(self, odds: Dict[str, float], home: str, away: str, league: str,
                       kickoff=None) -> Optional[Dict[str, float]]:
@@ -88,16 +113,17 @@ class ShadowPredictor(BetmanLivePredictor):
         if p is None:
             return None
         o = np.array([float(odds["home_win"]), float(odds["draw"]), float(odds["away_win"])])
-        row = {"p_market": p, BASE_KEY: fair_probs_shin(o), "p_avg": None, "p_sharp": None, "actual": 0}
+        row = {"p_market": p, "p_shin": fair_probs_shin(o), "p_avg": None, "p_sharp": None, "actual": 0}
         row.update(_features(self._form_before(kickoff), home, away, league))
         out = self.model.predict_rows([row])[0]
         return {"home_win": round(float(out[0]), 4), "draw": round(float(out[1]), 4), "away_win": round(float(out[2]), 4)}
 
 
 if __name__ == "__main__":
-    model = train(load_archive_df())
+    name, base, path = shadow_spec()
+    model = train(load_archive_df(), base_key=base, name=name)
     r = model.report
-    d = {**model.to_dict(), "base_prob_key": BASE_KEY}
-    SHADOW_PATH.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"👥 그림자 모델 {NAME}: λ={r['chosen_lambda']} · 학습 {r['production_rows']}경기 · "
-          f"TEST LL차 {r.get('test', {}).get('ll_diff')} · 최근 LL차 {r.get('holdout', {}).get('ll_diff')} → {SHADOW_PATH}")
+    d = {**model.to_dict(), "base_prob_key": base}
+    path.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"👥 그림자 모델 {name}: λ={r['chosen_lambda']} · 학습 {r['production_rows']}경기 · "
+          f"TEST LL차 {r.get('test', {}).get('ll_diff')} · 최근 LL차 {r.get('holdout', {}).get('ll_diff')} → {path}")

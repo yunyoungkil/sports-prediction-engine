@@ -138,7 +138,7 @@ def predict_matches(matches: list, gm_ts, models: dict, sharp_by_seq: dict = Non
         if bm_probs and models.get("shadow_model"):
             sp = models["shadow_model"].predict_proba(odds, home, away, m.get("league", ""),
                                                       kickoff=parse_betman_kickoff(m.get("match_time")))
-            shadow_probs = {"shin_mkt": sp} if sp else None
+            shadow_probs = {getattr(models["shadow_model"], "name", "shin_mkt"): sp} if sp else None   # 교체 뒤 이름은 prop_mkt (7.16)
         if bm_probs:
             blended_probs = bm_probs
             prob_source = "betman_corrector"
@@ -336,7 +336,8 @@ def run_full_pipeline(gm_ts: str = None) -> list:
     if gm_ts:
         try:
             from tracker.prediction_log import save_prediction_log
-            version = (f"betman:{betman_model.model.report.get('trained_at')}" if betman_model
+            # 버전 앞부분 = 모델 종류 (betman · 2026-11-10 교체 뒤 betman_shin) → 성적표 AI 버전별 표가 교체 전후를 나눠 봄 (7.16)
+            version = (f"{getattr(betman_model, 'family', 'betman')}:{betman_model.model.report.get('trained_at')}" if betman_model
                        else f"europe:{corrector.report.get('trained_at')}" if corrector else None)
             log_stat = save_prediction_log(gm_ts, results, model_version=version)
             print(f"📝 [5.3] 경기 전 예측 기록: {log_stat['updated']}경기 갱신 (이미 시작 {log_stat['frozen_or_started']}경기는 고정)")

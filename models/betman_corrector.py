@@ -41,6 +41,29 @@ from evaluation.config import BETMAN_CUTOFF_DATE
 
 ARCHIVE_CSV = Path("data/history/betman_soccer_1x2.csv")
 PARAMS_PATH = Path("data/betman_corrector.json")
+# [TODO 7.16] shin_mkt 실전 교체 — 사전 등록 규칙(7.1)대로, 사용자가 정한 시점(2026-11-10 정기 재학습)부터 출발 확률을 Shin 방식으로 학습한다.
+# 실전 예측은 날짜가 아니라 모델 파일의 base_prob_key를 따른다 → 그날 재학습이 끝나기 전까지는 지금 AI 그대로.
+SHIN_SWAP_FROM = "2026-11-10"
+
+
+def production_base_key(today: Optional[str] = None) -> str:
+    """이번 재학습에 쓸 출발 확률: 교체일(UTC) 이후면 Shin(p_shin), 전이면 비례 마진 제거(p_market)"""
+    today = today or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    return "p_shin" if today >= SHIN_SWAP_FROM else "p_market"
+
+
+def _new_model(lam: float, base_key: str = "p_market") -> MarketCorrector:
+    """출발 확률에 맞는 보정 모델 (p_market = 기존 MarketCorrector와 같음)"""
+    if base_key == "p_market":
+        return MarketCorrector("betman", lam)
+    from models.shin_margin import FlexibleMarketCorrector
+    return FlexibleMarketCorrector("betman", lam, base_key)
+
+
+def save_params(model: MarketCorrector, path: Path = PARAMS_PATH) -> None:
+    """모델 파일에 출발 확률(base_prob_key)을 같이 남긴다 — 실전 예측기와 그림자 선택이 이 값을 본다"""
+    d = {**model.to_dict(), "base_prob_key": getattr(model, "base_prob_key", "p_market")}
+    path.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
 
 TUNE_START = pd.Timestamp("2025-07-01", tz="UTC")
 TEST_START = pd.Timestamp("2026-01-01", tz="UTC")
@@ -276,8 +299,13 @@ def build_rows(df: pd.DataFrame, normalize: bool = False, group_fn=league_group)
     return rows
 
 
-def run(df: pd.DataFrame, normalize: bool = False, group_fn=league_group) -> MarketCorrector:
+def run(df: pd.DataFrame, normalize: bool = False, group_fn=league_group, base_key: Optional[str] = None) -> MarketCorrector:
+    base_key = base_key or production_base_key()
     rows = build_rows(df, normalize, group_fn)
+    if base_key == "p_shin":
+        from models.shin_margin import fair_probs_shin
+        for r in rows:
+            r["p_shin"] = fair_probs_shin(r["odds"])
     split = {
         "train": [r for r in rows if r["kickoff"] < TUNE_START],
         "tune": [r for r in rows if TUNE_START <= r["kickoff"] < TEST_START],
@@ -286,15 +314,16 @@ def run(df: pd.DataFrame, normalize: bool = False, group_fn=league_group) -> Mar
     }
     tune_scores = {}
     for lam in LAMBDA_GRID + [1.0]:
-        m = MarketCorrector("betman", lam).fit(split["train"])
+        m = _new_model(lam, base_key).fit(split["train"])
         tune_scores[lam] = MarketCorrector.score(split["tune"], m.predict_rows(split["tune"]))["model_ll"]
     best_lam = min(tune_scores, key=tune_scores.get)
 
-    eval_model = MarketCorrector("betman", best_lam).fit(split["train"] + split["tune"])
+    eval_model = _new_model(best_lam, base_key).fit(split["train"] + split["tune"])
     report: Dict[str, Any] = {
         "sizes": {k: len(v) for k, v in split.items()},
         "tune_ll_by_lambda": {str(k): v for k, v in tune_scores.items()},
         "chosen_lambda": best_lam,
+        "base_prob_key": base_key,
     }
     for name in ("test", "holdout"):
         if split[name]:
@@ -312,7 +341,7 @@ def run(df: pd.DataFrame, normalize: bool = False, group_fn=league_group) -> Mar
     report["passes_gate"] = bool(report.get("test", {}).get("ll_diff", 1) < 0
                                  and report.get("holdout", {}).get("ll_diff", 1) < 0)
     if report["passes_gate"]:
-        production = MarketCorrector("betman", best_lam).fit(rows)
+        production = _new_model(best_lam, base_key).fit(rows)
         report["production_rows"] = len(rows)
         report["trained_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
         production.report = report
@@ -353,6 +382,8 @@ class BetmanLivePredictor:
         self.timed_form = form
         self.form = form.at(None)          # 기본(가장 최근까지) 폼
         self._views: Dict[Any, TeamForm] = {}
+        self.base_prob_key = getattr(model, "base_prob_key", "p_market")
+        self.family = "betman_shin" if self.base_prob_key == "p_shin" else "betman"   # 경기 전 기록의 model_version 앞부분 (7.16)
 
     @classmethod
     def load(cls, params_path: Path = PARAMS_PATH, archive_path: Path = ARCHIVE_CSV, normalize: bool = False,
@@ -362,7 +393,7 @@ class BetmanLivePredictor:
         d = json.loads(params_path.read_text(encoding="utf-8"))
         if not d.get("report", {}).get("passes_gate", False):
             return None
-        m = MarketCorrector("betman", d["lam"])
+        m = _new_model(d["lam"], d.get("base_prob_key", "p_market"))     # 파일에 적힌 출발 확률 (없으면 예전 파일 = 비례)
         m.beta, m.gamma, m.c = np.array(d["beta"]), np.array(d["gamma"]), np.array(d["c"])
         m.mu, m.sd = np.array(d["mu"]), np.array(d["sd"])
         m.report, m.is_fitted = d.get("report", {}), True
@@ -385,6 +416,9 @@ class BetmanLivePredictor:
         if p is None:
             return None
         row = {"p_market": p, "p_avg": None, "p_sharp": None, "actual": 0}
+        if self.base_prob_key == "p_shin":
+            from models.shin_margin import fair_probs_shin
+            row["p_shin"] = fair_probs_shin(np.array([float(odds["home_win"]), float(odds["draw"]), float(odds["away_win"])]))
         row.update(_features(self._form_before(kickoff), home, away, league, self.group_fn))
         out = self.model.predict_rows([row])[0]
         return {"home_win": round(float(out[0]), 4), "draw": round(float(out[1]), 4), "away_win": round(float(out[2]), 4)}
@@ -415,5 +449,5 @@ if __name__ == "__main__":
     print("=" * 75)
     model = run(load_archive_df())
     _print(model)
-    PARAMS_PATH.write_text(json.dumps(model.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
+    save_params(model)
     print(f"💾 저장: {PARAMS_PATH}")

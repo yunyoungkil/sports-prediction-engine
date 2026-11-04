@@ -61,6 +61,7 @@ from models.betman_corrector import (
 )
 from models.betman_markets import MIN_HOLDOUT, MIN_TEST, MIN_TRAIN, MIN_TUNE, SegmentModel, _fair, load_segments
 from models.market_corrector import FEATURE_SETS, LAMBDA_GRID, MarketCorrector, _fair_probs
+from models.shin_margin import FlexibleMarketCorrector, fair_probs_shin  # noqa: F401 (실전 AI도 쓰도록 가벼운 모듈로 옮김, TODO 7.16)
 from models.paper_trading import STRATEGIES
 
 LAMS = LAMBDA_GRID + [1.0]
@@ -88,25 +89,6 @@ def fair_probs_power(odds: np.ndarray) -> np.ndarray:
     return p / p.sum()
 
 
-def fair_probs_shin(odds: np.ndarray) -> np.ndarray:
-    """Shin(1991, 1993) 방식 마진 제거: 내부자 거래 비율 z ∈ (0, 0.4)를 이분법으로 계산"""
-    inv = 1.0 / np.asarray(odds, dtype=float)
-    s = inv.sum()
-    if s <= 1.0 + 1e-9:
-        return inv / s
-    lo, hi = 1e-7, 0.45
-    for _ in range(35):
-        z = 0.5 * (lo + hi)
-        p = (np.sqrt(z * z + 4.0 * (1.0 - z) * (inv * inv) / s) - z) / (2.0 * (1.0 - z))
-        if p.sum() > 1.0:
-            lo = z
-        else:
-            hi = z
-    z = 0.5 * (lo + hi)
-    p = (np.sqrt(z * z + 4.0 * (1.0 - z) * (inv * inv) / s) - z) / (2.0 * (1.0 - z))
-    return p / p.sum()
-
-
 def enrich_rows_for_7_1(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """각 경기 행에 Power/Shin 확률 및 비선형 결과별 피처를 추가"""
     for r in rows:
@@ -121,30 +103,6 @@ def enrich_rows_for_7_1(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         r["f_hinge_fav"] = np.maximum(0.0, log_m - np.log(0.50))
         r["f_hinge_long"] = np.minimum(0.0, log_m - np.log(0.20))
     return rows
-
-
-class FlexibleMarketCorrector(MarketCorrector):
-    """per_outcome에 임의의 배열 피처(f_*) 및 기준 확률(base_prob_key) 변경을 지원하는 확장 실험용 클래스"""
-
-    def __init__(self, feature_set: str = "betman", lam: float = 1e-3, base_prob_key: str = "p_market"):
-        super().__init__(feature_set, lam)
-        self.base_prob_key = base_prob_key
-
-    def _matrices(self, rows: List[Dict[str, Any]]):
-        n = len(rows)
-        log_mkt = np.log(np.clip(np.array([r[self.base_prob_key] for r in rows]), 1e-12, None))
-        F = np.zeros((n, 3, len(self.per_outcome)))
-        for j, name in enumerate(self.per_outcome):
-            for i, r in enumerate(rows):
-                if name == "log_p_market":
-                    F[i, :, j] = log_mkt[i]
-                elif name.startswith("f_"):
-                    F[i, :, j] = r[name]
-                elif name.endswith("_diff") and r.get("p_" + name[:-5]) is not None:
-                    F[i, :, j] = np.log(np.clip(r["p_" + name[:-5]], 1e-12, None)) - log_mkt[i]
-        X = np.array([[r[name] for name in self.match] for r in rows], dtype=float).reshape(n, len(self.match))
-        y = np.array([r["actual"] for r in rows], dtype=int)
-        return log_mkt, F, X, y
 
 
 def calibration_ece(rows: List[Dict[str, Any]], probs: np.ndarray, n_bins: int = 10) -> float:

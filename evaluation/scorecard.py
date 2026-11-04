@@ -238,6 +238,10 @@ def shadow_compare(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
         ci = _round_ci(d, sub, digits=5)
         if len(sub) < SHADOW_MIN_N:
             verdict = f"모으는 중 ({len(sub)}/{SHADOW_MIN_N}경기)"
+        elif name == "prop_mkt":     # 7.16 교체 뒤: 그림자 = 옛 방식(비례 마진 제거) — 새 AI(Shin)가 나은지 계속 확인
+            verdict = ("새 AI(Shin)가 옛 방식보다 확실히 정확함" if ci[0] > 0 else
+                       "옛 방식이 확실히 더 정확함 — 사용자에게 알림 (교체를 되돌릴지는 사용자가 정함)" if ci[1] < 0 else
+                       "차이가 확실하지 않음 (교체 유지)")
         elif ci[0] > 0:
             verdict = "지금 AI보다 확실히 나쁨 → 교체하지 않음"
         elif ci[1] < 0:

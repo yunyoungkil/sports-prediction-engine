@@ -3285,8 +3285,12 @@ with tab3:
             "판정": h["verdict"]} for h in hyps]), hide_index=True, width="stretch")
     shadows = (card or {}).get("shadow") or {}
     if shadows:
-        st.markdown("**👥 차세대 AI 교체 후보 (뒤에서 같이 계산해 비교 중)** — 정배·역배 마진 차이를 반영한 새 방식 모델을 실전 경기마다 뒤에서 같이 계산해 비교해요 "
-                    "(과거 5구간 시험 14,722경기 전승 · −0.00066). 공식 성적표 300경기 1차 판정 직후 자동 교체 예정이에요.")
+        if "prop_mkt" in shadows:   # 7.16 교체 뒤: 옛 방식이 그림자
+            st.markdown("**👥 교체 확인용 비교 (뒤에서 같이 계산)** — 2026-11-10 재학습부터 실전 AI가 정배·역배 마진 차이를 반영한 Shin 방식으로 바뀌었고, "
+                        "옛 방식(비례 마진 제거)을 같은 경기에서 계속 계산해 새 AI가 정말 나은지 확인해요. 음수면 옛 방식이 더 정확한 거예요.")
+        else:
+            st.markdown("**👥 차세대 AI 교체 후보 (뒤에서 같이 계산해 비교 중)** — 정배·역배 마진 차이를 반영한 새 방식 모델을 실전 경기마다 뒤에서 같이 계산해 비교해요 "
+                        "(과거 5구간 시험 14,722경기 전승 · −0.00066). 2026-11-10 정기 재학습 때 실전 AI로 교체돼요(TODO 7.16).")
         st.dataframe(pd.DataFrame([{
             "후보 모델": name, "같은 실전 경기": f"{sh['n']:,}경기",
             "후보 − 지금 AI (음수 = 후보가 더 정확)": f"{signed(sh['ll_diff_vs_model'], 5)}" if sh.get("ll_diff_vs_model") is not None else "-",

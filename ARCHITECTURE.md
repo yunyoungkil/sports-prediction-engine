@@ -73,7 +73,8 @@ sports-prediction-engine/
 | `models/betman_corrector.py` | **실전 1순위 AI**: 베트맨 과거 2.3만 경기로 학습한 시장 보정(강팀·무승부·리그 편향). `norm_team`·`group_fn` 옵션은 아직 꺼짐(교체 때 켬) |
 | `models/betman_markets.py` | 유형별 보정(핸디캡·농구 승패 등), 유형마다 게이트 |
 | `models/market_corrector.py` | 유럽 데이터 기반 시장 보정 (대체 경로) |
-| `models/shadow_models.py` | 그림자 모델 `shin_mkt`: 같은 경기 확률을 옆에서 계산해 기록만 (판정·화면 불사용) |
+| `models/shadow_models.py` | 그림자 모델: 실전 모델 파일의 출발 확률의 **반대쪽**을 같은 경기에서 계산해 기록만 — 교체 전 `shin_mkt`, 교체 뒤 `prop_mkt`(옛 방식) (판정·화면 불사용) |
+| `models/shin_margin.py` | Shin 마진 제거(`fair_probs_shin`)와 출발 확률을 바꿀 수 있는 보정 모델(`FlexibleMarketCorrector`) — 실전 AI·그림자·7.1 실험이 같이 씀 |
 | `models/phase7_experiments.py` · `models/betman_experiments.py` | 선행 실험 (Power/Shin·xG·피처). 실전 모델 파일은 안 바꿈 |
 | `models/market_view.py` · `models/odds_normalizer.py` | 유형별 라벨·배당(마진 제거) 확률. 비례 방식 `remove_margin` |
 | `models/evaluator.py` | 기대가치(EV)·등급 |
@@ -144,7 +145,8 @@ sports-prediction-engine/
 | `data/paper_trading.json` · `data/paper_trading_backfill.json` | 가상 베팅 리그 현황 · 과거 재현 | pipeline·results |
 | `data/betman_corrector.json` · `data/betman_markets.json` | 실전 AI(축구 승무패) · 유형별 보정 모델과 시험 보고 | 재학습 |
 | `data/market_corrector.json` · `data/market_corrector_full.json` · `data/market_corrector_sharp.json` | 유럽 데이터 기반 보정 모델 변형들 | 재학습 |
-| `data/shadow_shin_mkt.json` | 그림자 모델 파라미터 | 재학습 |
+| `data/shadow_shin_mkt.json` | 그림자 모델 파라미터 (교체 전: Shin 방식) | 재학습 |
+| `data/shadow_prop_mkt.json` | 그림자 모델 파라미터 (7.16 교체 뒤: 옛 비례 방식 — 2026-11-10 재학습부터 생김) | 재학습 |
 | `data/sharp_validation.json` · `data/stale_odds_report.json` · `data/team_name_map.json` | 해외 배당 검증 · 지연 배당 측정 · 팀 이름 매핑 | pipeline |
 | `data/walk_forward.json` · `data/market_scan.json` | 워크포워드 결과 · 유형별 마진표 | 재학습 |
 | `data/health_report.json` · `data/health_state.json` | 운영 점검 결과 · 직전 상태 | pipeline·results |
