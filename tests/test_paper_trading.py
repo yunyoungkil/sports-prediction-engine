@@ -488,3 +488,38 @@ def test_cross_type_combo_settles_by_type_and_line(tmp_path):
     assert (j["bets"], j["hits"], j["pending"], j["profit"]) == (1, 1, 0, 3600)                      # 4.6배 × 1,000 − 1,000
     d = next(x for x in s["details"] if x["strategy"] == "J_gemini")
     assert "농구 승패" in d["legs"] and "축구 핸디캡" in d["legs"]
+
+
+def test_i_and_j_ignore_program_ai_values():
+    """I·J는 프로그램 AI가 분석한 값(AI 확률·그림자 확률)을 쓰지 않는다 — 그 값을 바꾸거나 지워도 고르는 경기가 같아야 한다
+    (사용자 2026-11-04: '프로그램의 데이터를 분석한 값을 말한 거지 자체 데이터는 아니야. 너도 마찬가지' · TODO 7.29 공정 규칙)"""
+    from models import gemini_bettor
+    from models.paper_trading import propose_bets
+    close = NOW.timestamp() * 1000 + 3600 * 1000
+    form_h = {"has_data": True, "win_rate_pct": 80.0, "avg_scored": 2.0, "avg_conceded": 0.8, "standing": {"pts": 21, "played": 10}}
+    form_a = {"has_data": True, "win_rate_pct": 40.0, "avg_scored": 1.0, "avg_conceded": 1.5, "standing": {"pts": 12, "played": 10}}
+
+    def build(ai_mode):
+        out = []
+        for seq, odds in (("1", (1.25, 5.0, 9.0)), ("2", (1.40, 4.2, 6.0)), ("3", (1.20, 6.0, 11.0)), ("4", (2.1, 3.3, 3.4))):
+            m = _m(seq, odds, (0.4, 0.3, 0.3))
+            m.update({"close_time": close, "home_form": dict(form_h), "away_form": dict(form_a)})
+            if ai_mode == "flip":     # AI가 정반대로 본다고 바꿈
+                m["blended_probabilities"] = {"home_win": 0.05, "draw": 0.05, "away_win": 0.90}
+                m["model_probabilities"] = dict(m["blended_probabilities"])
+                m["shadow_probs"] = {"shin_mkt": dict(m["blended_probabilities"])}
+            elif ai_mode == "none":   # AI 값이 아예 없음
+                m.pop("blended_probabilities", None)
+                m["prob_source"] = "market"
+            out.append(m)
+        return out
+
+    def picks(preds):
+        i = sorted((b["legs"][0]["seq"], b["legs"][0]["key"]) for b in propose_bets(preds, now=NOW) if b["strategy"] == "I_least_loss")
+        j = [(l["seq"], l["key"], b["stake"]) for b in gemini_bettor.propose(preds, now=NOW, wallet={"current_cash": 100_000}) for l in b["legs"]]
+        return i, j
+
+    base = picks(build("base"))
+    assert base[0] and base[1]                      # 둘 다 실제로 고르는 경우로 확인
+    assert picks(build("flip")) == base
+    assert picks(build("none")) == base
