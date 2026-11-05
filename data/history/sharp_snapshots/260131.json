@@ -943,6 +943,481 @@
           }
         }
       }
+    },
+    {
+      "captured_at": "2026-11-05T00:34:15.259039+00:00",
+      "credits_remaining": 470,
+      "targets": 18,
+      "matches": {
+        "2690": {
+          "event_id": "cb7170b1b0e68a09be62b7a0fcb8d268",
+          "home_team": "AC Milan",
+          "away_team": "Ferencváros TC",
+          "commence_time": "2026-11-05T17:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.32,
+            "draw": 4.84,
+            "away_win": 7.07
+          },
+          "sharp_probs": {
+            "home_win": 0.6852,
+            "draw": 0.1869,
+            "away_win": 0.1279
+          },
+          "consensus_probs": {
+            "home_win": 0.7061888888888889,
+            "draw": 0.1852111111111111,
+            "away_win": 0.10863333333333333
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_odds",
+          "prob_distance": 0.0299,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 1.25,
+            "draw": 4.55,
+            "away_win": 7.7
+          },
+          "betman_home": "AC밀란",
+          "betman_away": "페렌츠바로시TC",
+          "match_time": "26.11.06 (금) 02:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1435,
+            "draw": -0.1496,
+            "away_win": -0.0152
+          }
+        },
+        "2696": {
+          "event_id": "d6ef4964addd663baed90f8f19fda1d3",
+          "home_team": "Real Sociedad",
+          "away_team": "Lyon",
+          "commence_time": "2026-11-05T17:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.7,
+            "draw": 4.35,
+            "away_win": 4.6
+          },
+          "sharp_probs": {
+            "home_win": 0.5681,
+            "draw": 0.222,
+            "away_win": 0.2099
+          },
+          "consensus_probs": {
+            "home_win": 0.5566111111111111,
+            "draw": 0.23095555555555553,
+            "away_win": 0.21243333333333334
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.1176,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 1.71,
+            "draw": 3.6,
+            "away_win": 3.5
+          },
+          "betman_home": "레알 소시에다드",
+          "betman_away": "올랭피크 리옹",
+          "match_time": "26.11.06 (금) 02:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0285,
+            "draw": -0.2008,
+            "away_win": -0.2653
+          }
+        },
+        "2701": {
+          "event_id": "d437cbfcee6b57ec58d464e6b459c56e",
+          "home_team": "Sparta Prague",
+          "away_team": "Bournemouth",
+          "commence_time": "2026-11-05T17:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 6.18,
+            "draw": 4.6,
+            "away_win": 1.51
+          },
+          "sharp_probs": {
+            "home_win": 0.1554,
+            "draw": 0.2087,
+            "away_win": 0.6359
+          },
+          "consensus_probs": {
+            "home_win": 0.15604444444444449,
+            "draw": 0.21147777777777776,
+            "away_win": 0.6324777777777779
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_odds",
+          "prob_distance": 0.0288,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 5.5,
+            "draw": 3.95,
+            "away_win": 1.4
+          },
+          "betman_home": "스파르타 프라하",
+          "betman_away": "AFC본머스",
+          "match_time": "26.11.06 (금) 02:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1453,
+            "draw": -0.1756,
+            "away_win": -0.1097
+          }
+        },
+        "2716": {
+          "event_id": "2347e0e7725940f6a14d5a80601390a5",
+          "home_team": "Crystal Palace",
+          "away_team": "TSG Hoffenheim",
+          "commence_time": "2026-11-05T17:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.92,
+            "draw": 4.06,
+            "away_win": 3.8
+          },
+          "sharp_probs": {
+            "home_win": 0.5055,
+            "draw": 0.2391,
+            "away_win": 0.2554
+          },
+          "consensus_probs": {
+            "home_win": 0.5001444444444443,
+            "draw": 0.24114444444444447,
+            "away_win": 0.25867777777777773
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0446,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 1.8,
+            "draw": 3.55,
+            "away_win": 3.2
+          },
+          "betman_home": "크리스털 팰리스",
+          "betman_away": "TSG1899 호펜하임",
+          "match_time": "26.11.06 (금) 02:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0901,
+            "draw": -0.1512,
+            "away_win": -0.1827
+          }
+        },
+        "2726": {
+          "event_id": "c50815d0a3cbc7dfe6b9f3a737ce4836",
+          "home_team": "Lillestrom",
+          "away_team": "Viktoria Plzeň",
+          "commence_time": "2026-11-05T17:45:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 3.07,
+            "draw": 3.86,
+            "away_win": 2.21
+          },
+          "sharp_probs": {
+            "home_win": 0.314,
+            "draw": 0.2498,
+            "away_win": 0.4362
+          },
+          "consensus_probs": {
+            "home_win": 0.31512222222222225,
+            "draw": 0.2523777777777778,
+            "away_win": 0.4325333333333334
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_odds",
+          "prob_distance": 0.016,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 2.75,
+            "draw": 3.4,
+            "away_win": 2.03
+          },
+          "betman_home": "릴레스트룀SK",
+          "betman_away": "빅토리아 플젠",
+          "match_time": "26.11.06 (금) 02:45",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1365,
+            "draw": -0.1507,
+            "away_win": -0.1145
+          }
+        },
+        "2780": {
+          "event_id": "e1c3625feeebcd65317e17a4e9a38c4f",
+          "home_team": "Bayer Leverkusen",
+          "away_team": "Marseille",
+          "commence_time": "2026-11-05T20:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.38,
+            "draw": 5.68,
+            "away_win": 7.56
+          },
+          "sharp_probs": {
+            "home_win": 0.7015,
+            "draw": 0.1704,
+            "away_win": 0.1281
+          },
+          "consensus_probs": {
+            "home_win": 0.7001666666666667,
+            "draw": 0.17356666666666665,
+            "away_win": 0.12626666666666667
+          },
+          "n_bookmakers": 9,
+          "match_method": "name",
+          "prob_distance": 0.0936,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 1.33,
+            "draw": 4.35,
+            "away_win": 6.0
+          },
+          "betman_home": "바이어04 레버쿠젠",
+          "betman_away": "올랭피크드 마르세유",
+          "match_time": "26.11.06 (금) 05:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.067,
+            "draw": -0.2588,
+            "away_win": -0.2314
+          }
+        },
+        "2786": {
+          "event_id": "bc4a4cc34a2219d9564b7b0c17ba2934",
+          "home_team": "Benfica",
+          "away_team": "Lech Poznań",
+          "commence_time": "2026-11-05T20:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.18,
+            "draw": 7.82,
+            "away_win": 15.89
+          },
+          "sharp_probs": {
+            "home_win": 0.8162,
+            "draw": 0.1232,
+            "away_win": 0.0606
+          },
+          "consensus_probs": {
+            "home_win": 0.8313777777777777,
+            "draw": 0.11410000000000002,
+            "away_win": 0.05453333333333334
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_odds",
+          "prob_distance": 0.0645,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 1.11,
+            "draw": 6.2,
+            "away_win": 11.5
+          },
+          "betman_home": "SL벤피카",
+          "betman_away": "레흐 포즈난",
+          "match_time": "26.11.06 (금) 05:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.094,
+            "draw": -0.2362,
+            "away_win": -0.3031
+          }
+        },
+        "2792": {
+          "event_id": "c91f4c9744f6ca502b7986a564e858df",
+          "home_team": "AZ Alkmaar",
+          "away_team": "Juventus",
+          "commence_time": "2026-11-05T20:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 3.57,
+            "draw": 3.7,
+            "away_win": 2.06
+          },
+          "sharp_probs": {
+            "home_win": 0.2704,
+            "draw": 0.2609,
+            "away_win": 0.4687
+          },
+          "consensus_probs": {
+            "home_win": 0.2680777777777778,
+            "draw": 0.2627777777777778,
+            "away_win": 0.46911111111111103
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_odds",
+          "prob_distance": 0.0133,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 3.25,
+            "draw": 3.25,
+            "away_win": 1.87
+          },
+          "betman_home": "AZ알크마르",
+          "betman_away": "유벤투스",
+          "match_time": "26.11.06 (금) 05:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1212,
+            "draw": -0.1521,
+            "away_win": -0.1235
+          }
+        },
+        "2802": {
+          "event_id": "84b68e09ecbe93fdbce759cd822322a2",
+          "home_team": "SK Sturm Graz",
+          "away_team": "NK Celje",
+          "commence_time": "2026-11-05T20:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.55,
+            "draw": 4.61,
+            "away_win": 5.64
+          },
+          "sharp_probs": {
+            "home_win": 0.6207,
+            "draw": 0.2087,
+            "away_win": 0.1706
+          },
+          "consensus_probs": {
+            "home_win": 0.6123,
+            "draw": 0.21695555555555554,
+            "away_win": 0.17074444444444448
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_odds",
+          "prob_distance": 0.0414,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 1.45,
+            "draw": 3.85,
+            "away_win": 5.0
+          },
+          "betman_home": "슈투름 그라츠",
+          "betman_away": "NK첼레",
+          "match_time": "26.11.06 (금) 05:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1,
+            "draw": -0.1965,
+            "away_win": -0.147
+          }
+        },
+        "2812": {
+          "event_id": "b828d43ba5fa1c8cdd2e34aabea9d0ce",
+          "home_team": "Celta Vigo",
+          "away_team": "Union Saint-Gilloise",
+          "commence_time": "2026-11-05T20:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.3,
+            "draw": 3.58,
+            "away_win": 3.1
+          },
+          "sharp_probs": {
+            "home_win": 0.4194,
+            "draw": 0.2694,
+            "away_win": 0.3112
+          },
+          "consensus_probs": {
+            "home_win": 0.4189555555555556,
+            "draw": 0.27005555555555555,
+            "away_win": 0.31100000000000005
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_odds",
+          "prob_distance": 0.0052,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 2.06,
+            "draw": 3.25,
+            "away_win": 2.8
+          },
+          "betman_home": "RC셀타데비고",
+          "betman_away": "루아얄 위니옹 생질루아즈",
+          "match_time": "26.11.06 (금) 05:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.136,
+            "draw": -0.1245,
+            "away_win": -0.1286
+          }
+        },
+        "2817": {
+          "event_id": "402e102fa845ed84ab7e59b3b17f8c29",
+          "home_team": "Torreense",
+          "away_team": "FC Ararat-Armenia",
+          "commence_time": "2026-11-05T20:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.82,
+            "draw": 3.84,
+            "away_win": 4.4
+          },
+          "sharp_probs": {
+            "home_win": 0.5298,
+            "draw": 0.2511,
+            "away_win": 0.2191
+          },
+          "consensus_probs": {
+            "home_win": 0.5360555555555555,
+            "draw": 0.25606666666666666,
+            "away_win": 0.2078888888888889
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_odds",
+          "prob_distance": 0.033,
+          "sport_key": "soccer_uefa_europa_league",
+          "betman_odds": {
+            "home_win": 1.68,
+            "draw": 3.25,
+            "away_win": 4.05
+          },
+          "betman_home": "SCU토렌세",
+          "betman_away": "아라라트 아르메니아",
+          "match_time": "26.11.06 (금) 05:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1099,
+            "draw": -0.1839,
+            "away_win": -0.1126
+          }
+        },
+        "2835": {
+          "event_id": "53b2ad715a00ea769556e3f7a4583ecd",
+          "home_team": "Sydney FC",
+          "away_team": "Central Coast Mariners",
+          "commence_time": "2026-11-06T08:40:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.48,
+            "draw": 4.55,
+            "away_win": 6.3
+          },
+          "sharp_probs": {
+            "home_win": 0.6409,
+            "draw": 0.2085,
+            "away_win": 0.1506
+          },
+          "consensus_probs": {
+            "home_win": 0.6340500000000001,
+            "draw": 0.213625,
+            "away_win": 0.1523625
+          },
+          "n_bookmakers": 8,
+          "match_method": "time_single",
+          "prob_distance": 0.0564,
+          "sport_key": "soccer_australia_aleague",
+          "betman_odds": {
+            "home_win": 1.42,
+            "draw": 3.9,
+            "away_win": 5.3
+          },
+          "betman_home": "시드니FC",
+          "betman_away": "센트럴코스트 매리너스",
+          "match_time": "26.11.06 (금) 17:40",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.0899,
+            "draw": -0.1869,
+            "away_win": -0.2018
+          }
+        }
+      }
     }
   ]
 }
