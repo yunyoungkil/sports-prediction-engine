@@ -71,7 +71,7 @@ except ImportError:
 from models.strategy_backtest import backtest, describe_rule, extract_rule, outcome_kind
 from models.combo_finder import candidate_legs, find_combos
 from collector.betman_sharp import parse_betman_kickoff
-from models.paper_trading import STRATEGIES, RETIRED_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP, H_INTERIM, H_VERDICTS
+from models.paper_trading import STRATEGIES, RETIRED_LABELS, BACKFILL_LABELS as BACKFILL_LABEL_MAP, H_INTERIM, H_VERDICTS, competition_table
 
 STRATEGY_LABELS = {**RETIRED_LABELS, **STRATEGIES}   # 내역 표에서는 폐기한 전략 이름도 보여 줌
 from models.betman_markets import SPORT_NAMES
@@ -444,9 +444,14 @@ def render_competition(comp: list, reviews):
             "순위": str(r.get("rank", "-")), "선수": r["name"], "끝난 베팅": r["bets"], "결과 대기": r.get("pending", 0),
             "수익률": f"{r['roi_pct']:+.1f}%" if r["bets"] else "-",
             "95% 범위": roi_range_text(r["bets"], (r.get("roi_ci") or [None, None])[0], (r.get("roi_ci") or [None, None])[1], "%"),
-            "지갑": f"{int(r['bankroll']):,}원" if r.get("bankroll") is not None else "-",
-            "누적 입금": f"{int(r['total_deposited']):,}원" if r.get("total_deposited") else "-"}
+            "총 자산": f"{int(r['total_assets']):,}원" if r.get("total_assets") is not None else "-",
+            "현금": f"{int(r['bankroll']):,}원" if r.get("bankroll") is not None else "-",
+            "베팅에 묶인 돈": f"{int(r.get('pending_stakes') or 0):,}원",
+            "누적 입금": f"{int(r['total_deposited']):,}원" if r.get("total_deposited") else "-",
+            "순손익": f"{int(r.get('profit') or 0):+,}원"}
             for r in sorted(comp, key=lambda r: r.get("rank") or 99)]), hide_index=True, width="stretch")
+        st.caption("총 자산 = 현금 + 결과를 기다리는 베팅에 묶인 돈이에요. 누적 입금이 다르면 총 자산을 바로 비교할 수 없어서, "
+                   "순위는 수익률로 매기고 순손익을 같이 보여 줘요.")
     players = (reviews or {}).get("players") or {}
     if players:
         with st.expander("📝 선수별 자기 점검 리뷰 (결과가 나올 때마다 자동 · 규칙은 월말 점검에서만 바꿈)"):
@@ -3507,7 +3512,8 @@ with tab3:
                "H는 토너먼트 2차전 확인용으로 1,000원 고정, I(Claude)·J(Gemini)는 G와 같은 월 10만 원 지갑으로 겨루는 경쟁 선수). "
                f"AI 전략은 기준선(E. 배당 1순위)보다 나아야 의미가 있고, {PAPER_MIN}건 이상에서 수익률 95% 범위 아래 끝이 0보다 커야 '수익 입증'이에요.")
 
-    render_competition((pt or {}).get("competition") or [], load_bet_reviews())   # 🏁 경쟁 + 📝 자기 점검 리뷰 (TODO 7.29·7.30)
+    # 🏁 경쟁 + 📝 자기 점검 리뷰 (TODO 7.29·7.30) — 경쟁표는 전략 요약에서 바로 계산 (파일이 예전 형식이어도 총 자산이 나옴)
+    render_competition(competition_table((pt or {}).get("strategies") or {}) if (pt or {}).get("competition") else [], load_bet_reviews())
 
     clv_by_strategy = clv.get("paper_strategies", {})
     VERDICT_MARK = {"수익 입증": "✅ 입증", "수익 미입증": "❌ 미입증", "판단 보류 (표본 부족)": "⏳ 표본 부족",

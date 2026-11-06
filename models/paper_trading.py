@@ -477,14 +477,16 @@ def _summarize(per: Dict[str, List[Dict[str, Any]]], pending: Dict[str, int], la
 
 
 def competition_table(strategies: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """경쟁표 (TODO 7.29): 끝난 베팅의 수익률·95% 범위 · 지갑·순손익. 순위는 수익률(건 돈 대비) — 안 걸면 이기는 일이 없게,
-    MIN_FOR_VERDICT건 전에는 '판단 보류'로 둔다 (지갑 잔고만으로는 덜 건 쪽이 유리해서 순위에 쓰지 않음)"""
+    """경쟁표 (TODO 7.29): 끝난 베팅의 수익률·95% 범위 · 총 자산(현금 + 결과 대기 베팅에 묶인 돈)·순손익. 순위는 수익률(건 돈 대비) — 안 걸면 이기는 일이 없게,
+    MIN_FOR_VERDICT건 전에는 '판단 보류'로 둔다 (잔고·자산만으로는 덜 건 쪽과 입금이 많은 쪽이 유리해서 순위에 쓰지 않음)"""
     rows = []
     for k, name in COMPETITORS.items():
         s = strategies.get(k) or {}
+        cash, tied = s.get("bankroll"), s.get("pending_stakes") or 0
         rows.append({"key": k, "name": name, "bets": s.get("bets", 0), "pending": s.get("pending", 0),
                      "staked": s.get("staked", 0), "profit": s.get("profit", 0), "roi_pct": s.get("roi_pct"),
-                     "roi_ci": [s.get("roi_ci_low"), s.get("roi_ci_high")], "bankroll": s.get("bankroll"),
+                     "roi_ci": [s.get("roi_ci_low"), s.get("roi_ci_high")], "bankroll": cash, "pending_stakes": tied,
+                     "total_assets": cash + tied if cash is not None else None,
                      "total_deposited": s.get("total_deposited"), "ready": s.get("bets", 0) >= MIN_FOR_VERDICT})
     ranked = sorted([r for r in rows if r["bets"]], key=lambda r: -(r["roi_pct"] or -999))
     for i, r in enumerate(ranked, 1):

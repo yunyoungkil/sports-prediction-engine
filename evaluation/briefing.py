@@ -178,7 +178,8 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
         for r in sorted(comp, key=lambda r: r.get("rank") or 99):
             if r.get("bets"):
                 parts.append(f"{r.get('rank', '-')}위 {r['name']} {r['bets']}건 {r['roi_pct']:+.1f}%"
-                             + (f" · 지갑 {r['bankroll']:,}원" if r.get("bankroll") is not None else ""))
+                             + (f" · 총 자산 {r['total_assets']:,}원 (현금 {r['bankroll']:,}원)" if r.get("total_assets") is not None
+                                else f" · 지갑 {r['bankroll']:,}원" if r.get("bankroll") is not None else ""))
             else:
                 parts.append(f"{r['name']} 채점 없음" + (f" (결과 대기 {r['pending']})" if r.get("pending") else ""))
         out.append("   🏁 경쟁 (월 10만 원 지갑 · 순위는 수익률, 300건 전엔 판단 보류): " + " vs ".join(parts))

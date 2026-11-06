@@ -138,3 +138,12 @@ def test_data_intake_lines_flags_missing_round_empty_results_and_stale_data():
     assert "⚠️" in text and "회차(gm_ts)가 빈 경기 1건" in text and "배당이 비었거나" in text
     assert "260127의 결과가 비어" in text and "30시간째 갱신되지 않았어요" in text
     assert "predictions.json" in "\n".join(data_intake_lines(lambda rel: None, lambda rel: None))
+
+
+def test_paper_lines_competition_shows_total_assets():
+    from evaluation.briefing import paper_lines
+    pt = {"updated_at": "2026-11-06T02:29:44+00:00", "strategies": {"I_least_loss": {"label": "I", "bets": 4, "hits": 4, "pending": 2, "profit": 740, "roi_pct": 18.5}},
+          "competition": [{"key": "I_least_loss", "name": "Claude (I)", "rank": 1, "bets": 4, "roi_pct": 18.5, "bankroll": 98740, "pending_stakes": 2000, "total_assets": 100740},
+                          {"key": "G_ai_bettor", "name": "프로그램 AI (G)", "rank": 2, "bets": 5, "roi_pct": -16.7, "bankroll": 192250}]}   # 예전 형식 줄은 지갑으로
+    line = next(x for x in paper_lines(lambda path: pt if path == "data/paper_trading.json" else None) if "🏁" in x)
+    assert "총 자산 100,740원 (현금 98,740원)" in line and "지갑 192,250원" in line

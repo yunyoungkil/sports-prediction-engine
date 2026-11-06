@@ -566,3 +566,17 @@ def test_players_do_not_read_each_others_rules_bets_or_reviews():
                ast.parse((root / "evaluation" / "i_rule_review.py").read_text(encoding="utf-8"))]
     hits = [r for t in i_trees for r in _code_refs(t) if "gemini" in r.lower() or "bet_review" in r]
     assert not hits, f"I 규칙 코드가 J 자료를 읽음: {sorted(set(hits))}"
+
+
+def test_competition_table_shows_total_assets():
+    """총 자산 = 현금 + 결과 대기 베팅에 묶인 돈 = 누적 입금 + 순손익 (지갑을 안 쓰는 값이 없으면 None)"""
+    from models.paper_trading import competition_table
+    rows = {r["key"]: r for r in competition_table({
+        "G_ai_bettor": {"bets": 5, "roi_pct": -16.7, "profit": -2050, "bankroll": 192250, "pending_stakes": 5700, "total_deposited": 200000},
+        "I_least_loss": {"bets": 4, "roi_pct": 18.5, "profit": 740, "bankroll": 98740, "pending_stakes": 2000, "total_deposited": 100000},
+        "J_gemini": {"bets": 0}})}
+    g, i, j = rows["G_ai_bettor"], rows["I_least_loss"], rows["J_gemini"]
+    assert g["total_assets"] == 197950 == g["total_deposited"] + g["profit"] and g["pending_stakes"] == 5700
+    assert i["total_assets"] == 100740 == i["total_deposited"] + i["profit"]
+    assert j["total_assets"] is None and j["pending_stakes"] == 0
+    assert (i["rank"], g["rank"]) == (1, 2) and "rank" not in j          # 순위는 그대로 수익률 순
