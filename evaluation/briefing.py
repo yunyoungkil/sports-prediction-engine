@@ -140,6 +140,27 @@ def runs_status(now: Optional[datetime] = None) -> List[str]:
     return out
 
 
+def competition_lines(comp: List[Dict[str, Any]], strategies: Dict[str, Any]) -> List[str]:
+    """🏁 경쟁표 (사용자 2026-11-06: 브리핑도 이 표로 — 대시보드 ③ 탭 경쟁표와 같은 값). 총 자산 = 현금 + 베팅에 묶인 돈.
+    봇이 아직 예전 형식으로 쓴 파일이면 묶인 돈을 전략 요약에서 읽는다."""
+    def won(x: Any) -> str:
+        return f"{int(x):,}원" if x is not None else "-"
+
+    out = ["   🏁 경쟁 (월 10만 원 지갑 · 순위는 수익률, 300건 전엔 판단 보류):",
+           "   | 순위 | 선수 | 끝난 베팅 | 수익률 | 총 자산 | 현금 | 베팅에 묶인 돈 | 누적 입금 | 순손익 |",
+           "   |---|---|---|---|---|---|---|---|---|"]
+    for r in sorted(comp, key=lambda r: r.get("rank") or 99):
+        s = strategies.get(r.get("key")) or {}
+        cash = r.get("bankroll")
+        tied = r.get("pending_stakes")
+        tied = (s.get("pending_stakes") or 0) if tied is None else tied
+        assets = cash + tied if cash is not None else None
+        roi = f"{r['roi_pct']:+.1f}%" if r.get("bets") else "-"
+        out.append(f"   | {r.get('rank', '-')} | {r['name']} | {r.get('bets', 0)}건 | {roi} | {won(assets)} | {won(cash)} | {won(tied)} | "
+                   f"{won(r.get('total_deposited'))} | {int(r.get('profit') or 0):+,}원 |")
+    return out
+
+
 def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -> List[str]:
     """가상 베팅 리그 현황: 전략별 건수·적중·대기·손익·수익률과 판정 (표본이 적으면 판정 보류)"""
     pt = reader("data/paper_trading.json")
@@ -174,15 +195,7 @@ def paper_lines(reader: Callable[[str], Optional[Dict[str, Any]]] = read_json) -
                        f"(AI 금액 {z['roi_ai_pct']:+.1f}% vs 1,000원 고정 {z['roi_flat_pct']:+.1f}%) · {z['verdict']}")
     comp = pt.get("competition") or []
     if comp:                            # 경쟁 (TODO 7.29): Claude(I) · 프로그램 AI(G) · Gemini(J) — 셋 다 월 10만 원 지갑, 순위는 수익률
-        parts = []
-        for r in sorted(comp, key=lambda r: r.get("rank") or 99):
-            if r.get("bets"):
-                parts.append(f"{r.get('rank', '-')}위 {r['name']} {r['bets']}건 {r['roi_pct']:+.1f}%"
-                             + (f" · 총 자산 {r['total_assets']:,}원 (현금 {r['bankroll']:,}원)" if r.get("total_assets") is not None
-                                else f" · 지갑 {r['bankroll']:,}원" if r.get("bankroll") is not None else ""))
-            else:
-                parts.append(f"{r['name']} 채점 없음" + (f" (결과 대기 {r['pending']})" if r.get("pending") else ""))
-        out.append("   🏁 경쟁 (월 10만 원 지갑 · 순위는 수익률, 300건 전엔 판단 보류): " + " vs ".join(parts))
+        out += competition_lines(comp, pt["strategies"])
         rv = (reader("data/bet_reviews.json") or {}).get("players") or {}
         for p in rv.values():           # 📝 자기 점검 리뷰 (TODO 7.30): 결과가 아니라 결정의 질 — 마감 대비 가격 · 기대 대비 적중
             les = [l for l in (p.get("summary") or {}).get("lessons", []) if not l.startswith("표본")]

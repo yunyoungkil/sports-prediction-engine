@@ -140,10 +140,21 @@ def test_data_intake_lines_flags_missing_round_empty_results_and_stale_data():
     assert "predictions.json" in "\n".join(data_intake_lines(lambda rel: None, lambda rel: None))
 
 
-def test_paper_lines_competition_shows_total_assets():
+def test_paper_lines_competition_is_a_table_with_total_assets():
+    """브리핑의 🏁는 대시보드와 같은 표 — 총 자산 = 현금 + 묶인 돈, 예전 형식 파일은 전략 요약에서 묶인 돈을 읽는다"""
     from evaluation.briefing import paper_lines
-    pt = {"updated_at": "2026-11-06T02:29:44+00:00", "strategies": {"I_least_loss": {"label": "I", "bets": 4, "hits": 4, "pending": 2, "profit": 740, "roi_pct": 18.5}},
-          "competition": [{"key": "I_least_loss", "name": "Claude (I)", "rank": 1, "bets": 4, "roi_pct": 18.5, "bankroll": 98740, "pending_stakes": 2000, "total_assets": 100740},
-                          {"key": "G_ai_bettor", "name": "프로그램 AI (G)", "rank": 2, "bets": 5, "roi_pct": -16.7, "bankroll": 192250}]}   # 예전 형식 줄은 지갑으로
-    line = next(x for x in paper_lines(lambda path: pt if path == "data/paper_trading.json" else None) if "🏁" in x)
-    assert "총 자산 100,740원 (현금 98,740원)" in line and "지갑 192,250원" in line
+    pt = {"updated_at": "2026-11-06T02:29:44+00:00",
+          "strategies": {"G_ai_bettor": {"label": "G", "bets": 5, "hits": 2, "pending": 3, "profit": -2050, "roi_pct": -16.7, "pending_stakes": 5700}},
+          "competition": [{"key": "I_least_loss", "name": "Claude (I)", "rank": 1, "bets": 4, "roi_pct": 18.5, "profit": 740, "bankroll": 98740,
+                           "pending_stakes": 2000, "total_assets": 100740, "total_deposited": 100000},
+                          {"key": "G_ai_bettor", "name": "프로그램 AI (G)", "rank": 2, "bets": 5, "roi_pct": -16.7, "profit": -2050, "bankroll": 192250,
+                           "total_deposited": 200000},      # 예전 형식 (묶인 돈 없음)
+                          {"key": "J_gemini", "name": "Gemini (J)", "bets": 0, "roi_pct": 0.0, "profit": 0, "bankroll": 100000, "pending_stakes": 0,
+                           "total_assets": 100000, "total_deposited": 100000}]}
+    lines = paper_lines(lambda path: pt if path == "data/paper_trading.json" else None)
+    i = next(n for n, x in enumerate(lines) if "🏁" in x)
+    assert "순위 | 선수 | 끝난 베팅 | 수익률 | 총 자산 | 현금 | 베팅에 묶인 돈 | 누적 입금 | 순손익" in lines[i + 1]
+    claude, g, j = lines[i + 3:i + 6]
+    assert "| 1 | Claude (I) | 4건 | +18.5% | 100,740원 | 98,740원 | 2,000원 | 100,000원 | +740원 |" in claude
+    assert "| 2 | 프로그램 AI (G) | 5건 | -16.7% | 197,950원 | 192,250원 | 5,700원 | 200,000원 | -2,050원 |" in g
+    assert "| - | Gemini (J) | 0건 | - | 100,000원 | 100,000원 | 0원 | 100,000원 | +0원 |" in j
