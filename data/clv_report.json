@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-06T15:01:14+00:00",
+  "updated_at": "2026-11-06T15:26:42+00:00",
   "rounds": [
     260126,
     260127,
@@ -10,21 +10,21 @@
     260132
   ],
   "matches": 1275,
-  "moved": 593,
-  "toward_ai": 278,
-  "away_from_ai": 315,
+  "moved": 595,
+  "toward_ai": 279,
+  "away_from_ai": 316,
   "toward_ai_pct": 46.9,
-  "fav_toward_pct": 47.6,
+  "fav_toward_pct": 47.7,
   "mean_move_pp": {
     "n": 1275,
-    "mean": -0.23809,
+    "mean": -0.23769,
     "ci": [
-      -0.42942,
-      -0.06248
+      -0.43021,
+      -0.06167
     ],
     "ci_iid": [
-      -0.42942,
-      -0.06248
+      -0.43021,
+      -0.06167
     ],
     "clusters": 464,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
@@ -98,21 +98,21 @@
     },
     "축구 승무패": {
       "matches": 350,
-      "moved": 205,
+      "moved": 206,
       "toward_ai": 128,
-      "away_from_ai": 77,
-      "toward_ai_pct": 62.4,
-      "fav_toward_pct": 61.0,
+      "away_from_ai": 78,
+      "toward_ai_pct": 62.1,
+      "fav_toward_pct": 61.2,
       "mean_move_pp": {
         "n": 350,
-        "mean": 0.25201,
+        "mean": 0.24896,
         "ci": [
-          -0.0592,
-          0.54596
+          -0.05945,
+          0.54424
         ],
         "ci_iid": [
-          -0.0592,
-          0.53592
+          -0.05945,
+          0.53287
         ],
         "clusters": 350,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
@@ -120,21 +120,21 @@
     },
     "축구 언더오버": {
       "matches": 256,
-      "moved": 84,
-      "toward_ai": 26,
+      "moved": 85,
+      "toward_ai": 27,
       "away_from_ai": 58,
-      "toward_ai_pct": 31.0,
-      "fav_toward_pct": 33.3,
+      "toward_ai_pct": 31.8,
+      "fav_toward_pct": 34.1,
       "mean_move_pp": {
         "n": 256,
-        "mean": -0.31872,
+        "mean": -0.31254,
         "ci": [
-          -0.53245,
-          -0.12132
+          -0.52721,
+          -0.11573
         ],
         "ci_iid": [
-          -0.51446,
-          -0.12344
+          -0.51058,
+          -0.11821
         ],
         "clusters": 256,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
