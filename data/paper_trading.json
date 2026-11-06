@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-06T03:01:29+00:00",
+  "updated_at": "2026-11-06T05:01:17+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -808,6 +808,8 @@
         18.5
       ],
       "bankroll": 98740,
+      "pending_stakes": 2000,
+      "total_assets": 100740,
       "total_deposited": 100000,
       "ready": false,
       "rank": 2
@@ -825,6 +827,8 @@
         51.2
       ],
       "bankroll": 192250,
+      "pending_stakes": 5700,
+      "total_assets": 197950,
       "total_deposited": 200000,
       "ready": false,
       "rank": 3
@@ -842,6 +846,8 @@
         21.5
       ],
       "bankroll": 98290,
+      "pending_stakes": 3000,
+      "total_assets": 101290,
       "total_deposited": 100000,
       "ready": false,
       "rank": 1
