@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T11:01:16+00:00",
+  "updated_at": "2026-11-07T13:01:10+00:00",
   "rounds": [
     260126,
     260127,
@@ -32,15 +32,15 @@
   },
   "follow": {
     "with_history": 272,
-    "moved": 100,
+    "moved": 102,
     "toward_sharp": 59,
-    "toward_sharp_pct": 59.0,
+    "toward_sharp_pct": 57.8,
     "dist_change_pp": {
-      "n": 100,
-      "mean": -0.4225,
+      "n": 102,
+      "mean": -0.3888,
       "ci": [
-        -1.1377,
-        0.3133
+        -1.1593,
+        0.3125
       ]
     }
   },
