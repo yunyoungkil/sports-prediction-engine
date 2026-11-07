@@ -36229,45 +36229,7 @@
       "away_win": 0.3237
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "d7c0778720f3ff10863385ef0c40f9e8",
-      "home_team": "Kashiwa Reysol",
-      "away_team": "Kawasaki Frontale",
-      "commence_time": "2026-11-07T07:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.2,
-        "draw": 3.97,
-        "away_win": 3.07
-      },
-      "sharp_probs": {
-        "home_win": 0.4404,
-        "draw": 0.244,
-        "away_win": 0.3156
-      },
-      "consensus_probs": {
-        "home_win": 0.4360375,
-        "draw": 0.24488749999999998,
-        "away_win": 0.31908749999999997
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_odds",
-      "prob_distance": 0.0278,
-      "sport_key": "soccer_japan_j_league",
-      "betman_odds": {
-        "home_win": 2.04,
-        "draw": 3.55,
-        "away_win": 2.65
-      },
-      "betman_home": "가시와 레이솔",
-      "betman_away": "가와사키 프론탈레",
-      "match_time": "26.11.07 (토) 16:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1016,
-        "draw": -0.1338,
-        "away_win": -0.1637
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
@@ -43177,45 +43139,7 @@
       "away_win": 0.3273
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "db55a95444dc71401e82c6843dbe5b63",
-      "home_team": "Melbourne City",
-      "away_team": "Western Sydney Wanderers",
-      "commence_time": "2026-11-07T08:40:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.18,
-        "draw": 3.74,
-        "away_win": 3.28
-      },
-      "sharp_probs": {
-        "home_win": 0.4449,
-        "draw": 0.2593,
-        "away_win": 0.2957
-      },
-      "consensus_probs": {
-        "home_win": 0.43908749999999996,
-        "draw": 0.2639125,
-        "away_win": 0.296975
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_single",
-      "prob_distance": 0.0496,
-      "sport_key": "soccer_australia_aleague",
-      "betman_odds": {
-        "home_win": 2.07,
-        "draw": 3.3,
-        "away_win": 2.75
-      },
-      "betman_home": "멜버른 시티",
-      "betman_away": "웨스턴시드니 원더러스",
-      "match_time": "26.11.07 (토) 17:40",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.0791,
-        "draw": -0.1443,
-        "away_win": -0.1868
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
