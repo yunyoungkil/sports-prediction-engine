@@ -25163,45 +25163,7 @@
       "away_win": 0.2915
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "deb167291e30fad7203968083b27bfb6",
-      "home_team": "Auckland FC",
-      "away_team": "Wellington Phoenix FC",
-      "commence_time": "2026-11-07T04:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.32,
-        "draw": 3.63,
-        "away_win": 3.09
-      },
-      "sharp_probs": {
-        "home_win": 0.4184,
-        "draw": 0.2674,
-        "away_win": 0.3142
-      },
-      "consensus_probs": {
-        "home_win": 0.419475,
-        "draw": 0.26892499999999997,
-        "away_win": 0.3116
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_single",
-      "prob_distance": 0.0478,
-      "sport_key": "soccer_australia_aleague",
-      "betman_odds": {
-        "home_win": 1.99,
-        "draw": 3.2,
-        "away_win": 3.0
-      },
-      "betman_home": "오클랜드FC",
-      "betman_away": "웰링턴 피닉스",
-      "match_time": "26.11.07 (토) 13:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1674,
-        "draw": -0.1443,
-        "away_win": -0.0574
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
