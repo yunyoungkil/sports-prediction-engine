@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-07T19:01:26+00:00",
+  "updated_at": "2026-11-07T20:55:44+00:00",
   "rounds": [
     260126,
     260127,
@@ -9,24 +9,24 @@
     260131,
     260132
   ],
-  "matches": 1397,
-  "moved": 644,
+  "matches": 1405,
+  "moved": 646,
   "toward_ai": 304,
-  "away_from_ai": 340,
-  "toward_ai_pct": 47.2,
-  "fav_toward_pct": 48.0,
+  "away_from_ai": 342,
+  "toward_ai_pct": 47.1,
+  "fav_toward_pct": 47.8,
   "mean_move_pp": {
-    "n": 1397,
-    "mean": -0.22068,
+    "n": 1405,
+    "mean": -0.22379,
     "ci": [
-      -0.39833,
-      -0.06193
+      -0.39159,
+      -0.06196
     ],
     "ci_iid": [
-      -0.3807,
-      -0.06285
+      -0.39159,
+      -0.06805
     ],
-    "clusters": 525,
+    "clusters": 529,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
@@ -97,46 +97,46 @@
       }
     },
     "축구 승무패": {
-      "matches": 402,
-      "moved": 236,
+      "matches": 406,
+      "moved": 237,
       "toward_ai": 145,
-      "away_from_ai": 91,
-      "toward_ai_pct": 61.4,
-      "fav_toward_pct": 61.0,
+      "away_from_ai": 92,
+      "toward_ai_pct": 61.2,
+      "fav_toward_pct": 60.8,
       "mean_move_pp": {
-        "n": 402,
-        "mean": 0.24302,
+        "n": 406,
+        "mean": 0.24052,
         "ci": [
-          -0.01584,
-          0.50495
+          -0.0242,
+          0.49795
         ],
         "ci_iid": [
-          -0.01584,
-          0.4917
+          -0.0242,
+          0.49795
         ],
-        "clusters": 402,
+        "clusters": 406,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 언더오버": {
-      "matches": 308,
-      "moved": 99,
+      "matches": 312,
+      "moved": 100,
       "toward_ai": 32,
-      "away_from_ai": 67,
-      "toward_ai_pct": 32.3,
-      "fav_toward_pct": 34.3,
+      "away_from_ai": 68,
+      "toward_ai_pct": 32.0,
+      "fav_toward_pct": 34.0,
       "mean_move_pp": {
-        "n": 308,
-        "mean": -0.29622,
+        "n": 312,
+        "mean": -0.31194,
         "ci": [
-          -0.47878,
-          -0.11903
+          -0.48813,
+          -0.13715
         ],
         "ci_iid": [
-          -0.47007,
-          -0.11903
+          -0.48424,
+          -0.1423
         ],
-        "clusters": 308,
+        "clusters": 312,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
@@ -170,11 +170,11 @@
   },
   "paper_strategies": {
     "B_fav_double": {
-      "n": 11,
-      "mean": 0.37654,
+      "n": 12,
+      "mean": 0.34516,
       "ci": [
-        -3.21208,
-        3.07248
+        -2.94446,
+        2.81432
       ]
     },
     "C_finder_top": {
@@ -186,19 +186,19 @@
       ]
     },
     "D_banker_cover": {
-      "n": 51,
-      "mean": -0.43567,
+      "n": 54,
+      "mean": -0.41147,
       "ci": [
-        -1.92226,
-        0.99852
+        -1.78879,
+        0.94013
       ]
     },
     "E_market_fav": {
-      "n": 242,
-      "mean": 0.69363,
+      "n": 244,
+      "mean": 0.68795,
       "ci": [
-        0.00812,
-        1.31964
+        0.0074,
+        1.36627
       ]
     },
     "G_ai_bettor": {
@@ -234,16 +234,16 @@
       ]
     },
     "I_least_loss": {
-      "n": 4,
-      "mean": 0.65789,
+      "n": 6,
+      "mean": 0.4386,
       "ci": [
         0.0,
-        1.97368
+        1.31579
       ]
     },
     "J_gemini": {
-      "n": 2,
-      "mean": 2.52101,
+      "n": 3,
+      "mean": 1.68067,
       "ci": [
         0.0,
         5.04202
