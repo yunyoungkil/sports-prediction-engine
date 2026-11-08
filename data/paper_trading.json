@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-08T13:01:25+00:00",
+  "updated_at": "2026-11-08T14:54:15+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -48,28 +48,30 @@
     },
     "C_finder_top": {
       "label": "C. 조합 찾기 1순위",
-      "bets": 5,
+      "bets": 6,
       "hits": 3,
-      "pending": 1,
-      "staked": 5000,
+      "pending": 0,
+      "staked": 6000,
       "returned": 5000,
-      "profit": 0,
-      "roi_pct": 0.0,
-      "roi_ci_low": -68.0,
-      "roi_ci_high": 68.0,
+      "profit": -1000,
+      "roi_pct": -16.67,
+      "roi_ci_low": -73.33,
+      "roi_ci_high": 41.67,
       "cum_profit": [
         700,
         1300,
         300,
         1000,
-        0
+        0,
+        -1000
       ],
       "cum_staked": [
         1000,
         2000,
         3000,
         4000,
-        5000
+        5000,
+        6000
       ],
       "verdict": "판단 보류 (표본 부족)"
     },
@@ -128,15 +130,15 @@
     },
     "E_market_fav": {
       "label": "E. 배당 1순위 단일 (기준선)",
-      "bets": 259,
-      "hits": 150,
-      "pending": 28,
-      "staked": 259000,
-      "returned": 248300,
-      "profit": -10700,
-      "roi_pct": -4.13,
-      "roi_ci_low": -14.64,
-      "roi_ci_high": 6.26,
+      "bets": 269,
+      "hits": 153,
+      "pending": 18,
+      "staked": 269000,
+      "returned": 254370,
+      "profit": -14630,
+      "roi_pct": -5.44,
+      "roi_ci_low": -15.51,
+      "roi_ci_high": 5.29,
       "cum_profit": [
         550,
         770,
@@ -396,7 +398,17 @@
         -9530,
         -10530,
         -9700,
-        -10700
+        -10700,
+        -11700,
+        -12700,
+        -13700,
+        -12760,
+        -13760,
+        -14760,
+        -13590,
+        -14590,
+        -13630,
+        -14630
       ],
       "cum_staked": [
         1000,
@@ -657,7 +669,17 @@
         256000,
         257000,
         258000,
-        259000
+        259000,
+        260000,
+        261000,
+        262000,
+        263000,
+        264000,
+        265000,
+        266000,
+        267000,
+        268000,
+        269000
       ],
       "verdict": "판단 보류 (표본 부족)"
     },
@@ -682,22 +704,23 @@
     },
     "G_ai_bettor": {
       "label": "G. 자율 AI 베터 (월 10만 원 · 주력 안정 + 소액 복권)",
-      "bets": 6,
+      "bets": 7,
       "hits": 2,
-      "pending": 2,
-      "staked": 13700,
+      "pending": 1,
+      "staked": 15100,
       "returned": 10250,
-      "profit": -3450,
-      "roi_pct": -25.18,
+      "profit": -4850,
+      "roi_pct": -32.12,
       "roi_ci_low": -100.0,
-      "roi_ci_high": 38.17,
+      "roi_ci_high": 28.97,
       "cum_profit": [
         -1400,
         340,
         2650,
         1450,
         -2050,
-        -3450
+        -3450,
+        -4850
       ],
       "cum_staked": [
         1400,
@@ -705,13 +728,14 @@
         7600,
         8800,
         12300,
-        13700
+        13700,
+        15100
       ],
       "verdict": "판단 보류 (표본 부족)",
       "bankroll": 192250,
       "total_deposited": 200000,
       "months_funded": 2,
-      "pending_stakes": 4300,
+      "pending_stakes": 2900,
       "is_broke": false,
       "can_bet": true,
       "mode": "normal",
@@ -732,43 +756,44 @@
         },
         "lottery": {
           "label": "복권",
-          "bets": 3,
+          "bets": 4,
           "hits": 0,
-          "staked": 4000,
+          "staked": 5400,
           "returned": 0,
-          "profit": -4000,
+          "profit": -5400,
           "roi_pct": -100.0
         }
       },
       "sizing": {
-        "bets": 6,
+        "bets": 7,
         "flat_stake": 1000,
-        "roi_ai_pct": -25.18,
-        "roi_flat_pct": -45.0,
-        "gain_pp": 19.82,
-        "gain_ci_low": 19.82,
-        "gain_ci_high": 19.82,
+        "roi_ai_pct": -32.12,
+        "roi_flat_pct": -52.86,
+        "gain_pp": 20.74,
+        "gain_ci_low": 20.74,
+        "gain_ci_high": 20.74,
         "verdict": "판단 보류 (표본 부족)"
       }
     },
     "G_instinct": {
       "label": "G-본능 (G와 같은 경기 · 이기면 판돈 키우고 지면 고배당, 비교용)",
-      "bets": 6,
+      "bets": 7,
       "hits": 2,
-      "pending": 2,
-      "staked": 17600,
+      "pending": 1,
+      "staked": 19500,
       "returned": 12630,
-      "profit": -4970,
-      "roi_pct": -28.24,
+      "profit": -6870,
+      "roi_pct": -35.23,
       "roi_ci_low": -100.0,
-      "roi_ci_high": 38.92,
+      "roi_ci_high": 29.46,
       "cum_profit": [
         -1400,
         340,
         3630,
         1830,
         -3070,
-        -4970
+        -4970,
+        -6870
       ],
       "cum_staked": [
         1400,
@@ -776,13 +801,14 @@
         9000,
         10800,
         15700,
-        17600
+        17600,
+        19500
       ],
       "verdict": "판단 보류 (표본 부족)",
       "bankroll": 189130,
       "total_deposited": 200000,
       "months_funded": 2,
-      "pending_stakes": 5900,
+      "pending_stakes": 4000,
       "is_broke": false,
       "can_bet": true,
       "mode": "normal",
@@ -803,22 +829,22 @@
         },
         "lottery": {
           "label": "복권",
-          "bets": 3,
+          "bets": 4,
           "hits": 0,
-          "staked": 5100,
+          "staked": 7000,
           "returned": 0,
-          "profit": -5100,
+          "profit": -7000,
           "roi_pct": -100.0
         }
       },
       "sizing": {
-        "bets": 6,
+        "bets": 7,
         "flat_stake": 1000,
-        "roi_ai_pct": -28.24,
-        "roi_flat_pct": -45.0,
-        "gain_pp": 16.76,
-        "gain_ci_low": 16.76,
-        "gain_ci_high": 16.76,
+        "roi_ai_pct": -35.23,
+        "roi_flat_pct": -52.86,
+        "gain_pp": 17.63,
+        "gain_ci_low": 17.63,
+        "gain_ci_high": 17.63,
         "verdict": "판단 보류 (표본 부족)"
       },
       "instinct_rounds": {
@@ -935,18 +961,18 @@
     {
       "key": "G_ai_bettor",
       "name": "프로그램 AI (G)",
-      "bets": 6,
-      "pending": 2,
-      "staked": 13700,
-      "profit": -3450,
-      "roi_pct": -25.18,
+      "bets": 7,
+      "pending": 1,
+      "staked": 15100,
+      "profit": -4850,
+      "roi_pct": -32.12,
       "roi_ci": [
         -100.0,
-        38.17
+        28.97
       ],
       "bankroll": 192250,
-      "pending_stakes": 4300,
-      "total_assets": 196550,
+      "pending_stakes": 2900,
+      "total_assets": 195150,
       "total_deposited": 200000,
       "ready": false,
       "rank": 3
@@ -1188,9 +1214,9 @@
       "odds": 2.02,
       "stake": 1000,
       "kickoff": "2026-11-08T11:30:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260132",
@@ -1199,9 +1225,9 @@
       "odds": 1.96,
       "stake": 1000,
       "kickoff": "2026-11-08T08:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1960,
+      "profit": 960
     },
     {
       "gm_ts": "260132",
@@ -1210,9 +1236,9 @@
       "odds": 14.9,
       "stake": 1000,
       "kickoff": "2026-11-08T07:30:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260132",
@@ -1221,9 +1247,9 @@
       "odds": 2.17,
       "stake": 1000,
       "kickoff": "2026-11-08T07:30:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 2170,
+      "profit": 1170
     },
     {
       "gm_ts": "260132",
@@ -1232,9 +1258,9 @@
       "odds": 2.12,
       "stake": 1000,
       "kickoff": "2026-11-08T07:30:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260132",
@@ -1243,9 +1269,9 @@
       "odds": 14.9,
       "stake": 1400,
       "kickoff": "2026-11-08T07:30:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1400
     },
     {
       "gm_ts": "260132",
@@ -1254,9 +1280,9 @@
       "odds": 14.9,
       "stake": 1900,
       "kickoff": "2026-11-08T07:30:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1900
     },
     {
       "gm_ts": "260132",
@@ -1265,9 +1291,9 @@
       "odds": 2.22,
       "stake": 1000,
       "kickoff": "2026-11-08T06:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260132",
@@ -1276,9 +1302,9 @@
       "odds": 2.09,
       "stake": 1000,
       "kickoff": "2026-11-08T06:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260132",
@@ -1287,9 +1313,9 @@
       "odds": 2.22,
       "stake": 1000,
       "kickoff": "2026-11-08T05:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260132",
@@ -1298,9 +1324,9 @@
       "odds": 2.03,
       "stake": 1000,
       "kickoff": "2026-11-08T05:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260132",
@@ -1309,9 +1335,9 @@
       "odds": 1.88,
       "stake": 1000,
       "kickoff": "2026-11-08T05:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260132",
@@ -1320,9 +1346,9 @@
       "odds": 1.94,
       "stake": 1000,
       "kickoff": "2026-11-08T05:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1940,
+      "profit": 940
     },
     {
       "gm_ts": "260132",
