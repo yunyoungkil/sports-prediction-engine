@@ -13,7 +13,7 @@ import http.cookiejar
 import urllib.request
 from datetime import datetime
 from pathlib import Path
-from collector.net_retry import open_with_retry
+from collector.net_retry import open_with_retry, read_with_retry
 
 if sys.platform.startswith('win'):
     try:
@@ -69,8 +69,9 @@ def parse_odds_changes(tooltip_list: list, gm_ts: Any = None) -> dict:
 
 
 class BetmanScraper:
-    def __init__(self, gm_id: str = "G101"):
+    def __init__(self, gm_id: str = "G101", api_timeout: float = 40.0):
         self.gm_id = gm_id
+        self.api_timeout = api_timeout   # 경기 목록 본문 읽기 (15초 → 40초, 2026-11-08 GitHub 읽기 시간 초과)
         self.cookie_jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cookie_jar))
         self._visited = set()   # 이 세션에서 이미 연 쿠키용 시작 페이지 — 같은 객체로 다시 받을 때는 또 열지 않음
@@ -196,8 +197,8 @@ class BetmanScraper:
             }
             
             req_api = urllib.request.Request(api_url, data=json_body, headers=headers)
-            with open_with_retry(self.opener, req_api, timeout=15, label="경기 목록 조회") as resp:
-                data = json.loads(resp.read().decode("utf-8"))
+            # 본문(회차당 수백 KB)을 읽다가 시간이 다 되는 경우까지 재시도 (2026-11-08 GitHub에서 읽기 시간 초과 — read_with_retry)
+            data = json.loads(read_with_retry(self.opener, req_api, timeout=self.api_timeout, label="경기 목록 조회").decode("utf-8"))
 
             schedules = data.get("schedules", [])
             changes = parse_odds_changes(data.get("tooltipList"), gm_ts)   # 배당 변경 내역 (같은 응답 · 요청 추가 없음)
