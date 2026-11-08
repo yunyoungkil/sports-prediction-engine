@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-08T00:42:42+00:00",
+  "updated_at": "2026-11-08T01:01:09+00:00",
   "rounds": [
     260126,
     260127,
@@ -9,24 +9,24 @@
     260131,
     260132
   ],
-  "matches": 1435,
+  "matches": 1439,
   "moved": 659,
   "toward_ai": 310,
   "away_from_ai": 349,
   "toward_ai_pct": 47.0,
   "fav_toward_pct": 47.5,
   "mean_move_pp": {
-    "n": 1435,
-    "mean": -0.22258,
+    "n": 1439,
+    "mean": -0.22196,
     "ci": [
-      -0.38987,
-      -0.06764
+      -0.3994,
+      -0.06027
     ],
     "ci_iid": [
-      -0.38656,
-      -0.07666
+      -0.38504,
+      -0.06027
     ],
-    "clusters": 544,
+    "clusters": 546,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
@@ -53,46 +53,46 @@
       }
     },
     "농구 승패": {
-      "matches": 123,
+      "matches": 125,
       "moved": 53,
       "toward_ai": 22,
       "away_from_ai": 31,
       "toward_ai_pct": 41.5,
       "fav_toward_pct": 35.8,
       "mean_move_pp": {
-        "n": 123,
-        "mean": -0.21473,
+        "n": 125,
+        "mean": -0.21129,
         "ci": [
-          -0.99911,
-          0.54407
+          -0.96107,
+          0.55816
         ],
         "ci_iid": [
-          -0.99911,
-          0.54376
+          -0.9411,
+          0.55152
         ],
-        "clusters": 123,
+        "clusters": 125,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "농구 언더오버": {
-      "matches": 92,
+      "matches": 94,
       "moved": 11,
       "toward_ai": 5,
       "away_from_ai": 6,
       "toward_ai_pct": 45.5,
       "fav_toward_pct": 18.2,
       "mean_move_pp": {
-        "n": 92,
-        "mean": -0.03123,
+        "n": 94,
+        "mean": -0.03057,
         "ci": [
-          -0.13118,
-          0.06559
+          -0.12534,
+          0.05808
         ],
         "ci_iid": [
-          -0.12494,
-          0.05935
+          -0.12534,
+          0.05808
         ],
-        "clusters": 92,
+        "clusters": 94,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
