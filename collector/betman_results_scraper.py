@@ -13,7 +13,7 @@ import http.cookiejar
 import urllib.request
 from pathlib import Path
 from typing import List, Dict, Any
-from collector.net_retry import open_with_retry
+from collector.net_retry import read_with_retry
 
 if sys.platform.startswith('win'):
     try:
@@ -26,8 +26,9 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 
 
 class BetmanResultsScraper:
-    def __init__(self, gm_id: str = "G101"):
+    def __init__(self, gm_id: str = "G101", timeout: float = 40.0):
         self.gm_id = gm_id
+        self.timeout = timeout   # 결과 본문이 커서(회차당 약 700KB) 10초로는 GitHub에서 모자랐음 (2026-11-08)
         self.cookie_jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.cookie_jar))
         self.headers = {
@@ -63,8 +64,7 @@ class BetmanResultsScraper:
                 headers=self.headers,
                 method="POST"
             )
-            res = open_with_retry(self.opener, req, timeout=10, label=f"{gm_ts}회차 결과 조회")
-            data = json.loads(res.read().decode("utf-8"))
+            data = json.loads(read_with_retry(self.opener, req, timeout=self.timeout, label=f"{gm_ts}회차 결과 조회").decode("utf-8"))
             raw_items = data.get("detlBody", [])
         except Exception as e:
             print(f"⚠️ {gm_ts}회차 결과 수집 실패: {e}")

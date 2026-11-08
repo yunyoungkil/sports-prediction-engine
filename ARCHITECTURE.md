@@ -58,13 +58,13 @@ sports-prediction-engine/
 | 파일 | 역할 |
 |---|---|
 | `collector/betman_scraper.py` | 현재 판매 회차 경기·배당·배당 변경 내역 (야간 판매 중단 때는 detailSchedule로 회차 확인) |
-| `collector/betman_results_scraper.py` | 지난 회차 실제 결과·스코어. 조회가 비면 이미 저장된 결과를 지우지 않는다 |
+| `collector/betman_results_scraper.py` | 지난 회차 실제 결과·스코어. 조회가 비면 이미 저장된 결과를 지우지 않는다. 결과 본문(회차당 약 700KB)은 열기·읽기를 함께 재시도하고 기다리는 시간 40초(대시보드는 15초) — 2026-11-08 GitHub에서 10초 읽기 시간 초과로 조회가 계속 실패했음 |
 | `collector/betman_archive.py` | 과거 회차 축구 승무패 아카이브 → `betman_soccer_1x2.csv` (AI 학습·폼) |
 | `collector/betman_markets_archive.py` | 과거 회차 전 종목·전 유형 아카이브 (유형별 보정 모델 학습) |
 | `collector/betman_sharp.py` | 베트맨 경기 ↔ 해외 배당(The Odds API) 짝짓기, 회차별 스냅샷 |
 | `collector/download_history.py` | football-data.co.uk 유럽 5대 리그 CSV |
 | `collector/live_feed.py` | 대시보드 실시간 모드: 지금 회차·배당·상태를 받아 같은 함수로 AI 확률 계산 |
-| `collector/net_retry.py` | 베트맨 연결 끊김 재시도 |
+| `collector/net_retry.py` | 베트맨 연결 끊김 재시도 (`open_with_retry` 여는 것만 · `read_with_retry` 여는 것과 본문 읽기까지) |
 | `collector/betman_odds_moves.py` · `collector/betman_votes.py` | 배당 변경·구매현황을 천천히 모으는 보조 수집기 (이 PC에서만 실행, GitHub에서는 안 돌림) |
 
 ### models/ — 확률·전략
@@ -116,7 +116,7 @@ sports-prediction-engine/
 | `evaluation/pick_check.py` | 구매 전 점검: 담은 선택지의 과거 배당 구간별 실제 환급률로 조합의 1만 원당 환급·손해·경고 (대시보드 사이드바, 표시 전용) · **결정 점수**(`decision_months`: 실제 구매를 달마다 과거 환급률로 본 기대 손실 vs 덜 잃는 방식, ④ 탭·점검표) |
 | `evaluation/market_scan.py` · `evaluation/market_model.py` · `evaluation/metrics.py` · `evaluation/config.py` | 유형별 마진표 · 시장 기준선 · 지표(부트스트랩 포함) · 학습/튜닝/시험 분할 고정 |
 | `evaluation/gates.py` | 추천 잠금: 검증 3단계 통과한 기능만 켬 |
-| `evaluation/health_check.py` | 운영 점검(수집·갱신 시각·채점 감소·데이터 계약 오류) → 경고 시 실행 실패 표시·텔레그램 |
+| `evaluation/health_check.py` | 운영 점검(수집·갱신 시각·채점 감소·데이터 계약 오류·**시작 4시간 지난 경기 결과 20개 이상 누락**) → 경고 시 실행 실패 표시·텔레그램 |
 | `evaluation/data_contracts.py` | **데이터 계약(pandera)**: 예측·결과·아카이브 스키마 + 결과 누락 교차 검사 + 전 종목 아카이브의 정답 코드 = 점수·기준선(25개 유형)·유형 이름 복원 겹침 (2026-11-01) → `contract_report.json` |
 | `evaluation/audit.py` · `evaluation/docs_sync.py` · `evaluation/briefing.py` · `evaluation/gh_cli.py` | 브리핑용 데이터 점검 · 문서 동기화 점검 · 대화 시작 브리핑(TODO의 `📌 이어서` 항목 포함) · gh 경로 찾기 |
 | `evaluation/calibration_experiment.py` | 사후 보정 실험 (결과: 보정 불필요) |

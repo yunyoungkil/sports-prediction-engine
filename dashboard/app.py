@@ -397,7 +397,7 @@ def load_model_status():
 def live_results_scraper():
     """결과 조회용 베트맨 접속(세션) — 1분마다 새로 만들지 않고 계속 씀 (베트맨 요청 수 줄임)"""
     from collector.betman_results_scraper import BetmanResultsScraper
-    return BetmanResultsScraper()
+    return BetmanResultsScraper(timeout=15)   # 화면이 오래 멈추지 않게 (GitHub 결과 갱신은 40초)
 
 
 @st.cache_data(ttl=55, show_spinner=False)

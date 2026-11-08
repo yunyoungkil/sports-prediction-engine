@@ -24,3 +24,23 @@ def open_with_retry(opener: urllib.request.OpenerDirector, req: urllib.request.R
                     print(f"  ↻ {label} 재시도 {i + 1}/{attempts - 1} ({wait:.0f}초 후): {e}")
                 time.sleep(wait)
     raise last
+
+
+def read_with_retry(opener: urllib.request.OpenerDirector, req: urllib.request.Request, timeout: float = 40,
+                    attempts: int = 2, base_wait: float = 3.0, label: str = "") -> bytes:
+    """열기 + 본문 읽기를 한 번에 재시도해 본문(bytes)을 돌려준다. 마지막 실패는 예외로 올린다.
+    2026-11-08: GitHub에서 베트맨 결과 본문(700KB)을 읽다가 10초를 넘겨 'The read operation timed out'으로 회차 조회가
+    통째로 실패했다 — open_with_retry는 여는 것만 재시도해서 본문 읽기 실패는 다시 시도하지 않았음."""
+    last: Optional[Exception] = None
+    for i in range(attempts):
+        try:
+            with opener.open(req, timeout=timeout) as resp:
+                return resp.read()
+        except Exception as e:
+            last = e
+            if i < attempts - 1:
+                wait = base_wait + 3 * i
+                if label:
+                    print(f"  ↻ {label} 재시도 {i + 1}/{attempts - 1} ({wait:.0f}초 후): {e}")
+                time.sleep(wait)
+    raise last

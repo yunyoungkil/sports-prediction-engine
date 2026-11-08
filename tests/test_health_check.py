@@ -79,3 +79,48 @@ def test_record_writes_state_and_verify_fails_on_warnings(tmp_path):
 def test_next_state_keeps_other_job_time():
     s = next_state({"results_last_run": "x"}, _matches(5), {"graded_matches": 3}, "pipeline", NOW)
     assert s["results_last_run"] == "x" and s["pipeline_last_run"].startswith("2026-10-27")
+
+
+def test_results_missing_warns_only_when_many_started_matches_have_no_result():
+    """2026-11-08: 결과 조회가 GitHub에서 시간 초과로 계속 실패했는데 점검은 '이상 없음' — 시작 4시간 지난 경기 결과가 20개 이상 비면 경고"""
+    from evaluation.health_check import results_missing_warnings
+    old = (NOW - timedelta(hours=6)).timestamp()            # 초 단위도 받음
+    soon = (NOW - timedelta(hours=1)).timestamp() * 1000    # 밀리초 · 아직 4시간 안 됨
+    preds = [{"gm_ts": 260132, "match_seq": str(i), "kickoff_ts": old} for i in range(30)] + \
+            [{"gm_ts": 260132, "match_seq": str(100 + i), "kickoff_ts": soon} for i in range(30)]
+    got = [{"gm_ts": 260132, "match_seq": str(i)} for i in range(10)]
+    w = results_missing_warnings(preds, got, NOW)
+    assert [x["code"] for x in w] == ["results_missing"] and "20개" in w[0]["message"] and "260132" in w[0]["message"]
+    assert results_missing_warnings(preds, got + [{"gm_ts": 260132, "match_seq": str(i)} for i in range(10, 25)], NOW) == []
+    assert results_missing_warnings(preds, None, NOW) == []                         # 결과 파일이 없으면 점검 안 함
+    assert results_missing_warnings(preds[:19], [], NOW) == []                      # 취소·연기 몇 개는 경고 안 함
+
+
+def test_read_with_retry_retries_a_body_read_timeout():
+    """2026-11-08: 본문 읽기 시간 초과도 다시 시도한다 (예전 open_with_retry는 여는 것만 재시도)"""
+    import socket
+    from collector import net_retry
+    calls = []
+
+    class Resp:
+        def __init__(self, fail): self.fail = fail
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def read(self):
+            if self.fail:
+                raise socket.timeout("The read operation timed out")
+            return b'{"ok": 1}'
+
+    class Opener:
+        def open(self, req, timeout):
+            calls.append(timeout)
+            return Resp(fail=len(calls) == 1)
+
+    import time as _t
+    orig = net_retry.time.sleep
+    net_retry.time.sleep = lambda s: None
+    try:
+        assert net_retry.read_with_retry(Opener(), object(), timeout=40) == b'{"ok": 1}'
+    finally:
+        net_retry.time.sleep = orig
+    assert calls == [40, 40]

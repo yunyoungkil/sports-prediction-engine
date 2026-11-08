@@ -11,6 +11,8 @@ evaluation/health_check.py
 - pipeline_stale   : 파이프라인이 36시간 넘게 실행되지 않았다 (하루 2회 예약) — 결과 갱신 때 점검
 - results_stale    : 결과 갱신이 12시간 넘게 실행되지 않았다 (1시간마다 예약이지만 GitHub 지연으로 실제 4~5시간 간격) — 파이프라인 때 점검
 - graded_decrease  : 성적표 채점 경기 수가 직전보다 줄었다 (기록 유실)
+- results_missing  : 시작한 지 4시간이 넘었는데 결과가 없는 경기가 20개 이상 (베트맨 결과 조회 실패 — 2026-11-08 GitHub에서
+                     결과 조회가 시간 초과로 계속 실패했는데 실행은 '성공'·점검은 '이상 없음'으로 끝나 브리핑에서야 발견)
 
 저장: data/health_state.json (직전 값 · 마지막 실행 시각), data/health_report.json (이번 점검 결과)
 
@@ -120,6 +122,35 @@ def run_checks(predictions: List[Dict[str, Any]], current_matches: Optional[List
     return w
 
 
+RESULTS_MISSING_AFTER_H = 4.0
+RESULTS_MISSING_MIN = 20
+
+
+def results_missing_warnings(predictions: List[Dict[str, Any]], results: Optional[List[Dict[str, Any]]],
+                             now: datetime) -> List[Dict[str, str]]:
+    """시작한 지 RESULTS_MISSING_AFTER_H시간이 넘었는데 결과 파일에 없는 경기가 RESULTS_MISSING_MIN개 이상이면 경고.
+    결과 파일이 없으면(테스트·첫 실행) 점검하지 않는다. 취소·연기 경기 몇 개는 원래 결과가 없어서 문턱을 둔다."""
+    if results is None:
+        return []
+    done = {(str(r.get("gm_ts")), str(r.get("match_seq"))) for r in results}
+    cutoff = (now - timedelta(hours=RESULTS_MISSING_AFTER_H)).timestamp() * 1000
+    late = []
+    for m in predictions:
+        k = m.get("kickoff_ts")
+        try:
+            k = float(k)
+        except (TypeError, ValueError):
+            continue
+        k = k * 1000 if k < 1e12 else k
+        if k < cutoff and (str(m.get("gm_ts")), str(m.get("match_seq"))) not in done:
+            late.append(m)
+    if len(late) < RESULTS_MISSING_MIN:
+        return []
+    rounds = sorted({str(m.get("gm_ts")) for m in late})
+    return [_warn("results_missing", f"시작한 지 {RESULTS_MISSING_AFTER_H:g}시간이 넘었는데 결과가 없는 경기가 {len(late)}개예요 "
+                                     f"(회차 {', '.join(rounds)}) — 베트맨 결과 조회가 실패하고 있을 수 있어요")]
+
+
 def contract_warnings(report: Optional[Dict[str, Any]], now: datetime, max_age_h: float = 3.0) -> List[Dict[str, str]]:
     """데이터 계약 점검(evaluation/data_contracts.py, 파이프라인이 저장 직후 실행) 오류를 경고로. 오래된 보고서는 무시"""
     if not report:
@@ -150,6 +181,8 @@ def record(source: str, data_dir: Path = DATA_DIR, now: Optional[datetime] = Non
     scorecard = _load(data_dir / "model_scorecard.json", None)
     state = _load(data_dir / "health_state.json", {})
     warnings = run_checks(predictions, current, scorecard, state, now, source)
+    res_rows = _load(data_dir / "history" / "betman_recent_results.json", None)
+    warnings += results_missing_warnings(predictions, res_rows if isinstance(res_rows, list) else None, now)
     if source == "pipeline":   # 계약 점검은 pandas가 있는 파이프라인에서만 돌아 그 보고서만 믿는다 (결과 갱신 때는 낡을 수 있음)
         warnings += contract_warnings(_load(data_dir / "contract_report.json", None), now)
     # AI 모델이 오래됨 (주간 재학습이 안 돎 — 2026-10-29: 실행 시각 조건 때문에 한 번도 자동으로 안 돌았던 버그) · evaluation/audit.py와 같은 기준
