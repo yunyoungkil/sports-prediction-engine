@@ -1,13 +1,8 @@
 {
-  "checked_at": "2026-11-09T07:14:31+00:00",
-  "source": "pipeline",
-  "ok": false,
-  "warnings": [
-    {
-      "code": "match_count_drop",
-      "message": "260133회차 수집 경기 수가 직전 786 → 이번 62으로 절반 이하로 줄었어요"
-    }
-  ],
+  "checked_at": "2026-11-09T09:02:36+00:00",
+  "source": "results",
+  "ok": true,
+  "warnings": [],
   "matches": 62,
   "round": "260133",
   "graded": 1531
