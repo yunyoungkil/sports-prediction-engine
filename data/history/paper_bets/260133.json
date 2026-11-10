@@ -1,4 +1,169 @@
 {
   "gm_ts": "260133",
-  "bets": []
+  "bets": [
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "3750",
+          "key": "home_win",
+          "odds": 1.93,
+          "match_time": "26.11.11 (수) 19:30",
+          "home_team": "우라와 레드",
+          "away_team": "세레소 오사카",
+          "league": "일본 리그컵"
+        },
+        {
+          "seq": "3724",
+          "key": "home_win",
+          "odds": 2.15,
+          "match_time": "26.11.11 (수) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "FC마치다 젤비아",
+          "league": "일본 리그컵"
+        }
+      ],
+      "combined_odds": 4.2,
+      "stake": 1100,
+      "ev_ai": -0.1777,
+      "p_ai": 0.1958,
+      "edge": 0.0355,
+      "stake_mult": 0.85,
+      "wallet_before": 192250,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:3750h+3724h",
+      "ai_note": "주력 · 이번 달 밑천 70,170원 · 잔고 192,250원 중 1,100원 · 경기당 AI 우위 +3.5% → 판돈 ×0.9 · AI 기대수익 -17.8% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70170,
+      "gm_ts": "260133",
+      "created_at": "2026-11-10T00:54:32+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "3720",
+          "key": "away_win",
+          "odds": 2.5,
+          "match_time": "26.11.11 (수) 19:00",
+          "home_team": "요코하마 F마리노스",
+          "away_team": "가시마 앤틀러스",
+          "league": "일본 리그컵"
+        },
+        {
+          "seq": "3716",
+          "key": "away_win",
+          "odds": 2.6,
+          "match_time": "26.11.11 (수) 19:00",
+          "home_team": "가와사키 프론탈레",
+          "away_team": "가시와 레이솔",
+          "league": "일본 리그컵"
+        }
+      ],
+      "combined_odds": 6.5,
+      "stake": 300,
+      "ev_ai": -0.2159,
+      "p_ai": 0.1206,
+      "edge": 0.0179,
+      "stake_mult": 0.68,
+      "wallet_before": 192250,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:3720a+3716a",
+      "ai_note": "복권 · 이번 달 밑천 70,170원 · 잔고 192,250원 중 300원 · 경기당 AI 우위 +1.8% → 판돈 ×0.7 · AI 기대수익 -21.6% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70170,
+      "gm_ts": "260133",
+      "created_at": "2026-11-10T00:54:32+00:00"
+    },
+    {
+      "strategy": "G_instinct",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "3750",
+          "key": "home_win",
+          "odds": 1.93,
+          "match_time": "26.11.11 (수) 19:30",
+          "home_team": "우라와 레드",
+          "away_team": "세레소 오사카",
+          "league": "일본 리그컵"
+        },
+        {
+          "seq": "3724",
+          "key": "home_win",
+          "odds": 2.15,
+          "match_time": "26.11.11 (수) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "FC마치다 젤비아",
+          "league": "일본 리그컵"
+        }
+      ],
+      "combined_odds": 4.2,
+      "stake": 1200,
+      "ev_ai": -0.1777,
+      "p_ai": 0.1958,
+      "edge": 0.0355,
+      "stake_mult": 0.85,
+      "wallet_before": 189130,
+      "mode": "normal",
+      "bet_id": "G_instinct:3750h+3724h",
+      "ai_note": "주력 · 이번 달 밑천 70,340원 · 잔고 189,130원 중 1,200원 · 경기당 AI 우위 +3.5% → 판돈 ×0.9 · AI 기대수익 -17.8% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70340,
+      "boost": 1.0,
+      "instinct": "",
+      "gm_ts": "260133",
+      "created_at": "2026-11-10T00:54:32+00:00"
+    },
+    {
+      "strategy": "G_instinct",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "3720",
+          "key": "away_win",
+          "odds": 2.5,
+          "match_time": "26.11.11 (수) 19:00",
+          "home_team": "요코하마 F마리노스",
+          "away_team": "가시마 앤틀러스",
+          "league": "일본 리그컵"
+        },
+        {
+          "seq": "3716",
+          "key": "away_win",
+          "odds": 2.6,
+          "match_time": "26.11.11 (수) 19:00",
+          "home_team": "가와사키 프론탈레",
+          "away_team": "가시와 레이솔",
+          "league": "일본 리그컵"
+        }
+      ],
+      "combined_odds": 6.5,
+      "stake": 300,
+      "ev_ai": -0.2159,
+      "p_ai": 0.1206,
+      "edge": 0.0179,
+      "stake_mult": 0.68,
+      "wallet_before": 189130,
+      "mode": "normal",
+      "bet_id": "G_instinct:3720a+3716a",
+      "ai_note": "복권 · 이번 달 밑천 70,340원 · 잔고 189,130원 중 300원 · 경기당 AI 우위 +1.8% → 판돈 ×0.7 · AI 기대수익 -21.6% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70340,
+      "boost": 1.0,
+      "instinct": "",
+      "gm_ts": "260133",
+      "created_at": "2026-11-10T00:54:32+00:00"
+    }
+  ],
+  "f_plan": {
+    "games": 4,
+    "candidates": 56,
+    "bets": 0,
+    "bankroll": 100000,
+    "staked": 0,
+    "at": "2026-11-10T00:54:32+00:00"
+  }
 }
