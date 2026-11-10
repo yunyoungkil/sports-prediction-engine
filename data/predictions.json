@@ -18723,40 +18723,56 @@
     "home_team": "유타 재즈",
     "away_team": "마이애미 히트",
     "betman_odds": {
-      "home_win": 4.47,
+      "home_win": 4.02,
       "draw": 0.0,
-      "away_win": 1.08
+      "away_win": 1.11
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-10 22:42:55",
+        "from": {
+          "home_win": 4.47,
+          "draw": 0.0,
+          "away_win": 1.08
+        },
+        "to": {
+          "home_win": 4.02,
+          "draw": 0.0,
+          "away_win": 1.11
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 4.47,
+      "home_win": 4.02,
       "draw": 0.0,
-      "away_win": 1.08
+      "away_win": 1.11
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.1946,
+      "home": 0.2164,
       "draw": 0.0,
-      "away": 0.8054
+      "away": 0.7836
     },
     "model_probabilities": {
-      "home_win": 0.1946,
+      "home_win": 0.2164,
       "draw": 0.0,
-      "away_win": 0.8054
+      "away_win": 0.7836
     },
     "blended_probabilities": {
-      "home_win": 0.193,
+      "home_win": 0.2148,
       "draw": 0.0,
-      "away_win": 0.807
+      "away_win": 0.7852
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1373,
+        "home_win": -0.1365,
         "draw": -1.0,
         "away_win": -0.1284
       },

@@ -3424,11 +3424,27 @@
     "match_state": "2",
     "home_team": "유타 재즈",
     "away_team": "마이애미 히트",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-10 22:42:55",
+        "from": {
+          "home_win": 4.47,
+          "draw": 0.0,
+          "away_win": 1.08
+        },
+        "to": {
+          "home_win": 4.02,
+          "draw": 0.0,
+          "away_win": 1.11
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 4.47,
+      "home_win": 4.02,
       "draw": 0.0,
-      "away_win": 1.08
+      "away_win": 1.11
     },
     "gm_ts": 260133
   },
