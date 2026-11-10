@@ -13776,9 +13776,9 @@
     "home_team": "울산현대모비스 피버스",
     "away_team": "고양소노 스카이거너스",
     "betman_odds": {
-      "home_win": 2.8,
-      "draw": 2.75,
-      "away_win": 2.33
+      "home_win": 2.95,
+      "draw": 2.6,
+      "away_win": 2.35
     },
     "odds_changes": [
       {
@@ -13795,44 +13795,59 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-10 18:16:58",
+        "from": {
+          "home_win": 2.8,
+          "draw": 2.75,
+          "away_win": 2.33
+        },
+        "to": {
+          "home_win": 2.95,
+          "draw": 2.6,
+          "away_win": 2.35
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.8,
-      "draw": 2.75,
-      "away_win": 2.33
+      "home_win": 2.95,
+      "draw": 2.6,
+      "away_win": 2.35
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3106,
-      "draw": 0.3162,
-      "away": 0.3732
+      "home": 0.295,
+      "draw": 0.3347,
+      "away": 0.3703
     },
     "model_probabilities": {
-      "home_win": 0.3106,
-      "draw": 0.3162,
-      "away_win": 0.3732
+      "home_win": 0.295,
+      "draw": 0.3347,
+      "away_win": 0.3703
     },
     "blended_probabilities": {
-      "home_win": 0.3106,
-      "draw": 0.3162,
-      "away_win": 0.3732
+      "home_win": 0.295,
+      "draw": 0.3347,
+      "away_win": 0.3703
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1303,
-        "draw": -0.1305,
-        "away_win": -0.1304
+        "home_win": -0.1298,
+        "draw": -0.1298,
+        "away_win": -0.1298
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 울산현대모비스 피버스 승",
       "raw_selection_name": "울산현대모비스 피버스 승",
-      "best_ev": -0.1303,
+      "best_ev": -0.1298,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -14704,9 +14719,9 @@
     "home_team": "삼성화재 블루팡스",
     "away_team": "한국전력 빅스톰",
     "betman_odds": {
-      "home_win": 2.18,
+      "home_win": 2.09,
       "draw": 0.0,
-      "away_win": 1.45
+      "away_win": 1.49
     },
     "odds_changes": [
       {
@@ -14723,45 +14738,60 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-10 18:48:06",
+        "from": {
+          "home_win": 2.18,
+          "draw": 0.0,
+          "away_win": 1.45
+        },
+        "to": {
+          "home_win": 2.09,
+          "draw": 0.0,
+          "away_win": 1.49
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.18,
+      "home_win": 2.09,
       "draw": 0.0,
-      "away_win": 1.45
+      "away_win": 1.49
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3994,
+      "home": 0.4162,
       "draw": 0.0,
-      "away": 0.6006
+      "away": 0.5838
     },
     "model_probabilities": {
-      "home_win": 0.3994,
+      "home_win": 0.4162,
       "draw": 0.0,
-      "away_win": 0.6006
+      "away_win": 0.5838
     },
     "blended_probabilities": {
-      "home_win": 0.3994,
+      "home_win": 0.4162,
       "draw": 0.0,
-      "away_win": 0.6006
+      "away_win": 0.5838
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1293,
+        "home_win": -0.1301,
         "draw": -1.0,
-        "away_win": -0.1291
+        "away_win": -0.1301
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 한국전력 빅스톰 승",
-      "raw_selection_name": "한국전력 빅스톰 승",
-      "best_ev": -0.1291,
-      "best_ev_pct": "-12.9%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 삼성화재 블루팡스 승",
+      "raw_selection_name": "삼성화재 블루팡스 승",
+      "best_ev": -0.1301,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
