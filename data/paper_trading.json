@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-10T00:54:30+00:00",
+  "updated_at": "2026-11-10T01:01:02+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -733,14 +733,14 @@
       "verdict": "판단 보류 (표본 부족)",
       "bankroll": 100000,
       "start_bankroll": 100000,
-      "rounds_planned": 4,
-      "rounds_skipped": 4
+      "rounds_planned": 5,
+      "rounds_skipped": 5
     },
     "G_ai_bettor": {
       "label": "G. 자율 AI 베터 (월 10만 원 · 주력 안정 + 소액 복권)",
       "bets": 8,
       "hits": 2,
-      "pending": 0,
+      "pending": 2,
       "staked": 18000,
       "returned": 10250,
       "profit": -7750,
@@ -768,10 +768,10 @@
         18000
       ],
       "verdict": "판단 보류 (표본 부족)",
-      "bankroll": 192250,
+      "bankroll": 190850,
       "total_deposited": 200000,
       "months_funded": 2,
-      "pending_stakes": 0,
+      "pending_stakes": 1400,
       "is_broke": false,
       "can_bet": true,
       "mode": "normal",
@@ -815,7 +815,7 @@
       "label": "G-본능 (G와 같은 경기 · 이기면 판돈 키우고 지면 고배당, 비교용)",
       "bets": 8,
       "hits": 2,
-      "pending": 0,
+      "pending": 2,
       "staked": 23500,
       "returned": 12630,
       "profit": -10870,
@@ -843,10 +843,10 @@
         23500
       ],
       "verdict": "판단 보류 (표본 부족)",
-      "bankroll": 189130,
+      "bankroll": 187630,
       "total_deposited": 200000,
       "months_funded": 2,
-      "pending_stakes": 0,
+      "pending_stakes": 1500,
       "is_broke": false,
       "can_bet": true,
       "mode": "normal",
@@ -1000,7 +1000,7 @@
       "key": "G_ai_bettor",
       "name": "프로그램 AI (G)",
       "bets": 8,
-      "pending": 0,
+      "pending": 2,
       "staked": 18000,
       "profit": -7750,
       "roi_pct": -43.06,
@@ -1008,8 +1008,8 @@
         -100.0,
         16.48
       ],
-      "bankroll": 192250,
-      "pending_stakes": 0,
+      "bankroll": 190850,
+      "pending_stakes": 1400,
       "total_assets": 192250,
       "total_deposited": 200000,
       "ready": false,
@@ -1036,6 +1036,50 @@
     }
   ],
   "details": [
+    {
+      "gm_ts": "260133",
+      "strategy": "G_ai_bettor",
+      "legs": "우라와 레드 승 1.93 × 비셀 고베 승 2.15",
+      "odds": 4.2,
+      "stake": 1100,
+      "kickoff": "2026-11-11T10:30:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260133",
+      "strategy": "G_instinct",
+      "legs": "우라와 레드 승 1.93 × 비셀 고베 승 2.15",
+      "odds": 4.2,
+      "stake": 1200,
+      "kickoff": "2026-11-11T10:30:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260133",
+      "strategy": "G_ai_bettor",
+      "legs": "가시마 앤틀러스 승(원정) 2.50 × 가시와 레이솔 승(원정) 2.60",
+      "odds": 6.5,
+      "stake": 300,
+      "kickoff": "2026-11-11T10:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
+    {
+      "gm_ts": "260133",
+      "strategy": "G_instinct",
+      "legs": "가시마 앤틀러스 승(원정) 2.50 × 가시와 레이솔 승(원정) 2.60",
+      "odds": 6.5,
+      "stake": 300,
+      "kickoff": "2026-11-11T10:00:00+00:00",
+      "status": "대기",
+      "payout": null,
+      "profit": null
+    },
     {
       "gm_ts": "260132",
       "strategy": "E_market_fav",
