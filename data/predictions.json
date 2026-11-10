@@ -13540,47 +13540,63 @@
     "home_team": "울산현대모비스 피버스",
     "away_team": "고양소노 스카이거너스",
     "betman_odds": {
-      "home_win": 1.85,
+      "home_win": 1.92,
       "draw": 0.0,
-      "away_win": 1.64
+      "away_win": 1.59
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-10 17:04:25",
+        "from": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "to": {
+          "home_win": 1.92,
+          "draw": 0.0,
+          "away_win": 1.59
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.85,
+      "home_win": 1.92,
       "draw": 0.0,
-      "away_win": 1.64
+      "away_win": 1.59
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4699,
+      "home": 0.453,
       "draw": 0.0,
-      "away": 0.5301
+      "away": 0.547
     },
     "model_probabilities": {
-      "home_win": 0.4699,
+      "home_win": 0.453,
       "draw": 0.0,
-      "away_win": 0.5301
+      "away_win": 0.547
     },
     "blended_probabilities": {
-      "home_win": 0.469,
+      "home_win": 0.452,
       "draw": 0.0,
-      "away_win": 0.531
+      "away_win": 0.548
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1323,
+        "home_win": -0.1322,
         "draw": -1.0,
-        "away_win": -0.1292
+        "away_win": -0.1287
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 고양소노 스카이거너스 승",
       "raw_selection_name": "고양소노 스카이거너스 승",
-      "best_ev": -0.1292,
+      "best_ev": -0.1287,
       "best_ev_pct": "-12.9%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -13996,48 +14012,64 @@
     "home_team": "울산현대모비스 피버스",
     "away_team": "고양소노 스카이거너스",
     "betman_odds": {
-      "home_win": 1.74,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.69
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-10 17:04:25",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": 1.5,
+        "line_to": 1.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.74,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.69
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5,
+      "home": 0.4856,
       "draw": 0.0,
-      "away": 0.5
+      "away": 0.5144
     },
     "model_probabilities": {
-      "home_win": 0.5,
+      "home_win": 0.4856,
       "draw": 0.0,
-      "away_win": 0.5
+      "away_win": 0.5144
     },
     "blended_probabilities": {
-      "home_win": 0.5,
+      "home_win": 0.4856,
       "draw": 0.0,
-      "away_win": 0.5
+      "away_win": 0.5144
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.13,
+        "home_win": -0.1308,
         "draw": -1.0,
-        "away_win": -0.13
+        "away_win": -0.1307
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 울산현대모비스 피버스 (+1.5) 승",
-      "raw_selection_name": "울산현대모비스 피버스 (+1.5) 승",
-      "best_ev": -0.13,
-      "best_ev_pct": "-13.0%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 고양소노 스카이거너스 반대승",
+      "raw_selection_name": "고양소노 스카이거너스 반대승",
+      "best_ev": -0.1307,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -15094,9 +15126,9 @@
     "home_team": "삼성화재 블루팡스",
     "away_team": "한국전력 빅스톰",
     "betman_odds": {
-      "home_win": 1.92,
+      "home_win": 2.0,
       "draw": 0.0,
-      "away_win": 1.59
+      "away_win": 1.54
     },
     "odds_changes": [
       {
@@ -15143,44 +15175,59 @@
         },
         "line_from": 183.5,
         "line_to": 183.5
+      },
+      {
+        "at": "2026-11-10 17:09:34",
+        "from": {
+          "home_win": 1.92,
+          "draw": 0.0,
+          "away_win": 1.59
+        },
+        "to": {
+          "home_win": 2.0,
+          "draw": 0.0,
+          "away_win": 1.54
+        },
+        "line_from": 183.5,
+        "line_to": 183.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.92,
+      "home_win": 2.0,
       "draw": 0.0,
-      "away_win": 1.59
+      "away_win": 1.54
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.453,
+      "home": 0.435,
       "draw": 0.0,
-      "away": 0.547
+      "away": 0.565
     },
     "model_probabilities": {
-      "home_win": 0.453,
+      "home_win": 0.435,
       "draw": 0.0,
-      "away_win": 0.547
+      "away_win": 0.565
     },
     "blended_probabilities": {
-      "home_win": 0.453,
+      "home_win": 0.435,
       "draw": 0.0,
-      "away_win": 0.547
+      "away_win": 0.565
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1302,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.1303
+        "away_win": -0.1299
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 언더 (< 183.5)",
-      "raw_selection_name": "언더 (< 183.5)",
-      "best_ev": -0.1302,
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 오버 (> 183.5)",
+      "raw_selection_name": "오버 (> 183.5)",
+      "best_ev": -0.1299,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,

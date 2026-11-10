@@ -2526,11 +2526,27 @@
     "match_state": "2",
     "home_team": "울산현대모비스 피버스",
     "away_team": "고양소노 스카이거너스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-10 17:04:25",
+        "from": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "to": {
+          "home_win": 1.92,
+          "draw": 0.0,
+          "away_win": 1.59
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.85,
+      "home_win": 1.92,
       "draw": 0.0,
-      "away_win": 1.64
+      "away_win": 1.59
     },
     "gm_ts": 260133
   },
@@ -2600,11 +2616,27 @@
     "match_state": "2",
     "home_team": "울산현대모비스 피버스",
     "away_team": "고양소노 스카이거너스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-10 17:04:25",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": 1.5,
+        "line_to": 1.5
+      }
+    ],
     "odds": {
-      "home_win": 1.74,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.69
     },
     "gm_ts": 260133
   },
@@ -2822,12 +2854,27 @@
         },
         "line_from": 183.5,
         "line_to": 183.5
+      },
+      {
+        "at": "2026-11-10 17:09:34",
+        "from": {
+          "home_win": 1.92,
+          "draw": 0.0,
+          "away_win": 1.59
+        },
+        "to": {
+          "home_win": 2.0,
+          "draw": 0.0,
+          "away_win": 1.54
+        },
+        "line_from": 183.5,
+        "line_to": 183.5
       }
     ],
     "odds": {
-      "home_win": 1.92,
+      "home_win": 2.0,
       "draw": 0.0,
-      "away_win": 1.59
+      "away_win": 1.54
     },
     "gm_ts": 260133
   },
