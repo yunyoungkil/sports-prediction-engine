@@ -3300,7 +3300,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "시카고 불스",
     "away_team": "샌안토니오 스퍼스",
@@ -3329,7 +3329,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "시카고 불스",
     "away_team": "샌안토니오 스퍼스",
@@ -3358,7 +3358,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "시카고 불스",
     "away_team": "샌안토니오 스퍼스",
@@ -3403,7 +3403,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "시카고 불스",
     "away_team": "샌안토니오 스퍼스",
@@ -3432,7 +3432,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "멤피스 그리즐리스",
     "away_team": "덴버 너게츠",
@@ -3461,7 +3461,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "멤피스 그리즐리스",
     "away_team": "덴버 너게츠",
@@ -3490,7 +3490,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "멤피스 그리즐리스",
     "away_team": "덴버 너게츠",
@@ -3519,7 +3519,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "멤피스 그리즐리스",
     "away_team": "덴버 너게츠",
@@ -3548,7 +3548,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "밀워키 벅스",
     "away_team": "LA 레이커스",
@@ -3593,7 +3593,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "밀워키 벅스",
     "away_team": "LA 레이커스",
@@ -3668,7 +3668,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "밀워키 벅스",
     "away_team": "LA 레이커스",
@@ -3713,7 +3713,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "밀워키 벅스",
     "away_team": "LA 레이커스",
@@ -3742,7 +3742,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "브루클린 네츠",
@@ -3787,7 +3787,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "브루클린 네츠",
@@ -3832,7 +3832,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "브루클린 네츠",
@@ -3861,7 +3861,7 @@
     "kickoff_ts": 1794445200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "브루클린 네츠",
@@ -4026,11 +4026,27 @@
     "match_state": "2",
     "home_team": "휴스턴 로케츠",
     "away_team": "골든스테이트 워리어스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-12 10:41:29",
+        "from": {
+          "home_win": 1.24,
+          "draw": 0.0,
+          "away_win": 2.92
+        },
+        "to": {
+          "home_win": 1.28,
+          "draw": 0.0,
+          "away_win": 2.72
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.24,
+      "home_win": 1.28,
       "draw": 0.0,
-      "away_win": 2.92
+      "away_win": 2.72
     },
     "gm_ts": 260134
   },
@@ -4055,11 +4071,27 @@
     "match_state": "2",
     "home_team": "휴스턴 로케츠",
     "away_team": "골든스테이트 워리어스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-12 10:41:29",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": -6.5,
+        "line_to": -6.5
+      }
+    ],
     "odds": {
-      "home_win": 1.74,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.69
     },
     "gm_ts": 260134
   },
@@ -4099,12 +4131,27 @@
         },
         "line_from": 223.5,
         "line_to": 221.5
+      },
+      {
+        "at": "2026-11-12 10:41:29",
+        "from": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "to": {
+          "home_win": 1.82,
+          "draw": 0.0,
+          "away_win": 1.67
+        },
+        "line_from": 221.5,
+        "line_to": 221.5
       }
     ],
     "odds": {
-      "home_win": 1.76,
+      "home_win": 1.82,
       "draw": 0.0,
-      "away_win": 1.72
+      "away_win": 1.67
     },
     "gm_ts": 260134
   },
@@ -4202,12 +4249,27 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-12 10:40:15",
+        "from": {
+          "home_win": 1.57,
+          "draw": 0.0,
+          "away_win": 1.95
+        },
+        "to": {
+          "home_win": 1.52,
+          "draw": 0.0,
+          "away_win": 2.03
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "odds": {
-      "home_win": 1.57,
+      "home_win": 1.52,
       "draw": 0.0,
-      "away_win": 1.95
+      "away_win": 2.03
     },
     "gm_ts": 260134
   },
@@ -4380,11 +4442,27 @@
     "match_state": "2",
     "home_team": "포틀랜드 트레일블레이저스",
     "away_team": "오클라호마시티 썬더",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-12 10:41:30",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 226.5,
+        "line_to": 226.5
+      }
+    ],
     "odds": {
-      "home_win": 1.75,
+      "home_win": 1.8,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.68
     },
     "gm_ts": 260134
   },
