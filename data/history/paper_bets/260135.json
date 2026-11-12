@@ -1,0 +1,1049 @@
+{
+  "gm_ts": "260135",
+  "bets": [
+    {
+      "strategy": "B_fav_double",
+      "legs": [
+        {
+          "seq": "4110",
+          "key": "home_win",
+          "odds": 1.16,
+          "match_time": "26.11.15 (일) 02:00",
+          "home_team": "노르웨이",
+          "away_team": "웨일스",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "노르웨이 승"
+        },
+        {
+          "seq": "3975",
+          "key": "home_win",
+          "odds": 1.13,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "스코틀랜드",
+          "away_team": "북마케도니아",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "스코틀랜드 승"
+        }
+      ],
+      "ev_ai": -0.0372,
+      "combined_odds": 1.4,
+      "stake": 1000,
+      "bet_id": "B_fav_double:4110h+3975h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "C_finder_top",
+      "legs": [
+        {
+          "seq": "4110",
+          "key": "home_win",
+          "odds": 1.16,
+          "match_time": "26.11.15 (일) 02:00",
+          "home_team": "노르웨이",
+          "away_team": "웨일스",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "노르웨이 승"
+        },
+        {
+          "seq": "3975",
+          "key": "home_win",
+          "odds": 1.13,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "스코틀랜드",
+          "away_team": "북마케도니아",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "스코틀랜드 승"
+        }
+      ],
+      "ev_ai": -0.0372,
+      "combined_odds": 1.4,
+      "stake": 1000,
+      "bet_id": "C_finder_top:4110h+3975h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "3917",
+          "key": "away_win",
+          "odds": 1.01,
+          "match_time": "26.11.13 (금) 21:00",
+          "home_team": "싱가포르",
+          "away_team": "파라과이",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "파라과이 승"
+        },
+        {
+          "seq": "3975",
+          "key": "home_win",
+          "odds": 1.13,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "스코틀랜드",
+          "away_team": "북마케도니아",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "스코틀랜드 승"
+        },
+        {
+          "seq": "3935",
+          "key": "home_win",
+          "odds": 2.41,
+          "match_time": "26.11.14 (토) 02:00",
+          "home_team": "몰도바",
+          "away_team": "카자흐스탄",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "몰도바 승"
+        }
+      ],
+      "combined_odds": 2.8,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:3917a+3975h+3935h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "3917",
+          "key": "away_win",
+          "odds": 1.01,
+          "match_time": "26.11.13 (금) 21:00",
+          "home_team": "싱가포르",
+          "away_team": "파라과이",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "파라과이 승"
+        },
+        {
+          "seq": "3975",
+          "key": "home_win",
+          "odds": 1.13,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "스코틀랜드",
+          "away_team": "북마케도니아",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "스코틀랜드 승"
+        },
+        {
+          "seq": "3935",
+          "key": "draw",
+          "odds": 2.8,
+          "match_time": "26.11.14 (토) 02:00",
+          "home_team": "몰도바",
+          "away_team": "카자흐스탄",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "무승부"
+        }
+      ],
+      "combined_odds": 3.2,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:3917a+3975h+3935d",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "3917",
+          "key": "away_win",
+          "odds": 1.01,
+          "match_time": "26.11.13 (금) 21:00",
+          "home_team": "싱가포르",
+          "away_team": "파라과이",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "파라과이 승"
+        },
+        {
+          "seq": "3975",
+          "key": "home_win",
+          "odds": 1.13,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "스코틀랜드",
+          "away_team": "북마케도니아",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "스코틀랜드 승"
+        },
+        {
+          "seq": "3935",
+          "key": "away_win",
+          "odds": 2.65,
+          "match_time": "26.11.14 (토) 02:00",
+          "home_team": "몰도바",
+          "away_team": "카자흐스탄",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "카자흐스탄 승"
+        }
+      ],
+      "combined_odds": 3.1,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:3917a+3975h+3935a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3917",
+          "key": "away_win",
+          "odds": 1.01,
+          "match_time": "26.11.13 (금) 21:00",
+          "home_team": "싱가포르",
+          "away_team": "파라과이",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "파라과이 승"
+        }
+      ],
+      "combined_odds": 1.01,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3917a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3829",
+          "key": "home_win",
+          "odds": 2.05,
+          "match_time": "26.11.13 (금) 23:10",
+          "home_team": "아랍에미리트",
+          "away_team": "온두라스",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "아랍에미리트 승"
+        }
+      ],
+      "combined_odds": 2.05,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3829h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3923",
+          "key": "away_win",
+          "odds": 1.71,
+          "match_time": "26.11.13 (금) 23:30",
+          "home_team": "사우디아라비아",
+          "away_team": "한국",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "한국 승"
+        }
+      ],
+      "combined_odds": 1.71,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3923a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3931",
+          "key": "away_win",
+          "odds": 2.07,
+          "match_time": "26.11.13 (금) 23:45",
+          "home_team": "카타르",
+          "away_team": "호주",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "호주 승"
+        }
+      ],
+      "combined_odds": 2.07,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3931a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3935",
+          "key": "home_win",
+          "odds": 2.41,
+          "match_time": "26.11.14 (토) 02:00",
+          "home_team": "몰도바",
+          "away_team": "카자흐스탄",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "몰도바 승"
+        }
+      ],
+      "combined_odds": 2.41,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3935h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3939",
+          "key": "home_win",
+          "odds": 1.27,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "슬로바키아",
+          "away_team": "페로제도",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "슬로바키아 승"
+        }
+      ],
+      "combined_odds": 1.27,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3939h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3945",
+          "key": "home_win",
+          "odds": 2.21,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "룩셈부르크",
+          "away_team": "에스토니아",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "룩셈부르크 승"
+        }
+      ],
+      "combined_odds": 2.21,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3945h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3949",
+          "key": "away_win",
+          "odds": 1.74,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "불가리아",
+          "away_team": "아이슬란드",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "아이슬란드 승"
+        }
+      ],
+      "combined_odds": 1.74,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3949a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3953",
+          "key": "home_win",
+          "odds": 1.64,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "안도라",
+          "away_team": "지브롤터",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "안도라 승"
+        }
+      ],
+      "combined_odds": 1.64,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3953h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3957",
+          "key": "away_win",
+          "odds": 1.23,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "리히텐슈타인",
+          "away_team": "아제르바이잔",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "아제르바이잔 승"
+        }
+      ],
+      "combined_odds": 1.23,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3957a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3963",
+          "key": "home_win",
+          "odds": 1.46,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "네덜란드",
+          "away_team": "그리스",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "네덜란드 승"
+        }
+      ],
+      "combined_odds": 1.46,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3963h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3969",
+          "key": "away_win",
+          "odds": 1.21,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "세르비아",
+          "away_team": "독일",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "독일 승"
+        }
+      ],
+      "combined_odds": 1.21,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3969a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3975",
+          "key": "home_win",
+          "odds": 1.13,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "스코틀랜드",
+          "away_team": "북마케도니아",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "스코틀랜드 승"
+        }
+      ],
+      "combined_odds": 1.13,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3975h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3981",
+          "key": "away_win",
+          "odds": 1.59,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "슬로베니아",
+          "away_team": "스위스",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "스위스 승"
+        }
+      ],
+      "combined_odds": 1.59,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3981a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3825",
+          "key": "home_win",
+          "odds": 1.48,
+          "match_time": "26.11.14 (토) 08:00",
+          "home_team": "아르헨티나",
+          "away_team": "우루과이",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "아르헨티나 승"
+        }
+      ],
+      "combined_odds": 1.48,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3825h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3985",
+          "key": "home_win",
+          "odds": 1.35,
+          "match_time": "26.11.14 (토) 09:00",
+          "home_team": "콜롬비아",
+          "away_team": "칠레",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "콜롬비아 승"
+        }
+      ],
+      "combined_odds": 1.35,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3985h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "3989",
+          "key": "home_win",
+          "odds": 1.17,
+          "match_time": "26.11.14 (토) 09:00",
+          "home_team": "에콰도르",
+          "away_team": "코스타리카",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "에콰도르 승"
+        }
+      ],
+      "combined_odds": 1.17,
+      "stake": 1000,
+      "bet_id": "E_market_fav:3989h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4001",
+          "key": "home_win",
+          "odds": 1.48,
+          "match_time": "26.11.14 (토) 10:00",
+          "home_team": "페루",
+          "away_team": "볼리비아",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "페루 승"
+        }
+      ],
+      "combined_odds": 1.48,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4001h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4098",
+          "key": "away_win",
+          "odds": 1.78,
+          "match_time": "26.11.14 (토) 19:15",
+          "home_team": "일본",
+          "away_team": "브라질",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "브라질 승"
+        }
+      ],
+      "combined_odds": 1.78,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4098a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4102",
+          "key": "home_win",
+          "odds": 1.61,
+          "match_time": "26.11.14 (토) 21:00",
+          "home_team": "중국",
+          "away_team": "말레이시아",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "중국 승"
+        }
+      ],
+      "combined_odds": 1.61,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4102h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4106",
+          "key": "home_win",
+          "odds": 1.7,
+          "match_time": "26.11.14 (토) 23:00",
+          "home_team": "코소보",
+          "away_team": "이스라엘",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "코소보 승"
+        }
+      ],
+      "combined_odds": 1.7,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4106h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4110",
+          "key": "home_win",
+          "odds": 1.16,
+          "match_time": "26.11.15 (일) 02:00",
+          "home_team": "노르웨이",
+          "away_team": "웨일스",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "노르웨이 승"
+        }
+      ],
+      "combined_odds": 1.16,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4110h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4116",
+          "key": "away_win",
+          "odds": 2.3,
+          "match_time": "26.11.15 (일) 02:00",
+          "home_team": "조지아",
+          "away_team": "헝가리",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "헝가리 승"
+        }
+      ],
+      "combined_odds": 2.3,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4116a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4120",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.15 (일) 04:45",
+          "home_team": "스웨덴",
+          "away_team": "보스니아 헤르체고비나",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "스웨덴 승"
+        }
+      ],
+      "combined_odds": 1.44,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4120h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4124",
+          "key": "away_win",
+          "odds": 1.75,
+          "match_time": "26.11.15 (일) 04:45",
+          "home_team": "루마니아",
+          "away_team": "폴란드",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "폴란드 승"
+        }
+      ],
+      "combined_odds": 1.75,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4124a",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4128",
+          "key": "home_win",
+          "odds": 1.4,
+          "match_time": "26.11.15 (일) 04:45",
+          "home_team": "포르투갈",
+          "away_team": "덴마크",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "포르투갈 승"
+        }
+      ],
+      "combined_odds": 1.4,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4128h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4134",
+          "key": "home_win",
+          "odds": 1.48,
+          "match_time": "26.11.15 (일) 04:45",
+          "home_team": "오스트리아",
+          "away_team": "아일랜드공화국",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "오스트리아 승"
+        }
+      ],
+      "combined_odds": 1.48,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4134h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4138",
+          "key": "home_win",
+          "odds": 2.27,
+          "match_time": "26.11.15 (일) 04:45",
+          "home_team": "북아일랜드",
+          "away_team": "우크라이나",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "북아일랜드 승"
+        }
+      ],
+      "combined_odds": 2.27,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4138h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4176",
+          "key": "home_win",
+          "odds": 1.23,
+          "match_time": "26.11.15 (일) 12:00",
+          "home_team": "뉴질랜드",
+          "away_team": "인도",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "뉴질랜드 승"
+        }
+      ],
+      "combined_odds": 1.23,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4176h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "I_least_loss",
+      "legs": [
+        {
+          "seq": "4110",
+          "key": "home_win",
+          "odds": 1.16,
+          "match_time": "26.11.15 (일) 02:00",
+          "home_team": "노르웨이",
+          "away_team": "웨일스",
+          "league": "UEFA 네이션스리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "노르웨이 승"
+        }
+      ],
+      "rule_version": "v1",
+      "combined_odds": 1.16,
+      "stake": 1000,
+      "bet_id": "I_least_loss:4110h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "I_least_loss",
+      "legs": [
+        {
+          "seq": "3989",
+          "key": "home_win",
+          "odds": 1.17,
+          "match_time": "26.11.14 (토) 09:00",
+          "home_team": "에콰도르",
+          "away_team": "코스타리카",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "에콰도르 승"
+        }
+      ],
+      "rule_version": "v1",
+      "combined_odds": 1.17,
+      "stake": 1000,
+      "bet_id": "I_least_loss:3989h",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "4110",
+          "key": "home_win",
+          "odds": 1.16,
+          "match_time": "26.11.15 (일) 02:00",
+          "home_team": "노르웨이",
+          "away_team": "웨일스",
+          "league": "UEFA 네이션스리그"
+        },
+        {
+          "seq": "3975",
+          "key": "home_win",
+          "odds": 1.13,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "스코틀랜드",
+          "away_team": "북마케도니아",
+          "league": "UEFA 네이션스리그"
+        }
+      ],
+      "combined_odds": 1.4,
+      "stake": 3100,
+      "ev_ai": -0.0372,
+      "p_ai": 0.6877,
+      "edge": 0.0909,
+      "stake_mult": 2.23,
+      "wallet_before": 192420,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:4110h+3975h",
+      "ai_note": "주력 · 이번 달 밑천 70,170원 · 잔고 192,420원 중 3,100원 · 경기당 AI 우위 +9.1% → 판돈 ×2.2 · AI 기대수익 -3.7% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70170,
+      "gm_ts": "260135",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "3829",
+          "key": "draw",
+          "odds": 2.9,
+          "match_time": "26.11.13 (금) 23:10",
+          "home_team": "아랍에미리트",
+          "away_team": "온두라스",
+          "league": "남자축구 국제친선경기"
+        },
+        {
+          "seq": "3871",
+          "key": "draw",
+          "odds": 3.0,
+          "match_time": "26.11.13 (금) 09:30",
+          "home_team": "퀴라소",
+          "away_team": "파나마",
+          "league": "CONCACAF 네이션스리그"
+        }
+      ],
+      "combined_odds": 8.7,
+      "stake": 1400,
+      "ev_ai": -0.0309,
+      "p_ai": 0.1114,
+      "edge": 0.1313,
+      "stake_mult": 2.5,
+      "wallet_before": 192420,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:3829d+3871d",
+      "ai_note": "복권 · 이번 달 밑천 70,170원 · 잔고 192,420원 중 1,400원 · 경기당 AI 우위 +13.1% → 판돈 ×2.5 · AI 기대수익 -3.1% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70170,
+      "gm_ts": "260135",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "G_instinct",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "4110",
+          "key": "home_win",
+          "odds": 1.16,
+          "match_time": "26.11.15 (일) 02:00",
+          "home_team": "노르웨이",
+          "away_team": "웨일스",
+          "league": "UEFA 네이션스리그"
+        },
+        {
+          "seq": "3975",
+          "key": "home_win",
+          "odds": 1.13,
+          "match_time": "26.11.14 (토) 04:45",
+          "home_team": "스코틀랜드",
+          "away_team": "북마케도니아",
+          "league": "UEFA 네이션스리그"
+        }
+      ],
+      "combined_odds": 1.4,
+      "stake": 4300,
+      "ev_ai": -0.0372,
+      "p_ai": 0.6877,
+      "edge": 0.0909,
+      "stake_mult": 2.23,
+      "wallet_before": 189200,
+      "mode": "normal",
+      "bet_id": "G_instinct:4110h+3975h",
+      "ai_note": "본능: 지난 회차를 이겨서 판돈 ×1.4 · 주력 · 이번 달 밑천 70,340원 · 잔고 189,200원 중 4,300원 · 경기당 AI 우위 +9.1% → 판돈 ×2.2 · AI 기대수익 -3.7% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70340,
+      "boost": 1.4,
+      "instinct": "win_boost",
+      "gm_ts": "260135",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "G_instinct",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "3829",
+          "key": "draw",
+          "odds": 2.9,
+          "match_time": "26.11.13 (금) 23:10",
+          "home_team": "아랍에미리트",
+          "away_team": "온두라스",
+          "league": "남자축구 국제친선경기"
+        },
+        {
+          "seq": "3871",
+          "key": "draw",
+          "odds": 3.0,
+          "match_time": "26.11.13 (금) 09:30",
+          "home_team": "퀴라소",
+          "away_team": "파나마",
+          "league": "CONCACAF 네이션스리그"
+        }
+      ],
+      "combined_odds": 8.7,
+      "stake": 1900,
+      "ev_ai": -0.0309,
+      "p_ai": 0.1114,
+      "edge": 0.1313,
+      "stake_mult": 2.5,
+      "wallet_before": 189200,
+      "mode": "normal",
+      "bet_id": "G_instinct:3829d+3871d",
+      "ai_note": "본능: 지난 회차를 이겨서 판돈 ×1.4 · 복권 · 이번 달 밑천 70,340원 · 잔고 189,200원 중 1,900원 · 경기당 AI 우위 +13.1% → 판돈 ×2.5 · AI 기대수익 -3.1% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70340,
+      "boost": 1.4,
+      "instinct": "win_boost",
+      "gm_ts": "260135",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    },
+    {
+      "strategy": "J_gemini",
+      "legs": [
+        {
+          "seq": "4176",
+          "key": "home_win",
+          "odds": 1.23,
+          "match_time": "26.11.15 (일) 12:00",
+          "home_team": "뉴질랜드",
+          "away_team": "인도",
+          "league": "남자축구 국제친선경기",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "뉴질랜드 승"
+        }
+      ],
+      "combined_odds": 1.23,
+      "stake": 3000,
+      "rule_version": "j2",
+      "note": "j2: 뉴질랜드 홈승 (배당 1.23, Gemini확률 81.2%, Edge +6.9%p)",
+      "bet_id": "J_gemini:4176h:0",
+      "gm_ts": "260135",
+      "created_at": "2026-11-12T23:05:30+00:00"
+    }
+  ],
+  "f_plan": {
+    "games": 5,
+    "candidates": 128,
+    "bets": 0,
+    "bankroll": 100000,
+    "staked": 0,
+    "at": "2026-11-12T23:05:30+00:00"
+  }
+}
