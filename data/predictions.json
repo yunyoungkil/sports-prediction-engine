@@ -43409,9 +43409,9 @@
     "odds_changes": [],
     "shadow_probs": {
       "prop_mkt": {
-        "home_win": 0.749,
-        "draw": 0.1799,
-        "away_win": 0.0711
+        "home_win": 0.7505,
+        "draw": 0.18,
+        "away_win": 0.0695
       }
     },
     "prediction_odds": {
@@ -43432,24 +43432,24 @@
       "away_win": 0.1036
     },
     "blended_probabilities": {
-      "home_win": 0.749,
-      "draw": 0.1833,
-      "away_win": 0.0676
+      "home_win": 0.7502,
+      "draw": 0.1835,
+      "away_win": 0.0662
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0787,
-        "draw": -0.1568,
-        "away_win": -0.4322
+        "home_win": -0.0773,
+        "draw": -0.1559,
+        "away_win": -0.4439
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 뉴질랜드 승",
       "raw_selection_name": "뉴질랜드 승",
-      "best_ev": -0.0787,
-      "best_ev_pct": "-7.9%",
+      "best_ev": -0.0773,
+      "best_ev_pct": "-7.7%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-12T23:05:27+00:00",
+  "updated_at": "2026-11-13T00:38:10+00:00",
   "rounds": [
     260126,
     260127,
@@ -9,26 +9,27 @@
     260131,
     260132,
     260133,
-    260134
+    260134,
+    260135
   ],
-  "matches": 1731,
-  "moved": 778,
-  "toward_ai": 373,
-  "away_from_ai": 405,
+  "matches": 1743,
+  "moved": 780,
+  "toward_ai": 374,
+  "away_from_ai": 406,
   "toward_ai_pct": 47.9,
-  "fav_toward_pct": 48.2,
+  "fav_toward_pct": 48.1,
   "mean_move_pp": {
-    "n": 1731,
-    "mean": -0.16258,
+    "n": 1743,
+    "mean": -0.16114,
     "ci": [
-      -0.31408,
-      -0.02274
+      -0.2981,
+      -0.02283
     ],
     "ci_iid": [
-      -0.29824,
-      -0.02274
+      -0.2981,
+      -0.02341
     ],
-    "clusters": 691,
+    "clusters": 697,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
@@ -55,90 +56,90 @@
       }
     },
     "농구 승패": {
-      "matches": 183,
+      "matches": 187,
       "moved": 79,
       "toward_ai": 34,
       "away_from_ai": 45,
       "toward_ai_pct": 43.0,
       "fav_toward_pct": 35.4,
       "mean_move_pp": {
-        "n": 183,
-        "mean": -0.17465,
+        "n": 187,
+        "mean": -0.17092,
         "ci": [
-          -0.77902,
-          0.43485
+          -0.76453,
+          0.39631
         ],
         "ci_iid": [
-          -0.74856,
-          0.42626
+          -0.76453,
+          0.37898
         ],
-        "clusters": 182,
+        "clusters": 186,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "농구 언더오버": {
-      "matches": 152,
+      "matches": 156,
       "moved": 22,
       "toward_ai": 7,
       "away_from_ai": 15,
       "toward_ai_pct": 31.8,
       "fav_toward_pct": 31.8,
       "mean_move_pp": {
-        "n": 152,
-        "mean": -0.07553,
+        "n": 156,
+        "mean": -0.0736,
         "ci": [
-          -0.1704,
-          0.01712
+          -0.16099,
+          0.02115
         ],
         "ci_iid": [
-          -0.16529,
-          0.01614
+          -0.15924,
+          0.01196
         ],
-        "clusters": 151,
+        "clusters": 155,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 승무패": {
-      "matches": 509,
-      "moved": 297,
-      "toward_ai": 181,
+      "matches": 511,
+      "moved": 298,
+      "toward_ai": 182,
       "away_from_ai": 116,
-      "toward_ai_pct": 60.9,
-      "fav_toward_pct": 59.6,
+      "toward_ai_pct": 61.1,
+      "fav_toward_pct": 59.4,
       "mean_move_pp": {
-        "n": 509,
-        "mean": 0.24233,
+        "n": 511,
+        "mean": 0.24326,
         "ci": [
-          0.01775,
-          0.46087
+          0.01759,
+          0.46849
         ],
         "ci_iid": [
-          0.02633,
-          0.45461
+          0.01759,
+          0.46849
         ],
-        "clusters": 509,
+        "clusters": 511,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "축구 언더오버": {
-      "matches": 415,
-      "moved": 135,
+      "matches": 417,
+      "moved": 136,
       "toward_ai": 51,
-      "away_from_ai": 84,
-      "toward_ai_pct": 37.8,
-      "fav_toward_pct": 39.3,
+      "away_from_ai": 85,
+      "toward_ai_pct": 37.5,
+      "fav_toward_pct": 39.0,
       "mean_move_pp": {
-        "n": 415,
-        "mean": -0.1828,
+        "n": 417,
+        "mean": -0.18291,
         "ci": [
-          -0.37303,
-          0.00378
+          -0.35954,
+          -0.00178
         ],
         "ci_iid": [
-          -0.35662,
-          -0.00296
+          -0.35954,
+          -0.00178
         ],
-        "clusters": 415,
+        "clusters": 417,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
@@ -207,19 +208,19 @@
       ]
     },
     "G_ai_bettor": {
-      "n": 22,
-      "mean": 1.28845,
+      "n": 24,
+      "mean": 1.32476,
       "ci": [
-        -1.46159,
-        4.22829
+        -1.29108,
+        4.1673
       ]
     },
     "G_instinct": {
-      "n": 22,
-      "mean": 1.28845,
+      "n": 24,
+      "mean": 1.32476,
       "ci": [
-        -1.46159,
-        4.22829
+        -1.29108,
+        4.1673
       ]
     },
     "G_real_stable": {
