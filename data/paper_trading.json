@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T03:02:30+00:00",
+  "updated_at": "2026-11-14T03:19:43+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -146,15 +146,15 @@
     },
     "E_market_fav": {
       "label": "E. 배당 1순위 단일 (기준선)",
-      "bets": 313,
-      "hits": 186,
-      "pending": 24,
-      "staked": 313000,
-      "returned": 306670,
-      "profit": -6330,
-      "roi_pct": -2.02,
-      "roi_ci_low": -10.85,
-      "roi_ci_high": 7.69,
+      "bets": 316,
+      "hits": 188,
+      "pending": 21,
+      "staked": 316000,
+      "returned": 309190,
+      "profit": -6810,
+      "roi_pct": -2.16,
+      "roi_ci_low": -11.01,
+      "roi_ci_high": 7.02,
       "cum_profit": [
         550,
         770,
@@ -468,7 +468,10 @@
         -5670,
         -5460,
         -5330,
-        -6330
+        -6330,
+        -7330,
+        -6980,
+        -6810
       ],
       "cum_staked": [
         1000,
@@ -783,7 +786,10 @@
         310000,
         311000,
         312000,
-        313000
+        313000,
+        314000,
+        315000,
+        316000
       ],
       "verdict": "수익 미입증"
     },
@@ -997,15 +1003,15 @@
     },
     "I_least_loss": {
       "label": "I. Claude — 덜 잃기 원칙 (정배 1.15~1.50 단일 2경기 · AI 안 씀 · 월 10만 원)",
-      "bets": 8,
-      "hits": 8,
-      "pending": 2,
-      "staked": 8000,
-      "returned": 9580,
-      "profit": 1580,
-      "roi_pct": 19.75,
-      "roi_ci_low": 18.25,
-      "roi_ci_high": 21.38,
+      "bets": 9,
+      "hits": 9,
+      "pending": 1,
+      "staked": 9000,
+      "returned": 10750,
+      "profit": 1750,
+      "roi_pct": 19.44,
+      "roi_ci_low": 18.0,
+      "roi_ci_high": 21.0,
       "cum_profit": [
         200,
         380,
@@ -1014,7 +1020,8 @@
         960,
         1170,
         1340,
-        1580
+        1580,
+        1750
       ],
       "cum_staked": [
         1000,
@@ -1024,13 +1031,14 @@
         5000,
         6000,
         7000,
-        8000
+        8000,
+        9000
       ],
       "verdict": "판단 보류 (표본 부족)",
-      "bankroll": 99580,
+      "bankroll": 100750,
       "total_deposited": 100000,
       "months_funded": 1,
-      "pending_stakes": 2000,
+      "pending_stakes": 1000,
       "is_broke": false,
       "can_bet": true,
       "mode": "normal",
@@ -1076,18 +1084,18 @@
     {
       "key": "I_least_loss",
       "name": "Claude (I)",
-      "bets": 8,
-      "pending": 2,
-      "staked": 8000,
-      "profit": 1580,
-      "roi_pct": 19.75,
+      "bets": 9,
+      "pending": 1,
+      "staked": 9000,
+      "profit": 1750,
+      "roi_pct": 19.44,
       "roi_ci": [
-        18.25,
-        21.38
+        18.0,
+        21.0
       ],
-      "bankroll": 99580,
-      "pending_stakes": 2000,
-      "total_assets": 101580,
+      "bankroll": 100750,
+      "pending_stakes": 1000,
+      "total_assets": 101750,
       "total_deposited": 100000,
       "ready": false,
       "rank": 2
@@ -1425,9 +1433,9 @@
       "odds": 1.35,
       "stake": 1000,
       "kickoff": "2026-11-14T00:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1350,
+      "profit": 350
     },
     {
       "gm_ts": "260135",
@@ -1436,9 +1444,9 @@
       "odds": 1.17,
       "stake": 1000,
       "kickoff": "2026-11-14T00:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1170,
+      "profit": 170
     },
     {
       "gm_ts": "260135",
@@ -1447,9 +1455,9 @@
       "odds": 1.17,
       "stake": 1000,
       "kickoff": "2026-11-14T00:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1170,
+      "profit": 170
     },
     {
       "gm_ts": "260135",
@@ -1458,9 +1466,9 @@
       "odds": 1.48,
       "stake": 1000,
       "kickoff": "2026-11-13T23:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260135",
