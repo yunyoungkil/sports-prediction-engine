@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T23:01:09+00:00",
+  "updated_at": "2026-11-14T00:42:55+00:00",
   "graded_matches": 1699,
   "rounds": [
     260126,
@@ -865,6 +865,20 @@
     },
     {
       "date": "2026-11-13",
+      "graded_matches": 1699,
+      "model_ll": 0.817,
+      "market_ll": 0.8184,
+      "ll_diff": -0.0014,
+      "ll_diff_ci": [
+        -0.0041,
+        0.0009
+      ],
+      "roi_pct": -100.0,
+      "gem_bets": 1,
+      "gem_roi_pct": -100.0
+    },
+    {
+      "date": "2026-11-14",
       "graded_matches": 1699,
       "model_ll": 0.817,
       "market_ll": 0.8184,
