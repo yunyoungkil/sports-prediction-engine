@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-15T07:15:48+00:00",
+  "updated_at": "2026-11-15T07:17:17+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -150,15 +150,15 @@
     },
     "E_market_fav": {
       "label": "E. 배당 1순위 단일 (기준선)",
-      "bets": 327,
-      "hits": 195,
-      "pending": 10,
-      "staked": 327000,
-      "returned": 320930,
-      "profit": -6070,
-      "roi_pct": -1.86,
-      "roi_ci_low": -10.88,
-      "roi_ci_high": 7.06,
+      "bets": 328,
+      "hits": 196,
+      "pending": 9,
+      "staked": 328000,
+      "returned": 322160,
+      "profit": -5840,
+      "roi_pct": -1.78,
+      "roi_ci_low": -11.45,
+      "roi_ci_high": 7.14,
       "cum_profit": [
         550,
         770,
@@ -486,7 +486,8 @@
         -6820,
         -7820,
         -7340,
-        -6070
+        -6070,
+        -5840
       ],
       "cum_staked": [
         1000,
@@ -815,7 +816,8 @@
         324000,
         325000,
         326000,
-        327000
+        327000,
+        328000
       ],
       "verdict": "수익 미입증"
     },
@@ -1079,32 +1081,34 @@
     },
     "J_gemini": {
       "label": "J. Gemini (다른 PC의 Gemini가 규칙을 넣음 · 월 10만 원)",
-      "bets": 4,
-      "hits": 4,
-      "pending": 1,
-      "staked": 12000,
-      "returned": 14460,
-      "profit": 2460,
-      "roi_pct": 20.5,
-      "roi_ci_low": 20.5,
-      "roi_ci_high": 20.5,
+      "bets": 5,
+      "hits": 5,
+      "pending": 0,
+      "staked": 15000,
+      "returned": 18150,
+      "profit": 3150,
+      "roi_pct": 21.0,
+      "roi_ci_low": 18.2,
+      "roi_ci_high": 23.6,
       "cum_profit": [
         540,
         1290,
         1950,
-        2460
+        2460,
+        3150
       ],
       "cum_staked": [
         3000,
         6000,
         9000,
-        12000
+        12000,
+        15000
       ],
       "verdict": "판단 보류 (표본 부족)",
-      "bankroll": 99460,
+      "bankroll": 103150,
       "total_deposited": 100000,
       "months_funded": 1,
-      "pending_stakes": 3000,
+      "pending_stakes": 0,
       "is_broke": false,
       "can_bet": true,
       "mode": "normal",
@@ -1154,18 +1158,18 @@
     {
       "key": "J_gemini",
       "name": "Gemini (J)",
-      "bets": 4,
-      "pending": 1,
-      "staked": 12000,
-      "profit": 2460,
-      "roi_pct": 20.5,
+      "bets": 5,
+      "pending": 0,
+      "staked": 15000,
+      "profit": 3150,
+      "roi_pct": 21.0,
       "roi_ci": [
-        20.5,
-        20.5
+        18.2,
+        23.6
       ],
-      "bankroll": 99460,
-      "pending_stakes": 3000,
-      "total_assets": 102460,
+      "bankroll": 103150,
+      "pending_stakes": 0,
+      "total_assets": 103150,
       "total_deposited": 100000,
       "ready": false,
       "rank": 1
@@ -1267,9 +1271,9 @@
       "odds": 1.23,
       "stake": 1000,
       "kickoff": "2026-11-15T03:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 1230,
+      "profit": 230
     },
     {
       "gm_ts": "260135",
@@ -1278,9 +1282,9 @@
       "odds": 1.23,
       "stake": 3000,
       "kickoff": "2026-11-15T03:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "적중",
+      "payout": 3690,
+      "profit": 690
     },
     {
       "gm_ts": "260135",
