@@ -1,20 +1,12 @@
 {
-  "checked_at": "2026-11-16T00:57:27+00:00",
+  "checked_at": "2026-11-16T07:21:05+00:00",
   "rows": {
-    "predictions": 462,
-    "results": 8013,
-    "archive": 23869,
+    "predictions": 196,
+    "results": 8055,
+    "archive": 23870,
     "markets_archive": 195522
   },
-  "errors": [
-    {
-      "dataset": "결과 파일",
-      "column": "gm_ts",
-      "check": "result_coverage",
-      "count": 6,
-      "message": "결과 파일: 260136회차 결과가 하나도 없어요 (예측 로그에 끝났을 경기 6건)"
-    }
-  ],
+  "errors": [],
   "notes": [],
-  "ok": false
+  "ok": true
 }

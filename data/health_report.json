@@ -1,14 +1,14 @@
 {
-  "checked_at": "2026-11-16T07:01:13+00:00",
-  "source": "results",
+  "checked_at": "2026-11-16T07:21:02+00:00",
+  "source": "pipeline",
   "ok": false,
   "warnings": [
     {
-      "code": "results_missing",
-      "message": "시작한 지 4시간이 넘었는데 결과가 없는 경기가 450개예요 (회차 260136) — 베트맨 결과 조회가 실패하고 있을 수 있어요"
+      "code": "match_count_drop",
+      "message": "260136회차 수집 경기 수가 직전 462 → 이번 196으로 절반 이하로 줄었어요"
     }
   ],
-  "matches": 462,
+  "matches": 196,
   "round": "260136",
   "graded": 1826
 }
