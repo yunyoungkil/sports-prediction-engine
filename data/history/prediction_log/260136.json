@@ -1314,8 +1314,8 @@
       },
       "shadow_probs": null,
       "prob_source": "betman_markets",
-      "model_version": "betman_shin:2026-11-10T00:46:26+00:00",
-      "logged_at": "2026-11-15T16:34:06+00:00",
+      "model_version": "betman_shin:2026-11-16T00:47:40+00:00",
+      "logged_at": "2026-11-16T00:57:25+00:00",
       "first_odds": {
         "home_win": 1.71,
         "draw": 0.0,
@@ -1400,8 +1400,8 @@
       },
       "shadow_probs": null,
       "prob_source": "betman_markets",
-      "model_version": "betman_shin:2026-11-10T00:46:26+00:00",
-      "logged_at": "2026-11-15T16:34:06+00:00",
+      "model_version": "betman_shin:2026-11-16T00:47:40+00:00",
+      "logged_at": "2026-11-16T00:57:25+00:00",
       "first_odds": {
         "home_win": 1.75,
         "draw": 0.0,
@@ -1418,6 +1418,92 @@
         "away_win": 0.4935
       },
       "first_logged_at": "2026-11-15T15:05:53+00:00"
+    },
+    "4321": {
+      "match_time": "26.11.16 (월) 10:00",
+      "league": "NBA",
+      "game_type": "농구 SUM",
+      "line": 0.0,
+      "home_team": "밀워키 벅스",
+      "away_team": "애틀랜타 호크스",
+      "betman_odds": {
+        "home_win": 1.8,
+        "draw": 0.0,
+        "away_win": 1.8
+      },
+      "market_probs": {
+        "home": 0.5,
+        "draw": 0.0,
+        "away": 0.5
+      },
+      "model_probs": {
+        "home_win": 0.5095,
+        "draw": 0.0,
+        "away_win": 0.4905
+      },
+      "shadow_probs": null,
+      "prob_source": "betman_markets",
+      "model_version": "betman_shin:2026-11-16T00:47:40+00:00",
+      "logged_at": "2026-11-16T00:57:25+00:00",
+      "first_odds": {
+        "home_win": 1.8,
+        "draw": 0.0,
+        "away_win": 1.8
+      },
+      "first_market_probs": {
+        "home": 0.5,
+        "draw": 0.0,
+        "away": 0.5
+      },
+      "first_model_probs": {
+        "home_win": 0.5095,
+        "draw": 0.0,
+        "away_win": 0.4905
+      },
+      "first_logged_at": "2026-11-16T00:57:25+00:00"
+    },
+    "4325": {
+      "match_time": "26.11.16 (월) 11:00",
+      "league": "NBA",
+      "game_type": "농구 SUM",
+      "line": 0.0,
+      "home_team": "새크라멘토 킹스",
+      "away_team": "오클라호마시티 썬더",
+      "betman_odds": {
+        "home_win": 1.8,
+        "draw": 0.0,
+        "away_win": 1.8
+      },
+      "market_probs": {
+        "home": 0.5,
+        "draw": 0.0,
+        "away": 0.5
+      },
+      "model_probs": {
+        "home_win": 0.5095,
+        "draw": 0.0,
+        "away_win": 0.4905
+      },
+      "shadow_probs": null,
+      "prob_source": "betman_markets",
+      "model_version": "betman_shin:2026-11-16T00:47:40+00:00",
+      "logged_at": "2026-11-16T00:57:25+00:00",
+      "first_odds": {
+        "home_win": 1.8,
+        "draw": 0.0,
+        "away_win": 1.8
+      },
+      "first_market_probs": {
+        "home": 0.5,
+        "draw": 0.0,
+        "away": 0.5
+      },
+      "first_model_probs": {
+        "home_win": 0.5095,
+        "draw": 0.0,
+        "away_win": 0.4905
+      },
+      "first_logged_at": "2026-11-16T00:57:25+00:00"
     }
   }
 }
