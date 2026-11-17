@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-17T22:55:11+00:00",
-  "graded_matches": 1878,
+  "updated_at": "2026-11-17T23:01:14+00:00",
+  "graded_matches": 1899,
   "rounds": [
     260126,
     260127,
@@ -15,14 +15,14 @@
     260136
   ],
   "ci_method": "회차 단위 부트스트랩",
-  "model_ll": 0.8048,
-  "market_ll": 0.8062,
-  "ll_diff": -0.0015,
+  "model_ll": 0.8053,
+  "market_ll": 0.8066,
+  "ll_diff": -0.0013,
   "ll_diff_ci": [
-    -0.0038,
-    0.0009
+    -0.0037,
+    0.001
   ],
-  "hit_rate_top_pick": 57.7,
+  "hit_rate_top_pick": 57.6,
   "value_bets": 1,
   "roi_pct": -100.0,
   "roi_ci_low": -100.0,
@@ -33,8 +33,8 @@
   "gem_roi_ci_low": -100.0,
   "gem_roi_ci_high": -100.0,
   "prob_sources": {
-    "betman_markets": 1336,
-    "betman_corrector": 542
+    "betman_corrector": 552,
+    "betman_markets": 1347
   },
   "by_game_type": {
     "농구 SUM": {
@@ -77,42 +77,42 @@
       ]
     },
     "축구 소수핸디캡": {
-      "n": 3,
-      "ll_diff": 0.0691,
+      "n": 4,
+      "ll_diff": 0.0358,
       "ll_diff_ci": [
-        -0.0589,
-        0.3241
+        -0.0627,
+        0.2283
       ],
-      "fixtures": 3,
+      "fixtures": 4,
       "ll_diff_ci_fixture": [
-        -0.0589,
-        0.3241
+        -0.0627,
+        0.2283
       ]
     },
     "축구 승무패": {
-      "n": 542,
-      "ll_diff": -0.0071,
+      "n": 552,
+      "ll_diff": -0.0065,
       "ll_diff_ci": [
-        -0.0148,
-        -0.0007
+        -0.0132,
+        -0.0002
       ],
-      "fixtures": 542,
+      "fixtures": 552,
       "ll_diff_ci_fixture": [
-        -0.0131,
-        -0.0003
+        -0.0128,
+        -0.0001
       ]
     },
     "축구 언더오버": {
-      "n": 449,
-      "ll_diff": -0.0003,
+      "n": 459,
+      "ll_diff": -0.0,
       "ll_diff_ci": [
-        -0.002,
-        0.0016
+        -0.0016,
+        0.002
       ],
-      "fixtures": 449,
+      "fixtures": 459,
       "ll_diff_ci_fixture": [
-        -0.0017,
-        0.0012
+        -0.0015,
+        0.0015
       ]
     },
     "축구 핸디캡": {
@@ -129,7 +129,7 @@
       ]
     }
   },
-  "fixtures": 773,
+  "fixtures": 783,
   "by_model_version": [
     {
       "source": "betman_corrector",
@@ -315,16 +315,16 @@
       "rounds": [
         260136
       ],
-      "n": 13,
-      "ll_diff": -0.0351,
+      "n": 23,
+      "ll_diff": -0.0098,
       "ll_diff_ci": [
-        -0.0734,
-        0.0129
+        -0.0458,
+        0.0294
       ],
-      "fixtures": 13,
+      "fixtures": 23,
       "ll_diff_ci_fixture": [
-        -0.0735,
-        0.0129
+        -0.0462,
+        0.0296
       ]
     },
     {
@@ -335,30 +335,30 @@
       "rounds": [
         260136
       ],
-      "n": 42,
-      "ll_diff": 0.0085,
+      "n": 53,
+      "ll_diff": 0.0074,
       "ll_diff_ci": [
-        -0.0045,
-        0.0278
+        -0.0035,
+        0.0223
       ],
-      "fixtures": 27,
+      "fixtures": 37,
       "ll_diff_ci_fixture": [
-        -0.0045,
-        0.0278
+        -0.0035,
+        0.0223
       ]
     }
   ],
   "calibration_metrics": {
-    "n": 1878,
-    "brier_ai": 0.516,
-    "brier_market": 0.5168,
-    "brier_diff": -0.0008,
+    "n": 1899,
+    "brier_ai": 0.5165,
+    "brier_market": 0.5172,
+    "brier_diff": -0.0007,
     "brier_diff_ci": [
-      -0.0023,
-      0.0008
+      -0.0022,
+      0.0007
     ],
-    "ece_ai": 0.94,
-    "ece_market": 1.59
+    "ece_ai": 0.82,
+    "ece_market": 1.58
   },
   "calibration_by_game_type": {
     "농구 SUM": {
@@ -398,28 +398,28 @@
       "ece_market": 2.95
     },
     "축구 승무패": {
-      "n": 542,
-      "brier_ai": 0.5382,
-      "brier_market": 0.5425,
-      "brier_diff": -0.0042,
+      "n": 552,
+      "brier_ai": 0.5394,
+      "brier_market": 0.5434,
+      "brier_diff": -0.004,
       "brier_diff_ci": [
         -0.0078,
-        -0.0003
+        -0.0002
       ],
-      "ece_ai": 3.08,
-      "ece_market": 4.72
+      "ece_ai": 2.98,
+      "ece_market": 4.69
     },
     "축구 언더오버": {
-      "n": 449,
-      "brier_ai": 0.4889,
-      "brier_market": 0.4891,
-      "brier_diff": -0.0002,
+      "n": 459,
+      "brier_ai": 0.4907,
+      "brier_market": 0.4908,
+      "brier_diff": -0.0,
       "brier_diff_ci": [
-        -0.0016,
-        0.0012
+        -0.0015,
+        0.0014
       ],
-      "ece_ai": 0.59,
-      "ece_market": 1.38
+      "ece_ai": 0.56,
+      "ece_market": 0.91
     },
     "축구 핸디캡": {
       "n": 393,
@@ -440,11 +440,11 @@
       "name": "국가대표 경기에서 AI 확률 우위가 계속된다",
       "group": "national",
       "since": "2026-10-27T15:00:00+00:00",
-      "n": 69,
-      "ll_diff": -0.0165,
+      "n": 79,
+      "ll_diff": -0.0114,
       "ll_diff_ci": [
-        -0.0369,
-        0.0046
+        -0.031,
+        0.0094
       ],
       "value_bets": 0,
       "roi_pct": 0.0,
@@ -452,7 +452,7 @@
         0.0,
         0.0
       ],
-      "verdict": "진행 중 (69/300경기)"
+      "verdict": "진행 중 (79/300경기)"
     },
     {
       "id": "H2",
@@ -476,13 +476,13 @@
   ],
   "shadow": {
     "prop_mkt": {
-      "n": 82,
-      "ll_diff_vs_model": 0.00222,
+      "n": 92,
+      "ll_diff_vs_model": 0.00196,
       "ci": [
-        0.00036,
-        0.0041
+        0.00021,
+        0.00375
       ],
-      "verdict": "모으는 중 (82/100경기)"
+      "verdict": "모으는 중 (92/100경기)"
     },
     "shin_mkt": {
       "n": 364,
@@ -498,45 +498,45 @@
     "ai": [
       {
         "range": "0~10%",
-        "n": 114,
+        "n": 115,
         "said_pct": 7.0,
         "happened_pct": 6.1
       },
       {
         "range": "10~20%",
-        "n": 499,
+        "n": 503,
         "said_pct": 16.0,
-        "happened_pct": 15.2
+        "happened_pct": 15.3
       },
       {
         "range": "20~30%",
-        "n": 1092,
+        "n": 1105,
         "said_pct": 24.9,
         "happened_pct": 24.1
       },
       {
         "range": "30~40%",
-        "n": 484,
+        "n": 491,
         "said_pct": 35.0,
-        "happened_pct": 34.3
+        "happened_pct": 34.4
       },
       {
         "range": "40~50%",
-        "n": 1008,
+        "n": 1018,
         "said_pct": 46.0,
-        "happened_pct": 45.7
+        "happened_pct": 45.9
       },
       {
         "range": "50~60%",
-        "n": 994,
+        "n": 1005,
         "said_pct": 53.8,
-        "happened_pct": 54.0
+        "happened_pct": 53.8
       },
       {
         "range": "60~70%",
-        "n": 280,
+        "n": 285,
         "said_pct": 63.4,
-        "happened_pct": 67.9
+        "happened_pct": 67.7
       },
       {
         "range": "70~80%",
@@ -552,8 +552,8 @@
       },
       {
         "range": "90~100%",
-        "n": 3,
-        "said_pct": 92.1,
+        "n": 4,
+        "said_pct": 92.0,
         "happened_pct": 100.0
       }
     ],
@@ -566,39 +566,39 @@
       },
       {
         "range": "10~20%",
-        "n": 410,
-        "said_pct": 16.1,
-        "happened_pct": 13.7
+        "n": 414,
+        "said_pct": 16.0,
+        "happened_pct": 13.8
       },
       {
         "range": "20~30%",
-        "n": 1222,
+        "n": 1235,
         "said_pct": 24.8,
-        "happened_pct": 23.1
+        "happened_pct": 23.0
       },
       {
         "range": "30~40%",
-        "n": 504,
+        "n": 511,
         "said_pct": 35.1,
-        "happened_pct": 34.7
+        "happened_pct": 34.8
       },
       {
         "range": "40~50%",
-        "n": 945,
+        "n": 958,
         "said_pct": 45.8,
-        "happened_pct": 46.7
+        "happened_pct": 46.9
       },
       {
         "range": "50~60%",
-        "n": 1152,
+        "n": 1162,
         "said_pct": 53.2,
-        "happened_pct": 53.5
+        "happened_pct": 53.3
       },
       {
         "range": "60~70%",
-        "n": 218,
+        "n": 222,
         "said_pct": 63.5,
-        "happened_pct": 68.8
+        "happened_pct": 68.9
       },
       {
         "range": "70~80%",
@@ -608,9 +608,9 @@
       },
       {
         "range": "80~90%",
-        "n": 50,
+        "n": 51,
         "said_pct": 83.8,
-        "happened_pct": 94.0
+        "happened_pct": 94.1
       }
     ]
   },
@@ -976,13 +976,13 @@
     },
     {
       "date": "2026-11-17",
-      "graded_matches": 1878,
-      "model_ll": 0.8048,
-      "market_ll": 0.8062,
-      "ll_diff": -0.0015,
+      "graded_matches": 1899,
+      "model_ll": 0.8053,
+      "market_ll": 0.8066,
+      "ll_diff": -0.0013,
       "ll_diff_ci": [
-        -0.0038,
-        0.0009
+        -0.0037,
+        0.001
       ],
       "roi_pct": -100.0,
       "gem_bets": 1,
