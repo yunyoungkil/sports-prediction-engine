@@ -9459,7 +9459,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "샬럿 호네츠",
     "betman_odds": {
@@ -9678,7 +9678,7 @@
     "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "샬럿 호네츠",
     "betman_odds": {
@@ -9897,7 +9897,7 @@
     "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "샬럿 호네츠",
     "betman_odds": {
@@ -10131,7 +10131,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "LA 레이커스",
     "away_team": "샬럿 호네츠",
     "betman_odds": {
@@ -10333,14 +10333,14 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "서울삼성 썬더스",
     "away_team": "창원LG 세이커스",
     "betman_odds": {
-      "home_win": 1.91,
+      "home_win": 2.05,
       "draw": 0.0,
-      "away_win": 1.6
+      "away_win": 1.51
     },
     "odds_changes": [
       {
@@ -10387,45 +10387,60 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-18 18:48:59",
+        "from": {
+          "home_win": 1.91,
+          "draw": 0.0,
+          "away_win": 1.6
+        },
+        "to": {
+          "home_win": 2.05,
+          "draw": 0.0,
+          "away_win": 1.51
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.91,
+      "home_win": 2.05,
       "draw": 0.0,
-      "away_win": 1.6
+      "away_win": 1.51
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4558,
+      "home": 0.4242,
       "draw": 0.0,
-      "away": 0.5442
+      "away": 0.5758
     },
     "model_probabilities": {
-      "home_win": 0.4558,
+      "home_win": 0.4242,
       "draw": 0.0,
-      "away_win": 0.5442
+      "away_win": 0.5758
     },
     "blended_probabilities": {
-      "home_win": 0.4558,
+      "home_win": 0.4242,
       "draw": 0.0,
-      "away_win": 0.5442
+      "away_win": 0.5758
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1294,
+        "home_win": -0.1304,
         "draw": -1.0,
-        "away_win": -0.1293
+        "away_win": -0.1305
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 창원LG 세이커스 승",
-      "raw_selection_name": "창원LG 세이커스 승",
-      "best_ev": -0.1293,
-      "best_ev_pct": "-12.9%",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 서울삼성 썬더스 승",
+      "raw_selection_name": "서울삼성 썬더스 승",
+      "best_ev": -0.1304,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -10597,16 +10612,16 @@
     "match_time": "26.11.18 (수) 19:00",
     "close_time": 1794996000000,
     "kickoff_ts": 1794996000000,
-    "buy_reject": "4",
+    "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "서울삼성 썬더스",
     "away_team": "창원LG 세이커스",
     "betman_odds": {
-      "home_win": 2.95,
+      "home_win": 3.4,
       "draw": 2.55,
-      "away_win": 2.32
+      "away_win": 2.1
     },
     "odds_changes": [
       {
@@ -10668,44 +10683,104 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-18 18:31:25",
+        "from": {
+          "home_win": 2.95,
+          "draw": 2.55,
+          "away_win": 2.32
+        },
+        "to": {
+          "home_win": 3.0,
+          "draw": 2.55,
+          "away_win": 2.29
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-11-18 18:41:43",
+        "from": {
+          "home_win": 3.0,
+          "draw": 2.55,
+          "away_win": 2.29
+        },
+        "to": {
+          "home_win": 3.05,
+          "draw": 2.55,
+          "away_win": 2.26
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-11-18 18:48:59",
+        "from": {
+          "home_win": 3.05,
+          "draw": 2.55,
+          "away_win": 2.26
+        },
+        "to": {
+          "home_win": 3.3,
+          "draw": 2.55,
+          "away_win": 2.14
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-11-18 18:56:08",
+        "from": {
+          "home_win": 3.3,
+          "draw": 2.55,
+          "away_win": 2.14
+        },
+        "to": {
+          "home_win": 3.4,
+          "draw": 2.55,
+          "away_win": 2.1
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.95,
+      "home_win": 3.4,
       "draw": 2.55,
-      "away_win": 2.32
+      "away_win": 2.1
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.2917,
-      "draw": 0.3374,
-      "away": 0.3709
+      "home": 0.253,
+      "draw": 0.3373,
+      "away": 0.4096
     },
     "model_probabilities": {
-      "home_win": 0.2917,
-      "draw": 0.3374,
-      "away_win": 0.3709
+      "home_win": 0.253,
+      "draw": 0.3373,
+      "away_win": 0.4096
     },
     "blended_probabilities": {
-      "home_win": 0.2917,
-      "draw": 0.3374,
-      "away_win": 0.3709
+      "home_win": 0.253,
+      "draw": 0.3373,
+      "away_win": 0.4096
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1395,
-        "draw": -0.1396,
-        "away_win": -0.1395
+        "home_win": -0.1398,
+        "draw": -0.1399,
+        "away_win": -0.1398
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 서울삼성 썬더스 승",
       "raw_selection_name": "서울삼성 썬더스 승",
-      "best_ev": -0.1395,
+      "best_ev": -0.1398,
       "best_ev_pct": "-14.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -10867,27 +10942,27 @@
     "league": "KBL",
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
-    "category_label": "핸디캡 (+1.5)",
+    "category_label": "핸디캡 (+2.5)",
     "selection_labels": {
-      "home_win": "서울삼성 썬더스 (+1.5) 승",
+      "home_win": "서울삼성 썬더스 (+2.5) 승",
       "draw": "-",
       "away_win": "창원LG 세이커스 반대승"
     },
     "is_single": true,
-    "line": 1.5,
+    "line": 2.5,
     "match_time": "26.11.18 (수) 19:00",
     "close_time": 1794996000000,
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "서울삼성 썬더스",
     "away_team": "창원LG 세이커스",
     "betman_odds": {
-      "home_win": 1.77,
+      "home_win": 1.8,
       "draw": 0.0,
-      "away_win": 1.71
+      "away_win": 1.68
     },
     "odds_changes": [
       {
@@ -10934,45 +11009,75 @@
         },
         "line_from": 1.5,
         "line_to": 1.5
+      },
+      {
+        "at": "2026-11-18 18:41:43",
+        "from": {
+          "home_win": 1.77,
+          "draw": 0.0,
+          "away_win": 1.71
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 1.5,
+        "line_to": 1.5
+      },
+      {
+        "at": "2026-11-18 18:48:59",
+        "from": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "to": {
+          "home_win": 1.8,
+          "draw": 0.0,
+          "away_win": 1.68
+        },
+        "line_from": 1.5,
+        "line_to": 2.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.77,
+      "home_win": 1.8,
       "draw": 0.0,
-      "away_win": 1.71
+      "away_win": 1.68
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4914,
+      "home": 0.4828,
       "draw": 0.0,
-      "away": 0.5086
+      "away": 0.5172
     },
     "model_probabilities": {
-      "home_win": 0.4914,
+      "home_win": 0.4828,
       "draw": 0.0,
-      "away_win": 0.5086
+      "away_win": 0.5172
     },
     "blended_probabilities": {
-      "home_win": 0.4914,
+      "home_win": 0.4828,
       "draw": 0.0,
-      "away_win": 0.5086
+      "away_win": 0.5172
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1302,
+        "home_win": -0.131,
         "draw": -1.0,
-        "away_win": -0.1303
+        "away_win": -0.1311
       },
       "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 서울삼성 썬더스 (+1.5) 승",
-      "raw_selection_name": "서울삼성 썬더스 (+1.5) 승",
-      "best_ev": -0.1302,
-      "best_ev_pct": "-13.0%",
+      "best_selection_name": "[단통 ⚡] 서울삼성 썬더스 (+2.5) 승",
+      "raw_selection_name": "서울삼성 썬더스 (+2.5) 승",
+      "best_ev": -0.131,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -11146,8 +11251,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "서울삼성 썬더스",
     "away_team": "창원LG 세이커스",
     "betman_odds": {
@@ -11382,8 +11487,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "서울삼성 썬더스",
     "away_team": "창원LG 세이커스",
     "betman_odds": {
@@ -11602,8 +11707,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "신한은행 에스버드",
     "away_team": "KB 스타즈",
     "betman_odds": {
@@ -11853,8 +11958,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "신한은행 에스버드",
     "away_team": "KB 스타즈",
     "betman_odds": {
@@ -12104,8 +12209,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "신한은행 에스버드",
     "away_team": "KB 스타즈",
     "betman_odds": {
@@ -12324,8 +12429,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "신한은행 에스버드",
     "away_team": "KB 스타즈",
     "betman_odds": {
@@ -12560,8 +12665,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "신한은행 에스버드",
     "away_team": "KB 스타즈",
     "betman_odds": {
@@ -12778,10 +12883,10 @@
     "match_time": "26.11.18 (수) 19:00",
     "close_time": 1794996000000,
     "kickoff_ts": 1794996000000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "삼성화재 블루팡스",
     "away_team": "우리카드 우리WON",
     "betman_odds": {
@@ -13014,8 +13119,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "삼성화재 블루팡스",
     "away_team": "우리카드 우리WON",
     "betman_odds": {
@@ -13293,8 +13398,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "삼성화재 블루팡스",
     "away_team": "우리카드 우리WON",
     "betman_odds": {
@@ -13542,8 +13647,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "삼성화재 블루팡스",
     "away_team": "우리카드 우리WON",
     "betman_odds": {
@@ -13745,8 +13850,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "SOOP 수퍼스",
     "away_team": "현대건설 힐스테이트",
     "betman_odds": {
@@ -13953,10 +14058,10 @@
     "match_time": "26.11.18 (수) 19:00",
     "close_time": 1794996000000,
     "kickoff_ts": 1794996000000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "SOOP 수퍼스",
     "away_team": "현대건설 힐스테이트",
     "betman_odds": {
@@ -14180,8 +14285,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "SOOP 수퍼스",
     "away_team": "현대건설 힐스테이트",
     "betman_odds": {
@@ -14405,8 +14510,8 @@
     "kickoff_ts": 1794996000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "SOOP 수퍼스",
     "away_team": "현대건설 힐스테이트",
     "betman_odds": {
@@ -14599,8 +14704,8 @@
     "kickoff_ts": 1794996600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "고양소노 스카이거너스",
     "away_team": "사우스 고비 브롱코스",
     "betman_odds": {
@@ -14766,8 +14871,8 @@
     "kickoff_ts": 1794996600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "고양소노 스카이거너스",
     "away_team": "사우스 고비 브롱코스",
     "betman_odds": {
@@ -14933,8 +15038,8 @@
     "kickoff_ts": 1794996600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "고양소노 스카이거너스",
     "away_team": "사우스 고비 브롱코스",
     "betman_odds": {
@@ -15100,8 +15205,8 @@
     "kickoff_ts": 1794996600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "고양소노 스카이거너스",
     "away_team": "사우스 고비 브롱코스",
     "betman_odds": {
@@ -15268,7 +15373,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "클리블랜드 캐벌리어스",
     "away_team": "멤피스 그리즐리스",
     "betman_odds": {
@@ -15471,7 +15576,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "클리블랜드 캐벌리어스",
     "away_team": "멤피스 그리즐리스",
     "betman_odds": {
@@ -15674,7 +15779,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "클리블랜드 캐벌리어스",
     "away_team": "멤피스 그리즐리스",
     "betman_odds": {
@@ -15877,7 +15982,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "클리블랜드 캐벌리어스",
     "away_team": "멤피스 그리즐리스",
     "betman_odds": {
@@ -16080,7 +16185,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "인디애나 페이서스",
     "away_team": "휴스턴 로케츠",
     "betman_odds": {
@@ -16283,7 +16388,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "인디애나 페이서스",
     "away_team": "휴스턴 로케츠",
     "betman_odds": {
@@ -16486,7 +16591,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "인디애나 페이서스",
     "away_team": "휴스턴 로케츠",
     "betman_odds": {
@@ -16689,7 +16794,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "인디애나 페이서스",
     "away_team": "휴스턴 로케츠",
     "betman_odds": {
@@ -16892,7 +16997,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "마이애미 히트",
     "away_team": "밀워키 벅스",
     "betman_odds": {
@@ -17081,66 +17186,82 @@
     "league": "NBA",
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
-    "category_label": "핸디캡 (-11.5)",
+    "category_label": "핸디캡 (-12.5)",
     "selection_labels": {
-      "home_win": "마이애미 히트 (-11.5) 승",
+      "home_win": "마이애미 히트 (-12.5) 승",
       "draw": "-",
       "away_win": "밀워키 벅스 반대승"
     },
     "is_single": false,
-    "line": -11.5,
+    "line": -12.5,
     "match_time": "26.11.19 (목) 09:00",
     "close_time": 1795046400000,
     "kickoff_ts": 1795046400000,
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "마이애미 히트",
     "away_team": "밀워키 벅스",
     "betman_odds": {
-      "home_win": 1.7,
+      "home_win": 1.75,
       "draw": 0.0,
-      "away_win": 1.78
+      "away_win": 1.73
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-18 22:03:38",
+        "from": {
+          "home_win": 1.7,
+          "draw": 0.0,
+          "away_win": 1.78
+        },
+        "to": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "line_from": -11.5,
+        "line_to": -12.5
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.7,
+      "home_win": 1.75,
       "draw": 0.0,
-      "away_win": 1.78
+      "away_win": 1.73
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5115,
+      "home": 0.4971,
       "draw": 0.0,
-      "away": 0.4885
+      "away": 0.5029
     },
     "model_probabilities": {
-      "home_win": 0.5115,
+      "home_win": 0.4971,
       "draw": 0.0,
-      "away_win": 0.4885
+      "away_win": 0.5029
     },
     "blended_probabilities": {
-      "home_win": 0.5115,
+      "home_win": 0.4971,
       "draw": 0.0,
-      "away_win": 0.4885
+      "away_win": 0.5029
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1305,
+        "home_win": -0.1301,
         "draw": -1.0,
-        "away_win": -0.1305
+        "away_win": -0.13
       },
-      "best_selection": "home_win",
-      "best_selection_name": "마이애미 히트 (-11.5) 승",
-      "raw_selection_name": "마이애미 히트 (-11.5) 승",
-      "best_ev": -0.1305,
-      "best_ev_pct": "-13.1%",
+      "best_selection": "away_win",
+      "best_selection_name": "밀워키 벅스 반대승",
+      "raw_selection_name": "밀워키 벅스 반대승",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -17298,7 +17419,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "마이애미 히트",
     "away_team": "밀워키 벅스",
     "betman_odds": {
@@ -17501,7 +17622,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "마이애미 히트",
     "away_team": "밀워키 벅스",
     "betman_odds": {
@@ -17704,7 +17825,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "올랜도 매직",
     "away_team": "필라델피아 76s",
     "betman_odds": {
@@ -17907,7 +18028,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "올랜도 매직",
     "away_team": "필라델피아 76s",
     "betman_odds": {
@@ -18110,7 +18231,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "올랜도 매직",
     "away_team": "필라델피아 76s",
     "betman_odds": {
@@ -18313,7 +18434,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "올랜도 매직",
     "away_team": "필라델피아 76s",
     "betman_odds": {
@@ -18516,7 +18637,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "브루클린 네츠",
     "away_team": "시카고 불스",
     "betman_odds": {
@@ -18719,7 +18840,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "브루클린 네츠",
     "away_team": "시카고 불스",
     "betman_odds": {
@@ -18922,7 +19043,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "브루클린 네츠",
     "away_team": "시카고 불스",
     "betman_odds": {
@@ -19125,7 +19246,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "브루클린 네츠",
     "away_team": "시카고 불스",
     "betman_odds": {
@@ -19328,7 +19449,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "토론토 랩터스",
     "away_team": "워싱턴 위저즈",
     "betman_odds": {
@@ -19548,7 +19669,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "토론토 랩터스",
     "away_team": "워싱턴 위저즈",
     "betman_odds": {
@@ -19768,7 +19889,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "토론토 랩터스",
     "away_team": "워싱턴 위저즈",
     "betman_odds": {
@@ -19988,7 +20109,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "토론토 랩터스",
     "away_team": "워싱턴 위저즈",
     "betman_odds": {
@@ -20208,7 +20329,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "디트로이트 피스톤스",
     "betman_odds": {
@@ -20411,7 +20532,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "디트로이트 피스톤스",
     "betman_odds": {
@@ -20614,7 +20735,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "디트로이트 피스톤스",
     "betman_odds": {
@@ -20817,7 +20938,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "디트로이트 피스톤스",
     "betman_odds": {
@@ -21020,7 +21141,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "오클라호마시티 썬더",
     "away_team": "애틀랜타 호크스",
     "betman_odds": {
@@ -21223,7 +21344,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "오클라호마시티 썬더",
     "away_team": "애틀랜타 호크스",
     "betman_odds": {
@@ -21426,7 +21547,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "오클라호마시티 썬더",
     "away_team": "애틀랜타 호크스",
     "betman_odds": {
@@ -21629,7 +21750,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "오클라호마시티 썬더",
     "away_team": "애틀랜타 호크스",
     "betman_odds": {
@@ -21832,50 +21953,66 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "댈러스 매버릭스",
     "away_team": "골든스테이트 워리어스",
     "betman_odds": {
-      "home_win": 1.26,
+      "home_win": 1.3,
       "draw": 0.0,
-      "away_win": 2.81
+      "away_win": 2.63
     },
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-18 22:17:18",
+        "from": {
+          "home_win": 1.26,
+          "draw": 0.0,
+          "away_win": 2.81
+        },
+        "to": {
+          "home_win": 1.3,
+          "draw": 0.0,
+          "away_win": 2.63
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.26,
+      "home_win": 1.3,
       "draw": 0.0,
-      "away_win": 2.81
+      "away_win": 2.63
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.6904,
+      "home": 0.6692,
       "draw": 0.0,
-      "away": 0.3096
+      "away": 0.3308
     },
     "model_probabilities": {
-      "home_win": 0.6904,
+      "home_win": 0.6692,
       "draw": 0.0,
-      "away_win": 0.3096
+      "away_win": 0.3308
     },
     "blended_probabilities": {
-      "home_win": 0.6904,
+      "home_win": 0.6692,
       "draw": 0.0,
-      "away_win": 0.3096
+      "away_win": 0.3308
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1301,
+        "home_win": -0.13,
         "draw": -1.0,
         "away_win": -0.13
       },
-      "best_selection": "away_win",
-      "best_selection_name": "[단통 ⚡] 골든스테이트 워리어스 승",
-      "raw_selection_name": "골든스테이트 워리어스 승",
+      "best_selection": "home_win",
+      "best_selection_name": "[단통 ⚡] 댈러스 매버릭스 승",
+      "raw_selection_name": "댈러스 매버릭스 승",
       "best_ev": -0.13,
       "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
@@ -22035,7 +22172,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "댈러스 매버릭스",
     "away_team": "골든스테이트 워리어스",
     "betman_odds": {
@@ -22238,7 +22375,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "댈러스 매버릭스",
     "away_team": "골든스테이트 워리어스",
     "betman_odds": {
@@ -22441,7 +22578,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "댈러스 매버릭스",
     "away_team": "골든스테이트 워리어스",
     "betman_odds": {
@@ -22644,7 +22781,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "덴버 너게츠",
     "away_team": "보스턴 셀틱스",
     "betman_odds": {
@@ -22847,7 +22984,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "덴버 너게츠",
     "away_team": "보스턴 셀틱스",
     "betman_odds": {
@@ -23050,7 +23187,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "덴버 너게츠",
     "away_team": "보스턴 셀틱스",
     "betman_odds": {
@@ -23253,7 +23390,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "덴버 너게츠",
     "away_team": "보스턴 셀틱스",
     "betman_odds": {
@@ -23456,7 +23593,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "LA 레이커스",
     "away_team": "유타 재즈",
     "betman_odds": {
@@ -23676,7 +23813,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "LA 레이커스",
     "away_team": "유타 재즈",
     "betman_odds": {
@@ -23896,7 +24033,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "LA 레이커스",
     "away_team": "유타 재즈",
     "betman_odds": {
@@ -24116,7 +24253,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "LA 레이커스",
     "away_team": "유타 재즈",
     "betman_odds": {
@@ -24336,7 +24473,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "새크라멘토 킹스",
     "away_team": "피닉스 선즈",
     "betman_odds": {
@@ -24539,7 +24676,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "새크라멘토 킹스",
     "away_team": "피닉스 선즈",
     "betman_odds": {
@@ -24742,7 +24879,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "새크라멘토 킹스",
     "away_team": "피닉스 선즈",
     "betman_odds": {
@@ -24945,7 +25082,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "새크라멘토 킹스",
     "away_team": "피닉스 선즈",
     "betman_odds": {
