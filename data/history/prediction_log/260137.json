@@ -1,0 +1,140 @@
+{
+  "gm_ts": "260137",
+  "matches": {
+    "4531": {
+      "match_time": "26.11.18 (수) 11:30",
+      "league": "CONCACAF 네이션스리그",
+      "game_type": "축구 승무패",
+      "line": 0.0,
+      "home_team": "멕시코",
+      "away_team": "자메이카",
+      "betman_odds": {
+        "home_win": 1.12,
+        "draw": 5.8,
+        "away_win": 12.0
+      },
+      "market_probs": {
+        "home": 0.7773,
+        "draw": 0.1501,
+        "away": 0.0726
+      },
+      "model_probs": {
+        "home_win": 0.8401,
+        "draw": 0.1232,
+        "away_win": 0.0367
+      },
+      "shadow_probs": {
+        "prop_mkt": {
+          "home_win": 0.8333,
+          "draw": 0.1232,
+          "away_win": 0.0435
+        }
+      },
+      "prob_source": "betman_corrector",
+      "model_version": "betman_shin:2026-11-16T00:47:40+00:00",
+      "logged_at": "2026-11-18T00:41:43+00:00",
+      "first_odds": {
+        "home_win": 1.12,
+        "draw": 5.8,
+        "away_win": 12.0
+      },
+      "first_market_probs": {
+        "home": 0.7773,
+        "draw": 0.1501,
+        "away": 0.0726
+      },
+      "first_model_probs": {
+        "home_win": 0.8401,
+        "draw": 0.1232,
+        "away_win": 0.0367
+      },
+      "first_logged_at": "2026-11-18T00:41:43+00:00"
+    },
+    "4534": {
+      "match_time": "26.11.18 (수) 11:30",
+      "league": "CONCACAF 네이션스리그",
+      "game_type": "축구 소수핸디캡",
+      "line": -3.5,
+      "home_team": "멕시코",
+      "away_team": "자메이카",
+      "betman_odds": {
+        "home_win": 3.67,
+        "draw": 0.0,
+        "away_win": 1.14
+      },
+      "market_probs": {
+        "home": 0.237,
+        "draw": 0.0,
+        "away": 0.763
+      },
+      "model_probs": {
+        "home_win": 0.1912,
+        "draw": 0.0,
+        "away_win": 0.8088
+      },
+      "shadow_probs": null,
+      "prob_source": "betman_markets",
+      "model_version": "betman_shin:2026-11-16T00:47:40+00:00",
+      "logged_at": "2026-11-18T00:41:43+00:00",
+      "first_odds": {
+        "home_win": 3.67,
+        "draw": 0.0,
+        "away_win": 1.14
+      },
+      "first_market_probs": {
+        "home": 0.237,
+        "draw": 0.0,
+        "away": 0.763
+      },
+      "first_model_probs": {
+        "home_win": 0.1912,
+        "draw": 0.0,
+        "away_win": 0.8088
+      },
+      "first_logged_at": "2026-11-18T00:41:43+00:00"
+    },
+    "4535": {
+      "match_time": "26.11.18 (수) 11:30",
+      "league": "CONCACAF 네이션스리그",
+      "game_type": "축구 언더오버",
+      "line": 3.5,
+      "home_team": "멕시코",
+      "away_team": "자메이카",
+      "betman_odds": {
+        "home_win": 1.58,
+        "draw": 0.0,
+        "away_win": 1.94
+      },
+      "market_probs": {
+        "home": 0.5511,
+        "draw": 0.0,
+        "away": 0.4489
+      },
+      "model_probs": {
+        "home_win": 0.5585,
+        "draw": 0.0,
+        "away_win": 0.4415
+      },
+      "shadow_probs": null,
+      "prob_source": "betman_markets",
+      "model_version": "betman_shin:2026-11-16T00:47:40+00:00",
+      "logged_at": "2026-11-18T00:41:43+00:00",
+      "first_odds": {
+        "home_win": 1.58,
+        "draw": 0.0,
+        "away_win": 1.94
+      },
+      "first_market_probs": {
+        "home": 0.5511,
+        "draw": 0.0,
+        "away": 0.4489
+      },
+      "first_model_probs": {
+        "home_win": 0.5585,
+        "draw": 0.0,
+        "away_win": 0.4415
+      },
+      "first_logged_at": "2026-11-18T00:41:43+00:00"
+    }
+  }
+}
