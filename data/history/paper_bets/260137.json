@@ -1,4 +1,511 @@
 {
   "gm_ts": "260137",
-  "bets": []
+  "bets": [
+    {
+      "strategy": "C_finder_top",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "비셀 고베 승"
+        },
+        {
+          "seq": "4661",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "가시마 앤틀러스 승"
+        }
+      ],
+      "ev_ai": -0.1234,
+      "combined_odds": 2.0,
+      "stake": 1000,
+      "bet_id": "C_finder_top:4669h+4661h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "비셀 고베 승"
+        },
+        {
+          "seq": "4661",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "가시마 앤틀러스 승"
+        },
+        {
+          "seq": "4633",
+          "key": "home_win",
+          "odds": 2.15,
+          "match_time": "26.11.20 (금) 09:30",
+          "home_team": "올랜도 시티SC",
+          "away_team": "FC신시내티",
+          "league": "미국 메이저리그사커",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "올랜도 시티SC 승"
+        }
+      ],
+      "combined_odds": 4.2,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:4669h+4661h+4633h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "비셀 고베 승"
+        },
+        {
+          "seq": "4661",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "가시마 앤틀러스 승"
+        },
+        {
+          "seq": "4633",
+          "key": "draw",
+          "odds": 3.8,
+          "match_time": "26.11.20 (금) 09:30",
+          "home_team": "올랜도 시티SC",
+          "away_team": "FC신시내티",
+          "league": "미국 메이저리그사커",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "무승부"
+        }
+      ],
+      "combined_odds": 7.4,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:4669h+4661h+4633d",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "D_banker_cover",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "비셀 고베 승"
+        },
+        {
+          "seq": "4661",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "가시마 앤틀러스 승"
+        },
+        {
+          "seq": "4633",
+          "key": "away_win",
+          "odds": 2.3,
+          "match_time": "26.11.20 (금) 09:30",
+          "home_team": "올랜도 시티SC",
+          "away_team": "FC신시내티",
+          "league": "미국 메이저리그사커",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "FC신시내티 승"
+        }
+      ],
+      "combined_odds": 4.5,
+      "stake": 1000,
+      "bet_id": "D_banker_cover:4669h+4661h+4633a",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4633",
+          "key": "home_win",
+          "odds": 2.15,
+          "match_time": "26.11.20 (금) 09:30",
+          "home_team": "올랜도 시티SC",
+          "away_team": "FC신시내티",
+          "league": "미국 메이저리그사커",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "올랜도 시티SC 승"
+        }
+      ],
+      "combined_odds": 2.15,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4633h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4653",
+          "key": "home_win",
+          "odds": 1.8,
+          "match_time": "26.11.20 (금) 12:00",
+          "home_team": "시애틀 사운더스FC",
+          "away_team": "레알 솔트레이크",
+          "league": "미국 메이저리그사커",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "시애틀 사운더스FC 승"
+        }
+      ],
+      "combined_odds": 1.8,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4653h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4661",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "가시마 앤틀러스 승"
+        }
+      ],
+      "combined_odds": 1.44,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4661h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4665",
+          "key": "home_win",
+          "odds": 1.49,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시와 레이솔",
+          "away_team": "제프 유나이티드",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "가시와 레이솔 승"
+        }
+      ],
+      "combined_odds": 1.49,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4665h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "비셀 고베 승"
+        }
+      ],
+      "combined_odds": 1.34,
+      "stake": 1000,
+      "bet_id": "E_market_fav:4669h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "I_least_loss",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "비셀 고베 승"
+        }
+      ],
+      "rule_version": "v1",
+      "combined_odds": 1.34,
+      "stake": 1000,
+      "bet_id": "I_least_loss:4669h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "I_least_loss",
+      "legs": [
+        {
+          "seq": "4661",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "가시마 앤틀러스 승"
+        }
+      ],
+      "rule_version": "v1",
+      "combined_odds": 1.44,
+      "stake": 1000,
+      "bet_id": "I_least_loss:4661h",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그"
+        },
+        {
+          "seq": "4661",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 2.0,
+      "stake": 2200,
+      "ev_ai": -0.1234,
+      "p_ai": 0.4383,
+      "edge": 0.0704,
+      "stake_mult": 1.61,
+      "wallet_before": 194490,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:4669h+4661h",
+      "ai_note": "주력 · 이번 달 밑천 70,170원 · 잔고 194,490원 중 2,200원 · 경기당 AI 우위 +7.0% → 판돈 ×1.6 · AI 기대수익 -12.3% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70170,
+      "gm_ts": "260137",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "G_ai_bettor",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "4657",
+          "key": "draw",
+          "odds": 3.75,
+          "match_time": "26.11.20 (금) 17:40",
+          "home_team": "웨스턴시드니 원더러스",
+          "away_team": "애들레이드 유나이티드",
+          "league": "호주 A리그"
+        },
+        {
+          "seq": "4633",
+          "key": "away_win",
+          "odds": 2.3,
+          "match_time": "26.11.20 (금) 09:30",
+          "home_team": "올랜도 시티SC",
+          "away_team": "FC신시내티",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 8.7,
+      "stake": 1100,
+      "ev_ai": -0.1266,
+      "p_ai": 0.1004,
+      "edge": 0.0827,
+      "stake_mult": 1.98,
+      "wallet_before": 194490,
+      "mode": "normal",
+      "bet_id": "G_ai_bettor:4657d+4633a",
+      "ai_note": "복권 · 이번 달 밑천 70,170원 · 잔고 194,490원 중 1,100원 · 경기당 AI 우위 +8.3% → 판돈 ×2.0 · AI 기대수익 -12.7% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70170,
+      "gm_ts": "260137",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "G_instinct",
+      "slip": "main",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그"
+        },
+        {
+          "seq": "4661",
+          "key": "home_win",
+          "odds": 1.44,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "가시마 앤틀러스",
+          "away_team": "시미즈 에스펄스",
+          "league": "일본 J1리그"
+        }
+      ],
+      "combined_odds": 2.0,
+      "stake": 3100,
+      "ev_ai": -0.1234,
+      "p_ai": 0.4383,
+      "edge": 0.0704,
+      "stake_mult": 1.61,
+      "wallet_before": 191350,
+      "mode": "normal",
+      "bet_id": "G_instinct:4669h+4661h",
+      "ai_note": "본능: 지난 회차를 이겨서 판돈 ×1.4 · 주력 · 이번 달 밑천 70,340원 · 잔고 191,350원 중 3,100원 · 경기당 AI 우위 +7.0% → 판돈 ×1.6 · AI 기대수익 -12.3% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70340,
+      "boost": 1.4,
+      "instinct": "win_boost",
+      "gm_ts": "260137",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "G_instinct",
+      "slip": "lottery",
+      "legs": [
+        {
+          "seq": "4657",
+          "key": "draw",
+          "odds": 3.75,
+          "match_time": "26.11.20 (금) 17:40",
+          "home_team": "웨스턴시드니 원더러스",
+          "away_team": "애들레이드 유나이티드",
+          "league": "호주 A리그"
+        },
+        {
+          "seq": "4633",
+          "key": "away_win",
+          "odds": 2.3,
+          "match_time": "26.11.20 (금) 09:30",
+          "home_team": "올랜도 시티SC",
+          "away_team": "FC신시내티",
+          "league": "미국 메이저리그사커"
+        }
+      ],
+      "combined_odds": 8.7,
+      "stake": 1500,
+      "ev_ai": -0.1266,
+      "p_ai": 0.1004,
+      "edge": 0.0827,
+      "stake_mult": 1.98,
+      "wallet_before": 191350,
+      "mode": "normal",
+      "bet_id": "G_instinct:4657d+4633a",
+      "ai_note": "본능: 지난 회차를 이겨서 판돈 ×1.4 · 복권 · 이번 달 밑천 70,340원 · 잔고 191,350원 중 1,500원 · 경기당 AI 우위 +8.3% → 판돈 ×2.0 · AI 기대수익 -12.7% (정상 모드)",
+      "stake_basis": "month",
+      "month_capital": 70340,
+      "boost": 1.4,
+      "instinct": "win_boost",
+      "gm_ts": "260137",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    },
+    {
+      "strategy": "J_gemini",
+      "legs": [
+        {
+          "seq": "4669",
+          "key": "home_win",
+          "odds": 1.34,
+          "match_time": "26.11.20 (금) 19:00",
+          "home_team": "비셀 고베",
+          "away_team": "미토 홀리호크",
+          "league": "일본 J1리그",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "비셀 고베 승"
+        }
+      ],
+      "combined_odds": 1.34,
+      "stake": 3000,
+      "rule_version": "j2",
+      "note": "j2: 비셀 고베 홈승 (배당 1.34, Gemini확률 79.7%, Edge +12.2%p)",
+      "bet_id": "J_gemini:4669h:0",
+      "gm_ts": "260137",
+      "created_at": "2026-11-18T09:34:27+00:00"
+    }
+  ],
+  "f_plan": {
+    "games": 5,
+    "candidates": 128,
+    "bets": 0,
+    "bankroll": 100000,
+    "staked": 0,
+    "at": "2026-11-18T09:34:27+00:00"
+  }
 }
