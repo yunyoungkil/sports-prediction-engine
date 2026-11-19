@@ -124,6 +124,130 @@
           }
         }
       }
+    },
+    {
+      "captured_at": "2026-11-19T07:54:22.388994+00:00",
+      "credits_remaining": 430,
+      "targets": 6,
+      "matches": {
+        "4633": {
+          "event_id": "ec0a3056ce896bd73059bffab79fc261",
+          "home_team": "Orlando City SC",
+          "away_team": "FC Cincinnati",
+          "commence_time": "2026-11-20T00:30:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.46,
+            "draw": 3.89,
+            "away_win": 2.68
+          },
+          "sharp_probs": {
+            "home_win": 0.3921,
+            "draw": 0.248,
+            "away_win": 0.3599
+          },
+          "consensus_probs": {
+            "home_win": 0.3891444444444444,
+            "draw": 0.24422222222222223,
+            "away_win": 0.3666111111111111
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_single",
+          "prob_distance": 0.0434,
+          "sport_key": "soccer_usa_mls",
+          "betman_odds": {
+            "home_win": 2.15,
+            "draw": 3.8,
+            "away_win": 2.3
+          },
+          "betman_home": "올랜도 시티SC",
+          "betman_away": "FC신시내티",
+          "match_time": "26.11.20 (금) 09:30",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.157,
+            "draw": -0.0576,
+            "away_win": -0.1722
+          }
+        },
+        "4653": {
+          "event_id": "d8eca71d848497deda0c022c1c27e3bc",
+          "home_team": "Seattle Sounders FC",
+          "away_team": "Real Salt Lake",
+          "commence_time": "2026-11-20T03:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.98,
+            "draw": 3.94,
+            "away_win": 3.6
+          },
+          "sharp_probs": {
+            "home_win": 0.4872,
+            "draw": 0.2448,
+            "away_win": 0.268
+          },
+          "consensus_probs": {
+            "home_win": 0.48314444444444443,
+            "draw": 0.24833333333333338,
+            "away_win": 0.2685111111111111
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_single",
+          "prob_distance": 0.0198,
+          "sport_key": "soccer_usa_mls",
+          "betman_odds": {
+            "home_win": 1.8,
+            "draw": 3.5,
+            "away_win": 3.1
+          },
+          "betman_home": "시애틀 사운더스FC",
+          "betman_away": "레알 솔트레이크",
+          "match_time": "26.11.20 (금) 12:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.123,
+            "draw": -0.1432,
+            "away_win": -0.1692
+          }
+        },
+        "4657": {
+          "event_id": "68cfa1aec1d5f4115ca07e6237dfa6fd",
+          "home_team": "Western Sydney Wanderers",
+          "away_team": "Adelaide United",
+          "commence_time": "2026-11-20T08:40:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.66,
+            "draw": 4.41,
+            "away_win": 4.48
+          },
+          "sharp_probs": {
+            "home_win": 0.5724,
+            "draw": 0.2155,
+            "away_win": 0.2121
+          },
+          "consensus_probs": {
+            "home_win": 0.57035,
+            "draw": 0.22010000000000002,
+            "away_win": 0.20955
+          },
+          "n_bookmakers": 8,
+          "match_method": "time_single",
+          "prob_distance": 0.0435,
+          "sport_key": "soccer_australia_aleague",
+          "betman_odds": {
+            "home_win": 1.56,
+            "draw": 3.75,
+            "away_win": 3.9
+          },
+          "betman_home": "웨스턴시드니 원더러스",
+          "betman_away": "애들레이드 유나이티드",
+          "match_time": "26.11.20 (금) 17:40",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1071,
+            "draw": -0.1919,
+            "away_win": -0.1728
+          }
+        }
+      }
     }
   ]
 }
