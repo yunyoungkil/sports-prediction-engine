@@ -5764,14 +5764,14 @@
     "kickoff_ts": 1795164000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "웨스턴시드니 원더러스",
     "away_team": "애들레이드 유나이티드",
     "betman_odds": {
-      "home_win": 1.48,
-      "draw": 4.1,
-      "away_win": 4.1
+      "home_win": 1.39,
+      "draw": 4.4,
+      "away_win": 4.65
     },
     "odds_changes": [
       {
@@ -5788,89 +5788,66 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-20 17:11:22",
+        "from": {
+          "home_win": 1.48,
+          "draw": 4.1,
+          "away_win": 4.1
+        },
+        "to": {
+          "home_win": 1.39,
+          "draw": 4.4,
+          "away_win": 4.65
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": {
       "prop_mkt": {
-        "home_win": 0.5747,
-        "draw": 0.2311,
-        "away_win": 0.1942
+        "home_win": 0.6207,
+        "draw": 0.2123,
+        "away_win": 0.1669
       }
     },
     "prediction_odds": {
-      "home_win": 1.48,
-      "draw": 4.1,
-      "away_win": 4.1
+      "home_win": 1.39,
+      "draw": 4.4,
+      "away_win": 4.65
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5807,
-      "draw": 0.2096,
-      "away": 0.2096
+      "home": 0.6193,
+      "draw": 0.1956,
+      "away": 0.1851
     },
     "model_probabilities": {
-      "home_win": 0.5807,
-      "draw": 0.2096,
-      "away_win": 0.2096
+      "home_win": 0.6193,
+      "draw": 0.1956,
+      "away_win": 0.1851
     },
     "blended_probabilities": {
-      "home_win": 0.5727,
-      "draw": 0.2308,
-      "away_win": 0.1965
+      "home_win": 0.6192,
+      "draw": 0.2124,
+      "away_win": 0.1684
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "68cfa1aec1d5f4115ca07e6237dfa6fd",
-      "home_team": "Western Sydney Wanderers",
-      "away_team": "Adelaide United",
-      "commence_time": "2026-11-20T08:40:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 1.7,
-        "draw": 4.52,
-        "away_win": 4.44
-      },
-      "sharp_probs": {
-        "home_win": 0.5685,
-        "draw": 0.2138,
-        "away_win": 0.2177
-      },
-      "consensus_probs": {
-        "home_win": 0.569325,
-        "draw": 0.219025,
-        "away_win": 0.2116375
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_single",
-      "prob_distance": 0.0357,
-      "sport_key": "soccer_australia_aleague",
-      "betman_odds": {
-        "home_win": 1.56,
-        "draw": 3.75,
-        "away_win": 3.9
-      },
-      "betman_home": "웨스턴시드니 원더러스",
-      "betman_away": "애들레이드 유나이티드",
-      "match_time": "26.11.20 (금) 17:40",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1131,
-        "draw": -0.1983,
-        "away_win": -0.151
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1524,
-        "draw": -0.0537,
-        "away_win": -0.1944
+        "home_win": -0.1393,
+        "draw": -0.0654,
+        "away_win": -0.2169
       },
       "best_selection": "draw",
       "best_selection_name": "무승부",
       "raw_selection_name": "무승부",
-      "best_ev": -0.0537,
-      "best_ev_pct": "-5.4%",
+      "best_ev": -0.0654,
+      "best_ev_pct": "-6.5%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -6118,14 +6095,14 @@
     "kickoff_ts": 1795164000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "웨스턴시드니 원더러스",
     "away_team": "애들레이드 유나이티드",
     "betman_odds": {
-      "home_win": 2.35,
-      "draw": 3.35,
-      "away_win": 2.28
+      "home_win": 2.26,
+      "draw": 3.3,
+      "away_win": 2.4
     },
     "odds_changes": [
       {
@@ -6142,44 +6119,59 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-20 17:11:22",
+        "from": {
+          "home_win": 2.35,
+          "draw": 3.35,
+          "away_win": 2.28
+        },
+        "to": {
+          "home_win": 2.26,
+          "draw": 3.3,
+          "away_win": 2.4
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.35,
-      "draw": 3.35,
-      "away_win": 2.28
+      "home_win": 2.26,
+      "draw": 3.3,
+      "away_win": 2.4
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.366,
-      "draw": 0.2568,
-      "away": 0.3772
+      "home": 0.3807,
+      "draw": 0.2607,
+      "away": 0.3585
     },
     "model_probabilities": {
-      "home_win": 0.366,
-      "draw": 0.2568,
-      "away_win": 0.3772
+      "home_win": 0.3807,
+      "draw": 0.2607,
+      "away_win": 0.3585
     },
     "blended_probabilities": {
-      "home_win": 0.366,
-      "draw": 0.2568,
-      "away_win": 0.3772
+      "home_win": 0.3807,
+      "draw": 0.2607,
+      "away_win": 0.3585
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1399,
+        "home_win": -0.1396,
         "draw": -0.1397,
-        "away_win": -0.14
+        "away_win": -0.1396
       },
-      "best_selection": "draw",
-      "best_selection_name": "핸디캡 무승부",
-      "raw_selection_name": "핸디캡 무승부",
-      "best_ev": -0.1397,
+      "best_selection": "home_win",
+      "best_selection_name": "웨스턴시드니 원더러스 (-1.0) 승",
+      "raw_selection_name": "웨스턴시드니 원더러스 (-1.0) 승",
+      "best_ev": -0.1396,
       "best_ev_pct": "-14.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
@@ -6428,14 +6420,14 @@
     "kickoff_ts": 1795164000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "웨스턴시드니 원더러스",
     "away_team": "애들레이드 유나이티드",
     "betman_odds": {
-      "home_win": 1.76,
+      "home_win": 1.82,
       "draw": 0.0,
-      "away_win": 1.72
+      "away_win": 1.67
     },
     "odds_changes": [
       {
@@ -6467,45 +6459,60 @@
         },
         "line_from": 3.5,
         "line_to": 3.5
+      },
+      {
+        "at": "2026-11-20 17:11:22",
+        "from": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "to": {
+          "home_win": 1.82,
+          "draw": 0.0,
+          "away_win": 1.67
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.76,
+      "home_win": 1.82,
       "draw": 0.0,
-      "away_win": 1.72
+      "away_win": 1.67
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4943,
+      "home": 0.4785,
       "draw": 0.0,
-      "away": 0.5057
+      "away": 0.5215
     },
     "model_probabilities": {
-      "home_win": 0.4943,
+      "home_win": 0.4785,
       "draw": 0.0,
-      "away_win": 0.5057
+      "away_win": 0.5215
     },
     "blended_probabilities": {
-      "home_win": 0.4944,
+      "home_win": 0.4766,
       "draw": 0.0,
-      "away_win": 0.5056
+      "away_win": 0.5234
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1299,
+        "home_win": -0.1326,
         "draw": -1.0,
-        "away_win": -0.1304
+        "away_win": -0.1259
       },
-      "best_selection": "home_win",
-      "best_selection_name": "언더 (< 3.5)",
-      "raw_selection_name": "언더 (< 3.5)",
-      "best_ev": -0.1299,
-      "best_ev_pct": "-13.0%",
+      "best_selection": "away_win",
+      "best_selection_name": "오버 (> 3.5)",
+      "raw_selection_name": "오버 (> 3.5)",
+      "best_ev": -0.1259,
+      "best_ev_pct": "-12.6%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -6753,7 +6760,7 @@
     "kickoff_ts": 1795164000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "웨스턴시드니 원더러스",
     "away_team": "애들레이드 유나이티드",
@@ -7052,9 +7059,9 @@
     "home_team": "가시마 앤틀러스",
     "away_team": "시미즈 에스펄스",
     "betman_odds": {
-      "home_win": 1.33,
-      "draw": 4.0,
-      "away_win": 6.2
+      "home_win": 1.27,
+      "draw": 4.3,
+      "away_win": 7.0
     },
     "odds_changes": [
       {
@@ -7086,51 +7093,66 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-20 16:46:07",
+        "from": {
+          "home_win": 1.33,
+          "draw": 4.0,
+          "away_win": 6.2
+        },
+        "to": {
+          "home_win": 1.27,
+          "draw": 4.3,
+          "away_win": 7.0
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": {
       "prop_mkt": {
-        "home_win": 0.6923,
-        "draw": 0.1955,
-        "away_win": 0.1122
+        "home_win": 0.7263,
+        "draw": 0.1777,
+        "away_win": 0.0961
       }
     },
     "prediction_odds": {
-      "home_win": 1.33,
-      "draw": 4.0,
-      "away_win": 6.2
+      "home_win": 1.27,
+      "draw": 4.3,
+      "away_win": 7.0
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.6464,
-      "draw": 0.2149,
-      "away": 0.1387
+      "home": 0.6772,
+      "draw": 0.2,
+      "away": 0.1229
     },
     "model_probabilities": {
-      "home_win": 0.6464,
-      "draw": 0.2149,
-      "away_win": 0.1387
+      "home_win": 0.6772,
+      "draw": 0.2,
+      "away_win": 0.1229
     },
     "blended_probabilities": {
-      "home_win": 0.693,
-      "draw": 0.1975,
-      "away_win": 0.1095
+      "home_win": 0.7286,
+      "draw": 0.1794,
+      "away_win": 0.092
     },
     "prob_source": "betman_corrector",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.0783,
-        "draw": -0.21,
-        "away_win": -0.3211
+        "home_win": -0.0747,
+        "draw": -0.2286,
+        "away_win": -0.356
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 가시마 앤틀러스 승",
       "raw_selection_name": "가시마 앤틀러스 승",
-      "best_ev": -0.0783,
-      "best_ev_pct": "-7.8%",
+      "best_ev": -0.0747,
+      "best_ev_pct": "-7.5%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -7343,16 +7365,16 @@
     "match_time": "26.11.20 (금) 19:00",
     "close_time": 1795168800000,
     "kickoff_ts": 1795168800000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
     "home_team": "가시마 앤틀러스",
     "away_team": "시미즈 에스펄스",
     "betman_odds": {
-      "home_win": 2.21,
-      "draw": 2.95,
-      "away_win": 2.7
+      "home_win": 2.17,
+      "draw": 2.9,
+      "away_win": 2.8
     },
     "odds_changes": [
       {
@@ -7384,45 +7406,60 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-20 16:46:07",
+        "from": {
+          "home_win": 2.21,
+          "draw": 2.95,
+          "away_win": 2.7
+        },
+        "to": {
+          "home_win": 2.17,
+          "draw": 2.9,
+          "away_win": 2.8
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.21,
-      "draw": 2.95,
-      "away_win": 2.7
+      "home_win": 2.17,
+      "draw": 2.9,
+      "away_win": 2.8
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3895,
-      "draw": 0.2918,
-      "away": 0.3188
+      "home": 0.3963,
+      "draw": 0.2965,
+      "away": 0.3071
     },
     "model_probabilities": {
-      "home_win": 0.3895,
-      "draw": 0.2918,
-      "away_win": 0.3188
+      "home_win": 0.3963,
+      "draw": 0.2965,
+      "away_win": 0.3071
     },
     "blended_probabilities": {
-      "home_win": 0.3895,
-      "draw": 0.2918,
-      "away_win": 0.3188
+      "home_win": 0.3963,
+      "draw": 0.2965,
+      "away_win": 0.3071
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1392,
-        "draw": -0.1392,
-        "away_win": -0.1392
+        "home_win": -0.14,
+        "draw": -0.1402,
+        "away_win": -0.1401
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 가시마 앤틀러스 (-1.0) 승",
       "raw_selection_name": "가시마 앤틀러스 (-1.0) 승",
-      "best_ev": -0.1392,
-      "best_ev_pct": "-13.9%",
+      "best_ev": -0.14,
+      "best_ev_pct": "-14.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -8733,9 +8770,9 @@
     "home_team": "가시와 레이솔",
     "away_team": "제프 유나이티드",
     "betman_odds": {
-      "home_win": 2.25,
+      "home_win": 2.18,
       "draw": 0.0,
-      "away_win": 1.42
+      "away_win": 1.45
     },
     "odds_changes": [
       {
@@ -8752,45 +8789,60 @@
         },
         "line_from": 2.5,
         "line_to": 2.5
+      },
+      {
+        "at": "2026-11-20 17:40:20",
+        "from": {
+          "home_win": 2.25,
+          "draw": 0.0,
+          "away_win": 1.42
+        },
+        "to": {
+          "home_win": 2.18,
+          "draw": 0.0,
+          "away_win": 1.45
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 2.25,
+      "home_win": 2.18,
       "draw": 0.0,
-      "away_win": 1.42
+      "away_win": 1.45
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.3869,
+      "home": 0.3994,
       "draw": 0.0,
-      "away": 0.6131
+      "away": 0.6006
     },
     "model_probabilities": {
-      "home_win": 0.3869,
+      "home_win": 0.3994,
       "draw": 0.0,
-      "away_win": 0.6131
+      "away_win": 0.6006
     },
     "blended_probabilities": {
-      "home_win": 0.3738,
+      "home_win": 0.3878,
       "draw": 0.0,
-      "away_win": 0.6262
+      "away_win": 0.6122
     },
     "prob_source": "betman_markets",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1589,
+        "home_win": -0.1546,
         "draw": -1.0,
-        "away_win": -0.1108
+        "away_win": -0.1123
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 2.5)",
       "raw_selection_name": "오버 (> 2.5)",
-      "best_ev": -0.1108,
-      "best_ev_pct": "-11.1%",
+      "best_ev": -0.1123,
+      "best_ev_pct": "-11.2%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -11366,9 +11418,9 @@
     "home_team": "현대캐피탈 스카이워커스",
     "away_team": "한국전력 빅스톰",
     "betman_odds": {
-      "home_win": 1.36,
+      "home_win": 1.27,
       "draw": 0.0,
-      "away_win": 2.41
+      "away_win": 2.76
     },
     "odds_changes": [
       {
@@ -11385,45 +11437,75 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-20 17:01:37",
+        "from": {
+          "home_win": 1.36,
+          "draw": 0.0,
+          "away_win": 2.41
+        },
+        "to": {
+          "home_win": 1.31,
+          "draw": 0.0,
+          "away_win": 2.59
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-11-20 18:07:43",
+        "from": {
+          "home_win": 1.31,
+          "draw": 0.0,
+          "away_win": 2.59
+        },
+        "to": {
+          "home_win": 1.27,
+          "draw": 0.0,
+          "away_win": 2.76
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.36,
+      "home_win": 1.27,
       "draw": 0.0,
-      "away_win": 2.41
+      "away_win": 2.76
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.6393,
+      "home": 0.6849,
       "draw": 0.0,
-      "away": 0.3607
+      "away": 0.3151
     },
     "model_probabilities": {
-      "home_win": 0.6393,
+      "home_win": 0.6849,
       "draw": 0.0,
-      "away_win": 0.3607
+      "away_win": 0.3151
     },
     "blended_probabilities": {
-      "home_win": 0.6393,
+      "home_win": 0.6849,
       "draw": 0.0,
-      "away_win": 0.3607
+      "away_win": 0.3151
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1306,
+        "home_win": -0.1302,
         "draw": -1.0,
-        "away_win": -0.1307
+        "away_win": -0.1303
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 현대캐피탈 스카이워커스 승",
       "raw_selection_name": "현대캐피탈 스카이워커스 승",
-      "best_ev": -0.1306,
-      "best_ev_pct": "-13.1%",
+      "best_ev": -0.1302,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -11602,9 +11684,9 @@
     "home_team": "현대캐피탈 스카이워커스",
     "away_team": "한국전력 빅스톰",
     "betman_odds": {
-      "home_win": 1.75,
+      "home_win": 1.65,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.84
     },
     "odds_changes": [
       {
@@ -11636,30 +11718,45 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-20 18:07:43",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.65,
+          "draw": 0.0,
+          "away_win": 1.84
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.75,
+      "home_win": 1.65,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.84
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4971,
+      "home": 0.5272,
       "draw": 0.0,
-      "away": 0.5029
+      "away": 0.4728
     },
     "model_probabilities": {
-      "home_win": 0.4971,
+      "home_win": 0.5272,
       "draw": 0.0,
-      "away_win": 0.5029
+      "away_win": 0.4728
     },
     "blended_probabilities": {
-      "home_win": 0.4971,
+      "home_win": 0.5272,
       "draw": 0.0,
-      "away_win": 0.5029
+      "away_win": 0.4728
     },
     "prob_source": "market",
     "sharp": null,
@@ -11853,9 +11950,9 @@
     "home_team": "현대캐피탈 스카이워커스",
     "away_team": "한국전력 빅스톰",
     "betman_odds": {
-      "home_win": 1.74,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.64
     },
     "odds_changes": [
       {
@@ -11902,45 +11999,75 @@
         },
         "line_from": 183.5,
         "line_to": 185.5
+      },
+      {
+        "at": "2026-11-20 16:50:51",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": 185.5,
+        "line_to": 185.5
+      },
+      {
+        "at": "2026-11-20 17:44:28",
+        "from": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "to": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "line_from": 185.5,
+        "line_to": 185.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.74,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.64
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.5,
+      "home": 0.4699,
       "draw": 0.0,
-      "away": 0.5
+      "away": 0.5301
     },
     "model_probabilities": {
-      "home_win": 0.5,
+      "home_win": 0.4699,
       "draw": 0.0,
-      "away_win": 0.5
+      "away_win": 0.5301
     },
     "blended_probabilities": {
-      "home_win": 0.5,
+      "home_win": 0.4699,
       "draw": 0.0,
-      "away_win": 0.5
+      "away_win": 0.5301
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.13,
+        "home_win": -0.1307,
         "draw": -1.0,
-        "away_win": -0.13
+        "away_win": -0.1306
       },
-      "best_selection": "home_win",
-      "best_selection_name": "[단통 ⚡] 언더 (< 185.5)",
-      "raw_selection_name": "언더 (< 185.5)",
-      "best_ev": -0.13,
-      "best_ev_pct": "-13.0%",
+      "best_selection": "away_win",
+      "best_selection_name": "[단통 ⚡] 오버 (> 185.5)",
+      "raw_selection_name": "오버 (> 185.5)",
+      "best_ev": -0.1306,
+      "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -12575,9 +12702,9 @@
     "home_team": "한국도로공사 하이패스",
     "away_team": "IBK기업은행 알토스",
     "betman_odds": {
-      "home_win": 1.82,
+      "home_win": 1.76,
       "draw": 0.0,
-      "away_win": 1.67
+      "away_win": 1.72
     },
     "odds_changes": [
       {
@@ -12594,45 +12721,60 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-20 16:46:39",
+        "from": {
+          "home_win": 1.82,
+          "draw": 0.0,
+          "away_win": 1.67
+        },
+        "to": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.82,
+      "home_win": 1.76,
       "draw": 0.0,
-      "away_win": 1.67
+      "away_win": 1.72
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4785,
+      "home": 0.4943,
       "draw": 0.0,
-      "away": 0.5215
+      "away": 0.5057
     },
     "model_probabilities": {
-      "home_win": 0.4785,
+      "home_win": 0.4943,
       "draw": 0.0,
-      "away_win": 0.5215
+      "away_win": 0.5057
     },
     "blended_probabilities": {
-      "home_win": 0.4785,
+      "home_win": 0.4943,
       "draw": 0.0,
-      "away_win": 0.5215
+      "away_win": 0.5057
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1291,
+        "home_win": -0.13,
         "draw": -1.0,
-        "away_win": -0.1291
+        "away_win": -0.1302
       },
       "best_selection": "home_win",
       "best_selection_name": "[단통 ⚡] 한국도로공사 하이패스 (-1.5) 승",
       "raw_selection_name": "한국도로공사 하이패스 (-1.5) 승",
-      "best_ev": -0.1291,
-      "best_ev_pct": "-12.9%",
+      "best_ev": -0.13,
+      "best_ev_pct": "-13.0%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,
       "recommend_locked": true,
@@ -12811,9 +12953,9 @@
     "home_team": "한국도로공사 하이패스",
     "away_team": "IBK기업은행 알토스",
     "betman_odds": {
-      "home_win": 1.79,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.69
+      "away_win": 1.64
     },
     "odds_changes": [
       {
@@ -12875,44 +13017,59 @@
         },
         "line_from": 181.5,
         "line_to": 183.5
+      },
+      {
+        "at": "2026-11-20 18:01:38",
+        "from": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "to": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "line_from": 183.5,
+        "line_to": 183.5
       }
     ],
     "shadow_probs": null,
     "prediction_odds": {
-      "home_win": 1.79,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.69
+      "away_win": 1.64
     },
     "closing_odds": null,
     "clv_pct": null,
     "market_implied_probs": {
-      "home": 0.4856,
+      "home": 0.4699,
       "draw": 0.0,
-      "away": 0.5144
+      "away": 0.5301
     },
     "model_probabilities": {
-      "home_win": 0.4856,
+      "home_win": 0.4699,
       "draw": 0.0,
-      "away_win": 0.5144
+      "away_win": 0.5301
     },
     "blended_probabilities": {
-      "home_win": 0.4856,
+      "home_win": 0.4699,
       "draw": 0.0,
-      "away_win": 0.5144
+      "away_win": 0.5301
     },
     "prob_source": "market",
     "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
-        "home_win": -0.1308,
+        "home_win": -0.1307,
         "draw": -1.0,
-        "away_win": -0.1307
+        "away_win": -0.1306
       },
       "best_selection": "away_win",
       "best_selection_name": "[단통 ⚡] 오버 (> 183.5)",
       "raw_selection_name": "오버 (> 183.5)",
-      "best_ev": -0.1307,
+      "best_ev": -0.1306,
       "best_ev_pct": "-13.1%",
       "grade": "PASS (기대가치 마이너스 - 패스 권장)",
       "is_recommended": false,

@@ -776,7 +776,7 @@
     "kickoff_ts": 1795164000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "웨스턴시드니 원더러스",
     "away_team": "애들레이드 유나이티드",
@@ -795,12 +795,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-20 17:11:22",
+        "from": {
+          "home_win": 1.48,
+          "draw": 4.1,
+          "away_win": 4.1
+        },
+        "to": {
+          "home_win": 1.39,
+          "draw": 4.4,
+          "away_win": 4.65
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.48,
-      "draw": 4.1,
-      "away_win": 4.1
+      "home_win": 1.39,
+      "draw": 4.4,
+      "away_win": 4.65
     },
     "gm_ts": 260138
   },
@@ -821,7 +836,7 @@
     "kickoff_ts": 1795164000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "웨스턴시드니 원더러스",
     "away_team": "애들레이드 유나이티드",
@@ -840,12 +855,27 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-20 17:11:22",
+        "from": {
+          "home_win": 2.35,
+          "draw": 3.35,
+          "away_win": 2.28
+        },
+        "to": {
+          "home_win": 2.26,
+          "draw": 3.3,
+          "away_win": 2.4
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "odds": {
-      "home_win": 2.35,
-      "draw": 3.35,
-      "away_win": 2.28
+      "home_win": 2.26,
+      "draw": 3.3,
+      "away_win": 2.4
     },
     "gm_ts": 260138
   },
@@ -866,7 +896,7 @@
     "kickoff_ts": 1795164000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "웨스턴시드니 원더러스",
     "away_team": "애들레이드 유나이티드",
@@ -900,12 +930,27 @@
         },
         "line_from": 3.5,
         "line_to": 3.5
+      },
+      {
+        "at": "2026-11-20 17:11:22",
+        "from": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "to": {
+          "home_win": 1.82,
+          "draw": 0.0,
+          "away_win": 1.67
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
       }
     ],
     "odds": {
-      "home_win": 1.76,
+      "home_win": 1.82,
       "draw": 0.0,
-      "away_win": 1.72
+      "away_win": 1.67
     },
     "gm_ts": 260138
   },
@@ -926,7 +971,7 @@
     "kickoff_ts": 1795164000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
+    "proto_status": "3",
     "match_state": "2",
     "home_team": "웨스턴시드니 원더러스",
     "away_team": "애들레이드 유나이티드",
@@ -989,12 +1034,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-20 16:46:07",
+        "from": {
+          "home_win": 1.33,
+          "draw": 4.0,
+          "away_win": 6.2
+        },
+        "to": {
+          "home_win": 1.27,
+          "draw": 4.3,
+          "away_win": 7.0
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.33,
-      "draw": 4.0,
-      "away_win": 6.2
+      "home_win": 1.27,
+      "draw": 4.3,
+      "away_win": 7.0
     },
     "gm_ts": 260138
   },
@@ -1013,7 +1073,7 @@
     "match_time": "26.11.20 (금) 19:00",
     "close_time": 1795168800000,
     "kickoff_ts": 1795168800000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
     "proto_status": "2",
     "match_state": "2",
@@ -1049,12 +1109,27 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-20 16:46:07",
+        "from": {
+          "home_win": 2.21,
+          "draw": 2.95,
+          "away_win": 2.7
+        },
+        "to": {
+          "home_win": 2.17,
+          "draw": 2.9,
+          "away_win": 2.8
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "odds": {
-      "home_win": 2.21,
-      "draw": 2.95,
-      "away_win": 2.7
+      "home_win": 2.17,
+      "draw": 2.9,
+      "away_win": 2.8
     },
     "gm_ts": 260138
   },
@@ -1273,12 +1348,27 @@
         },
         "line_from": 2.5,
         "line_to": 2.5
+      },
+      {
+        "at": "2026-11-20 17:40:20",
+        "from": {
+          "home_win": 2.25,
+          "draw": 0.0,
+          "away_win": 1.42
+        },
+        "to": {
+          "home_win": 2.18,
+          "draw": 0.0,
+          "away_win": 1.45
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
       }
     ],
     "odds": {
-      "home_win": 2.25,
+      "home_win": 2.18,
       "draw": 0.0,
-      "away_win": 1.42
+      "away_win": 1.45
     },
     "gm_ts": 260138
   },
@@ -1687,12 +1777,42 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-20 17:01:37",
+        "from": {
+          "home_win": 1.36,
+          "draw": 0.0,
+          "away_win": 2.41
+        },
+        "to": {
+          "home_win": 1.31,
+          "draw": 0.0,
+          "away_win": 2.59
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-11-20 18:07:43",
+        "from": {
+          "home_win": 1.31,
+          "draw": 0.0,
+          "away_win": 2.59
+        },
+        "to": {
+          "home_win": 1.27,
+          "draw": 0.0,
+          "away_win": 2.76
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.36,
+      "home_win": 1.27,
       "draw": 0.0,
-      "away_win": 2.41
+      "away_win": 2.76
     },
     "gm_ts": 260138
   },
@@ -1747,12 +1867,27 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-20 18:07:43",
+        "from": {
+          "home_win": 1.75,
+          "draw": 0.0,
+          "away_win": 1.73
+        },
+        "to": {
+          "home_win": 1.65,
+          "draw": 0.0,
+          "away_win": 1.84
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "odds": {
-      "home_win": 1.75,
+      "home_win": 1.65,
       "draw": 0.0,
-      "away_win": 1.73
+      "away_win": 1.84
     },
     "gm_ts": 260138
   },
@@ -1822,12 +1957,42 @@
         },
         "line_from": 183.5,
         "line_to": 185.5
+      },
+      {
+        "at": "2026-11-20 16:50:51",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": 185.5,
+        "line_to": 185.5
+      },
+      {
+        "at": "2026-11-20 17:44:28",
+        "from": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "to": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "line_from": 185.5,
+        "line_to": 185.5
       }
     ],
     "odds": {
-      "home_win": 1.74,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.64
     },
     "gm_ts": 260138
   },
@@ -1941,12 +2106,27 @@
         },
         "line_from": -1.5,
         "line_to": -1.5
+      },
+      {
+        "at": "2026-11-20 16:46:39",
+        "from": {
+          "home_win": 1.82,
+          "draw": 0.0,
+          "away_win": 1.67
+        },
+        "to": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "line_from": -1.5,
+        "line_to": -1.5
       }
     ],
     "odds": {
-      "home_win": 1.82,
+      "home_win": 1.76,
       "draw": 0.0,
-      "away_win": 1.67
+      "away_win": 1.72
     },
     "gm_ts": 260138
   },
@@ -2031,12 +2211,27 @@
         },
         "line_from": 181.5,
         "line_to": 183.5
+      },
+      {
+        "at": "2026-11-20 18:01:38",
+        "from": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "to": {
+          "home_win": 1.85,
+          "draw": 0.0,
+          "away_win": 1.64
+        },
+        "line_from": 183.5,
+        "line_to": 183.5
       }
     ],
     "odds": {
-      "home_win": 1.79,
+      "home_win": 1.85,
       "draw": 0.0,
-      "away_win": 1.69
+      "away_win": 1.64
     },
     "gm_ts": 260138
   },
