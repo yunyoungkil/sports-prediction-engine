@@ -1,0 +1,90 @@
+{
+  "gm_ts": "260138",
+  "snapshots": [
+    {
+      "captured_at": "2026-11-20T00:35:49.030859+00:00",
+      "credits_remaining": 427,
+      "targets": 5,
+      "matches": {
+        "4653": {
+          "event_id": "d8eca71d848497deda0c022c1c27e3bc",
+          "home_team": "Seattle Sounders FC",
+          "away_team": "Real Salt Lake",
+          "commence_time": "2026-11-20T03:00:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 2.01,
+            "draw": 3.83,
+            "away_win": 3.66
+          },
+          "sharp_probs": {
+            "home_win": 0.4822,
+            "draw": 0.253,
+            "away_win": 0.2648
+          },
+          "consensus_probs": {
+            "home_win": 0.47442222222222225,
+            "draw": 0.25610000000000005,
+            "away_win": 0.2695
+          },
+          "n_bookmakers": 9,
+          "match_method": "time_single",
+          "prob_distance": 0.0248,
+          "sport_key": "soccer_usa_mls",
+          "betman_odds": {
+            "home_win": 1.8,
+            "draw": 3.5,
+            "away_win": 3.1
+          },
+          "betman_home": "시애틀 사운더스FC",
+          "betman_away": "레알 솔트레이크",
+          "match_time": "26.11.20 (금) 12:00",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.132,
+            "draw": -0.1145,
+            "away_win": -0.1791
+          }
+        },
+        "4657": {
+          "event_id": "68cfa1aec1d5f4115ca07e6237dfa6fd",
+          "home_team": "Western Sydney Wanderers",
+          "away_team": "Adelaide United",
+          "commence_time": "2026-11-20T08:40:00Z",
+          "sharp_bookmaker": "pinnacle",
+          "sharp_odds": {
+            "home_win": 1.7,
+            "draw": 4.52,
+            "away_win": 4.44
+          },
+          "sharp_probs": {
+            "home_win": 0.5685,
+            "draw": 0.2138,
+            "away_win": 0.2177
+          },
+          "consensus_probs": {
+            "home_win": 0.569325,
+            "draw": 0.219025,
+            "away_win": 0.2116375
+          },
+          "n_bookmakers": 8,
+          "match_method": "time_single",
+          "prob_distance": 0.0357,
+          "sport_key": "soccer_australia_aleague",
+          "betman_odds": {
+            "home_win": 1.56,
+            "draw": 3.75,
+            "away_win": 3.9
+          },
+          "betman_home": "웨스턴시드니 원더러스",
+          "betman_away": "애들레이드 유나이티드",
+          "match_time": "26.11.20 (금) 17:40",
+          "betman_ev_vs_sharp": {
+            "home_win": -0.1131,
+            "draw": -0.1983,
+            "away_win": -0.151
+          }
+        }
+      }
+    }
+  ]
+}
