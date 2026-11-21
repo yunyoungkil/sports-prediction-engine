@@ -49667,45 +49667,7 @@
       "away_win": 0.3745
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "2b7cc231aa95c50b368408649f7fd697",
-      "home_team": "Brisbane Roar",
-      "away_team": "Sydney FC",
-      "commence_time": "2026-11-21T08:40:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.62,
-        "draw": 3.7,
-        "away_win": 2.64
-      },
-      "sharp_probs": {
-        "home_win": 0.3703,
-        "draw": 0.2622,
-        "away_win": 0.3675
-      },
-      "consensus_probs": {
-        "home_win": 0.36824999999999997,
-        "draw": 0.269875,
-        "away_win": 0.36183750000000003
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_single",
-      "prob_distance": 0.0209,
-      "sport_key": "soccer_australia_aleague",
-      "betman_odds": {
-        "home_win": 2.26,
-        "draw": 3.3,
-        "away_win": 2.4
-      },
-      "betman_home": "브리즈번 로어",
-      "betman_away": "시드니FC",
-      "match_time": "26.11.21 (토) 17:40",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1631,
-        "draw": -0.1347,
-        "away_win": -0.118
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
