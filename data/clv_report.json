@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21T02:20:16+00:00",
+  "updated_at": "2026-11-21T03:02:32+00:00",
   "rounds": [
     260126,
     260127,
@@ -15,36 +15,36 @@
     260137,
     260138
   ],
-  "matches": 2131,
-  "moved": 923,
+  "matches": 2137,
+  "moved": 926,
   "toward_ai": 441,
-  "away_from_ai": 482,
-  "toward_ai_pct": 47.8,
+  "away_from_ai": 485,
+  "toward_ai_pct": 47.6,
   "fav_toward_pct": 49.1,
   "mean_move_pp": {
-    "n": 2131,
-    "mean": -0.14207,
+    "n": 2137,
+    "mean": -0.14375,
     "ci": [
-      -0.27353,
-      -0.01223
+      -0.26983,
+      -0.01623
     ],
     "ci_iid": [
-      -0.26857,
-      -0.02275
+      -0.26896,
+      -0.01623
     ],
-    "clusters": 885,
+    "clusters": 888,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
     "농구 SUM": {
-      "matches": 106,
+      "matches": 109,
       "moved": 0,
       "toward_ai": 0,
       "away_from_ai": 0,
       "toward_ai_pct": null,
       "fav_toward_pct": null,
       "mean_move_pp": {
-        "n": 106,
+        "n": 109,
         "mean": 0.0,
         "ci": [
           0.0,
@@ -54,7 +54,7 @@
           0.0,
           0.0
         ],
-        "clusters": 106,
+        "clusters": 109,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
@@ -81,24 +81,24 @@
       }
     },
     "농구 언더오버": {
-      "matches": 241,
-      "moved": 32,
+      "matches": 244,
+      "moved": 35,
       "toward_ai": 7,
-      "away_from_ai": 25,
-      "toward_ai_pct": 21.9,
-      "fav_toward_pct": 34.4,
+      "away_from_ai": 28,
+      "toward_ai_pct": 20.0,
+      "fav_toward_pct": 37.1,
       "mean_move_pp": {
-        "n": 241,
-        "mean": -0.10782,
+        "n": 244,
+        "mean": -0.12473,
         "ci": [
-          -0.17751,
-          -0.03866
+          -0.19351,
+          -0.0531
         ],
         "ci_iid": [
-          -0.17461,
-          -0.03866
+          -0.19351,
+          -0.05478
         ],
-        "clusters": 240,
+        "clusters": 243,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
