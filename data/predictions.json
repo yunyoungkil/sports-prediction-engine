@@ -130439,45 +130439,7 @@
       "away_win": 0.2379
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "89a9e84b79ee5ae92a3863868a7a11f2",
-      "home_team": "Wellington Phoenix FC",
-      "away_team": "Macarthur FC",
-      "commence_time": "2026-11-22T02:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 1.85,
-        "draw": 4.05,
-        "away_win": 4.05
-      },
-      "sharp_probs": {
-        "home_win": 0.5226,
-        "draw": 0.2387,
-        "away_win": 0.2387
-      },
-      "consensus_probs": {
-        "home_win": 0.5137499999999999,
-        "draw": 0.24718750000000003,
-        "away_win": 0.2391
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_single",
-      "prob_distance": 0.0212,
-      "sport_key": "soccer_australia_aleague",
-      "betman_odds": {
-        "home_win": 1.68,
-        "draw": 3.5,
-        "away_win": 3.55
-      },
-      "betman_home": "웰링턴 피닉스",
-      "betman_away": "맥아서FC",
-      "match_time": "26.11.22 (일) 11:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.122,
-        "draw": -0.1645,
-        "away_win": -0.1526
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
