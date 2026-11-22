@@ -80,13 +80,13 @@
       "roi_ci_high": 23.05
     },
     "betman": {
-      "samples": 1180,
-      "model_ll": 0.9428,
-      "market_ll": 0.9458,
-      "ll_diff": -0.003,
+      "samples": 1299,
+      "model_ll": 0.9455,
+      "market_ll": 0.9483,
+      "ll_diff": -0.0028,
       "ll_diff_ci": [
-        -0.0059,
-        -0.0002
+        -0.0056,
+        -0.0001
       ],
       "bets": 1,
       "roi_pct": -100.0,

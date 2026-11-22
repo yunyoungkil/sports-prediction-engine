@@ -1603,6 +1603,69 @@
       "bet_id": "J_gemini:4910h:0",
       "gm_ts": "260138",
       "created_at": "2026-11-20T07:47:47+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "5280",
+          "key": "home_win",
+          "odds": 1.39,
+          "match_time": "26.11.23 (월) 06:00",
+          "home_team": "내슈빌SC",
+          "away_team": "FC신시내티",
+          "league": "미국 메이저리그사커",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "내슈빌SC 승"
+        }
+      ],
+      "combined_odds": 1.39,
+      "stake": 1000,
+      "bet_id": "E_market_fav:5280h",
+      "created_at": "2026-11-22T00:54:29+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "5288",
+          "key": "home_win",
+          "odds": 1.54,
+          "match_time": "26.11.23 (월) 08:30",
+          "home_team": "시카고 파이어FC",
+          "away_team": "샬럿FC",
+          "league": "미국 메이저리그사커",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "시카고 파이어FC 승"
+        }
+      ],
+      "combined_odds": 1.54,
+      "stake": 1000,
+      "bet_id": "E_market_fav:5288h",
+      "created_at": "2026-11-22T00:54:29+00:00"
+    },
+    {
+      "strategy": "E_market_fav",
+      "legs": [
+        {
+          "seq": "5308",
+          "key": "home_win",
+          "odds": 1.41,
+          "match_time": "26.11.23 (월) 10:30",
+          "home_team": "밴쿠버 화이트캡스FC",
+          "away_team": "레알 솔트레이크",
+          "league": "미국 메이저리그사커",
+          "game_type": "축구 승무패",
+          "line": 0.0,
+          "label": "밴쿠버 화이트캡스FC 승"
+        }
+      ],
+      "combined_odds": 1.41,
+      "stake": 1000,
+      "bet_id": "E_market_fav:5308h",
+      "created_at": "2026-11-22T00:54:29+00:00"
     }
   ],
   "f_plan": {

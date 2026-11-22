@@ -76,13 +76,13 @@
       "roi_ci_high": 31.77
     },
     "betman": {
-      "samples": 1180,
-      "model_ll": 0.9421,
-      "market_ll": 0.9458,
-      "ll_diff": -0.0037,
+      "samples": 1299,
+      "model_ll": 0.9449,
+      "market_ll": 0.9483,
+      "ll_diff": -0.0034,
       "ll_diff_ci": [
-        -0.0069,
-        -0.0006
+        -0.0065,
+        -0.0004
       ],
       "bets": 1,
       "roi_pct": -100.0,
@@ -98,6 +98,6 @@
       2627
     ],
     "production_rows": 7582,
-    "trained_at": "2026-11-16T00:39:42+00:00"
+    "trained_at": "2026-11-22T00:36:52+00:00"
   }
 }
