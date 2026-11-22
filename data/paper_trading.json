@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-22T01:01:45+00:00",
+  "updated_at": "2026-11-22T03:01:49+00:00",
   "stake_unit": 1000,
   "strategies": {
     "A_gem_single": {
@@ -168,15 +168,15 @@
     },
     "E_market_fav": {
       "label": "E. 배당 1순위 단일 (기준선)",
-      "bets": 406,
+      "bets": 407,
       "hits": 236,
-      "pending": 21,
-      "staked": 406000,
+      "pending": 20,
+      "staked": 407000,
       "returned": 384230,
-      "profit": -21770,
-      "roi_pct": -5.36,
-      "roi_ci_low": -15.99,
-      "roi_ci_high": 3.21,
+      "profit": -22770,
+      "roi_pct": -5.59,
+      "roi_ci_low": -16.14,
+      "roi_ci_high": 2.82,
       "cum_profit": [
         550,
         770,
@@ -583,7 +583,8 @@
         -23020,
         -22660,
         -22560,
-        -21770
+        -21770,
+        -22770
       ],
       "cum_staked": [
         1000,
@@ -991,7 +992,8 @@
         403000,
         404000,
         405000,
-        406000
+        406000,
+        407000
       ],
       "verdict": "수익 미입증"
     },
@@ -1699,9 +1701,9 @@
       "odds": 1.44,
       "stake": 1000,
       "kickoff": "2026-11-21T23:00:00+00:00",
-      "status": "대기",
-      "payout": null,
-      "profit": null
+      "status": "미적중",
+      "payout": 0,
+      "profit": -1000
     },
     {
       "gm_ts": "260138",
