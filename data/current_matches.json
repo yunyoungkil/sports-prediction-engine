@@ -878,12 +878,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-23 18:01:25",
+        "from": {
+          "home_win": 1.2,
+          "draw": 0.0,
+          "away_win": 3.16
+        },
+        "to": {
+          "home_win": 1.24,
+          "draw": 0.0,
+          "away_win": 2.92
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.2,
+      "home_win": 1.24,
       "draw": 0.0,
-      "away_win": 3.16
+      "away_win": 2.92
     },
     "gm_ts": 260139
   },
@@ -938,12 +953,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-23 18:01:25",
+        "from": {
+          "home_win": 1.55,
+          "draw": 3.1,
+          "away_win": 5.1
+        },
+        "to": {
+          "home_win": 1.57,
+          "draw": 3.15,
+          "away_win": 4.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 1.55,
-      "draw": 3.1,
-      "away_win": 5.1
+      "home_win": 1.57,
+      "draw": 3.15,
+      "away_win": 4.8
     },
     "gm_ts": 260139
   },
@@ -984,7 +1014,7 @@
     "game_type": "농구 언더오버",
     "category": "언더오버",
     "is_single": true,
-    "line": 139.5,
+    "line": 138.5,
     "win_txt": "언더",
     "draw_txt": "-",
     "lose_txt": "오버",
@@ -1012,12 +1042,27 @@
         },
         "line_from": 139.5,
         "line_to": 139.5
+      },
+      {
+        "at": "2026-11-23 18:01:25",
+        "from": {
+          "home_win": 1.69,
+          "draw": 0.0,
+          "away_win": 1.79
+        },
+        "to": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "line_from": 139.5,
+        "line_to": 138.5
       }
     ],
     "odds": {
-      "home_win": 1.69,
+      "home_win": 1.74,
       "draw": 0.0,
-      "away_win": 1.79
+      "away_win": 1.74
     },
     "gm_ts": 260139
   },
@@ -1796,11 +1841,27 @@
     "match_state": "2",
     "home_team": "AC몬차",
     "away_team": "ACF피오렌티나",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 17:39:23",
+        "from": {
+          "home_win": 1.79,
+          "draw": 3.6,
+          "away_win": 3.05
+        },
+        "to": {
+          "home_win": 1.78,
+          "draw": 3.35,
+          "away_win": 3.3
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.79,
-      "draw": 3.6,
-      "away_win": 3.05
+      "home_win": 1.78,
+      "draw": 3.35,
+      "away_win": 3.3
     },
     "gm_ts": 260139
   },
@@ -2073,11 +2134,27 @@
     "match_state": "2",
     "home_team": "레반테",
     "away_team": "엘체",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 17:34:34",
+        "from": {
+          "home_win": 1.98,
+          "draw": 3.4,
+          "away_win": 2.75
+        },
+        "to": {
+          "home_win": 2.03,
+          "draw": 3.2,
+          "away_win": 2.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.98,
-      "draw": 3.4,
-      "away_win": 2.75
+      "home_win": 2.03,
+      "draw": 3.2,
+      "away_win": 2.8
     },
     "gm_ts": 260139
   },
@@ -2102,11 +2179,27 @@
     "match_state": "2",
     "home_team": "레반테",
     "away_team": "엘체",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 17:34:34",
+        "from": {
+          "home_win": 3.75,
+          "draw": 3.65,
+          "away_win": 1.61
+        },
+        "to": {
+          "home_win": 3.8,
+          "draw": 3.55,
+          "away_win": 1.62
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 3.75,
-      "draw": 3.65,
-      "away_win": 1.61
+      "home_win": 3.8,
+      "draw": 3.55,
+      "away_win": 1.62
     },
     "gm_ts": 260139
   },
