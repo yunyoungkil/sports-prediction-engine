@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-24T05:02:39+00:00",
+  "updated_at": "2026-11-24T07:01:57+00:00",
   "rounds": [
     260126,
     260127,
@@ -17,21 +17,21 @@
     260139
   ],
   "matches": 2531,
-  "moved": 1061,
+  "moved": 1063,
   "toward_ai": 508,
-  "away_from_ai": 553,
-  "toward_ai_pct": 47.9,
-  "fav_toward_pct": 47.5,
+  "away_from_ai": 555,
+  "toward_ai_pct": 47.8,
+  "fav_toward_pct": 47.4,
   "mean_move_pp": {
     "n": 2531,
-    "mean": -0.12587,
+    "mean": -0.13245,
     "ci": [
-      -0.23906,
-      -0.01633
+      -0.24709,
+      -0.02368
     ],
     "ci_iid": [
-      -0.23906,
-      -0.01932
+      -0.24709,
+      -0.02591
     ],
     "clusters": 1037,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
@@ -61,21 +61,21 @@
     },
     "농구 승패": {
       "matches": 260,
-      "moved": 102,
+      "moved": 104,
       "toward_ai": 39,
-      "away_from_ai": 63,
-      "toward_ai_pct": 38.2,
-      "fav_toward_pct": 30.4,
+      "away_from_ai": 65,
+      "toward_ai_pct": 37.5,
+      "fav_toward_pct": 29.8,
       "mean_move_pp": {
         "n": 260,
-        "mean": -0.15096,
+        "mean": -0.21506,
         "ci": [
-          -0.62602,
-          0.36877
+          -0.69555,
+          0.3098
         ],
         "ci_iid": [
-          -0.61988,
-          0.3379
+          -0.69555,
+          0.29556
         ],
         "clusters": 259,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
