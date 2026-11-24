@@ -744,7 +744,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "보스턴 셀틱스",
     "odds_changes": [],
@@ -773,7 +773,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "보스턴 셀틱스",
     "odds_changes": [],
@@ -802,7 +802,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "보스턴 셀틱스",
     "odds_changes": [],
@@ -831,7 +831,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "4",
-    "match_state": "3",
+    "match_state": "4",
     "home_team": "골든스테이트 워리어스",
     "away_team": "보스턴 셀틱스",
     "odds_changes": [],
@@ -859,8 +859,8 @@
     "kickoff_ts": 1795428000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "4",
     "home_team": "신한은행 에스버드",
     "away_team": "하나은행",
     "odds_changes": [
@@ -919,8 +919,8 @@
     "kickoff_ts": 1795428000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "4",
     "home_team": "신한은행 에스버드",
     "away_team": "하나은행",
     "odds_changes": [
@@ -992,10 +992,10 @@
     "match_time": "26.11.23 (월) 19:00",
     "close_time": 1795428000000,
     "kickoff_ts": 1795428000000,
-    "buy_reject": "0",
+    "buy_reject": "4",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "4",
     "home_team": "신한은행 에스버드",
     "away_team": "하나은행",
     "odds_changes": [],
@@ -1021,10 +1021,10 @@
     "match_time": "26.11.23 (월) 19:00",
     "close_time": 1795428000000,
     "kickoff_ts": 1795428000000,
-    "buy_reject": "0",
+    "buy_reject": "1",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "4",
     "home_team": "신한은행 에스버드",
     "away_team": "하나은행",
     "odds_changes": [
@@ -1083,8 +1083,8 @@
     "kickoff_ts": 1795428000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "4",
     "home_team": "신한은행 에스버드",
     "away_team": "하나은행",
     "odds_changes": [],
@@ -1112,15 +1112,31 @@
     "kickoff_ts": 1795441500000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "네프치 페르가나",
     "away_team": "알힐랄SFC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 21:42:51",
+        "from": {
+          "home_win": 7.0,
+          "draw": 4.4,
+          "away_win": 1.26
+        },
+        "to": {
+          "home_win": 9.0,
+          "draw": 5.3,
+          "away_win": 1.16
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 7.0,
-      "draw": 4.4,
-      "away_win": 1.26
+      "home_win": 9.0,
+      "draw": 5.3,
+      "away_win": 1.16
     },
     "gm_ts": 260139
   },
@@ -1141,15 +1157,61 @@
     "kickoff_ts": 1795441500000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "네프치 페르가나",
     "away_team": "알힐랄SFC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 21:42:51",
+        "from": {
+          "home_win": 3.05,
+          "draw": 3.4,
+          "away_win": 1.85
+        },
+        "to": {
+          "home_win": 3.75,
+          "draw": 3.4,
+          "away_win": 1.66
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      },
+      {
+        "at": "2026-11-23 21:46:19",
+        "from": {
+          "home_win": 3.75,
+          "draw": 3.4,
+          "away_win": 1.66
+        },
+        "to": {
+          "home_win": 3.85,
+          "draw": 3.6,
+          "away_win": 1.6
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      },
+      {
+        "at": "2026-11-23 22:27:09",
+        "from": {
+          "home_win": 3.85,
+          "draw": 3.6,
+          "away_win": 1.6
+        },
+        "to": {
+          "home_win": 4.15,
+          "draw": 3.9,
+          "away_win": 1.5
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 3.05,
-      "draw": 3.4,
-      "away_win": 1.85
+      "home_win": 4.15,
+      "draw": 3.9,
+      "away_win": 1.5
     },
     "gm_ts": 260139
   },
@@ -1170,15 +1232,46 @@
     "kickoff_ts": 1795441500000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "네프치 페르가나",
     "away_team": "알힐랄SFC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 21:42:51",
+        "from": {
+          "home_win": 1.5,
+          "draw": 0.0,
+          "away_win": 2.07
+        },
+        "to": {
+          "home_win": 1.62,
+          "draw": 0.0,
+          "away_win": 1.88
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      },
+      {
+        "at": "2026-11-23 22:27:09",
+        "from": {
+          "home_win": 1.62,
+          "draw": 0.0,
+          "away_win": 1.88
+        },
+        "to": {
+          "home_win": 1.67,
+          "draw": 0.0,
+          "away_win": 1.82
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.5,
+      "home_win": 1.67,
       "draw": 0.0,
-      "away_win": 2.07
+      "away_win": 1.82
     },
     "gm_ts": 260139
   },
@@ -1199,8 +1292,8 @@
     "kickoff_ts": 1795441500000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "네프치 페르가나",
     "away_team": "알힐랄SFC",
     "odds_changes": [],
@@ -1228,15 +1321,31 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "알샤말SC",
     "away_team": "알아흘리 사우디",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:37:11",
+        "from": {
+          "home_win": 3.45,
+          "draw": 3.65,
+          "away_win": 1.67
+        },
+        "to": {
+          "home_win": 3.6,
+          "draw": 3.9,
+          "away_win": 1.59
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 3.45,
-      "draw": 3.65,
-      "away_win": 1.67
+      "home_win": 3.6,
+      "draw": 3.9,
+      "away_win": 1.59
     },
     "gm_ts": 260139
   },
@@ -1257,15 +1366,31 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "알샤말SC",
     "away_team": "알아흘리 사우디",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:37:11",
+        "from": {
+          "home_win": 1.9,
+          "draw": 3.5,
+          "away_win": 2.85
+        },
+        "to": {
+          "home_win": 2.1,
+          "draw": 3.4,
+          "away_win": 2.55
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.9,
-      "draw": 3.5,
-      "away_win": 2.85
+      "home_win": 2.1,
+      "draw": 3.4,
+      "away_win": 2.55
     },
     "gm_ts": 260139
   },
@@ -1286,8 +1411,8 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "알샤말SC",
     "away_team": "알아흘리 사우디",
     "odds_changes": [],
@@ -1315,8 +1440,8 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "알샤말SC",
     "away_team": "알아흘리 사우디",
     "odds_changes": [],
@@ -1344,15 +1469,31 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "트락토르",
     "away_team": "알와슬",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:56:11",
+        "from": {
+          "home_win": 3.2,
+          "draw": 3.2,
+          "away_win": 1.86
+        },
+        "to": {
+          "home_win": 3.3,
+          "draw": 3.05,
+          "away_win": 1.88
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 3.2,
-      "draw": 3.2,
-      "away_win": 1.86
+      "home_win": 3.3,
+      "draw": 3.05,
+      "away_win": 1.88
     },
     "gm_ts": 260139
   },
@@ -1373,8 +1514,8 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "트락토르",
     "away_team": "알와슬",
     "odds_changes": [],
@@ -1402,8 +1543,8 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "트락토르",
     "away_team": "알와슬",
     "odds_changes": [],
@@ -1431,8 +1572,8 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "트락토르",
     "away_team": "알와슬",
     "odds_changes": [],
@@ -1460,8 +1601,8 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "알아인",
     "away_team": "에스테그랄 테헤란",
     "odds_changes": [],
@@ -1489,15 +1630,31 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "알아인",
     "away_team": "에스테그랄 테헤란",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:56:22",
+        "from": {
+          "home_win": 2.4,
+          "draw": 3.2,
+          "away_win": 2.31
+        },
+        "to": {
+          "home_win": 2.4,
+          "draw": 3.1,
+          "away_win": 2.36
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
       "home_win": 2.4,
-      "draw": 3.2,
-      "away_win": 2.31
+      "draw": 3.1,
+      "away_win": 2.36
     },
     "gm_ts": 260139
   },
@@ -1518,8 +1675,8 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "알아인",
     "away_team": "에스테그랄 테헤란",
     "odds_changes": [],
@@ -1547,8 +1704,8 @@
     "kickoff_ts": 1795449600000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "알아인",
     "away_team": "에스테그랄 테헤란",
     "odds_changes": [],
@@ -1576,8 +1733,8 @@
     "kickoff_ts": 1795457700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "에어포스 알쿠와알자위야",
     "away_team": "알가라파SC",
     "odds_changes": [],
@@ -1605,15 +1762,31 @@
     "kickoff_ts": 1795457700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "에어포스 알쿠와알자위야",
     "away_team": "알가라파SC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:37:32",
+        "from": {
+          "home_win": 3.9,
+          "draw": 3.6,
+          "away_win": 1.59
+        },
+        "to": {
+          "home_win": 4.4,
+          "draw": 3.6,
+          "away_win": 1.52
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 3.9,
+      "home_win": 4.4,
       "draw": 3.6,
-      "away_win": 1.59
+      "away_win": 1.52
     },
     "gm_ts": 260139
   },
@@ -1634,8 +1807,8 @@
     "kickoff_ts": 1795457700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "에어포스 알쿠와알자위야",
     "away_team": "알가라파SC",
     "odds_changes": [],
@@ -1663,8 +1836,8 @@
     "kickoff_ts": 1795457700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "에어포스 알쿠와알자위야",
     "away_team": "알가라파SC",
     "odds_changes": [],
@@ -1692,15 +1865,31 @@
     "kickoff_ts": 1795457700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "S알이티하드",
     "away_team": "파흐타코르",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:38:35",
+        "from": {
+          "home_win": 1.26,
+          "draw": 4.7,
+          "away_win": 6.4
+        },
+        "to": {
+          "home_win": 1.22,
+          "draw": 5.0,
+          "away_win": 7.0
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.26,
-      "draw": 4.7,
-      "away_win": 6.4
+      "home_win": 1.22,
+      "draw": 5.0,
+      "away_win": 7.0
     },
     "gm_ts": 260139
   },
@@ -1721,15 +1910,31 @@
     "kickoff_ts": 1795457700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "S알이티하드",
     "away_team": "파흐타코르",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:38:35",
+        "from": {
+          "home_win": 1.82,
+          "draw": 3.5,
+          "away_win": 3.05
+        },
+        "to": {
+          "home_win": 1.77,
+          "draw": 3.65,
+          "away_win": 3.1
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.82,
-      "draw": 3.5,
-      "away_win": 3.05
+      "home_win": 1.77,
+      "draw": 3.65,
+      "away_win": 3.1
     },
     "gm_ts": 260139
   },
@@ -1750,8 +1955,8 @@
     "kickoff_ts": 1795457700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "S알이티하드",
     "away_team": "파흐타코르",
     "odds_changes": [],
@@ -1779,8 +1984,8 @@
     "kickoff_ts": 1795457700000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "S알이티하드",
     "away_team": "파흐타코르",
     "odds_changes": [],
@@ -1808,15 +2013,31 @@
     "kickoff_ts": 1795463100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "AC몬차",
     "away_team": "ACF피오렌티나",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 21:28:56",
+        "from": {
+          "home_win": 3.15,
+          "draw": 3.65,
+          "away_win": 1.75
+        },
+        "to": {
+          "home_win": 3.15,
+          "draw": 3.5,
+          "away_win": 1.79
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
       "home_win": 3.15,
-      "draw": 3.65,
-      "away_win": 1.75
+      "draw": 3.5,
+      "away_win": 1.79
     },
     "gm_ts": 260139
   },
@@ -1837,8 +2058,8 @@
     "kickoff_ts": 1795463100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "AC몬차",
     "away_team": "ACF피오렌티나",
     "odds_changes": [
@@ -1856,11 +2077,26 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-23 21:28:56",
+        "from": {
+          "home_win": 1.78,
+          "draw": 3.35,
+          "away_win": 3.3
+        },
+        "to": {
+          "home_win": 1.81,
+          "draw": 3.25,
+          "away_win": 3.3
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 1.78,
-      "draw": 3.35,
+      "home_win": 1.81,
+      "draw": 3.25,
       "away_win": 3.3
     },
     "gm_ts": 260139
@@ -1882,15 +2118,31 @@
     "kickoff_ts": 1795463100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "AC몬차",
     "away_team": "ACF피오렌티나",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 21:28:56",
+        "from": {
+          "home_win": 1.24,
+          "draw": 5.2,
+          "away_win": 6.1
+        },
+        "to": {
+          "home_win": 1.27,
+          "draw": 4.85,
+          "away_win": 5.9
+        },
+        "line_from": 2.0,
+        "line_to": 2.0
+      }
+    ],
     "odds": {
-      "home_win": 1.24,
-      "draw": 5.2,
-      "away_win": 6.1
+      "home_win": 1.27,
+      "draw": 4.85,
+      "away_win": 5.9
     },
     "gm_ts": 260139
   },
@@ -1911,15 +2163,31 @@
     "kickoff_ts": 1795463100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "AC몬차",
     "away_team": "ACF피오렌티나",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 21:28:56",
+        "from": {
+          "home_win": 1.48,
+          "draw": 0.0,
+          "away_win": 2.11
+        },
+        "to": {
+          "home_win": 1.51,
+          "draw": 0.0,
+          "away_win": 2.05
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.48,
+      "home_win": 1.51,
       "draw": 0.0,
-      "away_win": 2.11
+      "away_win": 2.05
     },
     "gm_ts": 260139
   },
@@ -1940,8 +2208,8 @@
     "kickoff_ts": 1795463100000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "AC몬차",
     "away_team": "ACF피오렌티나",
     "odds_changes": [],
@@ -1969,8 +2237,8 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "브렌트퍼드",
     "away_team": "에버턴",
     "odds_changes": [
@@ -1988,12 +2256,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-23 18:53:46",
+        "from": {
+          "home_win": 2.16,
+          "draw": 3.1,
+          "away_win": 2.65
+        },
+        "to": {
+          "home_win": 2.18,
+          "draw": 2.95,
+          "away_win": 2.75
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.16,
-      "draw": 3.1,
-      "away_win": 2.65
+      "home_win": 2.18,
+      "draw": 2.95,
+      "away_win": 2.75
     },
     "gm_ts": 260139
   },
@@ -2014,8 +2297,8 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "브렌트퍼드",
     "away_team": "에버턴",
     "odds_changes": [],
@@ -2043,8 +2326,8 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "브렌트퍼드",
     "away_team": "에버턴",
     "odds_changes": [],
@@ -2072,15 +2355,31 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "브렌트퍼드",
     "away_team": "에버턴",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 18:53:46",
+        "from": {
+          "home_win": 1.87,
+          "draw": 0.0,
+          "away_win": 1.63
+        },
+        "to": {
+          "home_win": 1.92,
+          "draw": 0.0,
+          "away_win": 1.59
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.87,
+      "home_win": 1.92,
       "draw": 0.0,
-      "away_win": 1.63
+      "away_win": 1.59
     },
     "gm_ts": 260139
   },
@@ -2101,8 +2400,8 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "브렌트퍼드",
     "away_team": "에버턴",
     "odds_changes": [],
@@ -2130,8 +2429,8 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "레반테",
     "away_team": "엘체",
     "odds_changes": [
@@ -2149,11 +2448,26 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-23 19:57:26",
+        "from": {
+          "home_win": 2.03,
+          "draw": 3.2,
+          "away_win": 2.8
+        },
+        "to": {
+          "home_win": 2.07,
+          "draw": 3.1,
+          "away_win": 2.8
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.03,
-      "draw": 3.2,
+      "home_win": 2.07,
+      "draw": 3.1,
       "away_win": 2.8
     },
     "gm_ts": 260139
@@ -2175,8 +2489,8 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "레반테",
     "away_team": "엘체",
     "odds_changes": [
@@ -2194,12 +2508,27 @@
         },
         "line_from": -1.0,
         "line_to": -1.0
+      },
+      {
+        "at": "2026-11-23 19:57:26",
+        "from": {
+          "home_win": 3.8,
+          "draw": 3.55,
+          "away_win": 1.62
+        },
+        "to": {
+          "home_win": 3.85,
+          "draw": 3.4,
+          "away_win": 1.64
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
       }
     ],
     "odds": {
-      "home_win": 3.8,
-      "draw": 3.55,
-      "away_win": 1.62
+      "home_win": 3.85,
+      "draw": 3.4,
+      "away_win": 1.64
     },
     "gm_ts": 260139
   },
@@ -2220,15 +2549,31 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "레반테",
     "away_team": "엘체",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:57:26",
+        "from": {
+          "home_win": 8.3,
+          "draw": 5.8,
+          "away_win": 1.15
+        },
+        "to": {
+          "home_win": 7.7,
+          "draw": 5.2,
+          "away_win": 1.19
+        },
+        "line_from": -2.0,
+        "line_to": -2.0
+      }
+    ],
     "odds": {
-      "home_win": 8.3,
-      "draw": 5.8,
-      "away_win": 1.15
+      "home_win": 7.7,
+      "draw": 5.2,
+      "away_win": 1.19
     },
     "gm_ts": 260139
   },
@@ -2249,8 +2594,8 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "레반테",
     "away_team": "엘체",
     "odds_changes": [],
@@ -2278,8 +2623,8 @@
     "kickoff_ts": 1795464000000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "2",
+    "proto_status": "4",
+    "match_state": "3",
     "home_team": "레반테",
     "away_team": "엘체",
     "odds_changes": [],
@@ -2307,8 +2652,8 @@
     "kickoff_ts": 1795478400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "샬럿 호네츠",
     "away_team": "멤피스 그리즐리스",
     "odds_changes": [],
@@ -2336,15 +2681,31 @@
     "kickoff_ts": 1795478400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "샬럿 호네츠",
     "away_team": "멤피스 그리즐리스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 21:41:58",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.74,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.69
     },
     "gm_ts": 260139
   },
@@ -2356,7 +2717,7 @@
     "game_type": "농구 언더오버",
     "category": "언더오버",
     "is_single": false,
-    "line": 216.5,
+    "line": 213.5,
     "win_txt": "언더",
     "draw_txt": "-",
     "lose_txt": "오버",
@@ -2365,11 +2726,27 @@
     "kickoff_ts": 1795478400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "샬럿 호네츠",
     "away_team": "멤피스 그리즐리스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:33:43",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "line_from": 216.5,
+        "line_to": 213.5
+      }
+    ],
     "odds": {
       "home_win": 1.74,
       "draw": 0.0,
@@ -2394,8 +2771,8 @@
     "kickoff_ts": 1795478400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "샬럿 호네츠",
     "away_team": "멤피스 그리즐리스",
     "odds_changes": [],
@@ -2423,15 +2800,31 @@
     "kickoff_ts": 1795478400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "필라델피아 76s",
     "away_team": "포틀랜드 트레일블레이저스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:55:50",
+        "from": {
+          "home_win": 1.46,
+          "draw": 0.0,
+          "away_win": 2.15
+        },
+        "to": {
+          "home_win": 1.59,
+          "draw": 0.0,
+          "away_win": 1.92
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.46,
+      "home_win": 1.59,
       "draw": 0.0,
-      "away_win": 2.15
+      "away_win": 1.92
     },
     "gm_ts": 260139
   },
@@ -2443,7 +2836,7 @@
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
     "is_single": false,
-    "line": -3.5,
+    "line": -2.5,
     "win_txt": "승",
     "draw_txt": "-",
     "lose_txt": "패",
@@ -2452,15 +2845,46 @@
     "kickoff_ts": 1795478400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "필라델피아 76s",
     "away_team": "포틀랜드 트레일블레이저스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 21:41:57",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.69,
+          "draw": 0.0,
+          "away_win": 1.79
+        },
+        "line_from": -3.5,
+        "line_to": -3.5
+      },
+      {
+        "at": "2026-11-24 07:55:50",
+        "from": {
+          "home_win": 1.69,
+          "draw": 0.0,
+          "away_win": 1.79
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": -3.5,
+        "line_to": -2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.74,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.69
     },
     "gm_ts": 260139
   },
@@ -2481,8 +2905,8 @@
     "kickoff_ts": 1795478400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "필라델피아 76s",
     "away_team": "포틀랜드 트레일블레이저스",
     "odds_changes": [
@@ -2526,8 +2950,8 @@
     "kickoff_ts": 1795478400000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "필라델피아 76s",
     "away_team": "포틀랜드 트레일블레이저스",
     "odds_changes": [],
@@ -2555,15 +2979,31 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "인디애나 페이서스",
     "away_team": "오클라호마시티 썬더",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:57:34",
+        "from": {
+          "home_win": 2.63,
+          "draw": 0.0,
+          "away_win": 1.3
+        },
+        "to": {
+          "home_win": 2.35,
+          "draw": 0.0,
+          "away_win": 1.38
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.63,
+      "home_win": 2.35,
       "draw": 0.0,
-      "away_win": 1.3
+      "away_win": 1.38
     },
     "gm_ts": 260139
   },
@@ -2575,7 +3015,7 @@
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
     "is_single": false,
-    "line": 5.5,
+    "line": 4.5,
     "win_txt": "승",
     "draw_txt": "-",
     "lose_txt": "패",
@@ -2584,11 +3024,27 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "인디애나 페이서스",
     "away_team": "오클라호마시티 썬더",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:57:34",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "line_from": 5.5,
+        "line_to": 4.5
+      }
+    ],
     "odds": {
       "home_win": 1.74,
       "draw": 0.0,
@@ -2604,7 +3060,7 @@
     "game_type": "농구 언더오버",
     "category": "언더오버",
     "is_single": false,
-    "line": 222.5,
+    "line": 224.5,
     "win_txt": "언더",
     "draw_txt": "-",
     "lose_txt": "오버",
@@ -2613,11 +3069,27 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "인디애나 페이서스",
     "away_team": "오클라호마시티 썬더",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:35:06",
+        "from": {
+          "home_win": 1.72,
+          "draw": 0.0,
+          "away_win": 1.76
+        },
+        "to": {
+          "home_win": 1.72,
+          "draw": 0.0,
+          "away_win": 1.76
+        },
+        "line_from": 222.5,
+        "line_to": 224.5
+      }
+    ],
     "odds": {
       "home_win": 1.72,
       "draw": 0.0,
@@ -2642,8 +3114,8 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "인디애나 페이서스",
     "away_team": "오클라호마시티 썬더",
     "odds_changes": [],
@@ -2671,15 +3143,46 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "토론토 랩터스",
     "away_team": "밀워키 벅스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 22:15:00",
+        "from": {
+          "home_win": 1.05,
+          "draw": 0.0,
+          "away_win": 5.08
+        },
+        "to": {
+          "home_win": 1.08,
+          "draw": 0.0,
+          "away_win": 4.47
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      },
+      {
+        "at": "2026-11-24 08:52:23",
+        "from": {
+          "home_win": 1.08,
+          "draw": 0.0,
+          "away_win": 4.47
+        },
+        "to": {
+          "home_win": 1.11,
+          "draw": 0.0,
+          "away_win": 4.02
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.05,
+      "home_win": 1.11,
       "draw": 0.0,
-      "away_win": 5.08
+      "away_win": 4.02
     },
     "gm_ts": 260139
   },
@@ -2700,15 +3203,31 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "토론토 랩터스",
     "away_team": "밀워키 벅스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 08:52:23",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": -11.5,
+        "line_to": -11.5
+      }
+    ],
     "odds": {
-      "home_win": 1.74,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.69
     },
     "gm_ts": 260139
   },
@@ -2729,8 +3248,8 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "토론토 랩터스",
     "away_team": "밀워키 벅스",
     "odds_changes": [],
@@ -2758,8 +3277,8 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "토론토 랩터스",
     "away_team": "밀워키 벅스",
     "odds_changes": [],
@@ -2787,15 +3306,31 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "미네소타 팀버울브스",
     "away_team": "브루클린 네츠",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:35:48",
+        "from": {
+          "home_win": 1.03,
+          "draw": 0.0,
+          "away_win": 5.6
+        },
+        "to": {
+          "home_win": 1.06,
+          "draw": 0.0,
+          "away_win": 4.85
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.03,
+      "home_win": 1.06,
       "draw": 0.0,
-      "away_win": 5.6
+      "away_win": 4.85
     },
     "gm_ts": 260139
   },
@@ -2807,7 +3342,7 @@
     "game_type": "농구 핸디캡",
     "category": "핸디캡",
     "is_single": false,
-    "line": -12.5,
+    "line": -10.5,
     "win_txt": "승",
     "draw_txt": "-",
     "lose_txt": "패",
@@ -2816,15 +3351,31 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "미네소타 팀버울브스",
     "away_team": "브루클린 네츠",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:35:48",
+        "from": {
+          "home_win": 1.76,
+          "draw": 0.0,
+          "away_win": 1.72
+        },
+        "to": {
+          "home_win": 1.72,
+          "draw": 0.0,
+          "away_win": 1.76
+        },
+        "line_from": -12.5,
+        "line_to": -10.5
+      }
+    ],
     "odds": {
-      "home_win": 1.76,
+      "home_win": 1.72,
       "draw": 0.0,
-      "away_win": 1.72
+      "away_win": 1.76
     },
     "gm_ts": 260139
   },
@@ -2845,8 +3396,8 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "미네소타 팀버울브스",
     "away_team": "브루클린 네츠",
     "odds_changes": [],
@@ -2874,8 +3425,8 @@
     "kickoff_ts": 1795480200000,
     "buy_reject": "0",
     "game_reject": "0",
-    "proto_status": "2",
-    "match_state": "0",
+    "proto_status": "3",
+    "match_state": "2",
     "home_team": "미네소타 팀버울브스",
     "away_team": "브루클린 네츠",
     "odds_changes": [],
@@ -2907,11 +3458,27 @@
     "match_state": "2",
     "home_team": "세인트루이스 시티SC",
     "away_team": "LAFC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:30:40",
+        "from": {
+          "home_win": 2.08,
+          "draw": 3.55,
+          "away_win": 2.5
+        },
+        "to": {
+          "home_win": 2.29,
+          "draw": 3.4,
+          "away_win": 2.3
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.08,
-      "draw": 3.55,
-      "away_win": 2.5
+      "home_win": 2.29,
+      "draw": 3.4,
+      "away_win": 2.3
     },
     "gm_ts": 260139
   },
@@ -2936,11 +3503,42 @@
     "match_state": "2",
     "home_team": "세인트루이스 시티SC",
     "away_team": "LAFC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 22:40:31",
+        "from": {
+          "home_win": 3.95,
+          "draw": 3.85,
+          "away_win": 1.54
+        },
+        "to": {
+          "home_win": 4.5,
+          "draw": 3.85,
+          "away_win": 1.47
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      },
+      {
+        "at": "2026-11-24 07:30:40",
+        "from": {
+          "home_win": 4.5,
+          "draw": 3.85,
+          "away_win": 1.47
+        },
+        "to": {
+          "home_win": 4.4,
+          "draw": 4.05,
+          "away_win": 1.45
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 3.95,
-      "draw": 3.85,
-      "away_win": 1.54
+      "home_win": 4.4,
+      "draw": 4.05,
+      "away_win": 1.45
     },
     "gm_ts": 260139
   },
@@ -2965,11 +3563,27 @@
     "match_state": "2",
     "home_team": "세인트루이스 시티SC",
     "away_team": "LAFC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:30:40",
+        "from": {
+          "home_win": 8.6,
+          "draw": 6.2,
+          "away_win": 1.13
+        },
+        "to": {
+          "home_win": 10.5,
+          "draw": 6.7,
+          "away_win": 1.09
+        },
+        "line_from": -2.0,
+        "line_to": -2.0
+      }
+    ],
     "odds": {
-      "home_win": 8.6,
-      "draw": 6.2,
-      "away_win": 1.13
+      "home_win": 10.5,
+      "draw": 6.7,
+      "away_win": 1.09
     },
     "gm_ts": 260139
   },
@@ -2994,11 +3608,27 @@
     "match_state": "2",
     "home_team": "세인트루이스 시티SC",
     "away_team": "LAFC",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 22:40:31",
+        "from": {
+          "home_win": 1.48,
+          "draw": 0.0,
+          "away_win": 2.11
+        },
+        "to": {
+          "home_win": 1.4,
+          "draw": 0.0,
+          "away_win": 2.3
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.48,
+      "home_win": 1.4,
       "draw": 0.0,
-      "away_win": 2.11
+      "away_win": 2.3
     },
     "gm_ts": 260139
   },
@@ -3049,7 +3679,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "시카고 불스",
     "away_team": "클리블랜드 캐벌리어스",
     "odds_changes": [],
@@ -3078,7 +3708,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "시카고 불스",
     "away_team": "클리블랜드 캐벌리어스",
     "odds_changes": [],
@@ -3107,7 +3737,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "시카고 불스",
     "away_team": "클리블랜드 캐벌리어스",
     "odds_changes": [],
@@ -3136,7 +3766,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "시카고 불스",
     "away_team": "클리블랜드 캐벌리어스",
     "odds_changes": [],
@@ -3165,7 +3795,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "피닉스 선즈",
     "odds_changes": [],
@@ -3194,14 +3824,30 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "피닉스 선즈",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 08:52:35",
+        "from": {
+          "home_win": 1.74,
+          "draw": 0.0,
+          "away_win": 1.74
+        },
+        "to": {
+          "home_win": 1.79,
+          "draw": 0.0,
+          "away_win": 1.69
+        },
+        "line_from": 3.5,
+        "line_to": 3.5
+      }
+    ],
     "odds": {
-      "home_win": 1.74,
+      "home_win": 1.79,
       "draw": 0.0,
-      "away_win": 1.74
+      "away_win": 1.69
     },
     "gm_ts": 260139
   },
@@ -3223,7 +3869,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "피닉스 선즈",
     "odds_changes": [],
@@ -3252,7 +3898,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "뉴올리언스 펠리컨스",
     "away_team": "피닉스 선즈",
     "odds_changes": [],
@@ -3281,7 +3927,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "휴스턴 로케츠",
     "away_team": "LA 클리퍼스",
     "odds_changes": [],
@@ -3310,7 +3956,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "휴스턴 로케츠",
     "away_team": "LA 클리퍼스",
     "odds_changes": [],
@@ -3329,7 +3975,7 @@
     "game_type": "농구 언더오버",
     "category": "언더오버",
     "is_single": true,
-    "line": 226.5,
+    "line": 224.5,
     "win_txt": "언더",
     "draw_txt": "-",
     "lose_txt": "오버",
@@ -3339,10 +3985,26 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "휴스턴 로케츠",
     "away_team": "LA 클리퍼스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:37:02",
+        "from": {
+          "home_win": 1.72,
+          "draw": 0.0,
+          "away_win": 1.76
+        },
+        "to": {
+          "home_win": 1.72,
+          "draw": 0.0,
+          "away_win": 1.76
+        },
+        "line_from": 226.5,
+        "line_to": 224.5
+      }
+    ],
     "odds": {
       "home_win": 1.72,
       "draw": 0.0,
@@ -3368,7 +4030,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "휴스턴 로케츠",
     "away_team": "LA 클리퍼스",
     "odds_changes": [],
@@ -3397,7 +4059,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "LA 레이커스",
     "away_team": "유타 재즈",
     "odds_changes": [],
@@ -3426,7 +4088,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "LA 레이커스",
     "away_team": "유타 재즈",
     "odds_changes": [],
@@ -3445,7 +4107,7 @@
     "game_type": "농구 언더오버",
     "category": "언더오버",
     "is_single": true,
-    "line": 230.5,
+    "line": 226.5,
     "win_txt": "언더",
     "draw_txt": "-",
     "lose_txt": "오버",
@@ -3455,10 +4117,41 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "LA 레이커스",
     "away_team": "유타 재즈",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-23 19:12:43",
+        "from": {
+          "home_win": 1.73,
+          "draw": 0.0,
+          "away_win": 1.75
+        },
+        "to": {
+          "home_win": 1.73,
+          "draw": 0.0,
+          "away_win": 1.75
+        },
+        "line_from": 230.5,
+        "line_to": 228.5
+      },
+      {
+        "at": "2026-11-24 07:36:10",
+        "from": {
+          "home_win": 1.73,
+          "draw": 0.0,
+          "away_win": 1.75
+        },
+        "to": {
+          "home_win": 1.73,
+          "draw": 0.0,
+          "away_win": 1.75
+        },
+        "line_from": 228.5,
+        "line_to": 226.5
+      }
+    ],
     "odds": {
       "home_win": 1.73,
       "draw": 0.0,
@@ -3484,7 +4177,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "LA 레이커스",
     "away_team": "유타 재즈",
     "odds_changes": [],
@@ -3513,7 +4206,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "새크라멘토 킹스",
     "away_team": "샌안토니오 스퍼스",
     "odds_changes": [
@@ -3558,7 +4251,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "새크라멘토 킹스",
     "away_team": "샌안토니오 스퍼스",
     "odds_changes": [],
@@ -3587,7 +4280,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "새크라멘토 킹스",
     "away_team": "샌안토니오 스퍼스",
     "odds_changes": [],
@@ -3616,7 +4309,7 @@
     "buy_reject": "0",
     "game_reject": "0",
     "proto_status": "2",
-    "match_state": "0",
+    "match_state": "2",
     "home_team": "새크라멘토 킹스",
     "away_team": "샌안토니오 스퍼스",
     "odds_changes": [],
@@ -3648,11 +4341,27 @@
     "match_state": "2",
     "home_team": "뉴캐슬 제츠",
     "away_team": "가시와 레이솔",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:31:45",
+        "from": {
+          "home_win": 4.55,
+          "draw": 4.45,
+          "away_win": 1.39
+        },
+        "to": {
+          "home_win": 5.2,
+          "draw": 4.45,
+          "away_win": 1.34
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 4.55,
+      "home_win": 5.2,
       "draw": 4.45,
-      "away_win": 1.39
+      "away_win": 1.34
     },
     "gm_ts": 260139
   },
@@ -3677,11 +4386,27 @@
     "match_state": "2",
     "home_team": "뉴캐슬 제츠",
     "away_team": "가시와 레이솔",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:31:45",
+        "from": {
+          "home_win": 2.45,
+          "draw": 3.65,
+          "away_win": 2.08
+        },
+        "to": {
+          "home_win": 2.65,
+          "draw": 3.65,
+          "away_win": 1.96
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 2.45,
+      "home_win": 2.65,
       "draw": 3.65,
-      "away_win": 2.08
+      "away_win": 1.96
     },
     "gm_ts": 260139
   },
@@ -3880,11 +4605,27 @@
     "match_state": "2",
     "home_team": "대전 하나시티즌",
     "away_team": "베이징 궈안",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:32:59",
+        "from": {
+          "home_win": 1.53,
+          "draw": 3.8,
+          "away_win": 4.05
+        },
+        "to": {
+          "home_win": 1.43,
+          "draw": 3.85,
+          "away_win": 4.9
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 1.53,
-      "draw": 3.8,
-      "away_win": 4.05
+      "home_win": 1.43,
+      "draw": 3.85,
+      "away_win": 4.9
     },
     "gm_ts": 260139
   },
@@ -3909,11 +4650,27 @@
     "match_state": "2",
     "home_team": "대전 하나시티즌",
     "away_team": "베이징 궈안",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:32:59",
+        "from": {
+          "home_win": 2.5,
+          "draw": 3.4,
+          "away_win": 2.13
+        },
+        "to": {
+          "home_win": 2.28,
+          "draw": 3.35,
+          "away_win": 2.35
+        },
+        "line_from": -1.0,
+        "line_to": -1.0
+      }
+    ],
     "odds": {
-      "home_win": 2.5,
-      "draw": 3.4,
-      "away_win": 2.13
+      "home_win": 2.28,
+      "draw": 3.35,
+      "away_win": 2.35
     },
     "gm_ts": 260139
   },
@@ -3967,6 +4724,238 @@
     "match_state": "2",
     "home_team": "대전 하나시티즌",
     "away_team": "베이징 궈안",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.8,
+      "draw": 0.0,
+      "away_win": 1.8
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5417",
+    "match_key": "OK저축:대한항공",
+    "sport": "VL",
+    "league": "KOVO 남자",
+    "game_type": "배구 승패",
+    "category": "일반 승무패",
+    "is_single": true,
+    "line": 0.0,
+    "win_txt": "승",
+    "draw_txt": "-",
+    "lose_txt": "패",
+    "match_time": "26.11.24 (화) 19:00",
+    "close_time": 1795514400000,
+    "kickoff_ts": 1795514400000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "OK저축은행 읏맨",
+    "away_team": "대한항공 점보스",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 2.67,
+      "draw": 0.0,
+      "away_win": 1.29
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5418",
+    "match_key": "OK저축:대한항공",
+    "sport": "VL",
+    "league": "KOVO 남자",
+    "game_type": "배구 세트핸디캡",
+    "category": "핸디캡",
+    "is_single": true,
+    "line": 1.5,
+    "win_txt": "승",
+    "draw_txt": "-",
+    "lose_txt": "패",
+    "match_time": "26.11.24 (화) 19:00",
+    "close_time": 1795514400000,
+    "kickoff_ts": 1795514400000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "OK저축은행 읏맨",
+    "away_team": "대한항공 점보스",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.78,
+      "draw": 0.0,
+      "away_win": 1.7
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5419",
+    "match_key": "OK저축:대한항공",
+    "sport": "VL",
+    "league": "KOVO 남자",
+    "game_type": "배구 언더오버",
+    "category": "언더오버",
+    "is_single": true,
+    "line": 184.5,
+    "win_txt": "언더",
+    "draw_txt": "-",
+    "lose_txt": "오버",
+    "match_time": "26.11.24 (화) 19:00",
+    "close_time": 1795514400000,
+    "kickoff_ts": 1795514400000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "OK저축은행 읏맨",
+    "away_team": "대한항공 점보스",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.74,
+      "draw": 0.0,
+      "away_win": 1.74
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5420",
+    "match_key": "OK저축:대한항공",
+    "sport": "VL",
+    "league": "KOVO 남자",
+    "game_type": "배구 SUM",
+    "category": "홀짝",
+    "is_single": true,
+    "line": 0.0,
+    "win_txt": "홀",
+    "draw_txt": "-",
+    "lose_txt": "짝",
+    "match_time": "26.11.24 (화) 19:00",
+    "close_time": 1795514400000,
+    "kickoff_ts": 1795514400000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "OK저축은행 읏맨",
+    "away_team": "대한항공 점보스",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.8,
+      "draw": 0.0,
+      "away_win": 1.8
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5421",
+    "match_key": "대전정관:GS칼텍스",
+    "sport": "VL",
+    "league": "KOVO 여자",
+    "game_type": "배구 승패",
+    "category": "일반 승무패",
+    "is_single": true,
+    "line": 0.0,
+    "win_txt": "승",
+    "draw_txt": "-",
+    "lose_txt": "패",
+    "match_time": "26.11.24 (화) 19:00",
+    "close_time": 1795514400000,
+    "kickoff_ts": 1795514400000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "정관장 레드스파크스",
+    "away_team": "GS칼텍스 서울Kixx",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 4.02,
+      "draw": 0.0,
+      "away_win": 1.11
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5422",
+    "match_key": "대전정관:GS칼텍스",
+    "sport": "VL",
+    "league": "KOVO 여자",
+    "game_type": "배구 세트핸디캡",
+    "category": "핸디캡",
+    "is_single": true,
+    "line": 2.5,
+    "win_txt": "승",
+    "draw_txt": "-",
+    "lose_txt": "패",
+    "match_time": "26.11.24 (화) 19:00",
+    "close_time": 1795514400000,
+    "kickoff_ts": 1795514400000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "정관장 레드스파크스",
+    "away_team": "GS칼텍스 서울Kixx",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.39,
+      "draw": 0.0,
+      "away_win": 2.33
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5423",
+    "match_key": "대전정관:GS칼텍스",
+    "sport": "VL",
+    "league": "KOVO 여자",
+    "game_type": "배구 언더오버",
+    "category": "언더오버",
+    "is_single": true,
+    "line": 175.5,
+    "win_txt": "언더",
+    "draw_txt": "-",
+    "lose_txt": "오버",
+    "match_time": "26.11.24 (화) 19:00",
+    "close_time": 1795514400000,
+    "kickoff_ts": 1795514400000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "정관장 레드스파크스",
+    "away_team": "GS칼텍스 서울Kixx",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.74,
+      "draw": 0.0,
+      "away_win": 1.74
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5424",
+    "match_key": "대전정관:GS칼텍스",
+    "sport": "VL",
+    "league": "KOVO 여자",
+    "game_type": "배구 SUM",
+    "category": "홀짝",
+    "is_single": true,
+    "line": 0.0,
+    "win_txt": "홀",
+    "draw_txt": "-",
+    "lose_txt": "짝",
+    "match_time": "26.11.24 (화) 19:00",
+    "close_time": 1795514400000,
+    "kickoff_ts": 1795514400000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "정관장 레드스파크스",
+    "away_team": "GS칼텍스 서울Kixx",
     "odds_changes": [],
     "odds": {
       "home_win": 1.8,
@@ -4320,6 +5309,238 @@
       "home_win": 1.8,
       "draw": 0.0,
       "away_win": 1.8
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5437",
+    "match_key": "E벵골:J알후세",
+    "sport": "SC",
+    "league": "AFC 챔피언스리그2",
+    "game_type": "축구 승무패",
+    "category": "일반 승무패",
+    "is_single": false,
+    "line": 0.0,
+    "win_txt": "승",
+    "draw_txt": "무",
+    "lose_txt": "패",
+    "match_time": "26.11.24 (화) 22:45",
+    "close_time": 1795527900000,
+    "kickoff_ts": 1795527900000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "이스트 벵골",
+    "away_team": "J알후세인",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 2.75,
+      "draw": 3.1,
+      "away_win": 2.1
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5438",
+    "match_key": "E벵골:J알후세",
+    "sport": "SC",
+    "league": "AFC 챔피언스리그2",
+    "game_type": "축구 핸디캡",
+    "category": "핸디캡",
+    "is_single": false,
+    "line": 1.0,
+    "win_txt": "승",
+    "draw_txt": "무",
+    "lose_txt": "패",
+    "match_time": "26.11.24 (화) 22:45",
+    "close_time": 1795527900000,
+    "kickoff_ts": 1795527900000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "이스트 벵골",
+    "away_team": "J알후세인",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.55,
+      "draw": 3.5,
+      "away_win": 4.3
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5439",
+    "match_key": "E벵골:J알후세",
+    "sport": "SC",
+    "league": "AFC 챔피언스리그2",
+    "game_type": "축구 언더오버",
+    "category": "언더오버",
+    "is_single": false,
+    "line": 2.5,
+    "win_txt": "언더",
+    "draw_txt": "-",
+    "lose_txt": "오버",
+    "match_time": "26.11.24 (화) 22:45",
+    "close_time": 1795527900000,
+    "kickoff_ts": 1795527900000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "이스트 벵골",
+    "away_team": "J알후세인",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.64,
+      "draw": 0.0,
+      "away_win": 1.85
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5440",
+    "match_key": "E벵골:J알후세",
+    "sport": "SC",
+    "league": "AFC 챔피언스리그2",
+    "game_type": "축구 SUM",
+    "category": "홀짝",
+    "is_single": false,
+    "line": 0.0,
+    "win_txt": "홀",
+    "draw_txt": "-",
+    "lose_txt": "짝",
+    "match_time": "26.11.24 (화) 22:45",
+    "close_time": 1795527900000,
+    "kickoff_ts": 1795527900000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "이스트 벵골",
+    "away_team": "J알후세인",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.81,
+      "draw": 0.0,
+      "away_win": 1.79
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5441",
+    "match_key": "알시브:알쇼르타",
+    "sport": "SC",
+    "league": "AFC 챔피언스리그2",
+    "game_type": "축구 승무패",
+    "category": "일반 승무패",
+    "is_single": false,
+    "line": 0.0,
+    "win_txt": "승",
+    "draw_txt": "무",
+    "lose_txt": "패",
+    "match_time": "26.11.25 (수) 01:00",
+    "close_time": 1795528800000,
+    "kickoff_ts": 1795536000000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "알시브 클럽",
+    "away_team": "알쇼르타",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 2.14,
+      "draw": 2.95,
+      "away_win": 2.8
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5442",
+    "match_key": "알시브:알쇼르타",
+    "sport": "SC",
+    "league": "AFC 챔피언스리그2",
+    "game_type": "축구 핸디캡",
+    "category": "핸디캡",
+    "is_single": false,
+    "line": -1.0,
+    "win_txt": "승",
+    "draw_txt": "무",
+    "lose_txt": "패",
+    "match_time": "26.11.25 (수) 01:00",
+    "close_time": 1795528800000,
+    "kickoff_ts": 1795536000000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "알시브 클럽",
+    "away_team": "알쇼르타",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 4.65,
+      "draw": 3.45,
+      "away_win": 1.52
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5443",
+    "match_key": "알시브:알쇼르타",
+    "sport": "SC",
+    "league": "AFC 챔피언스리그2",
+    "game_type": "축구 언더오버",
+    "category": "언더오버",
+    "is_single": false,
+    "line": 2.5,
+    "win_txt": "언더",
+    "draw_txt": "-",
+    "lose_txt": "오버",
+    "match_time": "26.11.25 (수) 01:00",
+    "close_time": 1795528800000,
+    "kickoff_ts": 1795536000000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "알시브 클럽",
+    "away_team": "알쇼르타",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.49,
+      "draw": 0.0,
+      "away_win": 2.09
+    },
+    "gm_ts": 260139
+  },
+  {
+    "match_seq": "5444",
+    "match_key": "알시브:알쇼르타",
+    "sport": "SC",
+    "league": "AFC 챔피언스리그2",
+    "game_type": "축구 SUM",
+    "category": "홀짝",
+    "is_single": false,
+    "line": 0.0,
+    "win_txt": "홀",
+    "draw_txt": "-",
+    "lose_txt": "짝",
+    "match_time": "26.11.25 (수) 01:00",
+    "close_time": 1795528800000,
+    "kickoff_ts": 1795536000000,
+    "buy_reject": "0",
+    "game_reject": "0",
+    "proto_status": "2",
+    "match_state": "2",
+    "home_team": "알시브 클럽",
+    "away_team": "알쇼르타",
+    "odds_changes": [],
+    "odds": {
+      "home_win": 1.82,
+      "draw": 0.0,
+      "away_win": 1.78
     },
     "gm_ts": 260139
   },
@@ -4707,12 +5928,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-24 07:38:47",
+        "from": {
+          "home_win": 2.4,
+          "draw": 3.7,
+          "away_win": 2.1
+        },
+        "to": {
+          "home_win": 2.65,
+          "draw": 3.65,
+          "away_win": 1.96
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.4,
-      "draw": 3.7,
-      "away_win": 2.1
+      "home_win": 2.65,
+      "draw": 3.65,
+      "away_win": 1.96
     },
     "gm_ts": 260139
   },
@@ -4752,12 +5988,27 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-24 07:38:47",
+        "from": {
+          "home_win": 1.54,
+          "draw": 4.05,
+          "away_win": 3.75
+        },
+        "to": {
+          "home_win": 1.62,
+          "draw": 4.0,
+          "away_win": 3.4
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 1.54,
-      "draw": 4.05,
-      "away_win": 3.75
+      "home_win": 1.62,
+      "draw": 4.0,
+      "away_win": 3.4
     },
     "gm_ts": 260139
   },
@@ -4797,12 +6048,27 @@
         },
         "line_from": 2.0,
         "line_to": 2.0
+      },
+      {
+        "at": "2026-11-24 07:38:47",
+        "from": {
+          "home_win": 1.15,
+          "draw": 6.2,
+          "away_win": 7.6
+        },
+        "to": {
+          "home_win": 1.19,
+          "draw": 5.7,
+          "away_win": 6.8
+        },
+        "line_from": 2.0,
+        "line_to": 2.0
       }
     ],
     "odds": {
-      "home_win": 1.15,
-      "draw": 6.2,
-      "away_win": 7.6
+      "home_win": 1.19,
+      "draw": 5.7,
+      "away_win": 6.8
     },
     "gm_ts": 260139
   },
@@ -4916,12 +6182,27 @@
         },
         "line_from": 0.0,
         "line_to": 0.0
+      },
+      {
+        "at": "2026-11-24 07:39:35",
+        "from": {
+          "home_win": 2.85,
+          "draw": 2.38,
+          "away_win": 2.55
+        },
+        "to": {
+          "home_win": 3.1,
+          "draw": 2.36,
+          "away_win": 2.4
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
       }
     ],
     "odds": {
-      "home_win": 2.85,
-      "draw": 2.38,
-      "away_win": 2.55
+      "home_win": 3.1,
+      "draw": 2.36,
+      "away_win": 2.4
     },
     "gm_ts": 260139
   },
@@ -4961,12 +6242,27 @@
         },
         "line_from": 1.0,
         "line_to": 1.0
+      },
+      {
+        "at": "2026-11-24 07:39:35",
+        "from": {
+          "home_win": 1.34,
+          "draw": 3.9,
+          "away_win": 6.2
+        },
+        "to": {
+          "home_win": 1.39,
+          "draw": 3.75,
+          "away_win": 5.7
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
       }
     ],
     "odds": {
-      "home_win": 1.34,
-      "draw": 3.9,
-      "away_win": 6.2
+      "home_win": 1.39,
+      "draw": 3.75,
+      "away_win": 5.7
     },
     "gm_ts": 260139
   },
@@ -6921,11 +8217,27 @@
     "match_state": "2",
     "home_team": "페예노르트",
     "away_team": "포르투",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:41:00",
+        "from": {
+          "home_win": 2.35,
+          "draw": 3.45,
+          "away_win": 2.24
+        },
+        "to": {
+          "home_win": 2.65,
+          "draw": 3.3,
+          "away_win": 2.07
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.35,
-      "draw": 3.45,
-      "away_win": 2.24
+      "home_win": 2.65,
+      "draw": 3.3,
+      "away_win": 2.07
     },
     "gm_ts": 260139
   },
@@ -6950,11 +8262,27 @@
     "match_state": "2",
     "home_team": "페예노르트",
     "away_team": "포르투",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:41:00",
+        "from": {
+          "home_win": 1.46,
+          "draw": 3.95,
+          "away_win": 4.45
+        },
+        "to": {
+          "home_win": 1.56,
+          "draw": 3.75,
+          "away_win": 3.9
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.46,
-      "draw": 3.95,
-      "away_win": 4.45
+      "home_win": 1.56,
+      "draw": 3.75,
+      "away_win": 3.9
     },
     "gm_ts": 260139
   },
@@ -6979,11 +8307,27 @@
     "match_state": "2",
     "home_team": "페예노르트",
     "away_team": "포르투",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:41:00",
+        "from": {
+          "home_win": 1.09,
+          "draw": 6.7,
+          "away_win": 10.5
+        },
+        "to": {
+          "home_win": 1.13,
+          "draw": 6.1,
+          "away_win": 8.8
+        },
+        "line_from": 2.0,
+        "line_to": 2.0
+      }
+    ],
     "odds": {
-      "home_win": 1.09,
-      "draw": 6.7,
-      "away_win": 10.5
+      "home_win": 1.13,
+      "draw": 6.1,
+      "away_win": 8.8
     },
     "gm_ts": 260139
   },
@@ -7066,11 +8410,27 @@
     "match_state": "2",
     "home_team": "페예노르트",
     "away_team": "포르투",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:42:09",
+        "from": {
+          "home_win": 2.95,
+          "draw": 2.11,
+          "away_win": 2.85
+        },
+        "to": {
+          "home_win": 3.2,
+          "draw": 2.15,
+          "away_win": 2.6
+        },
+        "line_from": 0.0,
+        "line_to": 0.0
+      }
+    ],
     "odds": {
-      "home_win": 2.95,
-      "draw": 2.11,
-      "away_win": 2.85
+      "home_win": 3.2,
+      "draw": 2.15,
+      "away_win": 2.6
     },
     "gm_ts": 260139
   },
@@ -7095,11 +8455,27 @@
     "match_state": "2",
     "home_team": "페예노르트",
     "away_team": "포르투",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:42:09",
+        "from": {
+          "home_win": 1.28,
+          "draw": 3.95,
+          "away_win": 7.8
+        },
+        "to": {
+          "home_win": 1.32,
+          "draw": 3.75,
+          "away_win": 7.2
+        },
+        "line_from": 1.0,
+        "line_to": 1.0
+      }
+    ],
     "odds": {
-      "home_win": 1.28,
-      "draw": 3.95,
-      "away_win": 7.8
+      "home_win": 1.32,
+      "draw": 3.75,
+      "away_win": 7.2
     },
     "gm_ts": 260139
   },
@@ -8458,11 +9834,27 @@
     "match_state": "2",
     "home_team": "제프 유나이티드",
     "away_team": "나고야 그램퍼스",
-    "odds_changes": [],
+    "odds_changes": [
+      {
+        "at": "2026-11-24 07:42:51",
+        "from": {
+          "home_win": 1.98,
+          "draw": 0.0,
+          "away_win": 1.55
+        },
+        "to": {
+          "home_win": 1.84,
+          "draw": 0.0,
+          "away_win": 1.65
+        },
+        "line_from": 2.5,
+        "line_to": 2.5
+      }
+    ],
     "odds": {
-      "home_win": 1.98,
+      "home_win": 1.84,
       "draw": 0.0,
-      "away_win": 1.55
+      "away_win": 1.65
     },
     "gm_ts": 260139
   },
