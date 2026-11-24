@@ -1,8 +1,13 @@
 {
-  "checked_at": "2026-11-24T03:02:01+00:00",
+  "checked_at": "2026-11-24T05:02:40+00:00",
   "source": "results",
-  "ok": true,
-  "warnings": [],
+  "ok": false,
+  "warnings": [
+    {
+      "code": "results_missing",
+      "message": "시작한 지 4시간이 넘었는데 결과가 없는 경기가 33개예요 (회차 260139) — 베트맨 결과 조회가 실패하고 있을 수 있어요"
+    }
+  ],
   "matches": 317,
   "round": "260139",
   "graded": 2348
