@@ -10495,45 +10495,7 @@
       "away_win": 0.3345
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "e82083c75de6b9266b27142b9e045087",
-      "home_team": "FC Tokyo",
-      "away_team": "Hiroshima Sanfrecce FC",
-      "commence_time": "2026-11-25T10:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.35,
-        "draw": 3.6,
-        "away_win": 3.06
-      },
-      "sharp_probs": {
-        "home_win": 0.4131,
-        "draw": 0.2697,
-        "away_win": 0.3172
-      },
-      "consensus_probs": {
-        "home_win": 0.4076333333333333,
-        "draw": 0.2714222222222223,
-        "away_win": 0.3209555555555556
-      },
-      "n_bookmakers": 9,
-      "match_method": "time_odds",
-      "prob_distance": 0.0278,
-      "sport_key": "soccer_japan_j_league",
-      "betman_odds": {
-        "home_win": 2.13,
-        "draw": 3.25,
-        "away_win": 2.6
-      },
-      "betman_home": "FC도쿄",
-      "betman_away": "산프레체 히로시마",
-      "match_time": "26.11.25 (수) 19:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1201,
-        "draw": -0.1235,
-        "away_win": -0.1753
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
@@ -11715,45 +11677,7 @@
       "away_win": 0.2559
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "fadcd788d19ce04ae2ac8f56edf60336",
-      "home_team": "Fagiano Okayama",
-      "away_team": "Shimizu S Pulse",
-      "commence_time": "2026-11-25T10:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 2.1,
-        "draw": 3.33,
-        "away_win": 3.94
-      },
-      "sharp_probs": {
-        "home_win": 0.4622,
-        "draw": 0.2915,
-        "away_win": 0.2463
-      },
-      "consensus_probs": {
-        "home_win": 0.4592555555555556,
-        "draw": 0.2930444444444445,
-        "away_win": 0.24770000000000003
-      },
-      "n_bookmakers": 9,
-      "match_method": "time_odds",
-      "prob_distance": 0.037,
-      "sport_key": "soccer_japan_j_league",
-      "betman_odds": {
-        "home_win": 1.86,
-        "draw": 3.15,
-        "away_win": 3.25
-      },
-      "betman_home": "파지아노 오카야마",
-      "betman_away": "시미즈 에스펄스",
-      "match_time": "26.11.25 (수) 19:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1403,
-        "draw": -0.0818,
-        "away_win": -0.1995
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
