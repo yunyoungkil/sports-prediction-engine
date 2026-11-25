@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-24T23:05:27+00:00",
+  "updated_at": "2026-11-25T01:01:57+00:00",
   "rounds": [
     260126,
     260127,
@@ -11,20 +11,21 @@
     260133,
     260137,
     260138,
-    260139
+    260139,
+    260140
   ],
   "value": {
-    "matches": 395,
-    "options": 1185,
+    "matches": 419,
+    "options": 1257,
     "value_options": 0,
     "value_share_pct": 0.0,
-    "ev_all_mean_pct": -14.57,
+    "ev_all_mean_pct": -14.62,
     "ev_best_per_match": {
-      "n": 395,
-      "mean": -0.0943,
+      "n": 419,
+      "mean": -0.0949,
       "ci": [
-        -0.0965,
-        -0.0921
+        -0.0969,
+        -0.0927
       ]
     },
     "ev_value_options": {
@@ -35,7 +36,7 @@
     "max_ev_pct": -1.27
   },
   "follow": {
-    "with_history": 395,
+    "with_history": 419,
     "moved": 138,
     "toward_sharp": 81,
     "toward_sharp_pct": 58.7,
