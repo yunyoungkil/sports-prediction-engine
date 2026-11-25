@@ -1840,45 +1840,7 @@
       "away_win": 0.2886
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "8149dd94fc35019447c45a6a00b246f0",
-      "home_team": "San Jose Earthquakes",
-      "away_team": "Houston Dynamo",
-      "commence_time": "2026-11-25T03:00:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 1.97,
-        "draw": 3.78,
-        "away_win": 3.83
-      },
-      "sharp_probs": {
-        "home_win": 0.4913,
-        "draw": 0.256,
-        "away_win": 0.2527
-      },
-      "consensus_probs": {
-        "home_win": 0.49306666666666665,
-        "draw": 0.2564111111111111,
-        "away_win": 0.2505666666666666
-      },
-      "n_bookmakers": 9,
-      "match_method": "time_single",
-      "prob_distance": 0.0684,
-      "sport_key": "soccer_usa_mls",
-      "betman_odds": {
-        "home_win": 1.88,
-        "draw": 3.35,
-        "away_win": 3.0
-      },
-      "betman_home": "새너제이 어스퀘이크스",
-      "betman_away": "휴스턴 다이너모FC",
-      "match_time": "26.11.25 (수) 12:00",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.0764,
-        "draw": -0.1424,
-        "away_win": -0.2419
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
