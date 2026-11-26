@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T00:37:33+00:00",
+  "updated_at": "2026-11-26T01:01:52+00:00",
   "rounds": [
     260126,
     260127,
@@ -17,24 +17,24 @@
     260139,
     260140
   ],
-  "matches": 2816,
-  "moved": 1193,
+  "matches": 2820,
+  "moved": 1194,
   "toward_ai": 583,
-  "away_from_ai": 610,
-  "toward_ai_pct": 48.9,
+  "away_from_ai": 611,
+  "toward_ai_pct": 48.8,
   "fav_toward_pct": 48.2,
   "mean_move_pp": {
-    "n": 2816,
-    "mean": -0.1072,
+    "n": 2820,
+    "mean": -0.10755,
     "ci": [
-      -0.21182,
-      0.00287
+      -0.21361,
+      -0.00263
     ],
     "ci_iid": [
-      -0.21182,
-      0.00287
+      -0.20414,
+      -0.01133
     ],
-    "clusters": 1125,
+    "clusters": 1127,
     "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
   },
   "by_game_type": {
@@ -61,46 +61,46 @@
       }
     },
     "농구 승패": {
-      "matches": 270,
-      "moved": 107,
+      "matches": 272,
+      "moved": 108,
       "toward_ai": 40,
-      "away_from_ai": 67,
-      "toward_ai_pct": 37.4,
-      "fav_toward_pct": 29.9,
+      "away_from_ai": 68,
+      "toward_ai_pct": 37.0,
+      "fav_toward_pct": 30.6,
       "mean_move_pp": {
-        "n": 270,
-        "mean": -0.21687,
+        "n": 272,
+        "mean": -0.22056,
         "ci": [
-          -0.69268,
-          0.28883
+          -0.70825,
+          0.28577
         ],
         "ci_iid": [
-          -0.67909,
-          0.28883
+          -0.68701,
+          0.27213
         ],
-        "clusters": 269,
+        "clusters": 271,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
     "농구 언더오버": {
-      "matches": 284,
+      "matches": 286,
       "moved": 38,
       "toward_ai": 9,
       "away_from_ai": 29,
       "toward_ai_pct": 23.7,
       "fav_toward_pct": 34.2,
       "mean_move_pp": {
-        "n": 284,
-        "mean": -0.10412,
+        "n": 286,
+        "mean": -0.1034,
         "ci": [
-          -0.17152,
-          -0.04245
+          -0.16671,
+          -0.03966
         ],
         "ci_iid": [
-          -0.16933,
-          -0.04245
+          -0.16671,
+          -0.04272
         ],
-        "clusters": 283,
+        "clusters": 285,
         "ci_method": "대진 단위 부트스트랩 (넓은 쪽)"
       }
     },
@@ -283,5 +283,5 @@
       ]
     }
   },
-  "verdict": "아직 뚜렷한 방향 없음"
+  "verdict": "시장이 AI 반대쪽으로 움직임 (나쁜 신호)"
 }
