@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-27T13:01:15+00:00",
-  "graded_matches": 2858,
+  "updated_at": "2026-11-27T15:01:10+00:00",
+  "graded_matches": 2859,
   "rounds": [
     260126,
     260127,
@@ -38,8 +38,8 @@
   "gem_roi_ci_low": -100.0,
   "gem_roi_ci_high": -100.0,
   "prob_sources": {
-    "betman_corrector": 801,
-    "betman_markets": 2057
+    "betman_markets": 2058,
+    "betman_corrector": 801
   },
   "by_game_type": {
     "농구 SUM": {
@@ -69,16 +69,16 @@
       ]
     },
     "농구 언더오버": {
-      "n": 292,
+      "n": 293,
       "ll_diff": -0.0012,
       "ll_diff_ci": [
-        -0.0033,
-        0.0009
+        -0.0031,
+        0.001
       ],
-      "fixtures": 291,
+      "fixtures": 292,
       "ll_diff_ci_fixture": [
-        -0.0033,
-        0.0009
+        -0.0032,
+        0.001
       ]
     },
     "축구 소수핸디캡": {
@@ -134,7 +134,7 @@
       ]
     }
   },
-  "fixtures": 1125,
+  "fixtures": 1126,
   "by_model_version": [
     {
       "source": "betman_corrector",
@@ -390,29 +390,29 @@
         260140,
         260141
       ],
-      "n": 534,
-      "ll_diff": 0.0004,
+      "n": 535,
+      "ll_diff": 0.0003,
       "ll_diff_ci": [
         -0.0037,
-        0.0081
+        0.0076
       ],
-      "fixtures": 223,
+      "fixtures": 224,
       "ll_diff_ci_fixture": [
-        -0.0039,
-        0.0051
+        -0.0041,
+        0.005
       ]
     }
   ],
   "calibration_metrics": {
-    "n": 2858,
-    "brier_ai": 0.5229,
+    "n": 2859,
+    "brier_ai": 0.5228,
     "brier_market": 0.5227,
     "brier_diff": 0.0001,
     "brier_diff_ci": [
-      -0.0012,
-      0.0014
+      -0.0011,
+      0.0013
     ],
-    "ece_ai": 1.18,
+    "ece_ai": 1.14,
     "ece_market": 1.36
   },
   "calibration_by_game_type": {
@@ -441,15 +441,15 @@
       "ece_market": 4.42
     },
     "농구 언더오버": {
-      "n": 292,
+      "n": 293,
       "brier_ai": 0.4988,
       "brier_market": 0.5,
       "brier_diff": -0.0012,
       "brier_diff_ci": [
-        -0.0033,
-        0.0009
+        -0.0032,
+        0.001
       ],
-      "ece_ai": 2.7,
+      "ece_ai": 2.9,
       "ece_market": 0.78
     },
     "축구 소수핸디캡": {
@@ -589,15 +589,15 @@
       },
       {
         "range": "40~50%",
-        "n": 1530,
-        "said_pct": 46.0,
+        "n": 1531,
+        "said_pct": 46.1,
         "happened_pct": 47.5
       },
       {
         "range": "50~60%",
-        "n": 1485,
+        "n": 1486,
         "said_pct": 53.8,
-        "happened_pct": 51.9
+        "happened_pct": 52.0
       },
       {
         "range": "60~70%",
@@ -657,7 +657,7 @@
       },
       {
         "range": "50~60%",
-        "n": 1730,
+        "n": 1732,
         "said_pct": 53.3,
         "happened_pct": 52.3
       },
@@ -1183,7 +1183,7 @@
     },
     {
       "date": "2026-11-27",
-      "graded_matches": 2858,
+      "graded_matches": 2859,
       "model_ll": 0.8138,
       "market_ll": 0.8138,
       "ll_diff": -0.0,
