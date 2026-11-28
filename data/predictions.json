@@ -54222,45 +54222,7 @@
       "away_win": 0.5062
     },
     "prob_source": "betman_corrector",
-    "sharp": {
-      "event_id": "e526183dd8d164c44624bd93d2c1c39e",
-      "home_team": "Central Coast Mariners",
-      "away_team": "Auckland FC",
-      "commence_time": "2026-11-28T08:40:00Z",
-      "sharp_bookmaker": "pinnacle",
-      "sharp_odds": {
-        "home_win": 3.67,
-        "draw": 3.77,
-        "away_win": 2.0
-      },
-      "sharp_probs": {
-        "home_win": 0.2626,
-        "draw": 0.2556,
-        "away_win": 0.4818
-      },
-      "consensus_probs": {
-        "home_win": 0.26099999999999995,
-        "draw": 0.2575625,
-        "away_win": 0.4814
-      },
-      "n_bookmakers": 8,
-      "match_method": "time_single",
-      "prob_distance": 0.0208,
-      "sport_key": "soccer_australia_aleague",
-      "betman_odds": {
-        "home_win": 3.15,
-        "draw": 3.45,
-        "away_win": 1.8
-      },
-      "betman_home": "센트럴코스트 매리너스",
-      "betman_away": "오클랜드FC",
-      "match_time": "26.11.28 (토) 17:40",
-      "betman_ev_vs_sharp": {
-        "home_win": -0.1728,
-        "draw": -0.1182,
-        "away_win": -0.1328
-      }
-    },
+    "sharp": null,
     "top_scores": [],
     "evaluation": {
       "expected_values": {
