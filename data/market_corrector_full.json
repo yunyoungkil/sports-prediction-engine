@@ -66,27 +66,27 @@
       "roi_ci_high": 5.52
     },
     "current_season": {
-      "samples": 500,
-      "model_ll": 0.9415,
-      "market_ll": 0.9465,
-      "ll_diff": -0.0051,
+      "samples": 548,
+      "model_ll": 0.9466,
+      "market_ll": 0.9504,
+      "ll_diff": -0.0037,
       "ll_diff_ci": [
-        -0.0114,
-        0.0018
+        -0.0106,
+        0.0032
       ],
-      "bets": 149,
-      "roi_pct": 2.33,
-      "roi_ci_low": -19.7,
-      "roi_ci_high": 23.05
+      "bets": 160,
+      "roi_pct": 1.04,
+      "roi_ci_low": -18.44,
+      "roi_ci_high": 20.21
     },
     "betman": {
-      "samples": 1299,
-      "model_ll": 0.9455,
-      "market_ll": 0.9483,
-      "ll_diff": -0.0028,
+      "samples": 1473,
+      "model_ll": 0.9492,
+      "market_ll": 0.9508,
+      "ll_diff": -0.0016,
       "ll_diff_ci": [
-        -0.0056,
-        -0.0001
+        -0.0042,
+        0.0011
       ],
       "bets": 1,
       "roi_pct": -100.0,

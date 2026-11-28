@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27T23:02:00+00:00",
+  "updated_at": "2026-11-28T00:52:49+00:00",
   "graded_matches": 2896,
   "rounds": [
     260126,
@@ -683,7 +683,7 @@
   },
   "verdict": "AI가 시장보다 약간 정확하지만 확실하지 않음 (CI가 0 포함)",
   "model": {
-    "trained_at": "2026-11-22T00:36:52+00:00",
+    "trained_at": "2026-11-28T00:37:18+00:00",
     "trained_on": [
       2223,
       2324,
@@ -707,13 +707,13 @@
       "roi_ci_high": 18.65
     },
     "backtest_betman": {
-      "samples": 1299,
-      "model_ll": 0.9449,
-      "market_ll": 0.9483,
-      "ll_diff": -0.0034,
+      "samples": 1473,
+      "model_ll": 0.9488,
+      "market_ll": 0.9508,
+      "ll_diff": -0.0021,
       "ll_diff_ci": [
-        -0.0065,
-        -0.0004
+        -0.0049,
+        0.001
       ],
       "bets": 1,
       "roi_pct": -100.0,
@@ -1183,6 +1183,20 @@
     },
     {
       "date": "2026-11-27",
+      "graded_matches": 2896,
+      "model_ll": 0.8136,
+      "market_ll": 0.8136,
+      "ll_diff": -0.0001,
+      "ll_diff_ci": [
+        -0.0021,
+        0.002
+      ],
+      "roi_pct": -100.0,
+      "gem_bets": 1,
+      "gem_roi_pct": -100.0
+    },
+    {
+      "date": "2026-11-28",
       "graded_matches": 2896,
       "model_ll": 0.8136,
       "market_ll": 0.8136,
